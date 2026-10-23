@@ -1,0 +1,112 @@
+{
+    "name": "ignibyte/lotline",
+    "description": "Lotline dealership operations built fresh through the AIC workflow.",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.5",
+        "aic/framework": "0.1.x-dev",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0"
+    },
+    "require-dev": {
+        "aic/gates": "0.1.x-dev",
+        "aic/workflow": "0.1.x-dev",
+        "roave/security-advisories": "dev-latest"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../aic-nextgen-stable/framework",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "aic/framework": "0.1.x-dev"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "../aic-nextgen-stable/gates",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "aic/gates": "0.1.x-dev"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "../aic-nextgen-stable/workflow",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "aic/workflow": "0.1.x-dev"
+                }
+            }
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "App\\Generated\\": "generated/",
+            "App\\Site\\": "modules/site/src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "captainhook/hook-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "captainhook": {
+            "only-enabled": true
+        }
+    },
+    "scripts": {
+        "build": "aic-build",
+        "gate": [
+            "Composer\\Config::disableProcessTimeout",
+            "aic-gate"
+        ],
+        "gate:0": "aic-gate 0",
+        "gate:1": "aic-gate 1",
+        "gate:10": "aic-gate 10",
+        "gate:11": "aic-gate 11",
+        "gate:12": "aic-gate 12",
+        "gate:13": "aic-gate 13",
+        "gate:14": "aic-gate 14",
+        "gate:15": "aic-gate 15",
+        "gate:16": "aic-gate 16",
+        "gate:17": "aic-gate 17",
+        "gate:18": "aic-gate 18",
+        "gate:19": "aic-gate 19",
+        "gate:2": "aic-gate 2",
+        "gate:20": "aic-gate 20",
+        "gate:21": "aic-gate 21",
+        "gate:23": "aic-gate 23",
+        "gate:24": "aic-gate 24",
+        "gate:25": "aic-gate 25",
+        "gate:26": "aic-gate 26",
+        "gate:27": "aic-gate 27",
+        "gate:3": "aic-gate 3",
+        "gate:30": "aic-gate 30",
+        "gate:4": "aic-gate 4",
+        "gate:5": "aic-gate 5",
+        "gate:6": "aic-gate 6",
+        "gate:7": "aic-gate 7",
+        "gate:8": "aic-gate 8",
+        "gate:9": "aic-gate 9",
+        "native:serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "aic-gate serve"
+        ]
+    }
+}

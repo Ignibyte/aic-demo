@@ -1,0 +1,12 @@
+name: aic-demo
+type: php
+docroot: public
+php_version: "8.5"
+database:
+    type: postgres
+    version: "17"
+performance_mode: none
+composer_version: "2"
+corepack_enable: false
+xdebug_enabled: false
+use_dns_when_possible: true

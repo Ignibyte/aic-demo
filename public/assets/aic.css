@@ -1,0 +1,5 @@
+/* Built by composer run build (#95) from each module's assets/ CSS, then the site theme's assets/ CSS: edit those and run composer run build, never this file. */
+
+/* assets/base.css */
+:root { color-scheme: dark; }
+body { margin: 0; font-family: system-ui, sans-serif; }

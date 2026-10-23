@@ -1,0 +1,165 @@
+{
+    "routes": [
+        {
+            "handler": "App\\Site\\Controller\\HealthApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "site",
+            "path": "/health"
+        }
+    ],
+    "commands": [
+        {
+            "class": "App\\Site\\Command\\DatabasePing",
+            "kind": "Command",
+            "module": "site",
+            "name": "db:ping"
+        },
+        {
+            "class": "AIC\\Schema\\Application\\MigrateCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "migrate"
+        },
+        {
+            "class": "AIC\\Schema\\Application\\MigrationStatusCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "migrate:status"
+        },
+        {
+            "class": "AIC\\Queue\\Application\\QueueWorkCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "queue:work"
+        },
+        {
+            "class": "AIC\\Schedule\\Application\\ScheduleRunCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "schedule:run"
+        }
+    ],
+    "jobs": [
+        {
+            "class": "AIC\\Notification\\Application\\DeliverNotification",
+            "kind": "Job",
+            "module": "framework",
+            "name": "notify"
+        }
+    ],
+    "schedules": [],
+    "modules": [
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "site",
+            "namespace": "App\\Site\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": []
+        }
+    ],
+    "kinds": [
+        {
+            "contract": "AIC\\Controller\\Contracts\\Page",
+            "entry": true,
+            "folder": "Controller",
+            "kind": "Page",
+            "method": "page",
+            "response": "AIC\\Controller\\Contracts\\PageResponse"
+        },
+        {
+            "contract": "AIC\\Controller\\Contracts\\Api",
+            "entry": true,
+            "folder": "Controller",
+            "kind": "Api",
+            "method": "api",
+            "response": "AIC\\Controller\\Contracts\\ApiResponse"
+        },
+        {
+            "contract": "AIC\\Controller\\Contracts\\Stream",
+            "entry": true,
+            "folder": "Controller",
+            "kind": "Stream",
+            "method": "stream",
+            "response": "AIC\\Controller\\Contracts\\StreamResponse"
+        },
+        {
+            "contract": "AIC\\Controller\\Contracts\\Command",
+            "entry": true,
+            "folder": "Command",
+            "kind": "Command",
+            "method": "command",
+            "response": "AIC\\Controller\\Contracts\\CommandResponse"
+        },
+        {
+            "contract": "AIC\\Controller\\Contracts\\Job",
+            "entry": true,
+            "folder": "Job",
+            "kind": "Job",
+            "method": "run",
+            "response": "AIC\\Controller\\Contracts\\JobResponse"
+        },
+        {
+            "contract": "AIC\\Block\\Contracts\\Block",
+            "entry": false,
+            "folder": "Block",
+            "kind": "Block",
+            "method": "component",
+            "response": "AIC\\Component\\Contracts\\Component"
+        },
+        {
+            "contract": "AIC\\Component\\Contracts\\Component",
+            "entry": false,
+            "folder": "Component",
+            "kind": "Component",
+            "method": "",
+            "response": ""
+        },
+        {
+            "contract": "Psr\\Http\\Server\\MiddlewareInterface",
+            "entry": false,
+            "folder": "Middleware",
+            "kind": "Middleware",
+            "method": "",
+            "response": ""
+        },
+        {
+            "contract": "AIC\\Schema\\Contracts\\Migration",
+            "entry": false,
+            "folder": "Migration",
+            "kind": "Migration",
+            "method": "",
+            "response": ""
+        },
+        {
+            "contract": "AIC\\Notification\\Contracts\\Notification",
+            "entry": false,
+            "folder": "Notification",
+            "kind": "Notification",
+            "method": "",
+            "response": ""
+        },
+        {
+            "contract": "",
+            "entry": false,
+            "folder": "Form",
+            "kind": "Form",
+            "method": "",
+            "response": ""
+        },
+        {
+            "contract": "",
+            "entry": false,
+            "folder": "Repository",
+            "kind": "Repository",
+            "method": "",
+            "response": ""
+        }
+    ]
+}

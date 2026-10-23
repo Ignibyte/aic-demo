@@ -1,0 +1,23 @@
+{
+    "schema": "aic.native-site/1",
+    "steps": [
+        {
+            "name": "database health",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "missing route",
+            "method": "GET",
+            "path": "/missing-bootstrap-route",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        }
+    ]
+}
