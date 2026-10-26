@@ -5,8 +5,8 @@
  * stylesheet.
  */
 @import "tailwindcss" source(none);
-@source "../themes/lotline/**/*.phtml";
-@source "../themes/lotline/**/*.php";
+@source "../**/*.phtml";
+@source "../src/**/*.php";
 @plugin "daisyui" {
 	themes: false;
 }

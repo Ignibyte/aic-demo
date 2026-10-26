@@ -2,9 +2,10 @@
 number: 2
 title: "Move Lotline to AIC's new layout: theme src/, theme frontend/, build/"
 type: chore
-status: open
+status: in-review
 created: 2026-10-26T20:07:44Z
-updated: 2026-10-26T20:07:44Z
+updated: 2026-10-26T21:32:55Z
+phase: "docs"
 ---
 
 AIC moved where an app keeps things (AIC #167), and this app still has the old layout. Move it,
