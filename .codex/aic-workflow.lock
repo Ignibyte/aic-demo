@@ -2,15 +2,15 @@
     "schema": "aic.workflow-pack/1",
     "files": {
         ".agents/skills/aic-workflow-check/SKILL.md": "sha256:4dea41388edfd107659a1665cb086b0e8afbcbd9eadac93a2217cab9a41fe64e",
-        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:ceb83190de91a5c833b9b53d1c5926857fdc861c12c61480bd993c5bd516e66c",
+        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:9dd99315799cc397a66d4ef2f7a67d7a3649701f5d4b3fe0c848eb7b770896b0",
         ".agents/skills/aic-workflow-complete/SKILL.md": "sha256:92cdcdcedfcc55b1095c1390a4676a4df92ee8468a4038ec328522202d8af58a",
         ".agents/skills/aic-workflow-continue/SKILL.md": "sha256:7f2ca8a46543b757298df960812c57e1269f6dbee9d02216c3bd15b9e229e4b6",
-        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:c91a5fbac14e88bac562b047aa9bbf40a3a15b16f35753de3c20851f7c972678",
+        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:31879c637c00a028f0c39a394d7127675296e8b6e407ef6133915775fe011e0b",
         ".agents/skills/aic-workflow-plan/spec-template.md": "sha256:eb495f4267920cf1bab53971650c02164171e2afb15c1d0daf2f0fe91dcaf706",
         ".agents/skills/aic-workflow-start/SKILL.md": "sha256:23fe853cb161afa7aee0723f4797dedb7f38e8aa42387953de57de1f55817a4a",
         ".agents/skills/aic-workflow-status/SKILL.md": "sha256:687902be86099360ad2f47c2f5eaadc621095820dabfaa029acd6ef624970563",
         ".codex/agents/aic-seeker.toml": "sha256:407296fa533e4baba0241e3f699b91dca879e7dacc50a833c252533ed9640118",
-        "AGENTS.md#aic-workflow": "sha256:00160af7d5d20e572b2ad09d088b8ee810aa72313317147689ff8ff406ed5bc0",
+        "AGENTS.md#aic-workflow": "sha256:d6c07033a8bc9636f03ec771e8842fabe8a777eb5264a9bb7459ff15e6654717",
         "tickets/README.md": "sha256:bac6472b42cd172a8147bb6a0da9f2521e2da1fa5dcf46a47b75e6a26fefec1e"
     }
 }
