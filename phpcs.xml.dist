@@ -9,7 +9,7 @@
 
     <file>modules</file>
     <file>themes</file>
-    <file>generated</file>
+    <file>build/generated</file>
     <file>public</file>
     <file>bootstrap</file>
     <file>config</file>
@@ -25,9 +25,9 @@
         <properties>
             <property name="rootNamespaces" type="array">
                 <element key="modules/site/src" value="App\Site"/>
-                <element key="themes/lotline/components" value="App\Theme\Components"/>
-                <element key="themes/lotline/layouts" value="App\Theme\Layouts"/>
-                <element key="generated" value="App\Generated"/>
+                <element key="themes/lotline/src/Components" value="App\Theme\Components"/>
+                <element key="themes/lotline/src/Layouts" value="App\Theme\Layouts"/>
+                <element key="build/generated" value="App\Generated"/>
             </property>
         </properties>
     </rule>
