@@ -1,0 +1,5 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/layouts/page.phtml by composer run build; edit that file, never this one. */ ?>
+<main class="drawer-content flex min-h-screen flex-col bg-base-100 text-base-content lg:mt-2 lg:rounded-ss-4xl lg:border-s lg:border-t lg:border-base-300 [&>[data-region=content]]:grow [&>[data-region=content]]:px-4 [&>[data-region=content]]:py-6 lg:[&>[data-region=content]]:px-10">
+<?= $renderPass->region($page->header) ?><?= $renderPass->region($page->content) ?><?= $renderPass->region($page->footer) ?></main>
+<aside class="drawer-side z-10"><label for="lotline-drawer" class="drawer-overlay" aria-label="Close the navigation"></label>
+<?= $renderPass->region($page->sidebar) ?></aside>

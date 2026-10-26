@@ -1,0 +1,9 @@
+<?php /** @var \App\Theme\Layouts\Page $page */ ?>
+<main class="drawer-content flex min-h-screen flex-col bg-base-100 text-base-content lg:mt-2 lg:rounded-ss-4xl lg:border-s lg:border-t lg:border-base-300 [&>[data-region=content]]:grow [&>[data-region=content]]:px-4 [&>[data-region=content]]:py-6 lg:[&>[data-region=content]]:px-10">
+<?= $page->header ?>
+<?= $page->content ?>
+<?= $page->footer ?>
+</main>
+<aside class="drawer-side z-10"><label for="lotline-drawer" class="drawer-overlay" aria-label="Close the navigation"></label>
+<?= $page->sidebar ?>
+</aside>

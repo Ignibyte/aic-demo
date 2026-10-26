@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\Navigation\Navigation $navigation */ ?>
+<nav class="flex min-h-screen w-64 flex-col gap-2 bg-base-200 px-2 pt-10" aria-label="Main">
+<a class="mx-5 font-semibold" href="/"><?= $navigation->name ?></a>
+<ul class="menu w-full"><?php foreach ($navigation->links as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></ul>
+</nav>

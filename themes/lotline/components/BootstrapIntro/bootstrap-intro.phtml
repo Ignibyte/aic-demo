@@ -1,0 +1,8 @@
+<?php /** @var \App\Theme\Components\BootstrapIntro\BootstrapIntro $bootstrapIntro */ ?>
+<section class="card max-w-2xl bg-base-200" aria-labelledby="lotline-heading"><div class="card-body gap-4">
+<p class="text-sm uppercase tracking-wide opacity-60"><?= $bootstrapIntro->dealership ?></p>
+<h2 class="card-title text-3xl" id="lotline-heading"><?= $bootstrapIntro->title ?></h2>
+<p class="opacity-80"><?= $bootstrapIntro->description ?></p>
+<p class="flex items-center gap-2 text-sm"><span class="status status-success" aria-hidden="true"></span>Foundation in progress</p>
+<div class="card-actions"><a class="btn btn-primary btn-sm" href="<?= $bootstrapIntro->healthPath ?>" data-enhance="off">Check application health <span aria-hidden="true">↗</span></a></div>
+</div></section>

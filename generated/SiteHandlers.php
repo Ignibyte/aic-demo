@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
+use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
-use App\Site\Controller\AssetFile;
 use App\Site\Controller\BootstrapPage;
 use App\Site\Controller\HealthApi;
-use App\Site\Service\RequestedAsset;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -26,15 +25,16 @@ final readonly class SiteHandlers
     }
 
     /**
+     * @throws ContainerException When a called constructor or service fails.
+     *
      * @return array<string, RequestHandlerInterface> The module's handlers by id.
      */
     public function byId(): array
     {
-        $requestedAsset = new RequestedAsset($this->handlerContext->root(), $this->handlerContext->appConfig());
-
         return [
-            AssetFile::class => $this->handlerContext->stream(new AssetFile($requestedAsset)),
-            BootstrapPage::class => $this->handlerContext->page(new BootstrapPage($this->handlerContext->appConfig())),
+            BootstrapPage::class => $this->handlerContext->page(
+                new BootstrapPage($this->handlerContext->appConfig(), $this->handlerContext->documents()),
+            ),
             HealthApi::class => $this->handlerContext->api(new HealthApi($this->handlerContext->database())),
         ];
     }

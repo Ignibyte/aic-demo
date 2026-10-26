@@ -1,20 +1,6 @@
 {
     "routes": [
         {
-            "handler": "App\\Site\\Controller\\AssetFile",
-            "kind": "Stream",
-            "method": "GET",
-            "module": "site",
-            "path": "/assets/{file}"
-        },
-        {
-            "handler": "App\\Site\\Controller\\AssetFile",
-            "kind": "Stream",
-            "method": "GET",
-            "module": "site",
-            "path": "/assets/{dir}/{file}"
-        },
-        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -73,7 +59,10 @@
     "modules": [
         {
             "bindings": [],
-            "blocks": [],
+            "blocks": [
+                "App\\Site\\Block\\NavigationBlock",
+                "App\\Site\\Block\\SiteFooterBlock"
+            ],
             "exports": [],
             "factories": [],
             "middleware": [],
@@ -85,6 +74,57 @@
             "requires": []
         }
     ],
+    "theme": {
+        "assets": [
+            {
+                "kind": "Style",
+                "path": "themes/lotline/assets/lotline.css"
+            }
+        ],
+        "components": [
+            {
+                "component": "App\\Theme\\Components\\BootstrapIntro\\BootstrapIntro",
+                "generated": "generated/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml",
+                "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\Icon\\Icon",
+                "generated": "generated/templates/themes/lotline/components/Icon/icon.phtml",
+                "source": "themes/lotline/components/Icon/icon.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\NavLink\\NavLink",
+                "generated": "generated/templates/themes/lotline/components/NavLink/nav-link.phtml",
+                "source": "themes/lotline/components/NavLink/nav-link.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\Navigation\\Navigation",
+                "generated": "generated/templates/themes/lotline/components/Navigation/navigation.phtml",
+                "source": "themes/lotline/components/Navigation/navigation.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\SiteFooter\\SiteFooter",
+                "generated": "generated/templates/themes/lotline/components/SiteFooter/site-footer.phtml",
+                "source": "themes/lotline/components/SiteFooter/site-footer.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\TopBar\\TopBar",
+                "generated": "generated/templates/themes/lotline/components/TopBar/top-bar.phtml",
+                "source": "themes/lotline/components/TopBar/top-bar.phtml"
+            }
+        ],
+        "html": "themes/lotline/layouts/html.phtml",
+        "layouts": [],
+        "name": "lotline",
+        "page": "themes/lotline/layouts/page.phtml",
+        "pageData": "App\\Theme\\Layouts\\Page",
+        "regions": [
+            "sidebar",
+            "header",
+            "content",
+            "footer"
+        ]
+    },
     "kinds": [
         {
             "contract": "AIC\\Controller\\Contracts\\Page",
@@ -137,7 +177,7 @@
         {
             "contract": "AIC\\Component\\Contracts\\Component",
             "entry": false,
-            "folder": "Component",
+            "folder": "themes/<theme>/components/<Name>",
             "kind": "Component",
             "method": "",
             "response": ""

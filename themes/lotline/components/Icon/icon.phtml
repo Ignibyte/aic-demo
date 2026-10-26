@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\Icon\Icon $icon */ ?>
+<svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><?php foreach ($icon->paths as $iconPath): ?><path<?php if ($iconPath->evenOdd): ?> fill-rule="evenodd" clip-rule="evenodd"<?php endif; ?> d="<?= $iconPath->geometry ?>"/><?php endforeach ?></svg>

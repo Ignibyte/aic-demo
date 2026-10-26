@@ -8,13 +8,12 @@
     <arg name="cache" value=".phpcs-cache"/>
 
     <file>modules</file>
+    <file>themes</file>
     <file>generated</file>
     <file>public</file>
     <file>bootstrap</file>
     <file>config</file>
 
-    <!-- Templates are checked by gate:25, not the class tools. -->
-    <exclude-pattern>*/modules/*/templates/*</exclude-pattern>
     <exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>storage/*</exclude-pattern>
     <exclude-pattern>.rector-cache/*</exclude-pattern>
@@ -26,6 +25,8 @@
         <properties>
             <property name="rootNamespaces" type="array">
                 <element key="modules/site/src" value="App\Site"/>
+                <element key="themes/lotline/components" value="App\Theme\Components"/>
+                <element key="themes/lotline/layouts" value="App\Theme\Layouts"/>
                 <element key="generated" value="App\Generated"/>
             </property>
         </properties>

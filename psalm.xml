@@ -37,14 +37,13 @@
 >
     <projectFiles>
         <directory name="modules"/>
+        <directory name="themes"/>
         <directory name="generated"/>
         <directory name="public"/>
         <directory name="bootstrap"/>
         <directory name="config"/>
         <file name="bin/aic"/>
         <ignoreFiles>
-            <!-- Templates are checked by gate:25, not the class tools. -->
-            <directory name="modules/*/templates"/>
             <directory name="vendor"/>
             <directory name=".rector-cache"/>
             <directory name=".psalm-cache"/>

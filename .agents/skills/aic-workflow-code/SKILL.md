@@ -23,18 +23,31 @@ another file, add its row to the manifest first; the run records it as declared 
   redirect), an Api (JSON or XML), a Stream (events or a download), a Command (a CLI exit code)
   or a Job (queued or scheduled work). A controller returns its kind's response and nothing
   else; a helper goes in `src/Service/`.
-- **Components are data.** A component's constructor takes the ready values as public promoted
-  properties. Its template, `modules/<name>/templates/components/<Name>.html.php`, is plain PHP
+- **Components are data, in the theme.** A component's constructor takes the ready values as
+  public promoted properties. It lives with its template in the theme `config/app.php` names:
+  `themes/<theme>/components/<Name>/<Name>.php` and `<name>.phtml`. The template is plain PHP
   with `<?= expression ?>`, the alternative `if`/`foreach` syntax and property reads: no
-  function or method calls.
-- **The build.** After a change to a manifest, a template or a module's assets, run
-  `composer run build`. It writes `generated/`, `build/surface.json`, `public/assets/` and each
-  component's compiled `src/Component/<Name>Template.php`; never edit those by hand. The
-  compiled template is a path in the module, so it needs its manifest row.
-- **Make a new class.** For a new module, page, api, component, block, command, job or
-  migration, prefer `bin/aic make:*` (`bin/aic command:list` names the eight) to writing it by
+  function or method calls. A module holds no template or asset; its controllers build components.
+- **The build.** After a change to a manifest, a template or a theme asset, run
+  `composer run build`. It writes `generated/` (including the escaped templates in
+  `generated/templates/` that the lookups require), `build/surface.json`, `build/assets.json`, `public/assets/` and
+  `docs/wiki/`; never edit those by hand. These exact inventories and generated directories
+  are build outputs; declare every authored source and the edited module manifest.
+- **Make a new class.** For a new module, page, api, component, block, command, job,
+  migration, entity (`make:entity`: entity, repository, migration and list page) or first site theme, prefer `bin/aic make:*` (`bin/aic command:list` lists them) to writing it by
   hand: it writes the class in its folder, adds the manifest call, and the result passes every
   gate. `--dry-run` lists the paths it will write; add each to the manifest first.
+- **Themes and templates.** `make:component <Class>` writes the component and its template into
+  the theme and edits no manifest. A default `make:page` writes its own view there too;
+  `make:page --component=<Class>` reuses a theme component. `make:theme <name>` writes
+  `themes/<name>/layouts/` (`Page.php`, `html.phtml`, `page.phtml`) and CSS, then prints the
+  `config/app.php`, Composer and PHPCS lines to add. A Page controller takes the framework's
+  `PageDocuments` and may name a layout (`content([...], 200, ThemeLayoutName::Focus)`); a layout
+  ships `page--<name>.phtml`, `html--<name>.phtml` or both, each falling back to the default.
+  `make:layout <name>` writes a page layout (`<Case>Page.php`, the content region only, and
+  `page--<name>.phtml`); after `composer run build`, `make:page … --layout=<name>` names it. The
+  Composer prefix for `App\\Theme\\Components\\` must be configured first; run
+  `composer dump-autoload`. Use the dry-run to declare every path it lists.
 - **Find before you add.** `bin/aic code:search` and `bin/aic code:refs` before you write a
   class: reuse what the app has instead of a second copy.
 
@@ -57,6 +70,16 @@ line, never change or remove one.
 the manifest, the spec's frozen rows are still there, every declared entry point is built as
 declared (and nothing undeclared was added), and the house rules hold. Fix each blocked row and
 run again.
+
+Read a failed gate's stored output with `bin/aic workflow:logs gate:<N>` before changing code.
+Use `--phase=code --attempt=<N>` to inspect a specific attempt.
+Use `--json` to retain the exact stored transcript and its metadata.
+Use `--from-line=1 --lines=100` for an explicit line window.
+Read its continuation metadata when more lines remain.
+Use `bin/aic workflow:logs gate` for aggregate suite failures, including timeouts.
+The command does not rerun gates or write the evidence database.
+Historical capture completeness can be unknown. Do not call an old tail complete.
+Do not query the protected database directly.
 
 When everything else passes, code answers `inspection-due`: an independent reader checks the
 change once before it leaves code.

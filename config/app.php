@@ -16,6 +16,7 @@ use AIC\Tessera\Domain\TesseraRelease;
 
 return new AppConfig(
     name: 'Lotline',
+    theme: 'lotline',
     tessera: new TesseraRelease('0.1.0', [
         'tessera.csp.iife.js' => 'c200d65b0c2ead2ba9b1467249b5b245eda6f65f48c7072252ee23bb3a2c646b',
         'tessera.csp.iife.js.map' => '55ac49ce2c4ef4aa2aa6233669686641a6c07eb865898d9b708ab291e4087d56',

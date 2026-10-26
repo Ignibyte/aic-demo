@@ -2,15 +2,15 @@
     "schema": "aic.workflow-pack/1",
     "files": {
         ".agents/skills/aic-workflow-check/SKILL.md": "sha256:4dea41388edfd107659a1665cb086b0e8afbcbd9eadac93a2217cab9a41fe64e",
-        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:3e4a9c2a2d04fff50517823dbc0bda75722a5efb83814f5ab647fe989de62dcc",
+        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:ceb83190de91a5c833b9b53d1c5926857fdc861c12c61480bd993c5bd516e66c",
         ".agents/skills/aic-workflow-complete/SKILL.md": "sha256:92cdcdcedfcc55b1095c1390a4676a4df92ee8468a4038ec328522202d8af58a",
-        ".agents/skills/aic-workflow-continue/SKILL.md": "sha256:5066ce76739bf55408381dc315464015ad8eb140b7a327cfb800de2ed93e6aa7",
-        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:578e0d878b13a0db7c35f16678952d3783f0a75e725aa9a78ed23427af5ff74f",
+        ".agents/skills/aic-workflow-continue/SKILL.md": "sha256:7f2ca8a46543b757298df960812c57e1269f6dbee9d02216c3bd15b9e229e4b6",
+        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:c91a5fbac14e88bac562b047aa9bbf40a3a15b16f35753de3c20851f7c972678",
         ".agents/skills/aic-workflow-plan/spec-template.md": "sha256:eb495f4267920cf1bab53971650c02164171e2afb15c1d0daf2f0fe91dcaf706",
         ".agents/skills/aic-workflow-start/SKILL.md": "sha256:23fe853cb161afa7aee0723f4797dedb7f38e8aa42387953de57de1f55817a4a",
-        ".agents/skills/aic-workflow-status/SKILL.md": "sha256:64c362462aaeb0b51fda8eebd58429c963da973737bcbc41caee58fd26c432a0",
+        ".agents/skills/aic-workflow-status/SKILL.md": "sha256:687902be86099360ad2f47c2f5eaadc621095820dabfaa029acd6ef624970563",
         ".codex/agents/aic-seeker.toml": "sha256:407296fa533e4baba0241e3f699b91dca879e7dacc50a833c252533ed9640118",
-        "AGENTS.md#aic-workflow": "sha256:843a49a60cf1f3e38a43596845c1afc36ef2fb0ff7fc823d7100468f5767e015",
+        "AGENTS.md#aic-workflow": "sha256:00160af7d5d20e572b2ad09d088b8ee810aa72313317147689ff8ff406ed5bc0",
         "tickets/README.md": "sha256:bac6472b42cd172a8147bb6a0da9f2521e2da1fa5dcf46a47b75e6a26fefec1e"
     }
 }
