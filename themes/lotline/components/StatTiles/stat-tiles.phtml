@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\StatTiles\StatTiles $statTiles */ ?>
+<section class="stats stats-vertical col-span-12 w-full bg-base-200 shadow-xs xl:stats-horizontal" id="<?= $statTiles->id ?>" aria-label="<?= $statTiles->label ?>"><?php foreach ($statTiles->tiles as $statTile): ?><div class="stat"><div class="stat-title"><?= $statTile->title ?></div><div class="stat-value text-xl font-semibold tabular-nums" id="<?= $statTile->id ?>"><?= $statTile->value ?></div><div class="stat-desc"><?= $statTile->description ?></div></div><?php endforeach ?></section>

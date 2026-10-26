@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\BarChart\BarChart $barChart */ ?>
+<figure class="flex flex-col items-stretch justify-start" id="<?= $barChart->id ?>">
+<svg class="h-auto w-full" viewBox="<?= $barChart->viewBox ?>" role="img" aria-labelledby="<?= $barChart->id ?>-title <?= $barChart->id ?>-desc"><title id="<?= $barChart->id ?>-title"><?= $barChart->title ?></title><desc id="<?= $barChart->id ?>-desc"><?= $barChart->summary ?></desc><?php foreach ($barChart->bars as $chartBar): ?><text x="<?= $barChart->labelEdge ?>" y="<?= $chartBar->baseline ?>" text-anchor="end" class="fill-base-content/70 text-[14px]"><?= $chartBar->label ?></text><rect x="<?= $chartBar->left ?>" y="<?= $chartBar->top ?>" width="<?= $chartBar->width ?>" height="<?= $chartBar->height ?>" rx="3" class="fill-secondary"><title><?= $chartBar->label ?>: <?= $chartBar->value ?></title></rect><text x="<?= $chartBar->valueEdge ?>" y="<?= $chartBar->baseline ?>" class="fill-base-content text-[14px] tabular-nums"><?= $chartBar->value ?></text><?php endforeach ?></svg>
+<figcaption class="mt-2 text-sm text-base-content/70" aria-hidden="true"><?= $barChart->summary ?></figcaption>
+</figure>

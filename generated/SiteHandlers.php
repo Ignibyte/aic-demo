@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Form\Application\PostedFields;
 use AIC\Module\Application\HandlerContext;
 use App\Site\Controller\BootstrapPage;
 use App\Site\Controller\HealthApi;
+use App\Site\Controller\ThemeGuidePage;
+use App\Site\Controller\ThemeGuidePost;
+use App\Site\Service\ThemeSamples;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -31,11 +35,17 @@ final readonly class SiteHandlers
      */
     public function byId(): array
     {
+        $themeSamples = new ThemeSamples();
+
         return [
             BootstrapPage::class => $this->handlerContext->page(
                 new BootstrapPage($this->handlerContext->appConfig(), $this->handlerContext->documents()),
             ),
             HealthApi::class => $this->handlerContext->api(new HealthApi($this->handlerContext->database())),
+            ThemeGuidePage::class => $this->handlerContext->page(new ThemeGuidePage($this->handlerContext->documents(), $themeSamples)),
+            ThemeGuidePost::class => $this->handlerContext->page(
+                new ThemeGuidePost($this->handlerContext->documents(), $themeSamples, new PostedFields()),
+            ),
         ];
     }
 }

@@ -1,0 +1,4 @@
+<?php /** @var \App\Theme\Components\Panel\Panel $panel */ ?>
+<section class="card col-span-12 bg-base-200 shadow-xs<?php if (!$panel->wide): ?> xl:col-span-6<?php endif; ?>" aria-labelledby="<?= $panel->id ?>-heading"><div class="card-body"><h2 class="card-title" id="<?= $panel->id ?>-heading"><?= $panel->title ?></h2><p class="flex-none text-base-content/60"><?= $panel->description ?></p>
+<?php foreach ($panel->body as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?>
+</div></section>

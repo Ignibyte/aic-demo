@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\FilterBar\FilterBar $filterBar */ ?>
+<form method="get" action="<?= $filterBar->action ?>" class="mb-4 flex flex-wrap items-end gap-3" role="search" id="<?= $filterBar->id ?>" data-enhance="on" data-target="<?= $filterBar->target ?>"><?php foreach ($filterBar->fields as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?><button class="btn btn-sm btn-primary" type="submit">Filter</button><a class="btn btn-sm btn-ghost" href="<?= $filterBar->clearHref ?>">Clear</a></form>

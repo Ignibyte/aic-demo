@@ -48,9 +48,12 @@ final readonly class NavigationBlock implements Block
     public function component(ServerRequestInterface $serverRequest): Component
     {
         $path = $serverRequest->getUri()->getPath();
-        $navLink = new NavLink('/', 'Dashboard', (new Heroicons())->home(), self::isCurrent('/', $path));
+        $heroicons = new Heroicons();
 
-        return new Navigation(self::NAME, [new KeyedComponent('dashboard', $navLink)]);
+        return new Navigation(self::NAME, [
+            new KeyedComponent('dashboard', new NavLink('/', 'Dashboard', $heroicons->home(), self::isCurrent('/', $path))),
+            new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path))),
+        ]);
     }
 
     /**

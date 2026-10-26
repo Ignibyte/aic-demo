@@ -1,0 +1,7 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/ConfirmCard/confirm-card.phtml by composer run build; edit that file, never this one. */ ?>
+<div class="card max-w-2xl bg-base-200"><div class="card-body">
+<h2 class="card-title"><?= $renderPass->text($confirmCard->title) ?></h2>
+<p class="text-sm"><?= $renderPass->text($confirmCard->detail) ?></p>
+<p><?= $renderPass->text($confirmCard->question) ?></p>
+<?= $renderPass->child($confirmCard->form, 'ConfirmCard.1') ?><div class="card-actions"><a class="btn btn-sm <?= $renderPass->text($confirmCard->keep->buttonTone->value) ?>" href="<?= $renderPass->text($confirmCard->keep->href) ?>"><?= $renderPass->text($confirmCard->keep->label) ?></a></div>
+</div></div>

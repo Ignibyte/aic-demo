@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\SelectField\SelectField $selectField */ ?>
+<fieldset class="fieldset"><label class="label" for="<?= $selectField->id ?>"><?= $selectField->label ?></label>
+<select class="select <?php if ($selectField->compact): ?>select-sm w-40<?php else: ?>w-full<?php endif; ?><?php if ($selectField->error !== ''): ?> select-error<?php endif; ?>" id="<?= $selectField->id ?>" name="<?= $selectField->name ?>"<?php if ($selectField->error !== ''): ?> aria-invalid="true" aria-describedby="<?= $selectField->id ?>-error"<?php endif; ?>><option value=""><?= $selectField->prompt ?></option><?php foreach ($selectField->options as $selectOption): ?><option value="<?= $selectOption->value ?>"<?php if ($selectOption->selected): ?> selected<?php endif; ?>><?= $selectOption->label ?></option><?php endforeach ?></select>
+<?php if ($selectField->error !== ''): ?><p class="label whitespace-normal text-error-content" id="<?= $selectField->id ?>-error"><?= $selectField->error ?></p><?php endif; ?>
+</fieldset>
