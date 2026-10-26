@@ -13,6 +13,20 @@
             "method": "GET",
             "module": "site",
             "path": "/"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ThemeGuidePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ThemeGuidePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme"
         }
     ],
     "commands": [
@@ -83,14 +97,69 @@
         ],
         "components": [
             {
+                "component": "App\\Theme\\Components\\BarChart\\BarChart",
+                "generated": "generated/templates/themes/lotline/components/BarChart/bar-chart.phtml",
+                "source": "themes/lotline/components/BarChart/bar-chart.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\BootstrapIntro\\BootstrapIntro",
                 "generated": "generated/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml",
                 "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\ColumnChart\\ColumnChart",
+                "generated": "generated/templates/themes/lotline/components/ColumnChart/column-chart.phtml",
+                "source": "themes/lotline/components/ColumnChart/column-chart.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ConfirmCard\\ConfirmCard",
+                "generated": "generated/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml",
+                "source": "themes/lotline/components/ConfirmCard/confirm-card.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\DataTable\\DataTable",
+                "generated": "generated/templates/themes/lotline/components/DataTable/data-table.phtml",
+                "source": "themes/lotline/components/DataTable/data-table.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\DetailCard\\DetailCard",
+                "generated": "generated/templates/themes/lotline/components/DetailCard/detail-card.phtml",
+                "source": "themes/lotline/components/DetailCard/detail-card.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FilterBar\\FilterBar",
+                "generated": "generated/templates/themes/lotline/components/FilterBar/filter-bar.phtml",
+                "source": "themes/lotline/components/FilterBar/filter-bar.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FormActions\\FormActions",
+                "generated": "generated/templates/themes/lotline/components/FormActions/form-actions.phtml",
+                "source": "themes/lotline/components/FormActions/form-actions.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FormField\\FormField",
+                "generated": "generated/templates/themes/lotline/components/FormField/form-field.phtml",
+                "source": "themes/lotline/components/FormField/form-field.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FormGrid\\FormGrid",
+                "generated": "generated/templates/themes/lotline/components/FormGrid/form-grid.phtml",
+                "source": "themes/lotline/components/FormGrid/form-grid.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\Icon\\Icon",
                 "generated": "generated/templates/themes/lotline/components/Icon/icon.phtml",
                 "source": "themes/lotline/components/Icon/icon.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\IconEntry\\IconEntry",
+                "generated": "generated/templates/themes/lotline/components/IconEntry/icon-entry.phtml",
+                "source": "themes/lotline/components/IconEntry/icon-entry.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\IconLegend\\IconLegend",
+                "generated": "generated/templates/themes/lotline/components/IconLegend/icon-legend.phtml",
+                "source": "themes/lotline/components/IconLegend/icon-legend.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\NavLink\\NavLink",
@@ -103,9 +172,54 @@
                 "source": "themes/lotline/components/Navigation/navigation.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\Notice\\Notice",
+                "generated": "generated/templates/themes/lotline/components/Notice/notice.phtml",
+                "source": "themes/lotline/components/Notice/notice.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\Pagination\\Pagination",
+                "generated": "generated/templates/themes/lotline/components/Pagination/pagination.phtml",
+                "source": "themes/lotline/components/Pagination/pagination.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\Panel\\Panel",
+                "generated": "generated/templates/themes/lotline/components/Panel/panel.phtml",
+                "source": "themes/lotline/components/Panel/panel.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\PanelGrid\\PanelGrid",
+                "generated": "generated/templates/themes/lotline/components/PanelGrid/panel-grid.phtml",
+                "source": "themes/lotline/components/PanelGrid/panel-grid.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\SelectField\\SelectField",
+                "generated": "generated/templates/themes/lotline/components/SelectField/select-field.phtml",
+                "source": "themes/lotline/components/SelectField/select-field.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\SignedInMenu\\SignedInMenu",
+                "generated": "generated/templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml",
+                "source": "themes/lotline/components/SignedInMenu/signed-in-menu.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\SiteFooter\\SiteFooter",
                 "generated": "generated/templates/themes/lotline/components/SiteFooter/site-footer.phtml",
                 "source": "themes/lotline/components/SiteFooter/site-footer.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\StatTiles\\StatTiles",
+                "generated": "generated/templates/themes/lotline/components/StatTiles/stat-tiles.phtml",
+                "source": "themes/lotline/components/StatTiles/stat-tiles.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\StatusBadge\\StatusBadge",
+                "generated": "generated/templates/themes/lotline/components/StatusBadge/status-badge.phtml",
+                "source": "themes/lotline/components/StatusBadge/status-badge.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\TableRow\\TableRow",
+                "generated": "generated/templates/themes/lotline/components/TableRow/table-row.phtml",
+                "source": "themes/lotline/components/TableRow/table-row.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\TopBar\\TopBar",

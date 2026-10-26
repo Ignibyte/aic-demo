@@ -1,0 +1,8 @@
+<?php /** @var \App\Theme\Components\ConfirmCard\ConfirmCard $confirmCard */ ?>
+<div class="card max-w-2xl bg-base-200"><div class="card-body">
+<h2 class="card-title"><?= $confirmCard->title ?></h2>
+<p class="text-sm"><?= $confirmCard->detail ?></p>
+<p><?= $confirmCard->question ?></p>
+<?= $confirmCard->form ?>
+<div class="card-actions"><a class="btn btn-sm <?= $confirmCard->keep->buttonTone->value ?>" href="<?= $confirmCard->keep->href ?>"><?= $confirmCard->keep->label ?></a></div>
+</div></div>

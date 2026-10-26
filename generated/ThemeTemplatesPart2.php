@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\SiteFooter\SiteFooter;
-use App\Theme\Components\TopBar\TopBar;
+use App\Theme\Components\DataTable\DataTable;
+use App\Theme\Components\DetailCard\DetailCard;
+use App\Theme\Components\FilterBar\FilterBar;
+use App\Theme\Components\FormActions\FormActions;
 use Override;
 
 /**
@@ -23,7 +24,7 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The templates after these.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new ThemeTemplatesPart3(),
     ) {
     }
 
@@ -39,40 +40,74 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof SiteFooter => $this->renderSiteFooter($component, $renderPass),
-            $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
+            $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
+            $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
+            $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
+            $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param SiteFooter $siteFooter The component; its template reads it.
+     * @param DataTable  $dataTable  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/SiteFooter/site-footer.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/DataTable/data-table.phtml.
      */
-    private function renderSiteFooter(SiteFooter $siteFooter, RenderPass $renderPass): string
+    private function renderDataTable(DataTable $dataTable, RenderPass $renderPass): string
     {
-        $renderPass->open($siteFooter);
-        require __DIR__ . '/templates/themes/lotline/components/SiteFooter/site-footer.phtml';
+        $renderPass->open($dataTable);
+        require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param TopBar     $topBar     The component; its template reads it.
+     * @param DetailCard $detailCard The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TopBar/top-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/DetailCard/detail-card.phtml.
      */
-    private function renderTopBar(TopBar $topBar, RenderPass $renderPass): string
+    private function renderDetailCard(DetailCard $detailCard, RenderPass $renderPass): string
     {
-        $renderPass->open($topBar);
-        require __DIR__ . '/templates/themes/lotline/components/TopBar/top-bar.phtml';
+        $renderPass->open($detailCard);
+        require __DIR__ . '/templates/themes/lotline/components/DetailCard/detail-card.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param FilterBar  $filterBar  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FilterBar/filter-bar.phtml.
+     */
+    private function renderFilterBar(FilterBar $filterBar, RenderPass $renderPass): string
+    {
+        $renderPass->open($filterBar);
+        require __DIR__ . '/templates/themes/lotline/components/FilterBar/filter-bar.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param FormActions $formActions The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FormActions/form-actions.phtml.
+     */
+    private function renderFormActions(FormActions $formActions, RenderPass $renderPass): string
+    {
+        $renderPass->open($formActions);
+        require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
 
         return $renderPass->close();
     }

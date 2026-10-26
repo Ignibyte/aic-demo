@@ -90,6 +90,51 @@
             "header": "Range: bytes=0-15",
             "status": 206,
             "captures": false
+        },
+        {
+            "name": "theme guide",
+            "method": "GET",
+            "path": "/theme",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "theme guide, filtered and sorted",
+            "method": "GET",
+            "path": "/theme?q=a&status=in_stock&sort=-price&page=1",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "theme form, blank",
+            "method": "POST",
+            "path": "/theme",
+            "form": "intent=save&name=&price=&body_style=&notes=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "theme form, valid",
+            "method": "POST",
+            "path": "/theme",
+            "form": "intent=save&name=Demo%20truck&price=24500&body_style=truck&notes=&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "theme form, no token",
+            "method": "POST",
+            "path": "/theme",
+            "form": "intent=save&name=Demo",
+            "header": "",
+            "status": 403,
+            "captures": false
         }
     ]
 }

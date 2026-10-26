@@ -1,10 +1,12 @@
 /*
  * Lotline's styles: old Lotline's two daisyUI themes (dark the default) and its atom mapping, unchanged.
- * Tailwind scans the theme's templates for the classes they use. Run `npm run build` here after changing a
- * template's classes, then `composer run build` to publish the stylesheet.
+ * Tailwind scans the theme's templates, and its PHP for the tone classes its enums name (`badge-success`).
+ * Run `npm run build` here after changing a template's classes, then `composer run build` to publish the
+ * stylesheet.
  */
 @import "tailwindcss" source(none);
 @source "../themes/lotline/**/*.phtml";
+@source "../themes/lotline/**/*.php";
 @plugin "daisyui" {
 	themes: false;
 }

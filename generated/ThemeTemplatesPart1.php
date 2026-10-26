@@ -10,10 +10,10 @@ use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\ThemeLayout;
 use AIC\Component\Domain\ThemePage;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\BarChart\BarChart;
 use App\Theme\Components\BootstrapIntro\BootstrapIntro;
-use App\Theme\Components\Icon\Icon;
-use App\Theme\Components\Navigation\Navigation;
-use App\Theme\Components\NavLink\NavLink;
+use App\Theme\Components\ColumnChart\ColumnChart;
+use App\Theme\Components\ConfirmCard\ConfirmCard;
 use Override;
 
 /**
@@ -44,12 +44,28 @@ final readonly class ThemeTemplatesPart1 implements ComponentTemplates
         return match (true) {
             $component instanceof ThemeLayout => (new ThemeHtmlTemplate())->render($component, $renderPass),
             $component instanceof ThemePage => (new ThemePageTemplate())->render($component, $renderPass),
+            $component instanceof BarChart => $this->renderBarChart($component, $renderPass),
             $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
-            $component instanceof Icon => $this->renderIcon($component, $renderPass),
-            $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
-            $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
+            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
+            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param BarChart   $barChart   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/BarChart/bar-chart.phtml.
+     */
+    private function renderBarChart(BarChart $barChart, RenderPass $renderPass): string
+    {
+        $renderPass->open($barChart);
+        require __DIR__ . '/templates/themes/lotline/components/BarChart/bar-chart.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -69,49 +85,33 @@ final readonly class ThemeTemplatesPart1 implements ComponentTemplates
     }
 
     /**
-     * @param Icon       $icon       The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param ColumnChart $columnChart The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Icon/icon.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
      */
-    private function renderIcon(Icon $icon, RenderPass $renderPass): string
+    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
     {
-        $renderPass->open($icon);
-        require __DIR__ . '/templates/themes/lotline/components/Icon/icon.phtml';
+        $renderPass->open($columnChart);
+        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param NavLink    $navLink    The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param ConfirmCard $confirmCard The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/NavLink/nav-link.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
      */
-    private function renderNavLink(NavLink $navLink, RenderPass $renderPass): string
+    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
     {
-        $renderPass->open($navLink);
-        require __DIR__ . '/templates/themes/lotline/components/NavLink/nav-link.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param Navigation $navigation The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/Navigation/navigation.phtml.
-     */
-    private function renderNavigation(Navigation $navigation, RenderPass $renderPass): string
-    {
-        $renderPass->open($navigation);
-        require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
+        $renderPass->open($confirmCard);
+        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
 
         return $renderPass->close();
     }

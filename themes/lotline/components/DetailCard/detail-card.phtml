@@ -1,0 +1,7 @@
+<?php /** @var \App\Theme\Components\DetailCard\DetailCard $detailCard */ ?>
+<div class="card max-w-3xl bg-base-200"><div class="card-body">
+<div class="flex flex-wrap items-center gap-3"><h2 class="card-title" id="<?= $detailCard->id ?>"><?= $detailCard->title ?></h2><?= $detailCard->statusBadge ?></div>
+<dl class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2 text-sm"><?php foreach ($detailCard->facts as $fact): ?><dt class="opacity-70"><?= $fact->term ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $fact->detail ?></dd><?php endforeach ?></dl>
+<?php if ($detailCard->note !== ''): ?><p class="text-sm"><?= $detailCard->note ?></p><?php endif; ?>
+<div class="card-actions mt-4"><?php foreach ($detailCard->actions as $buttonLink): ?><a class="btn btn-sm <?= $buttonLink->buttonTone->value ?>" href="<?= $buttonLink->href ?>"<?php if ($buttonLink->id !== ''): ?> id="<?= $buttonLink->id ?>"<?php endif; ?>><?= $buttonLink->label ?></a><?php endforeach ?></div>
+</div></div>

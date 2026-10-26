@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\DataTable\DataTable $dataTable */ ?>
+<p class="mb-2 text-sm opacity-70" id="<?= $dataTable->id ?>-summary"><?= $dataTable->summary ?></p>
+<?php if (empty($dataTable->rows)): ?><p id="<?= $dataTable->id ?>-empty"><?= $dataTable->empty ?></p>
+<?php else: ?><div class="overflow-x-auto rounded-box border border-base-300"><table class="table table-sm" id="<?= $dataTable->id ?>"><thead><tr><?php foreach ($dataTable->columns as $tableColumn): ?><th<?php if ($tableColumn->href !== ''): ?> aria-sort="<?= $tableColumn->sort ?>"<?php endif; ?><?php if ($tableColumn->numeric): ?> class="text-right"<?php endif; ?>><?php if ($tableColumn->href !== ''): ?><a class="link link-hover" data-enhance="on" data-target="<?= $dataTable->target ?>" href="<?= $tableColumn->href ?>"><?= $tableColumn->label ?><?= $tableColumn->mark ?></a><?php else: ?><?= $tableColumn->label ?><?php endif; ?></th><?php endforeach ?></tr></thead><tbody><?php foreach ($dataTable->rows as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></tbody></table></div>
+<?php endif; ?>

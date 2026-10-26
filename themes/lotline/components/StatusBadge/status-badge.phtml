@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\StatusBadge\StatusBadge $statusBadge */ ?>
+<span class="badge <?= $statusBadge->badgeTone->value ?>"<?php if ($statusBadge->id !== ''): ?> id="<?= $statusBadge->id ?>"<?php endif; ?>><?= $statusBadge->label ?></span>

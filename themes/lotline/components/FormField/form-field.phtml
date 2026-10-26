@@ -1,0 +1,7 @@
+<?php /** @var \App\Theme\Components\FormField\FormField $formField */ ?>
+<fieldset class="fieldset"><label class="label" for="<?= $formField->id ?>"><?= $formField->label ?></label>
+<?php if ($formField->type === 'textarea'): ?><textarea class="textarea w-full<?php if ($formField->error !== ''): ?> textarea-error<?php endif; ?>" id="<?= $formField->id ?>" name="<?= $formField->name ?>"<?php if ($formField->required): ?> required<?php endif; ?><?php if ($formField->error !== ''): ?> aria-invalid="true" aria-describedby="<?= $formField->id ?>-error"<?php endif; ?>><?= $formField->value ?></textarea>
+<?php else: ?><input class="input <?php if ($formField->compact): ?>input-sm w-40<?php else: ?>w-full<?php endif; ?><?php if ($formField->error !== ''): ?> input-error<?php endif; ?>" id="<?= $formField->id ?>" name="<?= $formField->name ?>" type="<?= $formField->type ?>" value="<?= $formField->value ?>"<?php if ($formField->required): ?> required<?php endif; ?><?php if ($formField->error !== ''): ?> aria-invalid="true" aria-describedby="<?= $formField->id ?>-error"<?php endif; ?>>
+<?php endif; ?>
+<?php if ($formField->error !== ''): ?><p class="label whitespace-normal text-error-content" id="<?= $formField->id ?>-error"><?= $formField->error ?></p><?php endif; ?>
+</fieldset>

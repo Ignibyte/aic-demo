@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Theme\Components\Icon;
 
 /**
- * The icons Lotline draws: Heroicons 2.2.0, 20/solid (MIT, Tailwind Labs), as path data for icon.phtml. An icon joins
- * when the area that shows it lands.
+ * The icons Lotline draws: Heroicons 2.2.0, 20/solid (MIT, Tailwind Labs), as path data for icon.phtml.
  */
 final readonly class Heroicons
 {
@@ -15,11 +14,113 @@ final readonly class Heroicons
      */
     public function home(): Icon
     {
-        return new Icon([new IconPath(
-            'M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 '
+        return new Icon([
+            new IconPath(
+                'M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 '
                 . '0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 '
                 . '1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z',
-            true,
-        )]);
+                true,
+            ),
+        ]);
+    }
+
+    /**
+     * @return Icon `truck`, for Inventory.
+     */
+    public function truck(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.'
+                . '5h9V4.606c0-.771-.59-1.43-1.375-1.489A41.568 41.568 0 0 0 6.5 '
+                . '3ZM2 12v2.5A1.5 1.5 0 0 0 3.5 16h.041a3 3 0 0 1 5.918 0h.791a.'
+                . '75.75 0 0 0 .75-.75V12H2Z',
+                false,
+            ),
+            new IconPath(
+                'M6.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM13.25 5a.75.75 0 '
+                . '0 0-.75.75v8.514a3.001 3.001 0 0 1 4.893 1.44c.37-.275.61-.719'
+                . '.595-1.227a24.905 24.905 0 0 0-1.784-8.549A1.486 1.486 0 0 0 1'
+                . '4.823 5H13.25ZM14.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z',
+                false,
+            ),
+        ]);
+    }
+
+    /**
+     * @return Icon `users`, for Customers.
+     */
+    public function users(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5'
+                . ' 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.00'
+                . '2 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 '
+                . '0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.2'
+                . '97.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0'
+                . ' 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 1'
+                . '6Z',
+                false,
+            ),
+        ]);
+    }
+
+    /**
+     * @return Icon `banknotes`, for Sales.
+     */
+    public function banknotes(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M1 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 '
+                . '1-1-1V4Zm12 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM4 9a1 1 0 1 0 0-2 1'
+                . ' 1 0 0 0 0 2Zm13-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM1.75 14.5a.75.'
+                . '75 0 0 0 0 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.'
+                . '512 2.251-1.696v-.784a.75.75 0 0 0-1.5 0v.784a.272.272 0 0 1-.'
+                . '35.25A49.043 49.043 0 0 0 1.75 14.5Z',
+                true,
+            ),
+        ]);
+    }
+
+    /**
+     * @return Icon `chart-bar`, for Reports.
+     */
+    public function chartBar(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M15.5 2A1.5 1.5 0 0 0 14 3.5v13a1.5 1.5 0 0 0 1.5 1.5h1a1.5 1.'
+                . '5 0 0 0 1.5-1.5v-13A1.5 1.5 0 0 0 16.5 2h-1ZM9.5 6A1.5 1.5 0 0'
+                . ' 0 8 7.5v9A1.5 1.5 0 0 0 9.5 18h1a1.5 1.5 0 0 0 1.5-1.5v-9A1.5'
+                . ' 1.5 0 0 0 10.5 6h-1ZM3.5 10A1.5 1.5 0 0 0 2 11.5v5A1.5 1.5 0 '
+                . '0 0 3.5 18h1A1.5 1.5 0 0 0 6 16.5v-5A1.5 1.5 0 0 0 4.5 10h-1Z',
+                false,
+            ),
+        ]);
+    }
+
+    /**
+     * @return Icon `cog-6-tooth`, for Settings.
+     */
+    public function cog(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M7.84 1.804A1 1 0 0 1 8.82 1h2.36a1 1 0 0 1 .98.804l.331 1.652'
+                . 'a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l1'
+                . '.18 2.044a1 1 0 0 1-.205 1.251l-1.267 1.113a7.047 7.047 0 0 1 '
+                . '0 2.228l1.267 1.113a1 1 0 0 1 .206 1.25l-1.18 2.045a1 1 0 0 1-'
+                . '1.187.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a'
+                . '1 1 0 0 1-.98.804H8.82a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.'
+                . '993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-1.18-2.0'
+                . '44a1 1 0 0 1 .205-1.251l1.267-1.114a7.05 7.05 0 0 1 0-2.227L1.'
+                . '821 7.773a1 1 0 0 1-.206-1.25l1.18-2.045a1 1 0 0 1 1.187-.447l'
+                . '1.598.54A6.992 6.992 0 0 1 7.51 3.456l.33-1.652ZM10 13a3 3 0 1'
+                . ' 0 0-6 3 3 0 0 0 0 6Z',
+                true,
+            ),
+        ]);
     }
 }
