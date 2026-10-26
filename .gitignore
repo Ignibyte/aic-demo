@@ -22,7 +22,7 @@
 /.ddev/nginx_full/
 /.ddev/traefik/
 /.ddev/postgres/
-node_modules/
+/themes/lotline/frontend/node_modules/
 *.log
 core
 core.*

@@ -50,10 +50,10 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "App\\Generated\\": "generated/",
+            "App\\Generated\\": "build/generated/",
             "App\\Site\\": "modules/site/src/",
-            "App\\Theme\\Components\\": "themes/lotline/components/",
-            "App\\Theme\\Layouts\\": "themes/lotline/layouts/"
+            "App\\Theme\\Components\\": "themes/lotline/src/Components/",
+            "App\\Theme\\Layouts\\": "themes/lotline/src/Layouts/"
         }
     },
     "config": {

@@ -1,0 +1,3 @@
+<!-- BEGIN AIC WORKFLOW -->
+@AGENTS.md
+<!-- END AIC WORKFLOW -->

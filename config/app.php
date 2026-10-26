@@ -7,7 +7,7 @@ declare(strict_types=1);
  * object; the worker requires this one once, at boot.
  *
  * The Tessera pin (#70): the release and the SHA-256 of each file the build
- * copies into public/assets/tessera-VERSION/, from the release's SHA256SUMS.
+ * copies into build/assets/tessera-VERSION/, from the release's SHA256SUMS.
  * Upgrading is a new version and new sums here, then `composer run build`.
  */
 

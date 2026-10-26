@@ -3,7 +3,7 @@
 	"private": true,
 	"description": "Lotline's styles: Tailwind 4 and daisyUI 5, built from the theme's templates into themes/lotline/assets/lotline.css.",
 	"scripts": {
-		"build": "tailwindcss -i ./lotline.css -o ../themes/lotline/assets/lotline.css --minify"
+		"build": "tailwindcss -i ./lotline.css -o ../assets/lotline.css --minify"
 	},
 	"devDependencies": {
 		"@tailwindcss/cli": "4.3.3",
