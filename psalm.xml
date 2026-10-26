@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!-- gate:13 — ordinary and taint Psalm passes; shared handlers/functions are the package's, this stub names the app's files. -->
+<!-- Typed config files propagate failures to the HTTP/CLI startup boundary.
+     Global-scope exception checking cannot model those includes; method exception contracts remain checked. -->
+<!-- PHPStan level 10 holds return types; Chad approved restrictReturnTypes=false on 2026-10-22 (#131). -->
+<psalm
+    restrictReturnTypes="false"
+    autoloader="vendor/aic/gates/config/psalm-autoload.php"
+    errorLevel="1"
+    findUnusedCode="true"
+    findUnusedVariablesAndParams="true"
+    findUnusedBaselineEntry="true"
+    findUnusedPsalmSuppress="true"
+    strictBinaryOperands="true"
+    rememberPropertyAssignmentsAfterCall="false"
+    checkForThrowsDocblock="true"
+    checkForThrowsInGlobalScope="false"
+    ensureArrayStringOffsetsExist="true"
+    ensureArrayIntOffsetsExist="true"
+    ensureOverrideAttribute="true"
+    reportMixedIssues="true"
+    sealAllProperties="true"
+    sealAllMethods="true"
+    runTaintAnalysis="false"
+    usePhpDocPropertiesWithoutMagicCall="true"
+    usePhpDocMethodsWithoutMagicCall="true"
+    memoizeMethodCallResults="true"
+    hoistConstants="true"
+    addParamDefaultToDocblockType="true"
+    disableSuppressAll="true"
+    inferPropertyTypesFromConstructor="true"
+    cacheDirectory=".psalm-cache"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="modules"/>
+        <directory name="themes"/>
+        <directory name="generated"/>
+        <directory name="public"/>
+        <directory name="bootstrap"/>
+        <directory name="config"/>
+        <file name="bin/aic"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+            <directory name=".rector-cache"/>
+            <directory name=".psalm-cache"/>
+        </ignoreFiles>
+    </projectFiles>
+    <xi:include href="vendor/aic/gates/config/psalm-issue-handlers.xml"/>
+    <!-- The issue handlers and the forbidden functions are aic/gates' (#116). -->
+    <xi:include href="vendor/aic/gates/config/psalm-forbidden-functions.xml"/>
+</psalm>

@@ -1,0 +1,4 @@
+services:
+  web:
+    volumes:
+      - "${DDEV_APPROOT}/../aic-nextgen-stable:/var/www/aic-nextgen-stable:ro"

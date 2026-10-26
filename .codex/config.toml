@@ -1,0 +1,7 @@
+[mcp_servers.playwright]
+command = "npx"
+args = ["--yes", "@playwright/mcp@0.0.83", "--headless", "--isolated", "--executable-path", "/usr/bin/chromium", "--output-dir", "/srv/stacks/aic-demo/.native-gate/browser"]
+
+[mcp_servers.filesystem]
+command = "npx"
+args = ["--yes", "@modelcontextprotocol/server-filesystem@2.0.0", "/srv/stacks/aic-demo"]
