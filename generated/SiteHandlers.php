@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Module\Application\HandlerContext;
+use App\Site\Controller\AssetFile;
+use App\Site\Controller\BootstrapPage;
 use App\Site\Controller\HealthApi;
+use App\Site\Service\RequestedAsset;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -27,7 +30,11 @@ final readonly class SiteHandlers
      */
     public function byId(): array
     {
+        $requestedAsset = new RequestedAsset($this->handlerContext->root(), $this->handlerContext->appConfig());
+
         return [
+            AssetFile::class => $this->handlerContext->stream(new AssetFile($requestedAsset)),
+            BootstrapPage::class => $this->handlerContext->page(new BootstrapPage($this->handlerContext->appConfig())),
             HealthApi::class => $this->handlerContext->api(new HealthApi($this->handlerContext->database())),
         ];
     }

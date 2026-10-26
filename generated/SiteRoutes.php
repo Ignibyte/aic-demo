@@ -6,6 +6,8 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
+use App\Site\Controller\AssetFile;
+use App\Site\Controller\BootstrapPage;
 use App\Site\Controller\HealthApi;
 
 /**
@@ -24,6 +26,9 @@ final readonly class SiteRoutes
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
-            ->get('/health', HealthApi::class);
+            ->get('/assets/{file}', AssetFile::class)
+            ->get('/assets/{dir}/{file}', AssetFile::class)
+            ->get('/health', HealthApi::class)
+            ->get('/', BootstrapPage::class);
     }
 }

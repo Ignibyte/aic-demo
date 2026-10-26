@@ -2,9 +2,10 @@
 number: 1
 title: "Render the fresh Lotline bootstrap page through components"
 type: feature
-status: open
+status: in-review
 created: 2026-10-23T20:09:43Z
-updated: 2026-10-23T20:09:43Z
+updated: 2026-10-23T20:59:29Z
+phase: "docs"
 ---
 
 Build the first real rendered page in this fresh Lotline app through the installed AIC workflow. This is a bootstrap feature under AIC128 and supplies the real template coverage required before later AIC132 product work. The operator baseline is commit3d5a0bd, not a delivered product. Its earlier complete gate run correctly rejected absent templates and deferred the template gate. Both issues must be resolved by an actual component page, with no dummy template, ignored config path or fake use.

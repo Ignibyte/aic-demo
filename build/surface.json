@@ -1,11 +1,32 @@
 {
     "routes": [
         {
+            "handler": "App\\Site\\Controller\\AssetFile",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "site",
+            "path": "/assets/{file}"
+        },
+        {
+            "handler": "App\\Site\\Controller\\AssetFile",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "site",
+            "path": "/assets/{dir}/{file}"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
             "module": "site",
             "path": "/health"
+        },
+        {
+            "handler": "App\\Site\\Controller\\BootstrapPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/"
         }
     ],
     "commands": [

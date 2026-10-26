@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
@@ -21,7 +20,7 @@ final readonly class ModuleTemplates implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The chain's first templates.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new SiteTemplates(),
     ) {
     }
 
