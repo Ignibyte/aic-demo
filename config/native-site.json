@@ -639,6 +639,222 @@
             "header": "",
             "status": 404,
             "captures": false
+        },
+        {
+            "name": "sales list",
+            "method": "GET",
+            "path": "/app/sales",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sales, filtered",
+            "method": "GET",
+            "path": "/app/sales?month=2026-09&salesperson=leo.fontaine%40ridgeway-motors.test",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sales, second page",
+            "method": "GET",
+            "path": "/app/sales?page=2",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sales, malformed query",
+            "method": "GET",
+            "path": "/app/sales?month%5B%5D=x&salesperson=nobody&page=0",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle create",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE2XSR999002&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle page, unsold",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE2XSR999002",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale form, from the vehicle",
+            "method": "GET",
+            "path": "/app/sales/new?vehicle=0LTGATE2XSR999002",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale form",
+            "method": "GET",
+            "path": "/app/sales/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale create, every field refused",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=nope&customer=nope&salesperson=nope&price=x&sold_on=2026-02-30&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "sale create, no token",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ada.abbott%40example.test&salesperson=gate&price=19500&sold_on=2026-10-20",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "sale create",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ada.abbott%40example.test&salesperson=gate&price=19500&sold_on=2026-10-20&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
+            "name": "sale create, vehicle already sold",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ada.abbott%40example.test&salesperson=gate&price=19500&sold_on=2026-10-20&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "sale page",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle page, sold",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE2XSR999002",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle edit form",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE2XSR999002/edit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle update, in stock refused",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE2XSR999002",
+            "form": "vin=0LTGATE2XSR999002&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "sale void page",
+            "method": "GET",
+            "path": "{note}/void",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale void, altered envelope",
+            "method": "POST",
+            "path": "{note}/void",
+            "form": "aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "sale void",
+            "method": "POST",
+            "path": "{note}/void",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "sale page, voided",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "sale void page, voided",
+            "method": "GET",
+            "path": "{note}/void",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "sale page, unknown id",
+            "method": "GET",
+            "path": "/app/sales/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle delete page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE2XSR999002/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale vehicle delete",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE2XSR999002/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
         }
     ]
 }

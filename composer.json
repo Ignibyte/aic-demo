@@ -53,6 +53,7 @@
             "App\\Customers\\": "modules/customers/src/",
             "App\\Generated\\": "build/generated/",
             "App\\Inventory\\": "modules/inventory/src/",
+            "App\\Sales\\": "modules/sales/src/",
             "App\\Site\\": "modules/site/src/",
             "App\\Staff\\": "modules/staff/src/",
             "App\\Theme\\Components\\": "themes/lotline/src/Components/",

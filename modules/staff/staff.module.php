@@ -35,6 +35,7 @@ use App\Staff\Service\AccessRules;
 use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
+use App\Staff\Service\StaffRequests;
 use App\Staff\Service\StaffSession;
 use App\Staff\Service\StaffSettings;
 
@@ -57,4 +58,5 @@ return (new ModuleManifest('staff'))
     ->export(StaffSession::class)
     ->export(StaffPanels::class)
     ->export(StaffNotices::class)
-    ->export(StaffSeals::class);
+    ->export(StaffSeals::class)
+    ->export(StaffRequests::class);

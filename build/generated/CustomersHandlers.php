@@ -15,6 +15,7 @@ use App\Customers\Controller\CustomerPage;
 use App\Customers\Controller\CustomerUpdatePost;
 use App\Customers\Repository\CustomerRepository;
 use App\Customers\Service\CustomerList;
+use App\Customers\Service\CustomerPurchases;
 use App\Customers\Service\CustomerServices;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -45,6 +46,7 @@ final readonly class CustomersHandlers
             $this->handlerContext->database(),
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
+            $this->handlerContext->tagged(CustomerPurchases::class),
         );
         $customerSaves = $customerServices->customerSaves();
 

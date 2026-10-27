@@ -35,6 +35,7 @@ final readonly class ModuleCommands
             (new StaffCommands($this->consoleContext))->byName(),
             (new CustomersCommands($this->consoleContext))->byName(),
             (new InventoryCommands($this->consoleContext))->byName(),
+            (new SalesCommands($this->consoleContext))->byName(),
             (new SiteCommands($this->consoleContext))->byName(),
         );
     }

@@ -7,7 +7,10 @@ namespace App\Inventory\Form;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehiclePrice;
+use App\Inventory\Entity\VehicleSale;
+use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Repository\VehicleRecordRepository;
+use App\Inventory\Service\SoldVehicles;
 use App\Inventory\Service\VehicleStatuses;
 use App\Inventory\Service\Vins;
 use UnexpectedValueException;
@@ -21,8 +24,8 @@ use function trim;
 
 /**
  * The vehicle form's checks, one per field: the VIN's form, check digit and uniqueness, the model year's range, the
- * texts and their column lengths, whole numbers from 0, a known status and a real date. A valid entry becomes the
- * `Vehicle` it describes.
+ * texts and their column lengths, whole numbers from 0, a known status (sold, for a vehicle with a recorded sale) and a
+ * real date. A valid entry becomes the `Vehicle` it describes.
  */
 final readonly class VehicleChecks
 {
@@ -32,17 +35,24 @@ final readonly class VehicleChecks
     public const string VIN_TAKEN = 'Another vehicle on the lot has this VIN.';
 
     /**
+     * Why a vehicle with a recorded sale keeps its status.
+     */
+    public const string SALE_RECORDED = 'This vehicle has a recorded sale. Void the sale to put it back on the lot.';
+
+    /**
      * The first model year with a 17-character VIN.
      */
     private const int FIRST_YEAR = 1_981;
 
     /**
      * @param VehicleRecordRepository $vehicleRecordRepository Knows which VINs are taken.
+     * @param SoldVehicles            $soldVehicles            Knows which vehicles have a recorded sale.
      * @param Vins                    $vins                    Works out check digits.
      * @param VehicleStatuses         $vehicleStatuses         The statuses.
      */
     public function __construct(
         private VehicleRecordRepository $vehicleRecordRepository,
+        private SoldVehicles $soldVehicles,
         private Vins $vins = new Vins(),
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
     ) {
@@ -53,7 +63,7 @@ final readonly class VehicleChecks
      * @param string       $currentVin   The VIN of the vehicle being changed, which it may keep; empty for a new one.
      * @param string       $today        The database's today, `YYYY-MM-DD`; next year is the last model year.
      *
-     * @throws QueryException When the taken VINs cannot be read.
+     * @throws QueryException When the taken VINs or the vehicle's sale cannot be read.
      *
      * @return array<string, string> Why each refused field is refused, by name; empty when the entry is valid.
      */
@@ -68,7 +78,7 @@ final readonly class VehicleChecks
             'make' => $this->textError($vehicleEntry->value('make'), 'make', 40, true),
             'mileage' => $this->wholeError($vehicleEntry->value('mileage'), 'Mileage is a whole number of miles, 0 or more.'),
             'model' => $this->textError($vehicleEntry->value('model'), 'model', 60, true),
-            'status' => $this->statusError($vehicleEntry->value('status')),
+            'status' => $this->statusError($vehicleEntry->value('status'), $currentVin),
             'trim' => $this->textError($vehicleEntry->value('trim'), 'trim', 60, false),
             'vin' => $this->vinError($this->vin($vehicleEntry), $currentVin),
             'year' => $this->yearError(trim($vehicleEntry->value('year')), (int) substr($today, 0, 4) + 1),
@@ -212,19 +222,41 @@ final readonly class VehicleChecks
     }
 
     /**
-     * @param string $status A posted status.
+     * @param string $status     A posted status.
+     * @param string $currentVin The VIN of the vehicle being changed; empty for a new one.
      *
-     * @return string Why it is refused; empty when it is a status's stored value.
+     * @throws QueryException When the vehicle's sale cannot be read.
+     *
+     * @return string Why it is refused; empty when it is fine.
      */
-    private function statusError(string $status): string
+    private function statusError(string $status, string $currentVin): string
     {
         foreach ($this->vehicleStatuses->all() as $vehicleStatus) {
             if ($vehicleStatus->value === $status) {
-                return '';
+                return $this->saleError($status, $currentVin);
             }
         }
 
         return 'Choose a status.';
+    }
+
+    /**
+     * @param string $status     A known status.
+     * @param string $currentVin The VIN of the vehicle being changed; empty for a new one.
+     *
+     * @throws QueryException When the vehicle's sale cannot be read.
+     *
+     * @return string Why a status but sold is refused for a vehicle with a recorded sale; empty otherwise.
+     */
+    private function saleError(string $status, string $currentVin): string
+    {
+        if ($currentVin === '' || $status === VehicleStatus::Sold->value) {
+            return '';
+        }
+
+        return $this->soldVehicles->sale($currentVin) instanceof VehicleSale
+            ? self::SALE_RECORDED
+            : '';
     }
 
     /**

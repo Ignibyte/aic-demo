@@ -23,6 +23,7 @@ final readonly class ModuleMigrations
             (new StaffMigrations())->all(),
             (new CustomersMigrations())->all(),
             (new InventoryMigrations())->all(),
+            (new SalesMigrations())->all(),
         );
     }
 }

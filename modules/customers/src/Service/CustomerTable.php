@@ -6,22 +6,27 @@ namespace App\Customers\Service;
 
 use AIC\Component\Domain\KeyedComponent;
 use App\Customers\Entity\Customer;
+use App\Customers\Entity\Purchase;
 use App\Customers\Form\CustomerQuery;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
 use App\Theme\Components\Pagination\PageLink;
 use App\Theme\Components\Pagination\Pagination;
+use App\Theme\Components\StatusBadge\BadgeTone;
+use App\Theme\Components\StatusBadge\StatusBadge;
 use App\Theme\Components\TableRow\TableCell;
 use App\Theme\Components\TableRow\TableRow;
 use InvalidArgumentException;
 
+use function count;
 use function implode;
 use function number_format;
 use function rawurlencode;
 
 /**
  * The customers' tables: the list's, a row per customer on the page, its name linked to the customer's page, with a
- * link per page that keeps the search (Tessera answers the pages in `content`); and a customer's vehicles bought.
+ * link per page that keeps the search (Tessera answers the pages in `content`); and a customer's vehicles bought, with
+ * the badge that counts them.
  */
 final readonly class CustomerTable
 {
@@ -62,18 +67,47 @@ final readonly class CustomerTable
     }
 
     /**
-     * There is no sales table until sales are recorded (#7), so no row is read for it yet.
+     * @param list<Purchase> $purchases What a customer bought.
      *
-     * @return DataTable A customer's vehicles bought: the heads, no rows, and the line saying so.
+     * @throws InvalidArgumentException When a key is malformed.
+     *
+     * @return DataTable A customer's vehicles bought: a row each, the VIN linked to the vehicle and the day to the sale;
+     *                   the line saying so when there are none.
      */
-    public function purchases(): DataTable
+    public function purchases(array $purchases): DataTable
     {
+        $rows = [];
+
+        foreach ($purchases as $index => $purchase) {
+            $tableRow = new TableRow([
+                new TableCell($purchase->vin, $purchase->vehiclePath, true, false, null),
+                new TableCell($purchase->vehicle, '', false, false, null),
+                new TableCell($purchase->soldOn, $purchase->salePath, false, false, null),
+                new TableCell('$' . number_format($purchase->price), '', false, true, null),
+            ]);
+            $rows[] = new KeyedComponent('purchase-' . $index, $tableRow);
+        }
+
         return new DataTable('customer-purchases', 'Vehicles bought', 'No vehicles bought yet.', self::TARGET, [
             new TableColumn('VIN', '', 'none', '', false),
             new TableColumn('Vehicle', '', 'none', '', false),
             new TableColumn('Sold on', '', 'none', '', false),
             new TableColumn('Price', '', 'none', '', true),
-        ], []);
+        ], $rows);
+    }
+
+    /**
+     * @param list<Purchase> $purchases What a customer bought.
+     *
+     * @return StatusBadge Its card's badge: how many purchases, or none yet.
+     */
+    public function badge(array $purchases): StatusBadge
+    {
+        $count = count($purchases);
+
+        return $count === 0
+            ? new StatusBadge('No purchases yet', BadgeTone::Neutral, 'customer-badge')
+            : new StatusBadge($count . ($count === 1 ? ' purchase' : ' purchases'), BadgeTone::Success, 'customer-badge');
     }
 
     /**

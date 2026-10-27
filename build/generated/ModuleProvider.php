@@ -21,6 +21,7 @@ final readonly class ModuleProvider implements ServiceProvider
     public function register(ServiceRegistry $serviceRegistry): void
     {
         (new StaffProvider())->register($serviceRegistry);
+        (new SalesProvider())->register($serviceRegistry);
         (new SiteProvider())->register($serviceRegistry);
     }
 }

@@ -7,6 +7,7 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use App\Customers\Controller\CustomerDeletePost;
+use App\Customers\Service\CustomerPurchases;
 use App\Customers\Service\CustomerServices;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -35,6 +36,7 @@ final readonly class CustomersHandlersPart2
             $this->handlerContext->database(),
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
+            $this->handlerContext->tagged(CustomerPurchases::class),
         );
 
         return [
