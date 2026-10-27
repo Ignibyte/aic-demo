@@ -90,14 +90,15 @@ final readonly class InventoryTable
     /**
      * @param Vehicle $vehicle A vehicle.
      *
-     * @return TableRow Its row: the VIN, what it is, its mileage and price, its status as a badge and the day it came.
+     * @return TableRow Its row: the VIN, linked to its page, what it is, its mileage and price, its status as a badge and
+     *                  the day it came.
      */
     private function row(Vehicle $vehicle): TableRow
     {
         $status = $vehicle->status;
 
         return new TableRow([
-            new TableCell($vehicle->vin, '', true, false, null),
+            new TableCell($vehicle->vin, $vehicle->path(), true, false, null),
             new TableCell((string) $vehicle->year, '', false, false, null),
             new TableCell($vehicle->make, '', false, false, null),
             new TableCell($vehicle->model . ' ' . $vehicle->trim, '', false, false, null),

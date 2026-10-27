@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace App\Inventory\Entity;
 
+use function trim;
+
 /**
- * One vehicle on the lot, as the list shows it and the seed saves it.
+ * One vehicle on the lot, as the list and its page show it, the seed and the form save it; its page is found by its
+ * VIN.
  */
 final readonly class Vehicle
 {
+    /**
+     * Where the vehicles' pages are: the list, and below it each vehicle's.
+     */
+    public const string PAGES = '/app/inventory';
+
     /**
      * @param string        $vin            Its VIN, 17 characters.
      * @param int           $year           Its model year.
@@ -35,5 +43,21 @@ final readonly class Vehicle
         public VehicleStatus $status,
         public string $addedOn,
     ) {
+    }
+
+    /**
+     * @return string What staff call it: its year, make, model and trim.
+     */
+    public function title(): string
+    {
+        return trim($this->year . ' ' . $this->make . ' ' . $this->model . ' ' . $this->trim);
+    }
+
+    /**
+     * @return string Its page's path, `/app/inventory/{VIN}`.
+     */
+    public function path(): string
+    {
+        return self::PAGES . '/' . $this->vin;
     }
 }

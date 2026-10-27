@@ -279,6 +279,186 @@
             "header": "",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "vehicle form",
+            "method": "GET",
+            "path": "/app/inventory/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle create, every field refused",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=ABC&year=1900&make=&model=&trim=&body_style=&mileage=-1&exterior_colour=&list_price=x&cost=&status=bogus&added_on=2026-02-30&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle create, check digit",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE10SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle create, VIN taken",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTAAA000SR104729&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle create, no token",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE19SR999001",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "vehicle create",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE19SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle edit form",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/edit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle update, altered envelope",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "vin=0LTGATE19SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=sold&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "vehicle update, refused",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "vin=0LTGATE19SR999001&year=3000&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=sold&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle update, sold",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "vin=0LTGATE19SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=sold&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle delete page, sold",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle delete, sold",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle update, in stock",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "vin=0LTGATE19SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle delete page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle delete",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inventory, after a delete",
+            "method": "GET",
+            "path": "/app/inventory",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle page, deleted",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle edit form, deleted",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/edit",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle page, malformed VIN",
+            "method": "GET",
+            "path": "/app/inventory/nope",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
         }
     ]
 }

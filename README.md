@@ -2,7 +2,7 @@
 
 Lotline is a fresh dealership operations application built on AIC for fictional Ridgeway Motors data.
 
-This foundation provides the application runtime, database health check, installed development workflow and Lotline's theme. Staff sign in (the `staff` module, below) and see the vehicles on the lot (the `inventory` module); editing vehicles, customers, sales and the dashboard are built in later feature tickets.
+This foundation provides the application runtime, database health check, installed development workflow and Lotline's theme. Staff sign in (the `staff` module, below) and keep the vehicles on the lot (the `inventory` module); customers, sales and the dashboard are built in later feature tickets.
 
 AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `b74fb24439cf9b5931de95b35c3cefb6b0bf0213`. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
 
@@ -18,6 +18,6 @@ The installed [workflow instructions](AGENTS.md) govern feature work. Read the f
 
 Staff sign in at `/sign-in`, and everything under `/app` needs a session; `modules/staff/README.md` has the details. After `bin/aic migrate`, `bin/aic staff:seed` saves the admin from `LOTLINE_ADMIN_EMAIL`, `LOTLINE_ADMIN_NAME` and `LOTLINE_ADMIN_PASSWORD`, and four invented `@ridgeway-motors.test` staff when `LOTLINE_STAFF_PASSWORD` is set; on a dev box DDEV's ignored `.ddev/config.local.yaml` holds them. `bin/aic user:add {login} {password}` makes an admin, and is how gate:23 and `vendor/bin/aic-gate browser` make their own `gate` user. The browser tests in `tests/browser/` run in gate:23 and with `vendor/bin/aic-gate browser --base-url=https://aic-demo.ddev.site:8843`.
 
-Signed-in staff see the vehicles on the lot at `/app/inventory`, linked from the sidebar: a table searched, filtered, sorted and paged by plain GET parameters; `modules/inventory/README.md` has the details. After `bin/aic migrate`, `bin/aic inventory:seed` saves 60 invented vehicles with fictional, check-digit-valid VINs, and a rerun updates the same rows. The inventory browser tests compare the list with Postgres through `psql`, so they need the seed in the database gate:23 uses (DDEV's).
+Signed-in staff see the vehicles on the lot at `/app/inventory`, linked from the sidebar: a table searched, filtered, sorted and paged by plain GET parameters. Each VIN opens the vehicle's page at `/app/inventory/{vin}`, where it is edited or, after a confirmation, deleted (a sold vehicle stays); "Add a vehicle" opens the form. The form checks the VIN's format, check digit and uniqueness, the year, the texts, the numbers, the status and the date, and answers a refusal in place; `modules/inventory/README.md` has the details. After `bin/aic migrate`, `bin/aic inventory:seed` saves 60 invented vehicles with fictional, check-digit-valid VINs, and a rerun updates the same rows. The inventory browser tests compare the list with Postgres through `psql`, so they need the seed in the database gate:23 uses (DDEV's).
 
 Provide `AIC_APP_SECRET` outside version control. Development database credentials come from DDEV or PG environment variables. Product data and seed passwords are never committed.

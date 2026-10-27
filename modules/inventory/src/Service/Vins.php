@@ -10,7 +10,7 @@ use function substr;
 /**
  * Invented VINs that no vehicle carries: each starts with the world manufacturer identifier `0LT`, and no region is
  * assigned a leading `0`, yet each is a well-formed VIN, with the model-year code at position 10 and the ISO 3779
- * check digit at position 9.
+ * check digit at position 9. The vehicle form checks a typed VIN's digit here too.
  */
 final readonly class Vins
 {
@@ -63,6 +63,27 @@ final readonly class Vins
     }
 
     /**
+     * @param string $vin A 17-character VIN; its own position 9 does not count.
+     *
+     * @return string Its check digit: the sum of each character's value times its position's weight, modulo 11, with
+     *                10 written `X`.
+     */
+    public function checkDigit(string $vin): string
+    {
+        $sum = 0;
+
+        foreach (self::WEIGHTS as $position => $weight) {
+            $sum += $this->value(substr($vin, $position, 1)) * $weight;
+        }
+
+        $remainder = $sum % 11;
+
+        return $remainder === 10
+            ? 'X'
+            : (string) $remainder;
+    }
+
+    /**
      * @param int $place A place, 0 to 22.
      *
      * @return string The VIN letter at that place.
@@ -75,20 +96,11 @@ final readonly class Vins
     /**
      * @param string $vin A 17-character VIN whose position 9 is a placeholder.
      *
-     * @return string The VIN with its check digit there: the sum of each character's value times its position's
-     *                weight, modulo 11, with 10 written `X`.
+     * @return string The VIN with its check digit there.
      */
     private function withCheckDigit(string $vin): string
     {
-        $sum = 0;
-
-        foreach (self::WEIGHTS as $position => $weight) {
-            $sum += $this->value(substr($vin, $position, 1)) * $weight;
-        }
-
-        $remainder = $sum % 11;
-
-        return substr($vin, 0, 8) . ($remainder === 10 ? 'X' : (string) $remainder) . substr($vin, 9);
+        return substr($vin, 0, 8) . $this->checkDigit($vin) . substr($vin, 9);
     }
 
     /**
