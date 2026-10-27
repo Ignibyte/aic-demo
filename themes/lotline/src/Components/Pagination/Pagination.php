@@ -14,7 +14,7 @@ final readonly class Pagination implements Component
 {
     /**
      * @param string         $id     Its id.
-     * @param string         $target What a page link updates: a region (`content`) or a component's path.
+     * @param string         $target What a page link updates: a region (`content`) or a component's anchor (`@NAME`).
      * @param list<PageLink> $links  One link per page, in order.
      */
     public function __construct(

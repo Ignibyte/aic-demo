@@ -35,7 +35,7 @@ final readonly class StaffPages
      * @param string               $note          A line under the title, such as the dashboard's greeting; empty for none.
      * @param string               $documentTitle The document's title when it is not the top bar's; empty for the top bar's.
      *
-     * @throws InvalidArgumentException When the status or a region does not fit the theme.
+     * @throws InvalidArgumentException When the status or a region does not fit the theme, or the page has no title.
      *
      * @return PageDocument The page.
      */
@@ -46,11 +46,18 @@ final readonly class StaffPages
         string $note = '',
         string $documentTitle = '',
     ): PageDocument {
+        $pageTitle = $documentTitle === ''
+            ? $title
+            : $documentTitle;
+
+        if ($pageTitle === '') {
+            throw new InvalidArgumentException('A staff page names its title (AIC #187).');
+        }
+
         return $this->pageDocuments->page(
             new Regions([new Region('header', [new TopBar($title, $note)]), new Region('content', [new PanelGrid($panels)])]),
             $status,
-            null,
-            $documentTitle === '' ? $title : $documentTitle,
+            $pageTitle,
         );
     }
 }

@@ -19,7 +19,8 @@ use function intdiv;
 
 /**
  * The inventory list's panel: the notice a delete left, a link to add a vehicle, the filter bar and the results of the
- * page asked for (15 vehicles a page; a page past the last shows the first): the table and, past one page, the pages.
+ * page asked for (15 vehicles a page; a page past the last shows the first): the table and, past one page, the pages,
+ * anchored `inventory-results` for the controls that refresh them.
  */
 final readonly class InventoryList
 {
@@ -71,7 +72,8 @@ final readonly class InventoryList
 
         $body[] = new KeyedComponent('add', new Link('Add a vehicle', Vehicle::PAGES . '/new'));
         $body[] = new KeyedComponent('filters', $this->inventoryFilters->filterBar($inventoryQuery, $makes));
-        $body[] = new KeyedComponent('table', $this->inventoryTable->results($inventoryQuery, $vehicles, $count, $page, $pages));
+        $results = $this->inventoryTable->results($inventoryQuery, $vehicles, $count, $page, $pages);
+        $body[] = new KeyedComponent('table', $results, '', InventoryTable::ANCHOR);
 
         return new Panel('vehicles', 'Vehicles on the lot', 'Search, filter, sort and page the stock', true, $body);
     }

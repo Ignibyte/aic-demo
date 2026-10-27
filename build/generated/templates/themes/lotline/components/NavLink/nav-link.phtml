@@ -1,2 +1,2 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/NavLink/nav-link.phtml by composer run build; edit that file, never this one. */ ?>
-<li><a href="<?= $renderPass->text($navLink->path) ?>" aria-current="<?= $renderPass->text($navLink->current ? 'page' : 'false') ?>"><?= $renderPass->child($navLink->icon, 'NavLink.1') ?><?= $renderPass->text($navLink->label) ?></a></li>
+<li<?= $renderPass->marks() ?>><a href="<?= $renderPass->text($navLink->path) ?>" aria-current="<?= $renderPass->text($navLink->current ? 'page' : 'false') ?>"><?= $renderPass->child($navLink->icon, 'NavLink.1') ?><?= $renderPass->text($navLink->label) ?></a></li>

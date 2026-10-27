@@ -320,7 +320,7 @@
             "dist": {
                 "type": "path",
                 "url": "../aic-nextgen-stable/gates",
-                "reference": "786bb193788a8c484b7b4c4aea69bee5ec4ccc82"
+                "reference": "a77fc9413201d7c648d9d82df3eb6e8ca84a8568"
             },
             "require": {
                 "aic/framework": "0.1.x-dev",
@@ -330,6 +330,8 @@
                 "deptrac/deptrac": "^4.6",
                 "ergebnis/composer-normalize": "^2.45",
                 "ergebnis/phpstan-rules": "^2.13",
+                "ext-dom": "*",
+                "ext-libxml": "*",
                 "icanhazstring/composer-unused": "^0.9",
                 "laravel/pint": "^1.18",
                 "nikic/php-parser": "^5.9",

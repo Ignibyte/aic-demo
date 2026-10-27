@@ -12,15 +12,21 @@ use InvalidArgumentException;
 
 /**
  * The dashboard's live part (#12): the stat tiles and the latest sales in the theme's `LiveParts`, which Tessera refreshes
- * from the dashboard every five seconds. AIC answers each refresh of `content/c0/PanelGrid.1:live` with this part alone.
+ * from the dashboard every five seconds. The poll sits on the part's own root, so each refresh names the part, and AIC
+ * answers it with this part alone.
  */
 final readonly class DashboardLive
 {
     /**
-     * The part's key in the dashboard's grid; its Tessera path is `content/c0/PanelGrid.1:live`, as the render pass keys
-     * it, and changes if the page moves the part.
+     * The part's key in the dashboard's grid.
      */
     public const string KEY = 'live';
+
+    /**
+     * The part's anchor (AIC #188), `data-t-anchor="dashboard-live"` on its root, which names it as `@dashboard-live`
+     * wherever the page moves it.
+     */
+    public const string ANCHOR = 'dashboard-live';
 
     /**
      * The path that answers the refresh: the dashboard's own.

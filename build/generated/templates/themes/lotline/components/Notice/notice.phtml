@@ -1,2 +1,2 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/Notice/notice.phtml by composer run build; edit that file, never this one. */ ?>
-<div class="alert <?= $renderPass->text($notice->noticeTone->value) ?>" role="status" id="<?= $renderPass->text($notice->id) ?>"><?= $renderPass->text($notice->message) ?></div>
+<div<?= $renderPass->marks() ?> class="alert <?= $renderPass->text($notice->noticeTone->value) ?>" role="status" id="<?= $renderPass->text($notice->id) ?>"><?= $renderPass->text($notice->message) ?></div>

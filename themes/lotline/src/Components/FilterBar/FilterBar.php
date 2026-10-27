@@ -16,7 +16,7 @@ final readonly class FilterBar implements Component
     /**
      * @param string               $id        The form's id.
      * @param string               $action    The list's path.
-     * @param string               $target    What Tessera updates: a region (`content`) or a component's path.
+     * @param string               $target    What Tessera updates: a region (`content`) or an anchor (`@NAME`).
      * @param list<KeyedComponent> $fields    The compact fields, each keyed by its name.
      * @param string               $clearHref The list with no filter.
      */

@@ -1,8 +1,37 @@
 import { expect, type Page } from '@playwright/test';
 
-// The inventory results' Tessera path: the `content` region, the staff pages' unkeyed grid (`c0`), the panel
-// `vehicles` and its part `table`, as the render pass keys them.
-export const TABLE = 'content/c0/PanelGrid.1:vehicles/Panel.1:table';
+// The inventory results' anchor (AIC #188): the filter form, the sortable heads and the page links target
+// `@inventory-results`, and Tessera sends the results' path.
+export const RESULTS = 'inventory-results';
+
+// The path of the component carrying `data-t-anchor="NAME"`, found as Tessera and gate:23 find it: the enclosing
+// region's name, then each `data-t-c` key from the outside in. Empty when no element, or more than one, carries it.
+export async function anchorPath(page: Page, name: string): Promise<string> {
+    return page.evaluate((anchor) => {
+        const anchored = document.querySelectorAll(`[data-t-anchor="${anchor}"]`);
+
+        if (anchored.length !== 1) {
+            return '';
+        }
+
+        const keys: string[] = [];
+
+        for (let element: Element | null = anchored[0]; element !== null; element = element.parentElement) {
+            const key = element.getAttribute('data-t-c');
+            const region = element.getAttribute('data-region');
+
+            if (key !== null) {
+                keys.unshift(key);
+            }
+
+            if (region !== null) {
+                return [region, ...keys].join('/');
+            }
+        }
+
+        return '';
+    }, name);
+}
 
 // One request the page made to the inventory list, with what its answer held.
 export interface ListRequest {
@@ -66,17 +95,20 @@ export function pathOf(url: string): string {
     return parsed.pathname + parsed.search;
 }
 
-// Waits for the one request a change makes, then holds it to a Tessera visit of the table answered with the table alone.
-export async function expectTableVisit(requests: ListRequest[], path: string): Promise<void> {
+// Waits for the one request a change makes, then holds it to a Tessera visit of the results, by the path their anchor
+// has on the page, answered with the results alone.
+export async function expectTableVisit(page: Page, requests: ListRequest[], path: string): Promise<void> {
     await expect.poll(() => requests.length).toBe(1);
     const [request] = requests;
+    const results = await anchorPath(page, RESULTS);
+    expect(results).not.toBe('');
     expect(request.resourceType).toBe('fetch');
     expect(pathOf(request.url)).toBe(path);
     expect(request.tesseraRequest).toBe('visit');
-    expect(request.targets).toBe(TABLE);
+    expect(request.targets).toBe(results);
     expect(request.contentType).toMatch(/^text\/vnd\.tessera\+html/);
     expectTesseraVary(request.vary);
-    expect(request.templates).toEqual([TABLE]);
+    expect(request.templates).toEqual([results]);
     requests.length = 0;
 }
 

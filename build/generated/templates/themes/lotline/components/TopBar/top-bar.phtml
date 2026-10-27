@@ -1,6 +1,6 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/TopBar/top-bar.phtml by composer run build; edit that file, never this one. */ ?>
-<header class="flex grow items-center gap-2">
+<header<?= $renderPass->marks() ?> class="flex grow items-center gap-2">
 <label for="lotline-drawer" class="btn btn-square btn-ghost drawer-button lg:hidden" aria-label="Open the navigation"><svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/></svg></label>
-<!--t:b--><?php if ($topBar->note === ''): ?><h1 class="grow text-xl font-light opacity-70"><?= $renderPass->text($topBar->title) ?></h1>
+<?php if ($topBar->note === ''): ?><h1 class="grow text-xl font-light opacity-70"><?= $renderPass->text($topBar->title) ?></h1>
 <?php else: ?><div class="grow"><h1 class="text-xl font-light opacity-70"><?= $renderPass->text($topBar->title) ?></h1><p class="text-sm text-base-content/60"><?= $renderPass->text($topBar->note) ?></p></div>
-<?php endif; ?><!--/t:b--></header>
+<?php endif; ?></header>

@@ -46,7 +46,7 @@ final readonly class InventoryFilters
         $make = new SelectField('filter-make', 'make', 'Make', 'Every make', $this->makes($inventoryQuery, $makes), '', true);
         $status = new SelectField('filter-status', 'status', 'Status', 'Every status', $this->statuses($inventoryQuery), '', true);
 
-        return new FilterBar(self::FORM, InventoryLinks::PATH, InventoryTable::TARGET, [
+        return new FilterBar(self::FORM, InventoryLinks::PATH, '@' . InventoryTable::ANCHOR, [
             new KeyedComponent('q', $formField),
             new KeyedComponent('make', $make),
             new KeyedComponent('status', $status),

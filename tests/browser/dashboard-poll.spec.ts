@@ -45,7 +45,7 @@ test('a sale recorded in one page appears on the dashboard open in another withi
     // No reload: the same document, and every request since load a finished refresh of the live part alone.
     await expectMarksKept(page);
     expect(requests.length).toBeGreaterThan(0);
-    await expectRefreshes(requests);
+    await expectRefreshes(page, requests);
     expect(requests.filter((request) => request.path.startsWith('/app/events'))).toEqual([]);
 
     await other.close();

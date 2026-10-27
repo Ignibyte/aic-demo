@@ -23,9 +23,9 @@ final readonly class AssetsPart4
         return [
             new PublicAsset(
                 'theme_lotline/lotline.css',
-                '/assets/7029cb7afee178479f2233b8a681d25293ae3e6f6229ce70c54c1a8d7942add8/themes/'
+                '/assets/4a33b0eaa206400d506228c43d53c56ab8ea41d3b46c6f0bd6aed73cc3f1ea37/themes/'
                     . 'lotline/lotline.css',
-                '7029cb7afee178479f2233b8a681d25293ae3e6f6229ce70c54c1a8d7942add8/themes/lotline/'
+                '4a33b0eaa206400d506228c43d53c56ab8ea41d3b46c6f0bd6aed73cc3f1ea37/themes/lotline/'
                     . 'lotline.css',
                 'text/css; charset=utf-8',
                 'b92f13da797e93f68f8aa391cc740715c48f2f4c767c7876eb4b55b469eb3503',

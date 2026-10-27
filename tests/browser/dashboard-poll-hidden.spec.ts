@@ -47,11 +47,11 @@ test('while the dashboard is hidden it sends no refresh, and once shown again th
 
     // Shown, the dashboard polls: a refresh within one tick and its request.
     await expect.poll(() => requests.length, { timeout: 8_000 }).toBeGreaterThan(0);
-    await expectRefreshes(requests);
+    await expectRefreshes(page, requests);
 
     // Hidden, it sends nothing through two ticks, and a sale put in Postgres meanwhile does not show.
     await setShown(page, false);
-    await expectRefreshes(requests);
+    await expectRefreshes(page, requests);
     const before = requests.length;
     const shown = await shownFeed(page);
     insertLiveSale(VINS[0], 19800);
@@ -65,6 +65,6 @@ test('while the dashboard is hidden it sends no refresh, and once shown again th
     await expect.poll(async () => (await shownFeed(page))[0], { timeout: 8_000 }).toEqual(sale);
     await expectFeed(page);
     expect(requests.length).toBeGreaterThan(before);
-    await expectRefreshes(requests);
+    await expectRefreshes(page, requests);
     expect(errors).toEqual([]);
 });
