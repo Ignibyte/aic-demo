@@ -183,6 +183,13 @@
             "path": "/app"
         },
         {
+            "handler": "App\\Dashboard\\Controller\\DashboardEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "dashboard",
+            "path": "/app/events"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -422,6 +429,7 @@
             "plugins": [],
             "prefixes": [],
             "requires": [
+                "customers",
                 "inventory",
                 "sales",
                 "staff"
@@ -523,6 +531,11 @@
                 "component": "App\\Theme\\Components\\IconLegend\\IconLegend",
                 "generated": "build/generated/templates/themes/lotline/components/IconLegend/icon-legend.phtml",
                 "source": "themes/lotline/components/IconLegend/icon-legend.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\LiveParts\\LiveParts",
+                "generated": "build/generated/templates/themes/lotline/components/LiveParts/live-parts.phtml",
+                "source": "themes/lotline/components/LiveParts/live-parts.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\NavLink\\NavLink",
