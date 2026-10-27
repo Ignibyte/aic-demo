@@ -22,8 +22,9 @@ final readonly class ModuleRoutes
      */
     public function add(RouteCollector $routeCollector): RouteCollector
     {
-        $routeCollector = (new SiteRoutes())->add($routeCollector);
+        $routeCollector = (new StaffRoutes())->add($routeCollector);
+        $routeCollector = (new InventoryRoutes())->add($routeCollector);
 
-        return (new StaffRoutes())->add($routeCollector);
+        return (new SiteRoutes())->add($routeCollector);
     }
 }

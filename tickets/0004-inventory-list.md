@@ -2,9 +2,10 @@
 number: 4
 title: "Inventory: the vehicles on the lot, listed"
 type: feature
-status: open
+status: in-review
 created: 2026-10-27T00:00:00Z
-updated: 2026-10-27T00:00:00Z
+updated: 2026-10-27T05:44:17Z
+phase: "docs"
 ---
 
 Staff see the vehicles on Ridgeway Motors' lot. This is the first half of inventory; creating,

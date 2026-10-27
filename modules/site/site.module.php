@@ -13,6 +13,7 @@ use App\Site\Controller\ThemeGuidePage;
 use App\Site\Controller\ThemeGuidePost;
 
 return (new ModuleManifest('site'))
+    ->requires('staff')
     ->route(RouteMethod::Get, '/health', HealthApi::class)
     ->command('db:ping', DatabasePing::class)
     ->route(RouteMethod::Get, '/', BootstrapPage::class)

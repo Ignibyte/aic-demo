@@ -57,15 +57,15 @@ final readonly class ThemeSampleActions
      *
      * @throws LogicException When the request carries no session.
      *
-     * @return SignedInMenu A sample staff member's menu; nobody is signed in.
+     * @return SignedInMenu A sample staff member's menu, its ids its own beside the header's; nobody is signed in.
      */
     public function account(ServerRequestInterface $serverRequest): SignedInMenu
     {
-        $form = new Form('sign-out-form', '/theme', [
+        $form = new Form('sample-sign-out-form', '/theme', [
             new HiddenInput('intent', 'sign-out'),
-            new Button('Sign out', 'submit', 'sign-out'),
+            new Button('Sign out', 'submit', 'sample-sign-out'),
         ], $this->formTokens->issue($serverRequest)->value());
 
-        return new SignedInMenu('Dana Reyes', 'Sales manager', 'dana.reyes@example.com', $form);
+        return new SignedInMenu('sample-account', 'Dana Reyes', 'Sales manager', 'dana.reyes@example.com', $form);
     }
 }

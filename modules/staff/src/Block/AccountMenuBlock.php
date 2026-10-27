@@ -64,6 +64,6 @@ final readonly class AccountMenuBlock implements Block
         $token = $this->formTokens->issue($serverRequest)->value();
         $form = new Form('sign-out-form', '/sign-out', [new Button('Sign out', 'submit', 'sign-out')], $token);
 
-        return new SignedInMenu($staffMember->name, $staffMember->role->label(), $staffMember->email, $form);
+        return new SignedInMenu('account', $staffMember->name, $staffMember->role->label(), $staffMember->email, $form);
     }
 }

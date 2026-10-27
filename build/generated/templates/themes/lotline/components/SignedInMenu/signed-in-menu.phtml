@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/SignedInMenu/signed-in-menu.phtml by composer run build; edit that file, never this one. */ ?>
 <details class="dropdown dropdown-end">
-<summary class="btn btn-ghost btn-sm" id="account-name"><?= $renderPass->text($signedInMenu->name) ?></summary>
-<ul class="menu dropdown-content z-10 mt-2 w-64 rounded-box bg-base-100 p-2 shadow-2xl"><li class="menu-title" id="account-role"><?= $renderPass->text($signedInMenu->role) ?></li><li class="menu-disabled"><span><?= $renderPass->text($signedInMenu->email) ?></span></li><li class="mt-2"><?= $renderPass->child($signedInMenu->signOut, 'SignedInMenu.1') ?></li></ul>
+<summary class="btn btn-ghost btn-sm" id="<?= $renderPass->text($signedInMenu->id) ?>-name"><?= $renderPass->text($signedInMenu->name) ?></summary>
+<ul class="menu dropdown-content z-10 mt-2 w-64 rounded-box bg-base-100 p-2 shadow-2xl"><li class="menu-title" id="<?= $renderPass->text($signedInMenu->id) ?>-role"><?= $renderPass->text($signedInMenu->role) ?></li><li class="menu-disabled"><span><?= $renderPass->text($signedInMenu->email) ?></span></li><li class="mt-2"><?= $renderPass->child($signedInMenu->signOut, 'SignedInMenu.1') ?></li></ul>
 </details>
