@@ -17,7 +17,7 @@ final readonly class DataTable implements Component
      * @param string               $id      The table's id.
      * @param string               $summary What the table shows (`12 vehicles, newest first`).
      * @param string               $empty   What to say when no row matches.
-     * @param string               $target  The regions a sort updates (`content`).
+     * @param string               $target  What a sort updates: a region (`content`) or a component's path.
      * @param list<TableColumn>    $columns The column heads, in order.
      * @param list<KeyedComponent> $rows    The rows, each a TableRow keyed by its record.
      */

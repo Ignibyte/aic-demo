@@ -505,6 +505,11 @@
                 "source": "themes/lotline/components/FormGrid/form-grid.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\FormValue\\FormValue",
+                "generated": "build/generated/templates/themes/lotline/components/FormValue/form-value.phtml",
+                "source": "themes/lotline/components/FormValue/form-value.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\Icon\\Icon",
                 "generated": "build/generated/templates/themes/lotline/components/Icon/icon.phtml",
                 "source": "themes/lotline/components/Icon/icon.phtml"
@@ -573,6 +578,11 @@
                 "component": "App\\Theme\\Components\\StatusBadge\\StatusBadge",
                 "generated": "build/generated/templates/themes/lotline/components/StatusBadge/status-badge.phtml",
                 "source": "themes/lotline/components/StatusBadge/status-badge.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\TableResults\\TableResults",
+                "generated": "build/generated/templates/themes/lotline/components/TableResults/table-results.phtml",
+                "source": "themes/lotline/components/TableResults/table-results.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\TableRow\\TableRow",
