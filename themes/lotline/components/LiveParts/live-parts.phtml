@@ -1,2 +1,2 @@
 <?php /** @var \App\Theme\Components\LiveParts\LiveParts $liveParts */ ?>
-<div data-stream="<?= $liveParts->stream ?>"><?php foreach ($liveParts->parts as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></div>
+<div class="col-span-12 grid grid-cols-12 gap-6" data-poll__5s="<?= $liveParts->poll ?>"><?php foreach ($liveParts->parts as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></div>

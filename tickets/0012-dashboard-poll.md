@@ -2,9 +2,10 @@
 number: 12
 title: "Dashboard: refresh by Tessera's poll instead of a stream"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T09:00:00Z
-updated: 2026-10-28T09:00:00Z
+updated: 2026-10-27T13:33:01Z
+phase: "docs"
 ---
 
 Chad, 2026-10-28: the dashboard's live stream (ticket 10) holds one compiled-site worker for every open

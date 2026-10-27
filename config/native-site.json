@@ -900,6 +900,15 @@
             "header": "Tessera-Request: visit\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: sidebar",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "dashboard, a Tessera refresh of the polled tiles and feed",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:live",
+            "status": 200,
+            "captures": false
         }
     ]
 }

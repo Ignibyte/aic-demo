@@ -8,7 +8,6 @@ use AIC\Component\Domain\KeyedComponent;
 use App\Dashboard\Entity\LatestSale;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
-use App\Theme\Components\LiveParts\LiveParts;
 use App\Theme\Components\Panel\Panel;
 use App\Theme\Components\TableRow\TableCell;
 use App\Theme\Components\TableRow\TableRow;
@@ -17,8 +16,8 @@ use InvalidArgumentException;
 use function count;
 
 /**
- * The dashboard's "Latest sales" (#10): a wide panel whose table lists the sales recorded last, inside the theme's
- * `LiveParts`, which holds the dashboard's stream, so the stream can patch the table while the panel stays.
+ * The dashboard's "Latest sales" (#10): a wide panel whose table lists the sales recorded last. The page holds it and the
+ * tiles in the theme's `LiveParts`, which Tessera refreshes every five seconds (#12).
  */
 final readonly class DashboardFeed
 {
@@ -28,24 +27,12 @@ final readonly class DashboardFeed
     public const string KEY = 'feed';
 
     /**
-     * The table's Tessera path, which the stream patches: the grid's item `KEY`, its panel's part `LIVE` and the
-     * `LiveParts`' part `TABLE`, as the render pass keys them. It changes if the page moves the panel.
-     */
-    public const string TARGET = 'content/c0/PanelGrid.1:' . self::KEY . '/Panel.1:' . self::LIVE
-        . '/LiveParts.1:' . self::TABLE;
-
-    /**
      * How many sales the feed lists.
      */
     public const int LIMIT = 5;
 
     /**
-     * The key of the panel's one part, the `LiveParts` holding the stream.
-     */
-    private const string LIVE = 'live';
-
-    /**
-     * The key of the table inside the `LiveParts`.
+     * The key of the panel's one part, the table.
      */
     private const string TABLE = 'list';
 
@@ -68,23 +55,20 @@ final readonly class DashboardFeed
     }
 
     /**
-     * @param string           $stream The stream's path, with what the page saw.
-     * @param list<LatestSale> $sales  The sales recorded last, the latest first.
+     * @param list<LatestSale> $sales The sales recorded last, the latest first.
      *
      * @throws InvalidArgumentException When a key is malformed.
      *
-     * @return Panel The wide panel `feed`, its table inside the stream's element.
+     * @return Panel The wide panel `feed`, its table its one part.
      */
-    public function panel(string $stream, array $sales): Panel
+    public function panel(array $sales): Panel
     {
-        $liveParts = new LiveParts($stream, [new KeyedComponent(self::TABLE, $this->table($sales))]);
-
         return new Panel(
             'feed',
             'Latest sales',
-            'The sales recorded last. A new one appears here as it is recorded.',
+            'The sales recorded last. A new one appears here within seconds of being recorded.',
             true,
-            [new KeyedComponent(self::LIVE, $liveParts)],
+            [new KeyedComponent(self::TABLE, $this->table($sales))],
         );
     }
 
@@ -96,7 +80,7 @@ final readonly class DashboardFeed
      * @return DataTable A row per sale: its day, linked to the sale; the vehicle; the customer; the salesperson; and the
      *                   price.
      */
-    public function table(array $sales): DataTable
+    private function table(array $sales): DataTable
     {
         $rows = [];
 

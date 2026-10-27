@@ -55,11 +55,6 @@ export function insertLiveSale(vin: string, price: number): void {
     sql(`UPDATE vehicles SET status = 'sold' WHERE vin = ${literal(vin)}`);
 }
 
-// The sales' fingerprint, worked out here: their count, their prices summed and the highest id, joined by hyphens.
-export function fingerprint(): string {
-    return sql("SELECT count(*) || '-' || coalesce(sum(price), 0) || '-' || coalesce(max(id), 0) FROM sales")[0];
-}
-
 // The five sales recorded last, the latest first, each row's cells as the feed writes them.
 export function latestSales(): string[][] {
     return sql(
@@ -85,33 +80,86 @@ export async function expectFeed(page: Page): Promise<void> {
     await expect.poll(() => shownFeed(page), { timeout: 10_000 }).toEqual(latestSales());
 }
 
-// One connection the page opened to the dashboard's stream.
-export interface StreamConnection {
+// The Tessera path of the dashboard's live part, which holds the tiles and the feed and which its poll refreshes: the
+// `content` region, the staff pages' unkeyed grid (`c0`) and its item `live`, as the render pass keys them.
+export const LIVE = 'content/c0/PanelGrid.1:live';
+
+// One request the page sent, with its answer once it has finished.
+export interface SentRequest {
+    resourceType: string;
+    method: string;
     path: string;
     tesseraRequest: string;
-    lastEventId: string;
+    targets: string;
+    status: number;
+    contentType: string;
+    templates: string[];
+    failure: string;
+    finished: boolean;
 }
 
-// Records every connection the page opens to the dashboard's stream, and every document it loads.
-export function recordStreams(page: Page): { connections: StreamConnection[]; documents: string[] } {
-    const connections: StreamConnection[] = [];
-    const documents: string[] = [];
-    page.on('request', async (request) => {
+// Records every request the page sends from now on, in order, with its answer once the server has sent all of it. The
+// answer is taken through a route, since Tessera cancels a refresh's body once it has read it and the browser may then
+// report the request as failed; a request whose answer never ends shows as one not finished.
+export async function recordPolls(page: Page): Promise<SentRequest[]> {
+    const requests: SentRequest[] = [];
+
+    await page.route(() => true, async (route) => {
+        const request = route.request();
         const url = new URL(request.url());
+        const headers = await request.allHeaders();
+        const sent: SentRequest = {
+            resourceType: request.resourceType(),
+            method: request.method(),
+            path: url.pathname + url.search,
+            tesseraRequest: headers['tessera-request'] ?? '',
+            targets: headers['tessera-targets'] ?? '',
+            status: 0,
+            contentType: '',
+            templates: [],
+            failure: '',
+            finished: false,
+        };
+        requests.push(sent);
 
-        if (request.resourceType() === 'document') {
-            documents.push(url.pathname);
-        }
-
-        if (url.pathname === '/app/events') {
-            const headers = await request.allHeaders();
-            connections.push({
-                path: url.pathname + url.search,
-                tesseraRequest: headers['tessera-request'] ?? '',
-                lastEventId: headers['last-event-id'] ?? '',
-            });
+        try {
+            const response = await route.fetch({ maxRedirects: 0 });
+            const body = await response.text();
+            const contentType = response.headers()['content-type'] ?? '';
+            sent.status = response.status();
+            sent.contentType = contentType;
+            sent.templates = contentType.startsWith('text/vnd.tessera+html')
+                ? [...body.matchAll(/<template data-target="([^"]*)">/g)].map((match) => match[1])
+                : [];
+            sent.finished = true;
+            await route.fulfill({ response, body });
+        } catch (error) {
+            sent.failure = String(error);
+            sent.finished = true;
+            await route.abort().catch(() => {});
         }
     });
 
-    return { connections, documents };
+    return requests;
+}
+
+// Waits until every recorded request has finished, then holds each to a refresh of the live part: a `fetch` GET of the
+// dashboard, answered 200 with that part alone.
+export async function expectRefreshes(requests: SentRequest[]): Promise<void> {
+    await expect.poll(() => requests.every((request) => request.finished)).toBe(true);
+
+    for (const request of requests) {
+        expect(request).toEqual({
+            resourceType: 'fetch',
+            method: 'GET',
+            path: '/app',
+            tesseraRequest: 'refresh',
+            targets: LIVE,
+            status: 200,
+            contentType: expect.stringMatching(/^text\/vnd\.tessera\+html/),
+            templates: [LIVE],
+            failure: '',
+            finished: true,
+        });
+    }
 }

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { count, money, signIn, tiles } from './support/dashboard';
-import { BUYER, BUYER_NAME, VINS, expectFeed, fingerprint, insertLiveLooks, login, recordStreams, removeLiveLooks, shownFeed } from './support/live';
+import { BUYER, BUYER_NAME, VINS, expectFeed, expectRefreshes, insertLiveLooks, login, recordPolls, removeLiveLooks, shownFeed } from './support/live';
 import { fillSale, today } from './support/sales';
 import { collectErrors, expectMarksKept, markPage, ready } from './support/tessera';
 
@@ -10,21 +10,19 @@ test.beforeEach(() => {
 });
 test.afterEach(() => removeLiveLooks());
 
-test('a sale recorded in one page appears on the dashboard open in another, without a reload', async ({ page }) => {
+test('a sale recorded in one page appears on the dashboard open in another within seconds, by poll', async ({ page }) => {
     const errors = collectErrors(page);
-    const { connections, documents } = recordStreams(page);
 
-    // The dashboard names its stream with the sales' fingerprint, and its feed lists the sales Postgres gives.
+    // The tiles and the feed sit in one element that Tessera polls from the dashboard itself; there is no stream.
     await signIn(page);
     await ready(page);
-    const seen = fingerprint();
-    await expect(page.locator('#feed-heading')).toHaveText('Latest sales');
-    await expect(page.locator('[data-stream]')).toHaveAttribute('data-stream', `/app/events?seen=${seen}`);
+    await expect(page.locator('[data-poll__5s]')).toHaveAttribute('data-poll__5s', '/app');
+    await expect(page.locator('[data-poll__5s] #dashboard-tiles')).toHaveCount(1);
+    await expect(page.locator('[data-poll__5s] #sales-feed')).toHaveCount(1);
+    await expect(page.locator('[data-stream]')).toHaveCount(0);
     await expectFeed(page);
-    await expect(page.locator('#sales-feed').getByRole('link').first()).toHaveAttribute('href', /^\/app\/sales\/\d+$/);
-    await expect.poll(() => connections).toEqual([{ path: `/app/events?seen=${seen}`, tesseraRequest: 'stream', lastEventId: '' }]);
     await markPage(page);
-    documents.length = 0;
+    const requests = await recordPolls(page);
 
     // A second page of the same session records a sale through the form.
     const other = await page.context().newPage();
@@ -35,16 +33,20 @@ test('a sale recorded in one page appears on the dashboard open in another, with
     await expect(other).toHaveURL(/\/app\/sales\/\d+$/);
     await expect(other.locator('#sale-notice')).toHaveText('Recorded the sale.');
 
-    // The dashboard shows it first in the feed, and this month's tiles count it, with no reload.
+    // Within one five-second tick and its request, the dashboard shows it first in the feed and counts it in the tiles.
+    const sale = [today(), '2023 Probe Hatch SE', BUYER_NAME, login, '$21,500'];
+    await expect.poll(async () => (await shownFeed(page))[0], { timeout: 8_000 }).toEqual(sale);
     await expectFeed(page);
-    expect((await shownFeed(page))[0]).toEqual([today(), '2023 Probe Hatch SE', BUYER_NAME, login, '$21,500']);
     const figures = tiles();
     await expect(page.locator('#tile-sales')).toHaveText(count(figures.sales));
     await expect(page.locator('#tile-revenue')).toHaveText(money(figures.revenue));
     await expect(page.locator('#tile-in-stock')).toHaveText(count(figures.inStock));
+
+    // No reload: the same document, and every request since load a finished refresh of the live part alone.
     await expectMarksKept(page);
-    expect(documents).toEqual([]);
-    expect(connections).toHaveLength(1);
+    expect(requests.length).toBeGreaterThan(0);
+    await expectRefreshes(requests);
+    expect(requests.filter((request) => request.path.startsWith('/app/events'))).toEqual([]);
 
     await other.close();
     expect(errors).toEqual([]);

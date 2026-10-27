@@ -152,7 +152,7 @@ none
 | Module | Classes of this module it uses |
 | --- | --- |
 | [customers](customers.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
-| [dashboard](dashboard.md) | `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
+| [dashboard](dashboard.md) | `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffSession` |
 | [inventory](inventory.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels` |
 | [sales](sales.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 | [site](site.md) | `App\Staff\Service\StaffSession` |

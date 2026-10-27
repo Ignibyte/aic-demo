@@ -84,14 +84,22 @@ export function pathOf(url: string): string {
     return parsed.pathname + parsed.search;
 }
 
-// Records every request the page makes but its assets and the dashboard's stream, in order, with its answer. The answer
-// is taken through a route, with no redirect followed, so a 303 shows as the 303 the server sent.
+// Records every request the page makes but its assets and the dashboard's refreshes, in order, with its answer. The
+// answer is taken through a route, with no redirect followed, so a 303 shows as the 303 the server sent. A refresh,
+// which the dashboard's poll sends every five seconds while it is open, goes on to the network unrecorded.
 export async function recordRequests(page: Page): Promise<SentRequest[]> {
     const requests: SentRequest[] = [];
 
-    await page.route((url) => !url.pathname.startsWith('/assets/') && url.pathname !== '/app/events', async (route) => {
+    await page.route((url) => !url.pathname.startsWith('/assets/'), async (route) => {
         const request = route.request();
         const headers = await request.allHeaders();
+
+        if (headers['tessera-request'] === 'refresh') {
+            await route.fallback();
+
+            return;
+        }
+
         const response = await route.fetch({ maxRedirects: 0 });
         const body = await response.text();
         const answer = response.headers();

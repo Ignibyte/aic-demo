@@ -9,10 +9,8 @@ use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Database\Contracts\QueryException;
-use App\Dashboard\Repository\DashboardRepository;
 use App\Dashboard\Service\DashboardCharts;
-use App\Dashboard\Service\DashboardFeed;
-use App\Dashboard\Service\DashboardTiles;
+use App\Dashboard\Service\DashboardLive;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffSession;
 use LogicException;
@@ -20,31 +18,25 @@ use Override;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
 
-use function rawurlencode;
-
 /**
  * GET /app: the dashboard, the first page signed-in staff see. The header greets the member by name and role; under it
  * come this month's figures as stat tiles, the sales recorded last, then sales by month, inventory by make and revenue
- * by salesperson as charts. The tiles and the latest sales stay live over `/app/events` (#10), which the page opens
- * with the sales' fingerprint it was drawn with. The prefix is protected, so an anonymous visitor never reaches it; a
- * session without the member goes to sign in.
+ * by salesperson as charts. The tiles and the latest sales sit in one `LiveParts`, which Tessera refreshes from this
+ * page every five seconds (#12); AIC answers the refresh with that part alone. The prefix is protected, so an anonymous
+ * visitor never reaches it; a session without the member goes to sign in.
  */
 final readonly class DashboardPage implements Page
 {
     /**
-     * @param StaffPages          $staffPages          The staff pages' document.
-     * @param DashboardRepository $dashboardRepository The figures.
-     * @param DashboardCharts     $dashboardCharts     The chart panels.
-     * @param DashboardTiles      $dashboardTiles      The stat tiles.
-     * @param DashboardFeed       $dashboardFeed       The latest sales.
-     * @param StaffSession        $staffSession        Who is signed in.
+     * @param StaffPages      $staffPages      The staff pages' document.
+     * @param DashboardLive   $dashboardLive   The tiles and the latest sales, which Tessera refreshes.
+     * @param DashboardCharts $dashboardCharts The chart panels.
+     * @param StaffSession    $staffSession    Who is signed in.
      */
     public function __construct(
         private StaffPages $staffPages,
-        private DashboardRepository $dashboardRepository,
+        private DashboardLive $dashboardLive,
         private DashboardCharts $dashboardCharts,
-        private DashboardTiles $dashboardTiles = new DashboardTiles(),
-        private DashboardFeed $dashboardFeed = new DashboardFeed(),
         private StaffSession $staffSession = new StaffSession(),
     ) {
     }
@@ -67,13 +59,8 @@ final readonly class DashboardPage implements Page
             return new PageRedirect('/sign-in');
         }
 
-        // The fingerprint is read before the figures, so a sale recorded between the reads makes the stream patch at
-        // once instead of going unseen.
-        $stream = '/app/events?seen=' . rawurlencode($this->dashboardRepository->fingerprint());
-        $latest = $this->dashboardRepository->latest(DashboardFeed::LIMIT);
         $items = [
-            new KeyedComponent(DashboardTiles::KEY, $this->dashboardTiles->tiles($this->dashboardRepository->tiles())),
-            new KeyedComponent(DashboardFeed::KEY, $this->dashboardFeed->panel($stream, $latest)),
+            new KeyedComponent(DashboardLive::KEY, $this->dashboardLive->parts()),
             new KeyedComponent('sales', $this->dashboardCharts->sales()),
             new KeyedComponent('makes', $this->dashboardCharts->makes()),
             new KeyedComponent('salespeople', $this->dashboardCharts->salespeople()),
