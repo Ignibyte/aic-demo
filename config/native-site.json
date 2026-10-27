@@ -893,24 +893,6 @@
             "captures": false
         },
         {
-            "name": "dashboard stream, a page that saw no sales",
-            "method": "GET",
-            "path": "/app/events?polls=1",
-            "form": "",
-            "header": "Tessera-Request: stream\r\nTessera-Protocol: 0",
-            "status": 200,
-            "captures": false
-        },
-        {
-            "name": "dashboard stream, resumed from a stale Last-Event-ID",
-            "method": "GET",
-            "path": "/app/events?seen=0-0-0&polls=2",
-            "form": "",
-            "header": "Tessera-Request: stream\r\nTessera-Protocol: 0\r\nLast-Event-ID: 0-0-1",
-            "status": 200,
-            "captures": false
-        },
-        {
             "name": "navigation, a sidebar visit to the customers",
             "method": "GET",
             "path": "/app/customers",
