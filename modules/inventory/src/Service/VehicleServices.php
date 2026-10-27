@@ -7,6 +7,7 @@ namespace App\Inventory\Service;
 use AIC\Controller\Application\PageDocuments;
 use AIC\Database\Contracts\Database;
 use AIC\Form\Application\EnvelopeCodec;
+use AIC\Module\Attribute\Tagged;
 use App\Inventory\Form\VehicleChecks;
 use App\Inventory\Form\VehicleDeleteForm;
 use App\Inventory\Form\VehicleDeletes;
@@ -18,9 +19,10 @@ use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
 
 /**
- * The factory the manifest names for the vehicle record's services: each from the database, the envelope codec and
- * the page documents. The build splits the module's handlers into parts and each part builds what its controllers
- * take, so a graph the controllers share would be written out in every part; through here each part makes one call.
+ * The factory the manifest names for the vehicle record's services: each from the database, the envelope codec, the
+ * page documents and the `VehicleSales` plugins. The build splits the module's handlers into parts and each part
+ * builds what its controllers take, so a graph the controllers share would be written out in every part; through here
+ * each part makes one call.
  */
 final readonly class VehicleServices
 {
@@ -28,11 +30,14 @@ final readonly class VehicleServices
      * @param Database      $database      The database.
      * @param EnvelopeCodec $envelopeCodec Seals and opens envelopes with the app secret.
      * @param PageDocuments $pageDocuments The theme's document around a page.
+     * @param list<object>  $vehicleSales  The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
         private Database $database,
         private EnvelopeCodec $envelopeCodec,
         private PageDocuments $pageDocuments,
+        #[Tagged(VehicleSales::class)]
+        private array $vehicleSales,
     ) {
     }
 
@@ -46,7 +51,7 @@ final readonly class VehicleServices
         $staffSeals = new StaffSeals($this->envelopeCodec);
         $vehicleForm = new VehicleForm($staffPanels, $staffSeals);
         $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $staffPanels);
-        $vehicleChecks = new VehicleChecks($vehicleRecordRepository);
+        $vehicleChecks = new VehicleChecks($vehicleRecordRepository, $this->soldVehicles());
 
         return new VehicleSaves($vehicleRecords, $vehicleRecordRepository, $vehicleChecks, $vehicleForm, $staffSeals);
     }
@@ -62,7 +67,7 @@ final readonly class VehicleServices
         $vehicleDeleteForm = new VehicleDeleteForm($staffPanels, $staffSeals);
         $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $staffPanels);
 
-        return new VehicleDeletes($vehicleRecords, $vehicleRecordRepository, $vehicleDeleteForm, $staffSeals);
+        return new VehicleDeletes($vehicleRecords, $vehicleRecordRepository, $vehicleDeleteForm, $staffSeals, $this->soldVehicles());
     }
 
     /**
@@ -72,7 +77,9 @@ final readonly class VehicleServices
     {
         $staffPanels = $this->panels();
 
-        return new VehicleCards(new VehicleRecords($this->repository(), $staffPanels), $staffPanels);
+        $vehicleRecords = new VehicleRecords($this->repository(), $staffPanels);
+
+        return new VehicleCards($vehicleRecords, $staffPanels, $this->soldVehicles());
     }
 
     /**
@@ -81,6 +88,14 @@ final readonly class VehicleServices
     private function repository(): VehicleRecordRepository
     {
         return new VehicleRecordRepository($this->database);
+    }
+
+    /**
+     * @return SoldVehicles Asks the `VehicleSales` plugins about a vehicle's sale.
+     */
+    private function soldVehicles(): SoldVehicles
+    {
+        return new SoldVehicles($this->database, $this->vehicleSales);
     }
 
     /**

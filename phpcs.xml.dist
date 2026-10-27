@@ -26,6 +26,7 @@
             <property name="rootNamespaces" type="array">
                 <element key="modules/customers/src" value="App\Customers"/>
                 <element key="modules/inventory/src" value="App\Inventory"/>
+                <element key="modules/sales/src" value="App\Sales"/>
                 <element key="modules/site/src" value="App\Site"/>
                 <element key="modules/staff/src" value="App\Staff"/>
                 <element key="themes/lotline/src/Components" value="App\Theme\Components"/>

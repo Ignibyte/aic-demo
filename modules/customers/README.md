@@ -21,11 +21,11 @@ Run `bin/aic migrate` first. From the host, point both at DDEV's published Postg
 | `GET /app/customers` | `CustomerListPage` | The list: the notice a delete left, "Add a customer", the search (`q`, over name, email and phone), the table (name linked to the customer, email, phone, the day added), and the pages (`page`), 15 customers each. A `q` given as a list reads as no search, a `page` that is not 1 to 9999 as 1, and a page past the last shows the first. |
 | `GET /app/customers/new` | `CustomerNewPage` | The blank form. |
 | `POST /app/customers` | `CustomerCreatePost` | 303 to the new customer's page, or the form again as 422. |
-| `GET /app/customers/{id}` | `CustomerPage` | The customer's `DetailCard`: name, a "No purchases yet" badge, email, phone, address, notes and the day added; Edit, Delete and Back to the list. Under it the "Vehicles bought" table, empty with "No vehicles bought yet." until sales exist. |
+| `GET /app/customers/{id}` | `CustomerPage` | The customer's `DetailCard`: name, a badge counting the purchases ("No purchases yet", "1 purchase", "3 purchases"), email, phone, address, notes and the day added; Edit, Delete and Back to the list. Under it the "Vehicles bought" table, newest first (the VIN linked to the vehicle, the vehicle, the day linked to the sale and the price), or "No vehicles bought yet." |
 | `GET /app/customers/{id}/edit` | `CustomerEditPage` | The form filled from the customer. |
 | `POST /app/customers/{id}` | `CustomerUpdatePost` | 303 to the customer's page, 422, or 400 for the envelope. |
-| `GET /app/customers/{id}/delete` | `CustomerDeletePage` | The `ConfirmCard`: Delete, or Keep it back to the customer. |
-| `POST /app/customers/{id}/delete` | `CustomerDeletePost` | 303 to the list, with its notice, or 400 for the envelope. |
+| `GET /app/customers/{id}/delete` | `CustomerDeletePage` | The `ConfirmCard`: Delete, or Keep it back to the customer. A customer who bought a vehicle gets a warning `Notice` and no form. |
+| `POST /app/customers/{id}/delete` | `CustomerDeletePost` | 303 to the list, with its notice; 422 for a customer who bought; or 400 for the envelope. |
 
 The routes type the id as `{id:int}`, so the router matches digits only. `CustomerRecords` also holds it to 1 to 9 digits from 1 before any query, since a longer number would overflow the column; an id that fails, or that no customer has, answers 404 on every page and post.
 
@@ -39,6 +39,12 @@ The form (`CustomerForm`, its grid from `CustomerFields`) is AIC's `Form` atom a
 A refusal answers 422 with the error alert above the fields, each message beside its field, and every value as typed. The create's insert skips an email taken since the check (`ON CONFLICT (email) DO NOTHING RETURNING id`), and an update that meets one on the unique key finds it taken; both answer that refusal too. A save or a delete leaves its notice in the session for the page it redirects to.
 
 The edit and delete forms carry AIC's signed envelope sealing the customer's path. A post whose envelope is missing, altered or sealed for another customer's path answers 400 and changes nothing, so a form issued for one customer cannot change or delete another. The CSRF token and honeypot are the `Form` atom's.
+
+## Purchases
+
+The `sales` module requires customers, so customers cannot require it back. It exports a plugin type instead, `CustomerPurchases` (with its value `Purchase`), and `sales` registers its implementation. `CustomerServices` takes every plugin with `#[Tagged(CustomerPurchases::class)]` and hands them to `BoughtVehicles`, which asks them what a customer bought; the generated provider builds a plugin with no arguments, so the database comes with each call. The customer's page lists the purchases and counts them in its badge. `CustomerDeletes` refuses a customer with purchases, since the sales' foreign key keeps the row; a delete that meets that key because a sale landed after the check gives the same 422. Without the `sales` module, a customer has bought nothing.
+
+Customers also exports `SeedCustomers` and `CustomerDetails`, whose customers the sales seed sells to.
 
 `CustomerServices`, the manifest's factory, builds the form's, the delete's and the page's services, so the generated handler parts each make one call.
 

@@ -31,7 +31,7 @@ Each vehicle's pages are found by its VIN, not its numeric `id`: gate:23 replays
 
 | Route | Controller | What it answers |
 |---|---|---|
-| `GET /app/inventory/{vin}` | `VehiclePage` | The vehicle's `DetailCard`: title, status badge, VIN, year, make, model, trim, body style, colour, mileage, list price and the day it came; never its cost. Edit, Delete and Back to the list. |
+| `GET /app/inventory/{vin}` | `VehiclePage` | The vehicle's `DetailCard`: title, status badge, VIN, year, make, model, trim, body style, colour, mileage, list price and the day it came; never its cost. Edit, Delete and Back to the list, and "Record a sale" when the vehicle is not sold. Under the card, the vehicle's sale when one is recorded (see below). |
 | `GET /app/inventory/new` | `VehicleNewPage` | The blank form, in stock and on the lot from the database's today. |
 | `POST /app/inventory` | `VehicleCreatePost` | 303 to the new vehicle's page, or the form again as 422. |
 | `GET /app/inventory/{vin}/edit` | `VehicleEditPage` | The form filled from the vehicle. |
@@ -47,11 +47,17 @@ The form (`VehicleForm`, its grid from `VehicleFields`) is AIC's `Form` atom aro
 - the year: a model year from 1981 to next year, by the database's date;
 - make, model, body style and colour required, trim optional, each within its column's length;
 - mileage, list price and cost: whole numbers from 0, one to seven digits;
-- the status: one of the three; the day it came onto the lot: a real `YYYY-MM-DD`.
+- the status: one of the three, and sold while a sale is recorded (`VehicleSaves`; void the sale first); the day it came onto the lot: a real `YYYY-MM-DD`.
 
 A refusal answers 422 with the error alert above the fields, each message beside its field, and every value as typed. The create's insert skips a VIN taken since the check (`ON CONFLICT DO NOTHING`), and an update that meets one on the unique key finds it taken; both answer that refusal too; the delete's statement keeps a sold row whatever the page said. A save or a delete leaves one line in the session (`StaffNotices`, the `staff` module's, which customers share) for the page it redirects to, which shows it as a success `Notice` and clears it.
 
 The edit and delete forms carry AIC's signed envelope sealing the vehicle's path (`StaffSeals`, over `EnvelopeCodec`, from `staff` too). A post whose envelope is missing, altered or sealed for another vehicle's path answers 400 and changes nothing, so a form issued for one vehicle cannot change or delete another. The CSRF token and honeypot are the `Form` atom's.
+
+## Sales
+
+The `sales` module requires inventory, so inventory cannot require it back. It exports a plugin type instead, `VehicleSales` (with its value `VehicleSale`), and `sales` registers its implementation. `VehicleServices` takes every plugin with `#[Tagged(VehicleSales::class)]` and hands them to `SoldVehicles`, which asks them for a vehicle's sale and for the path of the form that records one; the generated provider builds a plugin with no arguments, so the database comes with each call. With a sale, the vehicle's page shows a "Sale" table (`vehicle-sale`: the day linked to the sale, the customer linked to theirs, the salesperson and the price), and the edit form refuses any status but sold. Without one, a vehicle that is not sold gets "Record a sale" (`vehicle-sell`), which opens `/app/sales/new?vehicle={VIN}`. Without the `sales` module, the page shows neither.
+
+`VehicleStatusRepository`, exported, is how `sales` changes a vehicle: it locks a vehicle's row while a sale is recorded and sets its status (sold, or in stock when a sale is voided), on the caller's transaction. A delete that meets a sale's foreign key, because a sale landed after an edit's check, answers the delete page as 422 (`VehicleDeletes`). Inventory also exports what the sales seed builds its sold vehicles with: `Vehicle`, `VehiclePrice`, `VehicleStatus`, `Vins`, `VehicleRepository` and `SeedVehicles`.
 
 ## Seed
 

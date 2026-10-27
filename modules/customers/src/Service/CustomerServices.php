@@ -7,6 +7,7 @@ namespace App\Customers\Service;
 use AIC\Controller\Application\PageDocuments;
 use AIC\Database\Contracts\Database;
 use AIC\Form\Application\EnvelopeCodec;
+use AIC\Module\Attribute\Tagged;
 use App\Customers\Form\CustomerChecks;
 use App\Customers\Form\CustomerDeleteForm;
 use App\Customers\Form\CustomerDeletes;
@@ -19,20 +20,23 @@ use App\Staff\Service\StaffPanels;
 
 /**
  * The factory the manifest names for the customer record's services, each built from the database, the envelope
- * codec and the page documents, so the generated handler parts make one call apiece rather than each writing out the
- * graph the controllers share (gate:14).
+ * codec, the page documents and the `CustomerPurchases` plugins, so the generated handler parts make one call apiece
+ * rather than each writing out the graph the controllers share (gate:14).
  */
 final readonly class CustomerServices
 {
     /**
-     * @param Database      $database      The database.
-     * @param EnvelopeCodec $envelopeCodec Seals and opens envelopes with the app secret.
-     * @param PageDocuments $pageDocuments The theme's document around a page.
+     * @param Database      $database          The database.
+     * @param EnvelopeCodec $envelopeCodec     Seals and opens envelopes with the app secret.
+     * @param PageDocuments $pageDocuments     The theme's document around a page.
+     * @param list<object>  $customerPurchases The `CustomerPurchases` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
         private Database $database,
         private EnvelopeCodec $envelopeCodec,
         private PageDocuments $pageDocuments,
+        #[Tagged(CustomerPurchases::class)]
+        private array $customerPurchases,
     ) {
     }
 
@@ -65,7 +69,7 @@ final readonly class CustomerServices
         $customerRecordRepository = new CustomerRecordRepository($this->database);
         $customerRecords = new CustomerRecords($customerRecordRepository, $staffPanels);
 
-        return new CustomerDeletes($customerRecords, $customerRecordRepository, $customerDeleteForm, $staffSeals);
+        return new CustomerDeletes($customerRecords, $customerRecordRepository, $customerDeleteForm, $staffSeals, $this->boughtVehicles());
     }
 
     /**
@@ -75,7 +79,17 @@ final readonly class CustomerServices
     {
         $staffPanels = $this->staffPanels();
 
-        return new CustomerCards(new CustomerRecords(new CustomerRecordRepository($this->database), $staffPanels), $staffPanels);
+        $customerRecords = new CustomerRecords(new CustomerRecordRepository($this->database), $staffPanels);
+
+        return new CustomerCards($customerRecords, $staffPanels, $this->boughtVehicles());
+    }
+
+    /**
+     * @return BoughtVehicles Asks the `CustomerPurchases` plugins what a customer bought.
+     */
+    private function boughtVehicles(): BoughtVehicles
+    {
+        return new BoughtVehicles($this->database, $this->customerPurchases);
     }
 
     /**

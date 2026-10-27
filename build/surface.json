@@ -141,6 +141,48 @@
             "path": "/app/inventory/{vin}/delete"
         },
         {
+            "handler": "App\\Sales\\Controller\\SaleListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/new"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "sales",
+            "path": "/app/sales"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SalePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/{id:int}"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleVoidPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/{id:int}/void"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleVoidPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "sales",
+            "path": "/app/sales/{id:int}/void"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -207,6 +249,12 @@
             "name": "queue:work"
         },
         {
+            "class": "App\\Sales\\Command\\SalesSeed",
+            "kind": "Command",
+            "module": "sales",
+            "name": "sales:seed"
+        },
+        {
             "class": "AIC\\Schedule\\Application\\ScheduleRunCommand",
             "kind": "Command",
             "module": "framework",
@@ -254,7 +302,8 @@
                 "App\\Staff\\Service\\StaffSession",
                 "App\\Staff\\Service\\StaffPanels",
                 "App\\Staff\\Service\\StaffNotices",
-                "App\\Staff\\Form\\StaffSeals"
+                "App\\Staff\\Form\\StaffSeals",
+                "App\\Staff\\Service\\StaffRequests"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -280,7 +329,12 @@
         {
             "bindings": [],
             "blocks": [],
-            "exports": [],
+            "exports": [
+                "App\\Customers\\Service\\CustomerPurchases",
+                "App\\Customers\\Entity\\Purchase",
+                "App\\Customers\\Service\\SeedCustomers",
+                "App\\Customers\\Entity\\CustomerDetails"
+            ],
             "factories": [
                 "App\\Customers\\Service\\CustomerServices"
             ],
@@ -299,7 +353,17 @@
         {
             "bindings": [],
             "blocks": [],
-            "exports": [],
+            "exports": [
+                "App\\Inventory\\Service\\VehicleSales",
+                "App\\Inventory\\Entity\\VehicleSale",
+                "App\\Inventory\\Entity\\Vehicle",
+                "App\\Inventory\\Entity\\VehiclePrice",
+                "App\\Inventory\\Entity\\VehicleStatus",
+                "App\\Inventory\\Service\\Vins",
+                "App\\Inventory\\Repository\\VehicleRepository",
+                "App\\Inventory\\Repository\\VehicleStatusRepository",
+                "App\\Inventory\\Service\\SeedVehicles"
+            ],
             "factories": [
                 "App\\Inventory\\Service\\VehicleServices"
             ],
@@ -312,6 +376,37 @@
             "plugins": [],
             "prefixes": [],
             "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [
+                "App\\Sales\\Service\\SaleServices",
+                "App\\Sales\\Service\\SaleRecordServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Sales\\Migration\\CreateSalesTable"
+            ],
+            "name": "sales",
+            "namespace": "App\\Sales\\",
+            "plugins": [
+                {
+                    "class": "App\\Sales\\Service\\VehicleSaleLookup",
+                    "type": "App\\Inventory\\Service\\VehicleSales"
+                },
+                {
+                    "class": "App\\Sales\\Service\\CustomerPurchaseLookup",
+                    "type": "App\\Customers\\Service\\CustomerPurchases"
+                }
+            ],
+            "prefixes": [],
+            "requires": [
+                "inventory",
+                "customers",
                 "staff"
             ]
         },

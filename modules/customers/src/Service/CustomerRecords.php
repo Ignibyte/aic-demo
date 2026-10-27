@@ -9,11 +9,10 @@ use AIC\Database\Contracts\QueryException;
 use App\Customers\Entity\Customer;
 use App\Customers\Repository\CustomerRecordRepository;
 use App\Staff\Service\StaffPanels;
+use App\Staff\Service\StaffRequests;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
-use function array_key_exists;
-use function is_string;
 use function preg_match;
 
 /**
@@ -25,10 +24,12 @@ final readonly class CustomerRecords
     /**
      * @param CustomerRecordRepository $customerRecordRepository Reads a customer by its id.
      * @param StaffPanels              $staffPanels              The customer pages' frame.
+     * @param StaffRequests            $staffRequests            Reads the route's id as text.
      */
     public function __construct(
         private CustomerRecordRepository $customerRecordRepository,
         private StaffPanels $staffPanels,
+        private StaffRequests $staffRequests = new StaffRequests(),
     ) {
     }
 
@@ -41,7 +42,7 @@ final readonly class CustomerRecords
      */
     public function find(ServerRequestInterface $serverRequest): ?Customer
     {
-        $id = $this->routeId($serverRequest);
+        $id = $this->staffRequests->attribute($serverRequest, 'id');
 
         if (preg_match('/^[1-9][0-9]{0,8}$/', $id) !== 1) {
             return null;
@@ -73,22 +74,5 @@ final readonly class CustomerRecords
         $message = 'This form was issued for another customer, or it changed on the way, so nothing was saved. Open the customer again.';
 
         return $this->staffPanels->warning('Form refused', $message, 'customer-refused', 'Back to the list', Customer::PAGES, 400);
-    }
-
-    /**
-     * Reads the attribute through a native `string` return, as `VehicleRecords::vin()` does: elephc does not narrow an
-     * untyped value by `is_string()`. No AIC ticket carries this yet.
-     *
-     * @param ServerRequestInterface $serverRequest A request to a customer's route.
-     *
-     * @return string Its `id` attribute; empty when it is not a string.
-     */
-    private function routeId(ServerRequestInterface $serverRequest): string
-    {
-        $attributes = $serverRequest->getAttributes();
-
-        return array_key_exists('id', $attributes) && is_string($attributes['id'])
-            ? $attributes['id']
-            : '';
     }
 }

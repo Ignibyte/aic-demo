@@ -7,6 +7,7 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Controller\VehicleDeletePost;
+use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -35,6 +36,7 @@ final readonly class InventoryHandlersPart2
             $this->handlerContext->database(),
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
+            $this->handlerContext->tagged(VehicleSales::class),
         );
 
         return [

@@ -2,11 +2,12 @@
 
 Ridgeway Motors' staff sign in to Lotline, and everything under `/app` is theirs alone. The module builds on AIC's Auth: `AIC\Auth\Application\Authenticator` signs a member in and out and keeps their id in the session, `PgcryptoPasswordHasher` hashes passwords with Postgres pgcrypto (bcrypt), and `RequireAuthenticationMiddleware` sends a signed-out visitor to anything under `/app` to `/sign-in?next=…`.
 
-The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `PgcryptoPasswordHasher`, runs the middleware after the session over the `RouteAuthConfig` that the `AccessRules` factory makes (every module's protected prefixes, sign-in at `/sign-in`), and protects `/app`. It exports `StaffPages` (the staff pages' document) and `StaffSession` (who is signed in), which `inventory`, `customers` and `site`'s navigation use, and three pieces a record's pages share (#6), so `inventory` and `customers` keep one copy:
+The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `PgcryptoPasswordHasher`, runs the middleware after the session over the `RouteAuthConfig` that the `AccessRules` factory makes (every module's protected prefixes, sign-in at `/sign-in`), and protects `/app`. It exports `StaffPages` (the staff pages' document) and `StaffSession` (who is signed in), which `inventory`, `customers`, `sales` and `site`'s navigation use, and the pieces a record's pages share (#6, #7), so each module keeps no copy of its own:
 
-- `StaffPanels`: a record page's one wide panel in the staff document, its id stem given by the module's factory (`vehicle`, `customer`), and the warning page a 404 or a refused form shows in it;
+- `StaffPanels`: a record page's one wide panel in the staff document, its id stem given by the module's factory (`vehicle`, `customer`, `sale`), and the warning page a 404 or a refused form shows in it;
 - `StaffNotices`: the one line a save or a delete keeps in the session (`staff.notice`) for the page it redirects to, which takes it before anything else (a 404 for a record gone meanwhile included, so no notice waits for a later page), shows it as a success `Notice` and clears it;
 - `StaffSeals` (in `Form/`): AIC's signed envelope sealing a record's path in its edit and delete forms, and the check that a post's envelope is whole and seals the path it was posted to.
+- `StaffRequests`: a query parameter and a route attribute read as plain text through a native `string` return (a list, or a value that is no string, reads as empty), for `customers` and `sales`; elephc does not narrow an untyped value by `is_string()`.
 
 ## Data
 

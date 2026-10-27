@@ -2,9 +2,10 @@
 number: 7
 title: "Sales: a vehicle sold to a customer"
 type: feature
-status: open
+status: in-review
 created: 2026-10-27T02:00:00Z
-updated: 2026-10-27T02:00:00Z
+updated: 2026-10-27T08:44:54Z
+phase: "docs"
 ---
 
 Staff record a sale. Old Lotline's ticket 8 (`/srv/stacks/lotline`, read only) is the reference for

@@ -19,7 +19,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * A customer's delete page: the question, with the form that deletes the record (its envelope sealing the customer's
- * path) and Keep it, back to the customer.
+ * path) and Keep it, back to the customer; or, for a customer who bought a vehicle, the warning that the record stays,
+ * and no form.
  */
 final readonly class CustomerDeleteForm
 {
@@ -38,12 +39,44 @@ final readonly class CustomerDeleteForm
     /**
      * @param ServerRequestInterface $serverRequest The request, with its session.
      * @param Customer               $customer      The customer.
+     * @param bool                   $bought        Whether they bought a vehicle.
+     * @param int                    $status        200, or 422 after a refused delete.
      *
      * @throws LogicException When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
      *
-     * @return PageDocument The page that asks first.
+     * @return PageDocument The page that asks first, or the warning.
      */
-    public function page(ServerRequestInterface $serverRequest, Customer $customer): PageDocument
+    public function page(
+        ServerRequestInterface $serverRequest,
+        Customer $customer,
+        bool $bought,
+        int $status,
+    ): PageDocument {
+        $customerDetails = $customer->customerDetails;
+        $title = 'Delete ' . $customerDetails->name;
+
+        if ($bought) {
+            $message = 'This customer has bought from Ridgeway Motors, so the record stays.';
+
+            return $this->staffPanels->warning($title, $message, 'customer-bought', 'Back to the customer', $customer->path(), $status);
+        }
+
+        $description = "A deleted customer's record is gone for good.";
+
+        return $this->staffPanels->page($title, 'Delete a customer', $description, [
+            'confirm' => $this->confirmCard($serverRequest, $customer),
+        ], $status);
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest The request, with its session.
+     * @param Customer               $customer      A customer who bought nothing.
+     *
+     * @throws LogicException When the request carries no session, or the envelope cannot be sealed.
+     *
+     * @return ConfirmCard The question, the form that deletes the record, and Keep it, back to the customer.
+     */
+    private function confirmCard(ServerRequestInterface $serverRequest, Customer $customer): ConfirmCard
     {
         $path = $customer->path();
         $customerDetails = $customer->customerDetails;
@@ -51,17 +84,13 @@ final readonly class CustomerDeleteForm
             $this->staffSeals->field($path),
             new Button('Delete', 'submit', 'customer-delete-confirm'),
         ], $this->formTokens->issue($serverRequest)->value());
-        $confirmCard = new ConfirmCard(
+
+        return new ConfirmCard(
             'Delete ' . $customerDetails->name . '?',
             $customerDetails->email,
             "This cannot be undone. Delete this customer's record?",
             $form,
             new ButtonLink('Keep it', $path, 'customer-keep', ButtonTone::Ghost),
         );
-        $description = "A deleted customer's record is gone for good.";
-
-        return $this->staffPanels->page('Delete ' . $customerDetails->name, 'Delete a customer', $description, [
-            'confirm' => $confirmCard,
-        ], 200);
     }
 }

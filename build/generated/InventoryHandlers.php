@@ -15,6 +15,7 @@ use App\Inventory\Controller\VehiclePage;
 use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Service\InventoryList;
+use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -45,6 +46,7 @@ final readonly class InventoryHandlers
             $this->handlerContext->database(),
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
+            $this->handlerContext->tagged(VehicleSales::class),
         );
         $vehicleSaves = $vehicleServices->vehicleSaves();
 
