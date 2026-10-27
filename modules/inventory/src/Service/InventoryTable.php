@@ -22,15 +22,15 @@ use function number_format;
 /**
  * The inventory list's results: a row per vehicle on the page, heads that sort (a second click on the sorted one
  * reverses it), a link per page, each link keeping the search and filters, and the sort the filter form sends. Tessera
- * answers a filter, a sort or a page with them alone.
+ * answers a filter, a sort or a page with them alone: each control targets them as `@inventory-results`.
  */
 final readonly class InventoryTable
 {
     /**
-     * The results' Tessera path: the `content` region, the staff pages' unkeyed grid in it (`c0`), the grid's panel
-     * `vehicles` and the panel's part `table`, each loop's key as the render pass writes it.
+     * The results' anchor (AIC #188): the list's panel carries it on the results, its controls target `@inventory-results`,
+     * and Tessera finds the results' path on the page, so no code here spells it.
      */
-    public const string TARGET = 'content/c0/PanelGrid.1:vehicles/Panel.1:table';
+    public const string ANCHOR = 'inventory-results';
 
     /**
      * @param InventoryLinks  $inventoryLinks  Writes the links.
@@ -100,7 +100,7 @@ final readonly class InventoryTable
         $summary = $this->summary($count, $page, $pages);
         $empty = 'No vehicle matches. Try fewer filters, or clear them.';
 
-        return new DataTable('vehicles-table', $summary, $empty, self::TARGET, $this->columns($inventoryQuery), $rows);
+        return new DataTable('vehicles-table', $summary, $empty, '@' . self::ANCHOR, $this->columns($inventoryQuery), $rows);
     }
 
     /**
@@ -119,7 +119,7 @@ final readonly class InventoryTable
             $links[] = new PageLink((string) $number, $href, $number === $page);
         }
 
-        return new Pagination('vehicles-pages', self::TARGET, $links);
+        return new Pagination('vehicles-pages', '@' . self::ANCHOR, $links);
     }
 
     /**

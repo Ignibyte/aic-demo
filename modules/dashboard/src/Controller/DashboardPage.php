@@ -60,7 +60,7 @@ final readonly class DashboardPage implements Page
         }
 
         $items = [
-            new KeyedComponent(DashboardLive::KEY, $this->dashboardLive->parts()),
+            new KeyedComponent(DashboardLive::KEY, $this->dashboardLive->parts(), '', DashboardLive::ANCHOR),
             new KeyedComponent('sales', $this->dashboardCharts->sales()),
             new KeyedComponent('makes', $this->dashboardCharts->makes()),
             new KeyedComponent('salespeople', $this->dashboardCharts->salespeople()),

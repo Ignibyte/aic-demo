@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/Navigation/navigation.phtml by composer run build; edit that file, never this one. */ ?>
-<nav class="flex min-h-screen w-64 flex-col gap-2 bg-base-200 px-2 pt-10" aria-label="Main">
+<nav<?= $renderPass->marks() ?> class="flex min-h-screen w-64 flex-col gap-2 bg-base-200 px-2 pt-10" aria-label="Main">
 <a class="mx-5 font-semibold" href="/"><?= $renderPass->text($navigation->name) ?></a>
-<ul class="menu w-full"><!--t:b--><?php foreach ($navigation->links as $keyedComponent): ?><?= $renderPass->child($keyedComponent, 'Navigation.1:' . $keyedComponent->key()) ?><?php endforeach; ?><!--/t:b--></ul>
+<ul class="menu w-full"><?php foreach ($navigation->links as $keyedComponent): ?><?= $renderPass->child($keyedComponent, 'Navigation.1:' . $keyedComponent->key()) ?><?php endforeach; ?></ul>
 </nav>

@@ -34,21 +34,21 @@ test('back and forward through a filter, a sort and a page restore each URL and 
 
     await page.locator('#filter-status').selectOption('in_stock');
     await page.locator('#inventory-filters').getByRole('button', { name: 'Filter' }).click();
-    await expectTableVisit(requests, steps[0].path);
+    await expectTableVisit(page, requests, steps[0].path);
     await expectStep(steps[0]);
     await page.locator('#vehicles-table thead th', { hasText: 'Price' }).getByRole('link').click();
-    await expectTableVisit(requests, steps[1].path);
+    await expectTableVisit(page, requests, steps[1].path);
     await expectStep(steps[1]);
     await page.locator('#vehicles-pages a', { hasText: /^2$/ }).click();
-    await expectTableVisit(requests, steps[2].path);
+    await expectTableVisit(page, requests, steps[2].path);
     await expectStep(steps[2]);
 
     // Back to the sort and the filter: each entry a change made asks for the table again.
     await page.goBack();
-    await expectTableVisit(requests, steps[1].path);
+    await expectTableVisit(page, requests, steps[1].path);
     await expectStep(steps[1]);
     await page.goBack();
-    await expectTableVisit(requests, steps[0].path);
+    await expectTableVisit(page, requests, steps[0].path);
     await expectStep(steps[0]);
 
     // Back to the list as it opened: its entry asks for the whole document, still fetched and committed in place.
@@ -63,7 +63,7 @@ test('back and forward through a filter, a sort and a page restore each URL and 
     // Forward again through the filter, the sort and the page.
     for (const step of steps) {
         await page.goForward();
-        await expectTableVisit(requests, step.path);
+        await expectTableVisit(page, requests, step.path);
         await expectStep(step);
     }
 

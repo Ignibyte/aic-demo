@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/ConfirmCard/confirm-card.phtml by composer run build; edit that file, never this one. */ ?>
-<div class="card max-w-2xl bg-base-200"><div class="card-body">
+<div<?= $renderPass->marks() ?> class="card max-w-2xl bg-base-200"><div class="card-body">
 <h2 class="card-title"><?= $renderPass->text($confirmCard->title) ?></h2>
 <p class="text-sm"><?= $renderPass->text($confirmCard->detail) ?></p>
 <p><?= $renderPass->text($confirmCard->question) ?></p>

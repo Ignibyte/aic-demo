@@ -23,14 +23,14 @@ final readonly class AssetsPart3
         return [
             new PublicAsset(
                 'tessera/tessera.csp.iife.js.map',
-                '/assets/7029cb7afee178479f2233b8a681d25293ae3e6f6229ce70c54c1a8d7942add8/tessera'
-                    . '-0.1.1/tessera.csp.iife.js.map',
-                '7029cb7afee178479f2233b8a681d25293ae3e6f6229ce70c54c1a8d7942add8/tessera-0.1.1/t'
+                '/assets/4a33b0eaa206400d506228c43d53c56ab8ea41d3b46c6f0bd6aed73cc3f1ea37/tessera'
+                    . '-0.2.0/tessera.csp.iife.js.map',
+                '4a33b0eaa206400d506228c43d53c56ab8ea41d3b46c6f0bd6aed73cc3f1ea37/tessera-0.2.0/t'
                     . 'essera.csp.iife.js.map',
                 'application/json; charset=utf-8',
-                '94711f125575cdcee702dcbfdb3ad5e9e2b201393cfd4eb423ab79c4bf17a2d9',
-                557_030,
-                '/assets/tessera-0.1.1/tessera.csp.iife.js.map',
+                '1a45093dcf371c811b39f62a702a60539a6207fdcd73996047b1c126ad04dc23',
+                548_194,
+                '/assets/tessera-0.2.0/tessera.csp.iife.js.map',
             ),
             ...(new AssetsPart4())->all(),
         ];

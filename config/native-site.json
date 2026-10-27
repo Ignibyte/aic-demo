@@ -909,6 +909,24 @@
             "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:live",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "inventory table, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/inventory?make=Toyota&sort=-price",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "dashboard, a Tessera refresh of the live part by its anchor",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
+            "status": 200,
+            "captures": false
         }
     ]
 }

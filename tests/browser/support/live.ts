@@ -3,6 +3,7 @@ import { checkDigitHolds, literal, sql } from './inventory';
 import { insertCustomer, testCustomer } from './customers';
 import { insertVehicle, testVehicle } from './vehicles';
 import { money } from './dashboard';
+import { anchorPath } from './tessera';
 
 // The gate's user, made by `bin/aic user:add` for each run: the live looks' seller.
 export const login = process.env.AIC_GATE_LOGIN ?? '';
@@ -80,9 +81,8 @@ export async function expectFeed(page: Page): Promise<void> {
     await expect.poll(() => shownFeed(page), { timeout: 10_000 }).toEqual(latestSales());
 }
 
-// The Tessera path of the dashboard's live part, which holds the tiles and the feed and which its poll refreshes: the
-// `content` region, the staff pages' unkeyed grid (`c0`) and its item `live`, as the render pass keys them.
-export const LIVE = 'content/c0/PanelGrid.1:live';
+// The anchor of the dashboard's live part (AIC #188), which holds the tiles and the feed and which its poll refreshes.
+export const LIVE = 'dashboard-live';
 
 // One request the page sent, with its answer once it has finished.
 export interface SentRequest {
@@ -143,10 +143,12 @@ export async function recordPolls(page: Page): Promise<SentRequest[]> {
     return requests;
 }
 
-// Waits until every recorded request has finished, then holds each to a refresh of the live part: a `fetch` GET of the
-// dashboard, answered 200 with that part alone.
-export async function expectRefreshes(requests: SentRequest[]): Promise<void> {
+// Waits until every recorded request has finished, then holds each to a refresh of the live part, by the path its
+// anchor has on the page: a `fetch` GET of the dashboard, answered 200 with that part alone.
+export async function expectRefreshes(page: Page, requests: SentRequest[]): Promise<void> {
     await expect.poll(() => requests.every((request) => request.finished)).toBe(true);
+    const live = await anchorPath(page, LIVE);
+    expect(live).not.toBe('');
 
     for (const request of requests) {
         expect(request).toEqual({
@@ -154,10 +156,10 @@ export async function expectRefreshes(requests: SentRequest[]): Promise<void> {
             method: 'GET',
             path: '/app',
             tesseraRequest: 'refresh',
-            targets: LIVE,
+            targets: live,
             status: 200,
             contentType: expect.stringMatching(/^text\/vnd\.tessera\+html/),
-            templates: [LIVE],
+            templates: [live],
             failure: '',
             finished: true,
         });

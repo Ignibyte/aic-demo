@@ -1,2 +1,2 @@
 <?php declare(strict_types=1); /* Escaped from themes/lotline/components/StatusBadge/status-badge.phtml by composer run build; edit that file, never this one. */ ?>
-<span class="badge <?= $renderPass->text($statusBadge->badgeTone->value) ?>"<?php if ($statusBadge->id !== ''): ?> id="<?= $renderPass->text($statusBadge->id) ?>"<?php endif; ?>><?= $renderPass->text($statusBadge->label) ?></span>
+<span<?= $renderPass->marks() ?> class="badge <?= $renderPass->text($statusBadge->badgeTone->value) ?>"<?php if ($statusBadge->id !== ''): ?> id="<?= $renderPass->text($statusBadge->id) ?>"<?php endif; ?>><?= $renderPass->text($statusBadge->label) ?></span>

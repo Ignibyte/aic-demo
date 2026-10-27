@@ -2,9 +2,10 @@
 number: 13
 title: "Adopt AIC's protocol 1, page titles and anchors"
 type: chore
-status: open
+status: in-review
 created: 2026-10-27T18:00:00Z
-updated: 2026-10-27T18:00:00Z
+updated: 2026-10-27T19:18:47Z
+phase: "docs"
 ---
 
 AIC moved under this branch (operator, before the run): the stable checkout is at AIC `acb7124`,
