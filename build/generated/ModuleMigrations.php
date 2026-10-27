@@ -17,6 +17,6 @@ final readonly class ModuleMigrations
      */
     public function all(): array
     {
-        return [];
+        return (new StaffMigrations())->all();
     }
 }

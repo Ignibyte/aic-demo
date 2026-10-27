@@ -15,6 +15,6 @@ final readonly class ModulePrefixes
      */
     public function all(): array
     {
-        return [];
+        return (new StaffPrefixes())->all();
     }
 }

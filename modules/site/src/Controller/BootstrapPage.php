@@ -46,7 +46,7 @@ final readonly class BootstrapPage implements Page
             $this->appConfig->name,
             'Ridgeway Motors',
             'A dealership operations app is taking shape. Inventory, customers and sales will come together here. '
-                . 'This first foundation page is ready; staff sign-in and daily operations are coming in later updates.',
+                . 'Staff can sign in now; daily operations are coming in later updates.',
             '/health',
         );
 

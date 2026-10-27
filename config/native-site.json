@@ -135,6 +135,69 @@
             "header": "",
             "status": 403,
             "captures": false
+        },
+        {
+            "name": "app, anonymous",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "sign-in page",
+            "method": "GET",
+            "path": "/sign-in?next=%2Fapp",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sign-in, refused password",
+            "method": "POST",
+            "path": "/sign-in",
+            "form": "email=gate&password=wrong&next=%2Fapp&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "sign-in",
+            "method": "POST",
+            "path": "/sign-in",
+            "form": "email=gate&password={password}&next=%2Fapp&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "app, signed in",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sign-out",
+            "method": "POST",
+            "path": "/sign-out",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "app, signed out",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
         }
     ]
 }
