@@ -81,9 +81,10 @@
 }
 
 /*
- * AIC's catalog atoms (forms, fields, inputs, buttons, alerts) render fixed
- * aic-* classes; the site's theme owns their look, so each maps to its
- * daisyUI component here. The CSRF form's honeypot stays out of sight.
+ * AIC's catalog atoms (forms, fields, inputs, buttons, alerts, links) render
+ * fixed aic-* classes; the site's theme owns their look, so each maps to its
+ * daisyUI component here. The CSRF form's honeypot stays out of sight, and a
+ * link in the header (the signed-out "Sign in") is a small ghost button.
  */
 @layer components {
 	.aic-form {
@@ -109,5 +110,8 @@
 	}
 	.aic-honeypot {
 		@apply sr-only;
+	}
+	[data-region="header"] .aic-link {
+		@apply btn btn-ghost btn-sm;
 	}
 }

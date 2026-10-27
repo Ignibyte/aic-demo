@@ -27,6 +27,34 @@
             "method": "POST",
             "module": "site",
             "path": "/theme"
+        },
+        {
+            "handler": "App\\Staff\\Controller\\SignInPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "staff",
+            "path": "/sign-in"
+        },
+        {
+            "handler": "App\\Staff\\Controller\\SignInPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "staff",
+            "path": "/sign-in"
+        },
+        {
+            "handler": "App\\Staff\\Controller\\SignOutPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "staff",
+            "path": "/sign-out"
+        },
+        {
+            "handler": "App\\Staff\\Controller\\StaffHomePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "staff",
+            "path": "/app"
         }
     ],
     "commands": [
@@ -59,6 +87,18 @@
             "kind": "Command",
             "module": "framework",
             "name": "schedule:run"
+        },
+        {
+            "class": "App\\Staff\\Command\\StaffSeed",
+            "kind": "Command",
+            "module": "staff",
+            "name": "staff:seed"
+        },
+        {
+            "class": "App\\Staff\\Command\\UserAdd",
+            "kind": "Command",
+            "module": "staff",
+            "name": "user:add"
         }
     ],
     "jobs": [
@@ -85,6 +125,42 @@
             "namespace": "App\\Site\\",
             "plugins": [],
             "prefixes": [],
+            "requires": []
+        },
+        {
+            "bindings": [
+                {
+                    "class": "App\\Staff\\Repository\\StaffRepository",
+                    "interface": "AIC\\Auth\\Contracts\\UserProvider"
+                },
+                {
+                    "class": "AIC\\Auth\\Application\\PgcryptoPasswordHasher",
+                    "interface": "AIC\\Auth\\Contracts\\PasswordHasher"
+                }
+            ],
+            "blocks": [
+                "App\\Staff\\Block\\AccountMenuBlock"
+            ],
+            "exports": [],
+            "factories": [
+                "App\\Staff\\Service\\AccessRules",
+                "App\\Staff\\Service\\StaffSettings"
+            ],
+            "middleware": [
+                {
+                    "class": "AIC\\Auth\\Application\\RequireAuthenticationMiddleware",
+                    "position": "AfterSession"
+                }
+            ],
+            "migrations": [
+                "App\\Staff\\Migration\\CreateUsersTable"
+            ],
+            "name": "staff",
+            "namespace": "App\\Staff\\",
+            "plugins": [],
+            "prefixes": [
+                "/app"
+            ],
             "requires": []
         }
     ],

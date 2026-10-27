@@ -2,9 +2,10 @@
 number: 3
 title: "Staff sign in, with roles"
 type: feature
-status: open
+status: in-review
 created: 2026-10-26T23:30:00Z
-updated: 2026-10-26T23:30:00Z
+updated: 2026-10-27T05:01:42Z
+phase: "docs"
 ---
 
 Ridgeway Motors' staff sign in to Lotline. Everything under `/app` is for signed-in staff only.

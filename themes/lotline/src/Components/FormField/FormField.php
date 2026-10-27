@@ -16,7 +16,7 @@ final readonly class FormField implements Component
      * @param string $id       The control's id.
      * @param string $name     The field's name.
      * @param string $label    The label.
-     * @param string $type     The input type (`text`, `email`, `number`, `date`, `search`), or `textarea`.
+     * @param string $type     The input type (`text`, `email`, `password`, `number`, `date`, `search`), or `textarea`.
      * @param string $value    The value shown.
      * @param string $error    What is wrong with the value; empty when nothing is.
      * @param bool   $required Whether the browser requires a value.

@@ -15,7 +15,7 @@ final readonly class Page implements Component
 {
     /**
      * @param Region $sidebar The navigation, in the drawer's side.
-     * @param Region $header  The top bar.
+     * @param Region $header  The top bar, then the account menu, in one row.
      * @param Region $content The page's primary content and its stable target.
      * @param Region $footer  The page footer.
      */
