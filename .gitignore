@@ -29,3 +29,6 @@ core.*
 
 # Local editor settings.
 /.phpactor.json
+
+# aic/gates' work directories and tool caches (#130)
+/node_modules/
