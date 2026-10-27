@@ -52,7 +52,7 @@ final readonly class StaffHomePage implements Page
             return new PageRedirect('/sign-in');
         }
 
-        $notice = new Notice('The dashboard, inventory, customers and sales arrive in later updates.', NoticeTone::Info, 'app-coming');
+        $notice = new Notice('The dashboard, customers and sales arrive in later updates.', NoticeTone::Info, 'app-coming');
         $panel = new Panel(
             'welcome',
             'Welcome, ' . $staffMember->name,

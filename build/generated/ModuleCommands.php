@@ -32,8 +32,9 @@ final readonly class ModuleCommands
     public function byName(): array
     {
         return array_merge(
-            (new SiteCommands($this->consoleContext))->byName(),
             (new StaffCommands($this->consoleContext))->byName(),
+            (new InventoryCommands($this->consoleContext))->byName(),
+            (new SiteCommands($this->consoleContext))->byName(),
         );
     }
 }

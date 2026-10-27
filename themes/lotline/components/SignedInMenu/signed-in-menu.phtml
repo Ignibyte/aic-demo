@@ -1,5 +1,5 @@
 <?php /** @var \App\Theme\Components\SignedInMenu\SignedInMenu $signedInMenu */ ?>
 <details class="dropdown dropdown-end">
-<summary class="btn btn-ghost btn-sm" id="account-name"><?= $signedInMenu->name ?></summary>
-<ul class="menu dropdown-content z-10 mt-2 w-64 rounded-box bg-base-100 p-2 shadow-2xl"><li class="menu-title" id="account-role"><?= $signedInMenu->role ?></li><li class="menu-disabled"><span><?= $signedInMenu->email ?></span></li><li class="mt-2"><?= $signedInMenu->signOut ?></li></ul>
+<summary class="btn btn-ghost btn-sm" id="<?= $signedInMenu->id ?>-name"><?= $signedInMenu->name ?></summary>
+<ul class="menu dropdown-content z-10 mt-2 w-64 rounded-box bg-base-100 p-2 shadow-2xl"><li class="menu-title" id="<?= $signedInMenu->id ?>-role"><?= $signedInMenu->role ?></li><li class="menu-disabled"><span><?= $signedInMenu->email ?></span></li><li class="mt-2"><?= $signedInMenu->signOut ?></li></ul>
 </details>

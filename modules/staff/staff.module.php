@@ -7,8 +7,9 @@ declare(strict_types=1);
  * Auth, and everything under /app is theirs alone. The users table and its
  * repository, the sign-in middleware over the protected prefixes, the sign-in
  * and sign-out pages, the first page under /app, the header's account menu,
- * and the user:add and staff:seed commands. The build reads it; nothing reads
- * it at run time.
+ * and the user:add and staff:seed commands. It exports the staff pages'
+ * document and the signed-in member (#4), for the pages and the navigation
+ * other modules add. The build reads it; nothing reads it at run time.
  */
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
@@ -28,6 +29,8 @@ use App\Staff\Controller\StaffHomePage;
 use App\Staff\Migration\CreateUsersTable;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\AccessRules;
+use App\Staff\Service\StaffPages;
+use App\Staff\Service\StaffSession;
 use App\Staff\Service\StaffSettings;
 
 return (new ModuleManifest('staff'))
@@ -44,4 +47,6 @@ return (new ModuleManifest('staff'))
     ->block(AccountMenuBlock::class)
     ->command('user:add', UserAdd::class)
     ->command('staff:seed', StaffSeed::class)
-    ->migration(CreateUsersTable::class);
+    ->migration(CreateUsersTable::class)
+    ->export(StaffPages::class)
+    ->export(StaffSession::class);

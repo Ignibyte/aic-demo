@@ -198,6 +198,87 @@
             "header": "",
             "status": 303,
             "captures": false
+        },
+        {
+            "name": "inventory, anonymous",
+            "method": "GET",
+            "path": "/app/inventory",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "sign-in page, for the inventory",
+            "method": "GET",
+            "path": "/sign-in?next=%2Fapp%2Finventory",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sign-in, for the inventory",
+            "method": "POST",
+            "path": "/sign-in",
+            "form": "email=gate&password={password}&next=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inventory, signed in",
+            "method": "GET",
+            "path": "/app/inventory",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, filtered",
+            "method": "GET",
+            "path": "/app/inventory?q=a&make=Toyota&status=in_stock&min_price=10000&max_price=40000",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, sorted",
+            "method": "GET",
+            "path": "/app/inventory?sort=-price",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, second page",
+            "method": "GET",
+            "path": "/app/inventory?page=2",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, malformed query",
+            "method": "GET",
+            "path": "/app/inventory?q%5B%5D=x&make=Nope&status=lost&min_price=cheap&sort=colour&page=0",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "theme guide, signed in",
+            "method": "GET",
+            "path": "/theme",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
         }
     ]
 }

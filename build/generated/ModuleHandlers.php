@@ -32,8 +32,9 @@ final readonly class ModuleHandlers
     public function byId(): array
     {
         return array_merge(
-            (new SiteHandlers($this->handlerContext))->byId(),
             (new StaffHandlers($this->handlerContext))->byId(),
+            (new InventoryHandlers($this->handlerContext))->byId(),
+            (new SiteHandlers($this->handlerContext))->byId(),
         );
     }
 }

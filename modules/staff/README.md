@@ -2,7 +2,7 @@
 
 Ridgeway Motors' staff sign in to Lotline, and everything under `/app` is theirs alone. The module builds on AIC's Auth: `AIC\Auth\Application\Authenticator` signs a member in and out and keeps their id in the session, `PgcryptoPasswordHasher` hashes passwords with Postgres pgcrypto (bcrypt), and `RequireAuthenticationMiddleware` sends a signed-out visitor to anything under `/app` to `/sign-in?next=…`.
 
-The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `PgcryptoPasswordHasher`, runs the middleware after the session over the `RouteAuthConfig` that the `AccessRules` factory makes (every module's protected prefixes, sign-in at `/sign-in`), and protects `/app`.
+The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `PgcryptoPasswordHasher`, runs the middleware after the session over the `RouteAuthConfig` that the `AccessRules` factory makes (every module's protected prefixes, sign-in at `/sign-in`), and protects `/app`. It exports `StaffPages` (the staff pages' document) and `StaffSession` (who is signed in), which `inventory` and `site`'s navigation use.
 
 ## Data
 
@@ -13,9 +13,9 @@ The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `
 - `GET /sign-in` (`SignInPage`): the form from `SignInForm`, carrying `next`. The email is a text field, so a login such as the gate's `gate` passes the browser.
 - `POST /sign-in` (`SignInPost`): on success a full visit (303) to `next` when it is a path on this site, else to `/app`; a wrong email or password answers the form again as 422 with "Wrong email or password.", the email kept and the password never.
 - `POST /sign-out` (`SignOutPost`): ends the session, a full visit (303) to `/`.
-- `GET /app` (`StaffHomePage`): greets the member by name and role until the dashboard lands.
+- `GET /app` (`StaffHomePage`): greets the member by name and role until the dashboard lands. The inventory list, `/app/inventory`, is the `inventory` module's.
 
-`AccountMenuBlock` puts the account corner in the `header` region on every page, after the page's `TopBar`: the theme's `SignedInMenu` (name, role, email and the sign-out form), or a "Sign in" link. A block takes no services, so `StaffSession` keeps the signed-in member's email, name and role in the session at sign-in, and both the block and `/app` read them there. Signing out clears the whole session.
+`AccountMenuBlock` puts the account corner in the `header` region on every page, after the page's `TopBar`: the theme's `SignedInMenu` (name, role, email and the sign-out form; the block sets its id stem, `account`, so its ids are `account-name`, `account-role`, `sign-out-form` and `sign-out`), or a "Sign in" link. A block takes no services, so `StaffSession` keeps the signed-in member's email, name and role in the session at sign-in, and both the block and `/app` read them there. Signing out clears the whole session.
 
 ## Commands
 

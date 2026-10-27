@@ -1,34 +1,6 @@
 {
     "routes": [
         {
-            "handler": "App\\Site\\Controller\\HealthApi",
-            "kind": "Api",
-            "method": "GET",
-            "module": "site",
-            "path": "/health"
-        },
-        {
-            "handler": "App\\Site\\Controller\\BootstrapPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "site",
-            "path": "/"
-        },
-        {
-            "handler": "App\\Site\\Controller\\ThemeGuidePage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "site",
-            "path": "/theme"
-        },
-        {
-            "handler": "App\\Site\\Controller\\ThemeGuidePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "site",
-            "path": "/theme"
-        },
-        {
             "handler": "App\\Staff\\Controller\\SignInPage",
             "kind": "Page",
             "method": "GET",
@@ -55,6 +27,41 @@
             "method": "GET",
             "module": "staff",
             "path": "/app"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\InventoryListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory"
+        },
+        {
+            "handler": "App\\Site\\Controller\\HealthApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "site",
+            "path": "/health"
+        },
+        {
+            "handler": "App\\Site\\Controller\\BootstrapPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ThemeGuidePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ThemeGuidePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme"
         }
     ],
     "commands": [
@@ -63,6 +70,12 @@
             "kind": "Command",
             "module": "site",
             "name": "db:ping"
+        },
+        {
+            "class": "App\\Inventory\\Command\\InventorySeed",
+            "kind": "Command",
+            "module": "inventory",
+            "name": "inventory:seed"
         },
         {
             "class": "AIC\\Schema\\Application\\MigrateCommand",
@@ -112,22 +125,6 @@
     "schedules": [],
     "modules": [
         {
-            "bindings": [],
-            "blocks": [
-                "App\\Site\\Block\\NavigationBlock",
-                "App\\Site\\Block\\SiteFooterBlock"
-            ],
-            "exports": [],
-            "factories": [],
-            "middleware": [],
-            "migrations": [],
-            "name": "site",
-            "namespace": "App\\Site\\",
-            "plugins": [],
-            "prefixes": [],
-            "requires": []
-        },
-        {
             "bindings": [
                 {
                     "class": "App\\Staff\\Repository\\StaffRepository",
@@ -141,7 +138,10 @@
             "blocks": [
                 "App\\Staff\\Block\\AccountMenuBlock"
             ],
-            "exports": [],
+            "exports": [
+                "App\\Staff\\Service\\StaffPages",
+                "App\\Staff\\Service\\StaffSession"
+            ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
                 "App\\Staff\\Service\\StaffSettings"
@@ -162,6 +162,41 @@
                 "/app"
             ],
             "requires": []
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [
+                "App\\Inventory\\Migration\\CreateVehiclesTable"
+            ],
+            "name": "inventory",
+            "namespace": "App\\Inventory\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [
+                "App\\Site\\Block\\NavigationBlock",
+                "App\\Site\\Block\\SiteFooterBlock"
+            ],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "site",
+            "namespace": "App\\Site\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
         }
     ],
     "theme": {
