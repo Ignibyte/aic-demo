@@ -10,8 +10,9 @@ use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Repository\VehicleRecordRepository;
-use App\Inventory\Service\VehicleNotices;
 use App\Inventory\Service\VehicleRecords;
+use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffNotices;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
@@ -26,15 +27,15 @@ final readonly class VehicleDeletes
      * @param VehicleRecords          $vehicleRecords          The route's vehicle and the 404 and 400 pages.
      * @param VehicleRecordRepository $vehicleRecordRepository Deletes the vehicle.
      * @param VehicleDeleteForm       $vehicleDeleteForm       The delete page.
-     * @param VehicleSeals            $vehicleSeals            Checks the form's envelope.
-     * @param VehicleNotices          $vehicleNotices          Leaves the delete's notice for the list.
+     * @param StaffSeals              $staffSeals              Checks the form's envelope.
+     * @param StaffNotices            $staffNotices            Leaves the delete's notice for the list.
      */
     public function __construct(
         private VehicleRecords $vehicleRecords,
         private VehicleRecordRepository $vehicleRecordRepository,
         private VehicleDeleteForm $vehicleDeleteForm,
-        private VehicleSeals $vehicleSeals,
-        private VehicleNotices $vehicleNotices = new VehicleNotices(),
+        private StaffSeals $staffSeals,
+        private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
 
@@ -76,12 +77,12 @@ final readonly class VehicleDeletes
             return $this->vehicleRecords->missing();
         }
 
-        if (!$this->vehicleSeals->holds($serverRequest, $vehicle->path())) {
+        if (!$this->staffSeals->holds($serverRequest, $vehicle->path())) {
             return $this->vehicleRecords->refused();
         }
 
         if ($vehicle->status !== VehicleStatus::Sold && $this->vehicleRecordRepository->delete($vehicle->vin)) {
-            $this->vehicleNotices->keep($serverRequest, 'Deleted the ' . $vehicle->title() . ', VIN ' . $vehicle->vin . '.');
+            $this->staffNotices->keep($serverRequest, 'Deleted the ' . $vehicle->title() . ', VIN ' . $vehicle->vin . '.');
 
             return new PageRedirect(Vehicle::PAGES);
         }

@@ -8,6 +8,7 @@ use AIC\Controller\Domain\PageDocument;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Repository\VehicleRecordRepository;
+use App\Staff\Service\StaffPanels;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
@@ -24,11 +25,11 @@ final readonly class VehicleRecords
 {
     /**
      * @param VehicleRecordRepository $vehicleRecordRepository Reads a vehicle by its VIN.
-     * @param VehiclePanels           $vehiclePanels           The vehicle pages' frame.
+     * @param StaffPanels             $staffPanels             The vehicle pages' frame.
      */
     public function __construct(
         private VehicleRecordRepository $vehicleRecordRepository,
-        private VehiclePanels $vehiclePanels,
+        private StaffPanels $staffPanels,
     ) {
     }
 
@@ -60,7 +61,7 @@ final readonly class VehicleRecords
     {
         $message = 'No vehicle on the lot has that VIN. It may have been deleted.';
 
-        return $this->vehiclePanels->warning('Vehicle not found', $message, 'vehicle-missing', 'Back to the list', Vehicle::PAGES, 404);
+        return $this->staffPanels->warning('Vehicle not found', $message, 'vehicle-missing', 'Back to the list', Vehicle::PAGES, 404);
     }
 
     /**
@@ -73,7 +74,7 @@ final readonly class VehicleRecords
     {
         $message = 'This form was issued for another vehicle, or it changed on the way, so nothing was saved. Open the vehicle again.';
 
-        return $this->vehiclePanels->warning('Form refused', $message, 'vehicle-refused', 'Back to the list', Vehicle::PAGES, 400);
+        return $this->staffPanels->warning('Form refused', $message, 'vehicle-refused', 'Back to the list', Vehicle::PAGES, 400);
     }
 
     /**

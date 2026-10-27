@@ -50,6 +50,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
+            "App\\Customers\\": "modules/customers/src/",
             "App\\Generated\\": "build/generated/",
             "App\\Inventory\\": "modules/inventory/src/",
             "App\\Site\\": "modules/site/src/",

@@ -21,6 +21,7 @@ final readonly class ModuleMigrations
     {
         return array_merge(
             (new StaffMigrations())->all(),
+            (new CustomersMigrations())->all(),
             (new InventoryMigrations())->all(),
         );
     }

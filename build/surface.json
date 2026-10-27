@@ -29,6 +29,62 @@
             "path": "/app"
         },
         {
+            "handler": "App\\Customers\\Controller\\CustomerListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/new"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "customers",
+            "path": "/app/customers"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/{id:int}"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerEditPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/edit"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerUpdatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "customers",
+            "path": "/app/customers/{id:int}"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerDeletePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/delete"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerDeletePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/delete"
+        },
+        {
             "handler": "App\\Inventory\\Controller\\InventoryListPage",
             "kind": "Page",
             "method": "GET",
@@ -115,6 +171,12 @@
     ],
     "commands": [
         {
+            "class": "App\\Customers\\Command\\CustomersSeed",
+            "kind": "Command",
+            "module": "customers",
+            "name": "customers:seed"
+        },
+        {
             "class": "App\\Site\\Command\\DatabasePing",
             "kind": "Command",
             "module": "site",
@@ -189,7 +251,10 @@
             ],
             "exports": [
                 "App\\Staff\\Service\\StaffPages",
-                "App\\Staff\\Service\\StaffSession"
+                "App\\Staff\\Service\\StaffSession",
+                "App\\Staff\\Service\\StaffPanels",
+                "App\\Staff\\Service\\StaffNotices",
+                "App\\Staff\\Form\\StaffSeals"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -211,6 +276,25 @@
                 "/app"
             ],
             "requires": []
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [
+                "App\\Customers\\Service\\CustomerServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Customers\\Migration\\CreateCustomersTable"
+            ],
+            "name": "customers",
+            "namespace": "App\\Customers\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
         },
         {
             "bindings": [],

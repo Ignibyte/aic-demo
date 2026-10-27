@@ -459,6 +459,186 @@
             "header": "",
             "status": 404,
             "captures": false
+        },
+        {
+            "name": "customers list",
+            "method": "GET",
+            "path": "/app/customers",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customers, a search on page 2",
+            "method": "GET",
+            "path": "/app/customers?q=example&page=2",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customers, malformed query",
+            "method": "GET",
+            "path": "/app/customers?q%5B%5D=x&page=0",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer form",
+            "method": "GET",
+            "path": "/app/customers/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer create, every field refused",
+            "method": "POST",
+            "path": "/app/customers",
+            "form": "name=&email=nope&phone=12&address=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&notes=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "customer create, no token",
+            "method": "POST",
+            "path": "/app/customers",
+            "form": "name=Gate%20Probe&email=gate.probe%40example.test&phone=%28503%29%20555-0199&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "customer create",
+            "method": "POST",
+            "path": "/app/customers",
+            "form": "name=Gate%20Probe&email=gate.probe%40example.test&phone=%28503%29%20555-0199&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
+            "name": "customer create, email taken",
+            "method": "POST",
+            "path": "/app/customers",
+            "form": "name=Gate%20Probe&email=Gate.Probe%40Example.TEST&phone=%28503%29%20555-0199&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "customer page",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer edit form",
+            "method": "GET",
+            "path": "{note}/edit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer update, altered envelope",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Probe&email=gate.probe%40example.test&phone=%28503%29%20555-0199&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "customer update, refused",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=&email=gate.probe%40example.test&phone=%28503%29%20555-0199&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "customer update",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Probe&email=gate.probe%40example.test&phone=%28503%29%20555-0198&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "customer delete page",
+            "method": "GET",
+            "path": "{note}/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer delete, altered envelope",
+            "method": "POST",
+            "path": "{note}/delete",
+            "form": "aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "customer delete",
+            "method": "POST",
+            "path": "{note}/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "customers, after a delete",
+            "method": "GET",
+            "path": "/app/customers",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer page, deleted",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "customer edit form, deleted",
+            "method": "GET",
+            "path": "{note}/edit",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "customer page, unknown id",
+            "method": "GET",
+            "path": "/app/customers/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
         }
     ]
 }

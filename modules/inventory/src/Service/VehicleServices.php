@@ -12,9 +12,10 @@ use App\Inventory\Form\VehicleDeleteForm;
 use App\Inventory\Form\VehicleDeletes;
 use App\Inventory\Form\VehicleForm;
 use App\Inventory\Form\VehicleSaves;
-use App\Inventory\Form\VehicleSeals;
 use App\Inventory\Repository\VehicleRecordRepository;
+use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffPages;
+use App\Staff\Service\StaffPanels;
 
 /**
  * The factory the manifest names for the vehicle record's services: each from the database, the envelope codec and
@@ -41,13 +42,13 @@ final readonly class VehicleServices
     public function vehicleSaves(): VehicleSaves
     {
         $vehicleRecordRepository = $this->repository();
-        $vehiclePanels = $this->panels();
-        $vehicleSeals = new VehicleSeals($this->envelopeCodec);
-        $vehicleForm = new VehicleForm($vehiclePanels, $vehicleSeals);
-        $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $vehiclePanels);
+        $staffPanels = $this->panels();
+        $staffSeals = new StaffSeals($this->envelopeCodec);
+        $vehicleForm = new VehicleForm($staffPanels, $staffSeals);
+        $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $staffPanels);
         $vehicleChecks = new VehicleChecks($vehicleRecordRepository);
 
-        return new VehicleSaves($vehicleRecords, $vehicleRecordRepository, $vehicleChecks, $vehicleForm, $vehicleSeals);
+        return new VehicleSaves($vehicleRecords, $vehicleRecordRepository, $vehicleChecks, $vehicleForm, $staffSeals);
     }
 
     /**
@@ -55,13 +56,13 @@ final readonly class VehicleServices
      */
     public function vehicleDeletes(): VehicleDeletes
     {
-        $vehicleSeals = new VehicleSeals($this->envelopeCodec);
-        $vehiclePanels = $this->panels();
+        $staffSeals = new StaffSeals($this->envelopeCodec);
+        $staffPanels = $this->panels();
         $vehicleRecordRepository = $this->repository();
-        $vehicleDeleteForm = new VehicleDeleteForm($vehiclePanels, $vehicleSeals);
-        $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $vehiclePanels);
+        $vehicleDeleteForm = new VehicleDeleteForm($staffPanels, $staffSeals);
+        $vehicleRecords = new VehicleRecords($vehicleRecordRepository, $staffPanels);
 
-        return new VehicleDeletes($vehicleRecords, $vehicleRecordRepository, $vehicleDeleteForm, $vehicleSeals);
+        return new VehicleDeletes($vehicleRecords, $vehicleRecordRepository, $vehicleDeleteForm, $staffSeals);
     }
 
     /**
@@ -69,9 +70,9 @@ final readonly class VehicleServices
      */
     public function vehicleCards(): VehicleCards
     {
-        $vehiclePanels = $this->panels();
+        $staffPanels = $this->panels();
 
-        return new VehicleCards(new VehicleRecords($this->repository(), $vehiclePanels), $vehiclePanels);
+        return new VehicleCards(new VehicleRecords($this->repository(), $staffPanels), $staffPanels);
     }
 
     /**
@@ -83,10 +84,10 @@ final readonly class VehicleServices
     }
 
     /**
-     * @return VehiclePanels The vehicle pages' frame in the staff pages' document.
+     * @return StaffPanels The vehicle pages' frame in the staff pages' document.
      */
-    private function panels(): VehiclePanels
+    private function panels(): StaffPanels
     {
-        return new VehiclePanels(new StaffPages($this->pageDocuments));
+        return new StaffPanels(new StaffPages($this->pageDocuments), 'vehicle');
     }
 }

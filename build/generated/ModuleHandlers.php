@@ -33,6 +33,8 @@ final readonly class ModuleHandlers
     {
         return array_merge(
             (new StaffHandlers($this->handlerContext))->byId(),
+            (new CustomersHandlers($this->handlerContext))->byId(),
+            (new CustomersHandlersPart2($this->handlerContext))->byId(),
             (new InventoryHandlers($this->handlerContext))->byId(),
             (new InventoryHandlersPart2($this->handlerContext))->byId(),
             (new SiteHandlers($this->handlerContext))->byId(),

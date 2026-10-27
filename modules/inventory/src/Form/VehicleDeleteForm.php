@@ -10,7 +10,8 @@ use AIC\Controller\Domain\PageDocument;
 use AIC\Form\Application\FormTokens;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehicleStatus;
-use App\Inventory\Service\VehiclePanels;
+use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffPanels;
 use App\Theme\Components\ConfirmCard\ConfirmCard;
 use App\Theme\Components\DetailCard\ButtonLink;
 use App\Theme\Components\DetailCard\ButtonTone;
@@ -24,13 +25,13 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class VehicleDeleteForm
 {
     /**
-     * @param VehiclePanels $vehiclePanels The vehicle pages' frame.
-     * @param VehicleSeals  $vehicleSeals  Seals the vehicle's path.
-     * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
+     * @param StaffPanels $staffPanels The vehicle pages' frame.
+     * @param StaffSeals  $staffSeals  Seals the vehicle's path.
+     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
      */
     public function __construct(
-        private VehiclePanels $vehiclePanels,
-        private VehicleSeals $vehicleSeals,
+        private StaffPanels $staffPanels,
+        private StaffSeals $staffSeals,
         private FormTokens $formTokens = new FormTokens(),
     ) {
     }
@@ -51,12 +52,12 @@ final readonly class VehicleDeleteForm
         if ($vehicle->status === VehicleStatus::Sold) {
             $message = 'This vehicle is sold, so it stays on the record and cannot be deleted.';
 
-            return $this->vehiclePanels->warning($title, $message, 'vehicle-sold', 'Back to the vehicle', $vehicle->path(), $status);
+            return $this->staffPanels->warning($title, $message, 'vehicle-sold', 'Back to the vehicle', $vehicle->path(), $status);
         }
 
         $description = 'A deleted vehicle is gone from the lot for good.';
 
-        return $this->vehiclePanels->page($title, 'Delete a vehicle', $description, [
+        return $this->staffPanels->page($title, 'Delete a vehicle', $description, [
             'confirm' => $this->confirmCard($serverRequest, $vehicle, $title),
         ], $status);
     }
@@ -74,7 +75,7 @@ final readonly class VehicleDeleteForm
     {
         $path = $vehicle->path();
         $form = new Form('vehicle-delete-form', $path . '/delete', [
-            $this->vehicleSeals->field($path),
+            $this->staffSeals->field($path),
             new Button('Delete', 'submit', 'vehicle-delete-confirm'),
         ], $this->formTokens->issue($serverRequest)->value());
 

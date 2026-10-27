@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * The customers module's manifest (#6): the people Ridgeway Motors serves.
+ * The customers table, its seed, the searched and paged list, and each
+ * customer's page, form and delete, found by its id, all under /app, which the
+ * staff module's protected prefix keeps to signed-in staff. The build reads
+ * it; nothing reads it at run time.
+ */
+
+use AIC\Module\Contracts\ModuleManifest;
+use AIC\Module\Contracts\RouteMethod;
+use App\Customers\Command\CustomersSeed;
+use App\Customers\Controller\CustomerCreatePost;
+use App\Customers\Controller\CustomerDeletePage;
+use App\Customers\Controller\CustomerDeletePost;
+use App\Customers\Controller\CustomerEditPage;
+use App\Customers\Controller\CustomerListPage;
+use App\Customers\Controller\CustomerNewPage;
+use App\Customers\Controller\CustomerPage;
+use App\Customers\Controller\CustomerUpdatePost;
+use App\Customers\Migration\CreateCustomersTable;
+use App\Customers\Service\CustomerServices;
+
+return (new ModuleManifest('customers'))
+    ->requires('staff')
+    ->route(RouteMethod::Get, '/app/customers', CustomerListPage::class)
+    ->route(RouteMethod::Get, '/app/customers/new', CustomerNewPage::class)
+    ->route(RouteMethod::Post, '/app/customers', CustomerCreatePost::class)
+    ->route(RouteMethod::Get, '/app/customers/{id:int}', CustomerPage::class)
+    ->route(RouteMethod::Get, '/app/customers/{id:int}/edit', CustomerEditPage::class)
+    ->route(RouteMethod::Post, '/app/customers/{id:int}', CustomerUpdatePost::class)
+    ->route(RouteMethod::Get, '/app/customers/{id:int}/delete', CustomerDeletePage::class)
+    ->route(RouteMethod::Post, '/app/customers/{id:int}/delete', CustomerDeletePost::class)
+    ->factory(CustomerServices::class)
+    ->command('customers:seed', CustomersSeed::class)
+    ->migration(CreateCustomersTable::class);

@@ -67,6 +67,8 @@ final readonly class NavigationBlock implements Block
         if ($this->staffSession->member($serverRequest) !== null) {
             $navLink = new NavLink('/app/inventory', 'Inventory', $heroicons->truck(), self::isCurrent('/app/inventory', $path));
             $links[] = new KeyedComponent('inventory', $navLink);
+            $customersLink = new NavLink('/app/customers', 'Customers', $heroicons->users(), self::isCurrent('/app/customers', $path));
+            $links[] = new KeyedComponent('customers', $customersLink);
         }
 
         $links[] = new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path)));
