@@ -15,8 +15,8 @@ use App\Dashboard\Entity\TileFigures;
 /**
  * The dashboard's figures, read from the vehicles, the sales and the staff. Every query counts against the database's
  * `current_date`, so no date is worked out in PHP: "this month" is its calendar month, and "the last twelve months"
- * start on the first day of the month eleven before it. It also reads the sales recorded last, and the sales'
- * fingerprint the live dashboard compares (#10).
+ * start on the first day of the month eleven before it. It also reads the sales recorded last, which the dashboard's
+ * "Latest sales" lists (#10).
  */
 final readonly class DashboardRepository
 {
@@ -72,13 +72,6 @@ final readonly class DashboardRepository
     private const string SALESPEOPLE = 'SELECT u.name AS label, sum(s.price)::integer AS amount'
         . ' FROM sales s JOIN users u ON u.id = s.salesperson_id WHERE s.sold_on >= ' . self::FIRST_MONTH . '::date'
         . ' GROUP BY u.id, u.name ORDER BY amount DESC, u.name';
-
-    /**
-     * The sales' fingerprint: their count, their prices summed and the highest id, joined by hyphens (`412-9876500-468`).
-     * Recording a sale raises the id; voiding one deletes its row, which lowers the count.
-     */
-    private const string FINGERPRINT = "SELECT count(*) || '-' || coalesce(sum(price), 0) || '-' || coalesce(max(id), 0)"
-        . ' AS fingerprint FROM sales';
 
     /**
      * The sales recorded last, the latest first, each with its vehicle's title and the names it carries.
@@ -152,16 +145,6 @@ final readonly class DashboardRepository
     public function salespeople(): array
     {
         return $this->figures(self::SALESPEOPLE);
-    }
-
-    /**
-     * @throws QueryException When the query fails.
-     *
-     * @return string The sales' fingerprint, which changes whenever a sale is recorded or voided.
-     */
-    public function fingerprint(): string
-    {
-        return $this->database->fetchOne(self::FINGERPRINT, [])->string('fingerprint');
     }
 
     /**

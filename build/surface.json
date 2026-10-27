@@ -183,13 +183,6 @@
             "path": "/app"
         },
         {
-            "handler": "App\\Dashboard\\Controller\\DashboardEvents",
-            "kind": "Stream",
-            "method": "GET",
-            "module": "dashboard",
-            "path": "/app/events"
-        },
-        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",

@@ -6,7 +6,6 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
-use App\Dashboard\Controller\DashboardEvents;
 use App\Dashboard\Controller\DashboardPage;
 
 /**
@@ -25,7 +24,6 @@ final readonly class DashboardRoutes
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
-            ->get('/app', DashboardPage::class)
-            ->get('/app/events', DashboardEvents::class);
+            ->get('/app', DashboardPage::class);
     }
 }

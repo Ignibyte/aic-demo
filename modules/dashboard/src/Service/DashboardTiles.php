@@ -22,12 +22,6 @@ final readonly class DashboardTiles
     public const string KEY = 'tiles';
 
     /**
-     * The tiles' Tessera path, which the live dashboard patches (#10): the `content` region, the staff pages' unkeyed
-     * grid (`c0`) and its item `KEY`, as the render pass keys them. It changes if the page moves the tiles.
-     */
-    public const string TARGET = 'content/c0/PanelGrid.1:' . self::KEY;
-
-    /**
      * @param DashboardWords $dashboardWords Writes counts and money.
      */
     public function __construct(
