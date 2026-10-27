@@ -2,9 +2,10 @@
 number: 9
 title: "Tessera: the inventory table refreshes in place"
 type: feature
-status: open
+status: in-review
 created: 2026-10-27T02:00:00Z
-updated: 2026-10-27T02:00:00Z
+updated: 2026-10-27T09:56:18Z
+phase: "docs"
 ---
 
 The inventory list's filters, sorting and pages update only the table through Tessera, the page's

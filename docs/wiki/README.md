@@ -29,6 +29,7 @@ Every component, layout and asset lives in `themes/lotline/` (#153). The page `t
 | `App\Theme\Components\FormActions\FormActions` | `themes/lotline/components/FormActions/form-actions.phtml` |
 | `App\Theme\Components\FormField\FormField` | `themes/lotline/components/FormField/form-field.phtml` |
 | `App\Theme\Components\FormGrid\FormGrid` | `themes/lotline/components/FormGrid/form-grid.phtml` |
+| `App\Theme\Components\FormValue\FormValue` | `themes/lotline/components/FormValue/form-value.phtml` |
 | `App\Theme\Components\Icon\Icon` | `themes/lotline/components/Icon/icon.phtml` |
 | `App\Theme\Components\IconEntry\IconEntry` | `themes/lotline/components/IconEntry/icon-entry.phtml` |
 | `App\Theme\Components\IconLegend\IconLegend` | `themes/lotline/components/IconLegend/icon-legend.phtml` |
@@ -43,6 +44,7 @@ Every component, layout and asset lives in `themes/lotline/` (#153). The page `t
 | `App\Theme\Components\SiteFooter\SiteFooter` | `themes/lotline/components/SiteFooter/site-footer.phtml` |
 | `App\Theme\Components\StatTiles\StatTiles` | `themes/lotline/components/StatTiles/stat-tiles.phtml` |
 | `App\Theme\Components\StatusBadge\StatusBadge` | `themes/lotline/components/StatusBadge/status-badge.phtml` |
+| `App\Theme\Components\TableResults\TableResults` | `themes/lotline/components/TableResults/table-results.phtml` |
 | `App\Theme\Components\TableRow\TableRow` | `themes/lotline/components/TableRow/table-row.phtml` |
 | `App\Theme\Components\TopBar\TopBar` | `themes/lotline/components/TopBar/top-bar.phtml` |
 

@@ -9,8 +9,10 @@ use App\Inventory\Entity\Vehicle;
 use App\Inventory\Form\InventoryQuery;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
+use App\Theme\Components\FormValue\FormValue;
 use App\Theme\Components\Pagination\PageLink;
 use App\Theme\Components\Pagination\Pagination;
+use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableRow\TableCell;
 use App\Theme\Components\TableRow\TableRow;
 use InvalidArgumentException;
@@ -18,15 +20,17 @@ use InvalidArgumentException;
 use function number_format;
 
 /**
- * The inventory list's table and pages: a row per vehicle on the page, heads that sort (a second click on the sorted
- * one reverses it) and a link per page, each link keeping the search and filters. Tessera answers them in `content`.
+ * The inventory list's results: a row per vehicle on the page, heads that sort (a second click on the sorted one
+ * reverses it), a link per page, each link keeping the search and filters, and the sort the filter form sends. Tessera
+ * answers a filter, a sort or a page with them alone.
  */
 final readonly class InventoryTable
 {
     /**
-     * The regions a sort or a page updates.
+     * The results' Tessera path: the `content` region, the staff pages' unkeyed grid in it (`c0`), the grid's panel
+     * `vehicles` and the panel's part `table`, each loop's key as the render pass writes it.
      */
-    private const string TARGET = 'content';
+    public const string TARGET = 'content/c0/PanelGrid.1:vehicles/Panel.1:table';
 
     /**
      * @param InventoryLinks  $inventoryLinks  Writes the links.
@@ -47,9 +51,40 @@ final readonly class InventoryTable
      *
      * @throws InvalidArgumentException When a key is malformed.
      *
+     * @return TableResults The sort the filter form sends, the table and, past one page, the pages.
+     */
+    public function results(
+        InventoryQuery $inventoryQuery,
+        array $vehicles,
+        int $count,
+        int $page,
+        int $pages,
+    ): TableResults {
+        $sort = $this->inventoryLinks->sortValue($inventoryQuery->sort, $inventoryQuery->descending);
+        $parts = [
+            new KeyedComponent('sort', new FormValue(InventoryFilters::FORM, 'sort', $sort)),
+            new KeyedComponent('table', $this->table($inventoryQuery, $vehicles, $count, $page, $pages)),
+        ];
+
+        if ($pages > 1) {
+            $parts[] = new KeyedComponent('pages', $this->pagination($inventoryQuery, $page, $pages));
+        }
+
+        return new TableResults($parts);
+    }
+
+    /**
+     * @param InventoryQuery $inventoryQuery What the list was asked for.
+     * @param list<Vehicle>  $vehicles       The page's vehicles.
+     * @param int            $count          How many vehicles match.
+     * @param int            $page           The page shown.
+     * @param int            $pages          How many pages there are.
+     *
+     * @throws InvalidArgumentException When a key is malformed.
+     *
      * @return DataTable The page's rows under the heads, or the empty line.
      */
-    public function table(
+    private function table(
         InventoryQuery $inventoryQuery,
         array $vehicles,
         int $count,
@@ -75,7 +110,7 @@ final readonly class InventoryTable
      *
      * @return Pagination A link per page, keeping the search, the filters and the sort.
      */
-    public function pagination(InventoryQuery $inventoryQuery, int $page, int $pages): Pagination
+    private function pagination(InventoryQuery $inventoryQuery, int $page, int $pages): Pagination
     {
         $links = [];
 

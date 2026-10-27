@@ -864,6 +864,33 @@
             "header": "",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "inventory table, a Tessera fragment",
+            "method": "GET",
+            "path": "/app/inventory?make=Toyota&sort=-price",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:table",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory table, a Tessera fragment at page 2",
+            "method": "GET",
+            "path": "/app/inventory?status=in_stock&sort=price&page=2",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:table",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, a Tessera visit to a missing component",
+            "method": "GET",
+            "path": "/app/inventory",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:nope",
+            "status": 200,
+            "captures": false
         }
     ]
 }

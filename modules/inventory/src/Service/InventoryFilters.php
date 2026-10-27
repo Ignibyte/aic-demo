@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Inventory\Service;
 
-use AIC\Component\Domain\HiddenInput;
 use AIC\Component\Domain\KeyedComponent;
 use App\Inventory\Form\InventoryQuery;
 use App\Theme\Components\FilterBar\FilterBar;
@@ -15,17 +14,21 @@ use InvalidArgumentException;
 
 /**
  * The inventory list's filter bar: the search, the make and status selects and the price range, each showing what was
- * asked, with the sort kept in a hidden field. It is a plain GET form, which Tessera answers in `content`.
+ * asked. It is a plain GET form, which Tessera answers with the results alone; the sort it sends sits in the results
+ * (`InventoryTable`), tied to the form by its id, so a sort that swaps only them keeps it current.
  */
 final readonly class InventoryFilters
 {
     /**
+     * The form's id.
+     */
+    public const string FORM = 'inventory-filters';
+
+    /**
      * @param VehicleStatuses $vehicleStatuses The statuses to offer.
-     * @param InventoryLinks  $inventoryLinks  Writes the kept sort.
      */
     public function __construct(
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
-        private InventoryLinks $inventoryLinks = new InventoryLinks(),
     ) {
     }
 
@@ -42,15 +45,13 @@ final readonly class InventoryFilters
         $formField = new FormField('filter-q', 'q', 'Search', 'search', $inventoryQuery->search, '', false, true);
         $make = new SelectField('filter-make', 'make', 'Make', 'Every make', $this->makes($inventoryQuery, $makes), '', true);
         $status = new SelectField('filter-status', 'status', 'Status', 'Every status', $this->statuses($inventoryQuery), '', true);
-        $sort = $this->inventoryLinks->sortValue($inventoryQuery->sort, $inventoryQuery->descending);
 
-        return new FilterBar('inventory-filters', InventoryLinks::PATH, 'content', [
+        return new FilterBar(self::FORM, InventoryLinks::PATH, InventoryTable::TARGET, [
             new KeyedComponent('q', $formField),
             new KeyedComponent('make', $make),
             new KeyedComponent('status', $status),
             new KeyedComponent('min_price', $this->price('min-price', 'min_price', 'Price from', $inventoryQuery->minPrice)),
             new KeyedComponent('max_price', $this->price('max-price', 'max_price', 'Price to', $inventoryQuery->maxPrice)),
-            new KeyedComponent('sort', new HiddenInput('sort', $sort)),
         ], InventoryLinks::PATH);
     }
 
