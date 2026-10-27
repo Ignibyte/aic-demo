@@ -10,7 +10,8 @@ use AIC\Component\Domain\Form;
 use AIC\Controller\Domain\PageDocument;
 use AIC\Form\Application\FormTokens;
 use App\Inventory\Entity\Vehicle;
-use App\Inventory\Service\VehiclePanels;
+use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffPanels;
 use App\Theme\Components\FormActions\FormActions;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,14 +23,14 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class VehicleForm
 {
     /**
-     * @param VehiclePanels $vehiclePanels The vehicle pages' frame.
-     * @param VehicleSeals  $vehicleSeals  Seals the edited vehicle's path.
+     * @param StaffPanels   $staffPanels   The vehicle pages' frame.
+     * @param StaffSeals    $staffSeals    Seals the edited vehicle's path.
      * @param VehicleFields $vehicleFields The grid of fields.
      * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
      */
     public function __construct(
-        private VehiclePanels $vehiclePanels,
-        private VehicleSeals $vehicleSeals,
+        private StaffPanels $staffPanels,
+        private StaffSeals $staffSeals,
         private VehicleFields $vehicleFields = new VehicleFields(),
         private FormTokens $formTokens = new FormTokens(),
     ) {
@@ -68,11 +69,11 @@ final readonly class VehicleForm
         // Each branch spreads the alerts alone: elephc's build of the site answered 500 when a second list was spread
         // after them (gate:23). No AIC ticket carries this yet.
         $fields = $editing
-            ? [...$alerts, $this->vehicleSeals->field($path), $grid, $formActions]
+            ? [...$alerts, $this->staffSeals->field($path), $grid, $formActions]
             : [...$alerts, $grid, $formActions];
         $form = new Form('vehicle-form', $path, $fields, $this->formTokens->issue($serverRequest)->value());
         $description = "Prices are whole dollars. The cost stays off the vehicle's page.";
 
-        return $this->vehiclePanels->page($title, $title, $description, ['form' => $form], $status);
+        return $this->staffPanels->page($title, $title, $description, ['form' => $form], $status);
     }
 }

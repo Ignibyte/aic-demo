@@ -9,6 +9,7 @@ use AIC\Component\Domain\Link;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Repository\VehicleRepository;
+use App\Staff\Service\StaffNotices;
 use App\Theme\Components\Panel\Panel;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,14 +33,14 @@ final readonly class InventoryList
      * @param InventoryQueries  $inventoryQueries  Reads what the list is asked for.
      * @param InventoryFilters  $inventoryFilters  The filter bar.
      * @param InventoryTable    $inventoryTable    The table and the pages.
-     * @param VehicleNotices    $vehicleNotices    The last delete's notice.
+     * @param StaffNotices      $staffNotices      The last delete's notice.
      */
     public function __construct(
         private VehicleRepository $vehicleRepository,
         private InventoryQueries $inventoryQueries = new InventoryQueries(),
         private InventoryFilters $inventoryFilters = new InventoryFilters(),
         private InventoryTable $inventoryTable = new InventoryTable(),
-        private VehicleNotices $vehicleNotices = new VehicleNotices(),
+        private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
 
@@ -64,7 +65,7 @@ final readonly class InventoryList
         $vehicles = $this->vehicleRepository->page($inventoryQuery, self::PAGE, ($page - 1) * self::PAGE);
         $body = [];
 
-        foreach ($this->vehicleNotices->take($serverRequest, 'inventory-notice') as $key => $notice) {
+        foreach ($this->staffNotices->take($serverRequest, 'inventory-notice') as $key => $notice) {
             $body[] = new KeyedComponent($key, $notice);
         }
 

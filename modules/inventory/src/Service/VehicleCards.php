@@ -7,6 +7,8 @@ namespace App\Inventory\Service;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
+use App\Staff\Service\StaffNotices;
+use App\Staff\Service\StaffPanels;
 use App\Theme\Components\DetailCard\ButtonLink;
 use App\Theme\Components\DetailCard\ButtonTone;
 use App\Theme\Components\DetailCard\DetailCard;
@@ -25,15 +27,15 @@ final readonly class VehicleCards
 {
     /**
      * @param VehicleRecords  $vehicleRecords  The route's vehicle and the 404 page.
-     * @param VehiclePanels   $vehiclePanels   The vehicle pages' frame.
+     * @param StaffPanels     $staffPanels     The vehicle pages' frame.
      * @param VehicleStatuses $vehicleStatuses Gives the status its badge.
-     * @param VehicleNotices  $vehicleNotices  The last save's notice.
+     * @param StaffNotices    $staffNotices    The last save's notice.
      */
     public function __construct(
         private VehicleRecords $vehicleRecords,
-        private VehiclePanels $vehiclePanels,
+        private StaffPanels $staffPanels,
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
-        private VehicleNotices $vehicleNotices = new VehicleNotices(),
+        private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
 
@@ -48,16 +50,17 @@ final readonly class VehicleCards
      */
     public function page(ServerRequestInterface $serverRequest): PageResponse
     {
+        // The notice is taken first, so a save whose vehicle went before its 303 landed leaves nothing behind.
+        $body = $this->staffNotices->take($serverRequest, 'vehicle-notice');
         $vehicle = $this->vehicleRecords->find($serverRequest);
 
         if (!$vehicle instanceof Vehicle) {
             return $this->vehicleRecords->missing();
         }
 
-        $body = $this->vehicleNotices->take($serverRequest, 'vehicle-notice');
         $body['card'] = $this->card($vehicle);
 
-        return $this->vehiclePanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, 200);
+        return $this->staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, 200);
     }
 
     /**

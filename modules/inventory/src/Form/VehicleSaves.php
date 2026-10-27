@@ -9,8 +9,9 @@ use AIC\Controller\Domain\PageRedirect;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Repository\VehicleRecordRepository;
-use App\Inventory\Service\VehicleNotices;
 use App\Inventory\Service\VehicleRecords;
+use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffNotices;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
@@ -27,18 +28,18 @@ final readonly class VehicleSaves
      * @param VehicleRecordRepository $vehicleRecordRepository Saves the vehicle.
      * @param VehicleChecks           $vehicleChecks           Checks the form.
      * @param VehicleForm             $vehicleForm             The form's page.
-     * @param VehicleSeals            $vehicleSeals            Checks an edit form's envelope.
+     * @param StaffSeals              $staffSeals              Checks an edit form's envelope.
      * @param VehicleEntries          $vehicleEntries          Fills the form.
-     * @param VehicleNotices          $vehicleNotices          Leaves the save's notice.
+     * @param StaffNotices            $staffNotices            Leaves the save's notice.
      */
     public function __construct(
         private VehicleRecords $vehicleRecords,
         private VehicleRecordRepository $vehicleRecordRepository,
         private VehicleChecks $vehicleChecks,
         private VehicleForm $vehicleForm,
-        private VehicleSeals $vehicleSeals,
+        private StaffSeals $staffSeals,
         private VehicleEntries $vehicleEntries = new VehicleEntries(),
-        private VehicleNotices $vehicleNotices = new VehicleNotices(),
+        private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
 
@@ -124,7 +125,7 @@ final readonly class VehicleSaves
 
         $path = $current->path();
 
-        if (!$this->vehicleSeals->holds($serverRequest, $path)) {
+        if (!$this->staffSeals->holds($serverRequest, $path)) {
             return $this->vehicleRecords->refused();
         }
 
@@ -185,7 +186,7 @@ final readonly class VehicleSaves
      */
     private function saved(ServerRequestInterface $serverRequest, Vehicle $vehicle, string $message): PageRedirect
     {
-        $this->vehicleNotices->keep($serverRequest, $message);
+        $this->staffNotices->keep($serverRequest, $message);
 
         return new PageRedirect($vehicle->path());
     }

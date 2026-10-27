@@ -24,6 +24,7 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
+                <element key="modules/customers/src" value="App\Customers"/>
                 <element key="modules/inventory/src" value="App\Inventory"/>
                 <element key="modules/site/src" value="App\Site"/>
                 <element key="modules/staff/src" value="App\Staff"/>

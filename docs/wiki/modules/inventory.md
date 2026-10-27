@@ -106,7 +106,6 @@ none
 | `App\Inventory\Form\VehicleFields` | [modules/inventory/src/Form/VehicleFields.php](../../../modules/inventory/src/Form/VehicleFields.php) |
 | `App\Inventory\Form\VehicleForm` | [modules/inventory/src/Form/VehicleForm.php](../../../modules/inventory/src/Form/VehicleForm.php) |
 | `App\Inventory\Form\VehicleSaves` | [modules/inventory/src/Form/VehicleSaves.php](../../../modules/inventory/src/Form/VehicleSaves.php) |
-| `App\Inventory\Form\VehicleSeals` | [modules/inventory/src/Form/VehicleSeals.php](../../../modules/inventory/src/Form/VehicleSeals.php) |
 
 ### `src/Migration/`
 
@@ -132,8 +131,6 @@ none
 | `App\Inventory\Service\InventoryTable` | [modules/inventory/src/Service/InventoryTable.php](../../../modules/inventory/src/Service/InventoryTable.php) |
 | `App\Inventory\Service\SeedVehicles` | [modules/inventory/src/Service/SeedVehicles.php](../../../modules/inventory/src/Service/SeedVehicles.php) |
 | `App\Inventory\Service\VehicleCards` | [modules/inventory/src/Service/VehicleCards.php](../../../modules/inventory/src/Service/VehicleCards.php) |
-| `App\Inventory\Service\VehicleNotices` | [modules/inventory/src/Service/VehicleNotices.php](../../../modules/inventory/src/Service/VehicleNotices.php) |
-| `App\Inventory\Service\VehiclePanels` | [modules/inventory/src/Service/VehiclePanels.php](../../../modules/inventory/src/Service/VehiclePanels.php) |
 | `App\Inventory\Service\VehicleRecords` | [modules/inventory/src/Service/VehicleRecords.php](../../../modules/inventory/src/Service/VehicleRecords.php) |
 | `App\Inventory\Service\VehicleRows` | [modules/inventory/src/Service/VehicleRows.php](../../../modules/inventory/src/Service/VehicleRows.php) |
 | `App\Inventory\Service\VehicleServices` | [modules/inventory/src/Service/VehicleServices.php](../../../modules/inventory/src/Service/VehicleServices.php) |
@@ -150,13 +147,12 @@ none
 - [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 - [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
-- [AIC\Session](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 
 ### Other modules
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Service\StaffPages` |
+| [staff](staff.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels` |
 
 ## Used by
 

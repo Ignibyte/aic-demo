@@ -9,7 +9,9 @@ declare(strict_types=1);
  * and sign-out pages, the first page under /app, the header's account menu,
  * and the user:add and staff:seed commands. It exports the staff pages'
  * document and the signed-in member (#4), for the pages and the navigation
- * other modules add. The build reads it; nothing reads it at run time.
+ * other modules add, and a record page's panel, its one-time notice and the
+ * envelope sealing its path (#6), which inventory and customers share. The
+ * build reads it; nothing reads it at run time.
  */
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
@@ -26,10 +28,13 @@ use App\Staff\Controller\SignInPage;
 use App\Staff\Controller\SignInPost;
 use App\Staff\Controller\SignOutPost;
 use App\Staff\Controller\StaffHomePage;
+use App\Staff\Form\StaffSeals;
 use App\Staff\Migration\CreateUsersTable;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\AccessRules;
+use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPages;
+use App\Staff\Service\StaffPanels;
 use App\Staff\Service\StaffSession;
 use App\Staff\Service\StaffSettings;
 
@@ -49,4 +54,7 @@ return (new ModuleManifest('staff'))
     ->command('staff:seed', StaffSeed::class)
     ->migration(CreateUsersTable::class)
     ->export(StaffPages::class)
-    ->export(StaffSession::class);
+    ->export(StaffSession::class)
+    ->export(StaffPanels::class)
+    ->export(StaffNotices::class)
+    ->export(StaffSeals::class);

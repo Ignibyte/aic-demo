@@ -39,6 +39,8 @@ Each vehicle's pages are found by its VIN, not its numeric `id`: gate:23 replays
 | `GET /app/inventory/{vin}/delete` | `VehicleDeletePage` | The `ConfirmCard`: Delete, or Keep it back to the vehicle. A sold vehicle gets a warning `Notice` and no form. |
 | `POST /app/inventory/{vin}/delete` | `VehicleDeletePost` | 303 to the list; 422 for a sold vehicle; 400 for the envelope. |
 
+Every vehicle page is one wide `vehicle` panel in the staff pages' document, framed by `staff`'s `StaffPanels`, which `VehicleServices` builds with that id stem; the 404, 400 and sold pages are its warning page.
+
 The form (`VehicleForm`, its grid from `VehicleFields`) is AIC's `Form` atom around the theme's `FormGrid` of `FormField`s and the status `SelectField`, then `FormActions`. No field is browser-required, so every post reaches `VehicleChecks`:
 
 - the VIN: 17 letters and digits without I, O or Q (taken in capitals), its ISO 3779 check digit right (`Vins::checkDigit()`; the message names the digit it should be), and no other vehicle holding it;
@@ -47,9 +49,9 @@ The form (`VehicleForm`, its grid from `VehicleFields`) is AIC's `Form` atom aro
 - mileage, list price and cost: whole numbers from 0, one to seven digits;
 - the status: one of the three; the day it came onto the lot: a real `YYYY-MM-DD`.
 
-A refusal answers 422 with the error alert above the fields, each message beside its field, and every value as typed. The create's insert skips a VIN taken since the check (`ON CONFLICT DO NOTHING`), and an update that meets one on the unique key finds it taken; both answer that refusal too; the delete's statement keeps a sold row whatever the page said. A save or a delete leaves one line in the session (`VehicleNotices`) for the page it redirects to, which shows it as a success `Notice` and clears it.
+A refusal answers 422 with the error alert above the fields, each message beside its field, and every value as typed. The create's insert skips a VIN taken since the check (`ON CONFLICT DO NOTHING`), and an update that meets one on the unique key finds it taken; both answer that refusal too; the delete's statement keeps a sold row whatever the page said. A save or a delete leaves one line in the session (`StaffNotices`, the `staff` module's, which customers share) for the page it redirects to, which shows it as a success `Notice` and clears it.
 
-The edit and delete forms carry AIC's signed envelope sealing the vehicle's path (`VehicleSeals`, over `EnvelopeCodec`). A post whose envelope is missing, altered or sealed for another vehicle's path answers 400 and changes nothing, so a form issued for one vehicle cannot change or delete another. The CSRF token and honeypot are the `Form` atom's.
+The edit and delete forms carry AIC's signed envelope sealing the vehicle's path (`StaffSeals`, over `EnvelopeCodec`, from `staff` too). A post whose envelope is missing, altered or sealed for another vehicle's path answers 400 and changes nothing, so a form issued for one vehicle cannot change or delete another. The CSRF token and honeypot are the `Form` atom's.
 
 ## Seed
 

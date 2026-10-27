@@ -2,29 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Inventory\Service;
+namespace App\Staff\Service;
 
 use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Component\Domain\Link;
 use AIC\Controller\Domain\PageDocument;
-use App\Staff\Service\StaffPages;
 use App\Theme\Components\Notice\Notice;
 use App\Theme\Components\Notice\NoticeTone;
 use App\Theme\Components\Panel\Panel;
 use InvalidArgumentException;
 
 /**
- * The vehicle pages' frame: one wide panel in the staff pages' document, and the page a refusal shows in it, a
- * warning and a link on.
+ * A record's pages' frame: one wide panel in the staff pages' document, and the page a refusal shows in it, a warning
+ * and a link on. Each module builds its own with its panel's id stem (`vehicle`, `customer`).
  */
-final readonly class VehiclePanels
+final readonly class StaffPanels
 {
     /**
      * @param StaffPages $staffPages The staff pages' document.
+     * @param string     $id         The panel's id stem and key.
      */
     public function __construct(
         private StaffPages $staffPages,
+        private string $id,
     ) {
     }
 
@@ -47,9 +48,9 @@ final readonly class VehiclePanels
             $keyed[] = new KeyedComponent($key, $component);
         }
 
-        $panel = new Panel('vehicle', $heading, $description, true, $keyed);
+        $panel = new Panel($this->id, $heading, $description, true, $keyed);
 
-        return $this->staffPages->page($title, [new KeyedComponent('vehicle', $panel)], $status);
+        return $this->staffPages->page($title, [new KeyedComponent($this->id, $panel)], $status);
     }
 
     /**

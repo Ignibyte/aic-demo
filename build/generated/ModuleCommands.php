@@ -33,6 +33,7 @@ final readonly class ModuleCommands
     {
         return array_merge(
             (new StaffCommands($this->consoleContext))->byName(),
+            (new CustomersCommands($this->consoleContext))->byName(),
             (new InventoryCommands($this->consoleContext))->byName(),
             (new SiteCommands($this->consoleContext))->byName(),
         );
