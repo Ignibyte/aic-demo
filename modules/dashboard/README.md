@@ -4,7 +4,7 @@
 
 ## The page
 
-`GET /app` (`DashboardPage`) reads the member from `StaffSession` (303 to `/sign-in` when the session holds none) and hands `StaffPages` the greeting, "Welcome, {name}", as the top bar's title and "{role} at Ridgeway Motors" as the line under it. Under the header, the `PanelGrid` holds, keyed `tiles`, `feed`, `sales`, `makes` and `salespeople`:
+`GET /app` (`DashboardPage`) reads the member from `StaffSession` (303 to `/sign-in` when the session holds none) and hands `StaffPages` the greeting, "Welcome, {name}", as the top bar's title, "{role} at Ridgeway Motors" as the line under it, and `Dashboard` as the document's title (`Dashboard · Lotline`), since the greeting names the member, not the page. Under the header, the `PanelGrid` holds, keyed `tiles`, `feed`, `sales`, `makes` and `salespeople`:
 
 - the theme's `StatTiles` `dashboard-tiles` ("This month on the lot"), built by `DashboardTiles`: `tile-in-stock`, the vehicles in stock, with how many more are on hold; `tile-sales` and `tile-revenue`, this month's sales and the sum of their prices, each with last month's under it; and `tile-days`, the average days the vehicles not sold have been on the lot, rounded, with how many vehicles that covers;
 - the wide panel `feed`, "Latest sales", built by `DashboardFeed`: the theme's `LiveParts` (keyed `live`), which names the stream, around the `DataTable` `sales-feed` (keyed `list`), a row for each of the five sales recorded last, the latest first, by id: the day, linked to the sale's page; the vehicle's title; the customer; the salesperson; and the price;
