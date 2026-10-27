@@ -11,7 +11,6 @@ use AIC\Module\Application\HandlerContext;
 use App\Staff\Controller\SignInPage;
 use App\Staff\Controller\SignInPost;
 use App\Staff\Controller\SignOutPost;
-use App\Staff\Controller\StaffHomePage;
 use App\Staff\Form\SignInForm;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\StaffPages;
@@ -48,7 +47,6 @@ final readonly class StaffHandlers
             SignInPage::class => $this->handlerContext->page(new SignInPage($signInForm)),
             SignInPost::class => $this->handlerContext->page(new SignInPost($signInForm, $authenticator, $staffRepository)),
             SignOutPost::class => $this->handlerContext->page(new SignOutPost($authenticator)),
-            StaffHomePage::class => $this->handlerContext->page(new StaffHomePage($staffPages)),
         ];
     }
 }

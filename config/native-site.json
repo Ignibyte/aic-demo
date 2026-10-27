@@ -855,6 +855,15 @@
             "header": "",
             "status": 303,
             "captures": false
+        },
+        {
+            "name": "dashboard, signed in",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
         }
     ]
 }
