@@ -909,6 +909,15 @@
             "header": "Tessera-Request: stream\r\nTessera-Protocol: 0\r\nLast-Event-ID: 0-0-1",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "navigation, a sidebar visit to the customers",
+            "method": "GET",
+            "path": "/app/customers",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 0\r\nTessera-Layout: lotline\r\nTessera-Targets: sidebar",
+            "status": 200,
+            "captures": false
         }
     ]
 }

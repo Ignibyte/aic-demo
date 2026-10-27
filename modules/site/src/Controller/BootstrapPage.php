@@ -53,6 +53,8 @@ final readonly class BootstrapPage implements Page
         return $this->pageDocuments->page(
             new Regions([new Region('header', [new TopBar('Dashboard')]), new Region('content', [$bootstrapIntro])]),
             200,
+            null,
+            'Dashboard',
         );
     }
 }

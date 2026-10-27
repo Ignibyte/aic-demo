@@ -66,6 +66,6 @@ final readonly class ThemeGuidePost implements Page
         return $this->pageDocuments->page(new Regions([
             new Region('header', [new TopBar('Theme')]),
             new Region('content', $this->themeSamples->content($serverRequest, $themeEntry, $problems)),
-        ]), 422);
+        ]), 422, null, 'Theme');
     }
 }

@@ -47,6 +47,8 @@ final readonly class ThemeGuidePage implements Page
         return $this->pageDocuments->page(
             new Regions([new Region('header', [new TopBar('Theme')]), new Region('content', $content)]),
             200,
+            null,
+            'Theme',
         );
     }
 }

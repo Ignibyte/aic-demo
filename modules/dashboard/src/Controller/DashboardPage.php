@@ -84,6 +84,7 @@ final readonly class DashboardPage implements Page
             $items,
             200,
             $staffMember->role->label() . ' at Ridgeway Motors',
+            'Dashboard',
         );
     }
 }
