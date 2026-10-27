@@ -6,11 +6,10 @@ namespace App\Sales\Controller;
 
 use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
-use AIC\Database\Contracts\QueryException;
 use App\Sales\Form\SaleVoids;
-use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * POST /app/sales/{id}/void: removes the sale and puts its vehicle back in stock, then goes to the vehicle (303); 400
@@ -29,8 +28,8 @@ final readonly class SaleVoidPost implements Page
     /**
      * @param ServerRequestInterface $serverRequest The posted form, with its session.
      *
-     * @throws QueryException When the sale cannot be read or voided.
-     * @throws LogicException When the request has no session, or a key does not fit the theme.
+     * @throws Throwable When the sale cannot be read or voided (the transaction rolled back), the request has no session,
+     *                   or a key does not fit the theme.
      *
      * @return PageResponse 303 to the vehicle, 400 or 404.
      */

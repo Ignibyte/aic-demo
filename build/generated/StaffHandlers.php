@@ -7,6 +7,7 @@ namespace App\Generated;
 use AIC\Auth\Application\Authenticator;
 use AIC\Auth\Application\PgcryptoPasswordHasher;
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Staff\Controller\SignInPage;
 use App\Staff\Controller\SignInPost;
@@ -39,7 +40,8 @@ final readonly class StaffHandlers
     {
         $staffPages = new StaffPages($this->handlerContext->documents());
         $signInForm = new SignInForm($staffPages);
-        $staffRepository = new StaffRepository($this->handlerContext->database());
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $staffRepository = new StaffRepository($entityStore);
         $pgcryptoPasswordHasher = new PgcryptoPasswordHasher($this->handlerContext->database());
         $authenticator = new Authenticator($staffRepository, $pgcryptoPasswordHasher);
 

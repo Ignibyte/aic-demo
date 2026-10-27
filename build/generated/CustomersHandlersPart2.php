@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Customers\Controller\CustomerDeletePost;
-use App\Customers\Service\CustomerPurchases;
-use App\Customers\Service\CustomerServices;
+use App\Customers\Controller\CustomerListPage;
+use App\Customers\Repository\CustomerRepository;
+use App\Customers\Service\CustomerList;
+use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -32,15 +34,12 @@ final readonly class CustomersHandlersPart2
      */
     public function byId(): array
     {
-        $customerServices = new CustomerServices(
-            $this->handlerContext->database(),
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->documents(),
-            $this->handlerContext->tagged(CustomerPurchases::class),
-        );
+        $customerRepository = new CustomerRepository(new EntityStore($this->handlerContext->database()));
 
         return [
-            CustomerDeletePost::class => $this->handlerContext->page(new CustomerDeletePost($customerServices->customerDeletes())),
+            CustomerListPage::class => $this->handlerContext->page(
+                new CustomerListPage(new StaffPages($this->handlerContext->documents()), new CustomerList($customerRepository)),
+            ),
         ];
     }
 }

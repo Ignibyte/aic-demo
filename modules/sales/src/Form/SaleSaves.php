@@ -6,7 +6,6 @@ namespace App\Sales\Form;
 
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageRedirect;
-use AIC\Database\Contracts\QueryException;
 use App\Sales\Entity\Sale;
 use App\Sales\Entity\SaleDetails;
 use App\Sales\Entity\SaleVehicle;
@@ -14,8 +13,8 @@ use App\Sales\Repository\SaleChoiceRepository;
 use App\Sales\Repository\SaleRecordRepository;
 use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffRequests;
-use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 use function strtoupper;
 use function trim;
@@ -50,8 +49,8 @@ final readonly class SaleSaves
      * @param ServerRequestInterface $serverRequest A request for the sale form, with its session; `?vehicle=` may
      *                                              name a VIN.
      *
-     * @throws QueryException When the vehicle, the day or the options cannot be read.
-     * @throws LogicException When the request has no session, or a key does not fit the theme.
+     * @throws Throwable When the vehicle, the day or the options cannot be read, the request has no session, or a key
+     *                   does not fit the theme.
      *
      * @return PageResponse The form: the named vehicle and its list price when it is on the lot and not sold, and today.
      */
@@ -72,8 +71,8 @@ final readonly class SaleSaves
     /**
      * @param ServerRequestInterface $serverRequest A posted sale, with its session.
      *
-     * @throws QueryException When the sale cannot be checked or recorded.
-     * @throws LogicException When the request has no session, or a key does not fit the theme.
+     * @throws Throwable When the sale cannot be checked or recorded (the transaction rolled back), the request has no
+     *                   session, or a key does not fit the theme.
      *
      * @return PageResponse 303 to the new sale, or the form again as 422, also when the vehicle was sold meanwhile.
      */

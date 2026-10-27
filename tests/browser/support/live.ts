@@ -84,13 +84,15 @@ export async function expectFeed(page: Page): Promise<void> {
 // The anchor of the dashboard's live part (AIC #188), which holds the tiles and the feed and which its poll refreshes.
 export const LIVE = 'dashboard-live';
 
-// One request the page sent, with its answer once it has finished.
+// One request the page sent, with its answer once it has finished. `targets` is the path `Tessera-Targets` names, and
+// `props` whether a props token followed it, as Tessera sends the one the part carries.
 export interface SentRequest {
     resourceType: string;
     method: string;
     path: string;
     tesseraRequest: string;
     targets: string;
+    props: boolean;
     status: number;
     contentType: string;
     templates: string[];
@@ -108,12 +110,14 @@ export async function recordPolls(page: Page): Promise<SentRequest[]> {
         const request = route.request();
         const url = new URL(request.url());
         const headers = await request.allHeaders();
+        const [targets, props] = (headers['tessera-targets'] ?? '').split(' ');
         const sent: SentRequest = {
             resourceType: request.resourceType(),
             method: request.method(),
             path: url.pathname + url.search,
             tesseraRequest: headers['tessera-request'] ?? '',
-            targets: headers['tessera-targets'] ?? '',
+            targets,
+            props: (props ?? '') !== '',
             status: 0,
             contentType: '',
             templates: [],
@@ -144,24 +148,19 @@ export async function recordPolls(page: Page): Promise<SentRequest[]> {
 }
 
 // Waits until every recorded request has finished, then holds each to a refresh of the live part, by the path its
-// anchor has on the page: a `fetch` GET of the dashboard, answered 200 with that part alone.
+// anchor has on the page and with the props it carries: a `fetch` GET of the dashboard, answered 200 with that part
+// alone, or, when its figures had not changed, 204 with nothing (AIC #193).
 export async function expectRefreshes(page: Page, requests: SentRequest[]): Promise<void> {
     await expect.poll(() => requests.every((request) => request.finished)).toBe(true);
     const live = await anchorPath(page, LIVE);
     expect(live).not.toBe('');
 
     for (const request of requests) {
-        expect(request).toEqual({
-            resourceType: 'fetch',
-            method: 'GET',
-            path: '/app',
-            tesseraRequest: 'refresh',
-            targets: live,
-            status: 200,
-            contentType: expect.stringMatching(/^text\/vnd\.tessera\+html/),
-            templates: [live],
-            failure: '',
-            finished: true,
-        });
+        const sent = { resourceType: 'fetch', method: 'GET', path: '/app', tesseraRequest: 'refresh', targets: live, props: true, failure: '', finished: true };
+        const answer = request.status === 204
+            ? { status: 204, contentType: expect.any(String), templates: [] }
+            : { status: 200, contentType: expect.stringMatching(/^text\/vnd\.tessera\+html/), templates: [live] };
+
+        expect(request).toEqual({ ...sent, ...answer });
     }
 }

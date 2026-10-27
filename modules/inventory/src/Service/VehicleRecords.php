@@ -38,6 +38,7 @@ final readonly class VehicleRecords
      *
      * @throws QueryException           When the vehicle cannot be read.
      * @throws UnexpectedValueException When its stored status is no status.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return Vehicle|null The vehicle its `vin` names; null when that is no VIN or no vehicle has it.
      */

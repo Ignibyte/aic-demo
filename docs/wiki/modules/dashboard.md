@@ -32,7 +32,7 @@ none
 
 ## Migrations
 
-none
+- `App\Dashboard\Migration\CreateDashboardViews`
 
 ## Plugins
 
@@ -68,9 +68,14 @@ none
 | Class | File |
 | --- | --- |
 | `App\Dashboard\Entity\Figure` | [modules/dashboard/src/Entity/Figure.php](../../../modules/dashboard/src/Entity/Figure.php) |
-| `App\Dashboard\Entity\LatestSale` | [modules/dashboard/src/Entity/LatestSale.php](../../../modules/dashboard/src/Entity/LatestSale.php) |
 | `App\Dashboard\Entity\MonthSales` | [modules/dashboard/src/Entity/MonthSales.php](../../../modules/dashboard/src/Entity/MonthSales.php) |
 | `App\Dashboard\Entity\TileFigures` | [modules/dashboard/src/Entity/TileFigures.php](../../../modules/dashboard/src/Entity/TileFigures.php) |
+
+### `src/Migration/`
+
+| Class | File |
+| --- | --- |
+| `App\Dashboard\Migration\CreateDashboardViews` | [modules/dashboard/src/Migration/CreateDashboardViews.php](../../../modules/dashboard/src/Migration/CreateDashboardViews.php) |
 
 ### `src/Repository/`
 
@@ -83,9 +88,11 @@ none
 | Class | File |
 | --- | --- |
 | `App\Dashboard\Service\ChartSummaries` | [modules/dashboard/src/Service/ChartSummaries.php](../../../modules/dashboard/src/Service/ChartSummaries.php) |
+| `App\Dashboard\Service\DashboardChart` | [modules/dashboard/src/Service/DashboardChart.php](../../../modules/dashboard/src/Service/DashboardChart.php) |
 | `App\Dashboard\Service\DashboardCharts` | [modules/dashboard/src/Service/DashboardCharts.php](../../../modules/dashboard/src/Service/DashboardCharts.php) |
 | `App\Dashboard\Service\DashboardFeed` | [modules/dashboard/src/Service/DashboardFeed.php](../../../modules/dashboard/src/Service/DashboardFeed.php) |
 | `App\Dashboard\Service\DashboardLive` | [modules/dashboard/src/Service/DashboardLive.php](../../../modules/dashboard/src/Service/DashboardLive.php) |
+| `App\Dashboard\Service\DashboardPoll` | [modules/dashboard/src/Service/DashboardPoll.php](../../../modules/dashboard/src/Service/DashboardPoll.php) |
 | `App\Dashboard\Service\DashboardTiles` | [modules/dashboard/src/Service/DashboardTiles.php](../../../modules/dashboard/src/Service/DashboardTiles.php) |
 | `App\Dashboard\Service\DashboardWords` | [modules/dashboard/src/Service/DashboardWords.php](../../../modules/dashboard/src/Service/DashboardWords.php) |
 
@@ -96,13 +103,20 @@ none
 - [AIC\Component](../../../vendor/aic/framework/docs/systems.md#4-components)
 - [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
 - [AIC\Database](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
+- [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Tessera](../../../vendor/aic/framework/docs/systems.md#7-the-browser-runtime)
 
 ### Other modules
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffSession` |
+| [customers](customers.md) | `App\Customers\Entity\CustomerTable` |
+| [inventory](inventory.md) | `App\Inventory\Entity\VehicleTable`, `App\Inventory\Repository\TodayRepository` |
+| [sales](sales.md) | `App\Sales\Entity\Sale`, `App\Sales\Repository\SaleRepository` |
+| [staff](staff.md) | `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffSession` |
 
 ## Used by
 

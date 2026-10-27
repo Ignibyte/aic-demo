@@ -11,17 +11,11 @@ use App\Inventory\Entity\VehiclePrice;
 use UnexpectedValueException;
 
 /**
- * A row of `vehicles` read into a `Vehicle`, and a `Vehicle` as the values a statement saves, for both repositories:
- * the list's and the one that writes a vehicle at a time.
+ * A row of `vehicles` read into a `Vehicle`, and a `Vehicle` as the values the entity store saves by field, for both
+ * repositories: the list's and the one that writes a vehicle at a time.
  */
 final readonly class VehicleRows
 {
-    /**
-     * The columns a vehicle is read from and saved to, in its constructor's order.
-     */
-    public const string COLUMNS = 'vin, year, make, model, trim, body_style, mileage, exterior_colour, list_price, cost,'
-        . ' status, added_on';
-
     /**
      * @param VehicleStatuses $vehicleStatuses Reads a stored status.
      */
@@ -31,11 +25,11 @@ final readonly class VehicleRows
     }
 
     /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `fetchAll()` list
-     * has no type to it, and `->string()` there would be resolved against every class with that method, as
-     * `StaffRepository::first()` found at gate:23. No AIC ticket carries this yet.
+     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
+     * no type to it, and `->string()` there would be resolved against every class with that method, as the staff
+     * repository found at gate:23. No AIC ticket carries this yet.
      *
-     * @param Row $row A row with every column of `COLUMNS`.
+     * @param Row $row A row of the `vehicles` entity type.
      *
      * @throws QueryException           When a column is missing or of another type.
      * @throws UnexpectedValueException When its status is no status.
@@ -62,23 +56,23 @@ final readonly class VehicleRows
     /**
      * @param Vehicle $vehicle A vehicle.
      *
-     * @return list<string|int> Its values for the `?`s of a statement naming `COLUMNS`, in that order.
+     * @return array<string, string|int> Its values by field, every writable field of `VehicleTable`'s.
      */
     public function values(Vehicle $vehicle): array
     {
         return [
-            $vehicle->vin,
-            $vehicle->year,
-            $vehicle->make,
-            $vehicle->model,
-            $vehicle->trim,
-            $vehicle->bodyStyle,
-            $vehicle->mileage,
-            $vehicle->exteriorColour,
-            $vehicle->price->list,
-            $vehicle->price->cost,
-            $vehicle->status->value,
-            $vehicle->addedOn,
+            'added_on' => $vehicle->addedOn,
+            'body_style' => $vehicle->bodyStyle,
+            'cost' => $vehicle->price->cost,
+            'exterior_colour' => $vehicle->exteriorColour,
+            'list_price' => $vehicle->price->list,
+            'make' => $vehicle->make,
+            'mileage' => $vehicle->mileage,
+            'model' => $vehicle->model,
+            'status' => $vehicle->status->value,
+            'trim' => $vehicle->trim,
+            'vin' => $vehicle->vin,
+            'year' => $vehicle->year,
         ];
     }
 }

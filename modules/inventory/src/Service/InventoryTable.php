@@ -21,8 +21,9 @@ use function number_format;
 
 /**
  * The inventory list's results: a row per vehicle on the page, heads that sort (a second click on the sorted one
- * reverses it), a link per page, each link keeping the search and filters, and the sort the filter form sends. Tessera
- * answers a filter, a sort or a page with them alone: each control targets them as `@inventory-results`.
+ * reverses it), a link per page, each link keeping the search and filters, and the sort the filter form sends.
+ * `InventoryResults` builds them from what it read when the results are rendered (#14). Tessera answers a filter, a
+ * sort or a page with them alone: each control targets them as `@inventory-results`.
  */
 final readonly class InventoryTable
 {

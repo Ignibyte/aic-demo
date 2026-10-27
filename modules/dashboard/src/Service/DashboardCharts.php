@@ -16,7 +16,8 @@ use InvalidArgumentException;
 /**
  * The dashboard's three charts, each in its panel: sales by month as columns, inventory by make and revenue by
  * salesperson as bars. The theme's builders lay them out as SVG; this hands them the labels and whole numbers Postgres
- * gives, and the summary of each.
+ * gives, and the summary of each. Each chart's `DashboardChart` calls its method when the chart is rendered (#14), so
+ * each reads its own figures and no other's.
  */
 final readonly class DashboardCharts
 {
@@ -32,6 +33,21 @@ final readonly class DashboardCharts
         private BarCharts $barCharts = new BarCharts(),
         private ColumnCharts $columnCharts = new ColumnCharts(),
     ) {
+    }
+
+    /**
+     * @throws InvalidArgumentException When a key or an anchor is malformed.
+     *
+     * @return list<KeyedComponent> The three charts, each keyed and anchored, each built from its `DashboardChart` when
+     *                              it is rendered.
+     */
+    public function parts(): array
+    {
+        return [
+            (new DashboardChart($this, DashboardChart::SALES))->keyed(),
+            (new DashboardChart($this, DashboardChart::MAKES))->keyed(),
+            (new DashboardChart($this, DashboardChart::SALESPEOPLE))->keyed(),
+        ];
     }
 
     /**

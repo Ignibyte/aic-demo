@@ -13,6 +13,7 @@ use App\Inventory\Repository\VehicleRecordRepository;
 use App\Inventory\Service\SoldVehicles;
 use App\Inventory\Service\VehicleStatuses;
 use App\Inventory\Service\Vins;
+use InvalidArgumentException;
 use UnexpectedValueException;
 
 use function checkdate;
@@ -63,7 +64,8 @@ final readonly class VehicleChecks
      * @param string       $currentVin   The VIN of the vehicle being changed, which it may keep; empty for a new one.
      * @param string       $today        The database's today, `YYYY-MM-DD`; next year is the last model year.
      *
-     * @throws QueryException When the taken VINs or the vehicle's sale cannot be read.
+     * @throws QueryException           When the taken VINs or the vehicle's sale cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return array<string, string> Why each refused field is refused, by name; empty when the entry is valid.
      */
@@ -147,7 +149,8 @@ final readonly class VehicleChecks
      * @param string $vin        A posted VIN, in capitals.
      * @param string $currentVin The VIN of the vehicle being changed; empty for a new one.
      *
-     * @throws QueryException When the taken VINs cannot be read.
+     * @throws QueryException           When the taken VINs cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return string Why it is refused; empty when it is fine.
      */

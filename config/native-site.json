@@ -870,7 +870,7 @@
             "method": "GET",
             "path": "/app/inventory?make=Toyota&sort=-price",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:table",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,
             "captures": false
         },
@@ -879,7 +879,7 @@
             "method": "GET",
             "path": "/app/inventory?status=in_stock&sort=price&page=2",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:table",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,
             "captures": false
         },
@@ -906,7 +906,7 @@
             "method": "GET",
             "path": "/app",
             "form": "",
-            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:live",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
             "status": 200,
             "captures": false
         },
@@ -925,6 +925,15 @@
             "path": "/app",
             "form": "",
             "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "dashboard, a Tessera refresh of the makes chart alone by its anchor",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-makes",
             "status": 200,
             "captures": false
         }

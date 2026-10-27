@@ -31,13 +31,13 @@ final readonly class CustomersRoutes
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
-            ->get('/app/customers', CustomerListPage::class)
             ->get('/app/customers/new', CustomerNewPage::class)
             ->post('/app/customers', CustomerCreatePost::class)
             ->get('/app/customers/{id:int}', CustomerPage::class)
             ->get('/app/customers/{id:int}/edit', CustomerEditPage::class)
             ->post('/app/customers/{id:int}', CustomerUpdatePost::class)
             ->get('/app/customers/{id:int}/delete', CustomerDeletePage::class)
-            ->post('/app/customers/{id:int}/delete', CustomerDeletePost::class);
+            ->post('/app/customers/{id:int}/delete', CustomerDeletePost::class)
+            ->get('/app/customers', CustomerListPage::class);
     }
 }

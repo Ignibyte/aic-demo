@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Inventory\Controller\VehicleDeletePost;
-use App\Inventory\Service\VehicleSales;
-use App\Inventory\Service\VehicleServices;
+use App\Inventory\Controller\InventoryListPage;
+use App\Inventory\Repository\VehicleRepository;
+use App\Inventory\Service\InventoryList;
+use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -32,15 +34,12 @@ final readonly class InventoryHandlersPart2
      */
     public function byId(): array
     {
-        $vehicleServices = new VehicleServices(
-            $this->handlerContext->database(),
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->documents(),
-            $this->handlerContext->tagged(VehicleSales::class),
-        );
+        $vehicleRepository = new VehicleRepository(new EntityStore($this->handlerContext->database()));
 
         return [
-            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($vehicleServices->vehicleDeletes())),
+            InventoryListPage::class => $this->handlerContext->page(
+                new InventoryListPage(new StaffPages($this->handlerContext->documents()), new InventoryList($vehicleRepository)),
+            ),
         ];
     }
 }

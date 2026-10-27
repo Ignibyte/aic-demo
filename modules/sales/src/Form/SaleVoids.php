@@ -14,6 +14,7 @@ use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Voiding a sale: the page that asks first, and the void itself, which removes the sale, puts its vehicle back in
@@ -59,8 +60,8 @@ final readonly class SaleVoids
     /**
      * @param ServerRequestInterface $serverRequest A posted void form, with its session.
      *
-     * @throws QueryException When the sale cannot be read or voided.
-     * @throws LogicException When the request has no session, or a key does not fit the theme.
+     * @throws Throwable When the sale cannot be read or voided (the transaction rolled back), the request has no session,
+     *                   or a key does not fit the theme.
      *
      * @return PageResponse 303 to the vehicle's page; 400 for an envelope that is not this sale's; or 404, also when the
      *                      sale went meanwhile.

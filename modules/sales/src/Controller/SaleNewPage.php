@@ -6,11 +6,10 @@ namespace App\Sales\Controller;
 
 use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
-use AIC\Database\Contracts\QueryException;
 use App\Sales\Form\SaleSaves;
-use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * GET /app/sales/new: the sale form, with the vehicle `?vehicle=` names chosen and its list price filled in when it is
@@ -29,8 +28,8 @@ final readonly class SaleNewPage implements Page
     /**
      * @param ServerRequestInterface $serverRequest The request, from a signed-in member of staff.
      *
-     * @throws QueryException When the vehicle or the options cannot be read.
-     * @throws LogicException When the request has no session, or a key does not fit the theme.
+     * @throws Throwable When the vehicle, the day or the options cannot be read, the request has no session, or a key
+     *                   does not fit the theme.
      *
      * @return PageResponse The form.
      */

@@ -36,7 +36,8 @@ final readonly class CustomerRecords
     /**
      * @param ServerRequestInterface $serverRequest A request to a customer's route.
      *
-     * @throws QueryException When the customer cannot be read.
+     * @throws QueryException           When the customer cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return Customer|null The customer its `id` names; null when that is not 1 to 999,999,999 or no customer has it.
      */

@@ -7,6 +7,7 @@ namespace App\Customers\Form;
 use AIC\Database\Contracts\QueryException;
 use App\Customers\Entity\CustomerDetails;
 use App\Customers\Repository\CustomerRecordRepository;
+use InvalidArgumentException;
 
 use function mb_strlen;
 use function preg_match;
@@ -49,7 +50,8 @@ final readonly class CustomerChecks
      * @param int           $currentId     The id of the customer being changed, which may keep its email; 0 for a new
      *                                     one.
      *
-     * @throws QueryException When the taken emails cannot be read.
+     * @throws QueryException           When the taken emails cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return array<string, string> Why each refused field is refused, by name; empty when the entry is valid.
      */
@@ -121,7 +123,8 @@ final readonly class CustomerChecks
      * @param string $email     A posted email, trimmed and in small letters.
      * @param int    $currentId The id of the customer being changed; 0 for a new one.
      *
-     * @throws QueryException When the taken emails cannot be read.
+     * @throws QueryException           When the taken emails cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return string Why it is refused; empty when it is fine.
      */

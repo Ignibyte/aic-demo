@@ -11,7 +11,7 @@ The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `
 
 ## Data
 
-`CreateUsersTable` makes `users`: an identity `id`, `email` (unique; the login), `name`, `role` and `password_hash`, with `created_at`. Roles are `Role` cases stored as `admin`, `sales_manager` and `salesperson`; `Roles::stored()` reads a stored value back and refuses any other. `Role::label()` is written as if/return, since elephc cannot lower a `match` over enum cases yet (AIC #164).
+`CreateUsersTable` makes `users`: an identity `id`, `email` (unique; the login), `name`, `role` and `password_hash`, with `created_at`. `StaffTable::type()` is its AIC entity type, the one place the table is named (#14, AIC #185); it is exported, so `sales` references a member through it and reads its sellers and its form's staff from it. `StaffRepository` reads and writes through AIC's `EntityStore`: `save()` upserts on the email, and `add()` inserts when the login is new and otherwise changes the password alone. Roles are `Role` cases stored as `admin`, `sales_manager` and `salesperson`; `Roles::stored()` reads a stored value back and refuses any other. `Role::label()` is written as if/return, since elephc cannot lower a `match` over enum cases yet (AIC #164).
 
 ## Pages
 
@@ -19,6 +19,8 @@ The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `
 - `POST /sign-in` (`SignInPost`): on success a full visit (303) to `next` when it is a path on this site, else to `/app`; a wrong email or password answers the form again as 422 with "Wrong email or password.", the email kept and the password never.
 - `POST /sign-out` (`SignOutPost`): ends the session, a full visit (303) to `/`.
 `GET /app` is the `dashboard` module's page (#8), which greets the member in the header; the staff module keeps the prefix it protects and the sign-in's landing there. `StaffPages::page()` takes an optional last argument, the line the theme's `TopBar` writes under the title, which the dashboard's greeting uses; every other page leaves it empty.
+
+`StaffPages::page()` also takes lead parts, set in `content` itself before the panel grid (#14). Only a region's child carries a Tessera props token, so a part that seals what it shows, the dashboard's polled live part, leads; `StaffPages::target()` gives a lead part's path (`content/live`), so the page that asks whether a poll names it never spells a path. The content region and the grid share `gap-6`, so a lead part sits where it would in the grid.
 
 `StaffPages::page()` titles the document with the top bar's title (#11): AIC's `PageDocuments` writes it as `{title} · Lotline` in the whole page and in every Tessera fragment, so the browser's tab follows each visit. Every staff page goes through it, directly, through `StaffPanels` or through `SignInForm`, so a list is titled `Inventory · Lotline`, a record by its heading (a vehicle's year, make, model and trim, a customer's name, `Sale of the …`) and a form or a warning by its title. A page whose heading should not be its title names one as the optional last argument, `$documentTitle`; the dashboard, whose heading greets the member, passes `Dashboard`. The inventory list, `/app/inventory`, is the `inventory` module's.
 

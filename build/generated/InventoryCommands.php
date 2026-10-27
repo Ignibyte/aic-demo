@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Controller\Contracts\Command;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\ConsoleContext;
 use App\Inventory\Command\InventorySeed;
 use App\Inventory\Repository\VehicleRepository;
@@ -28,8 +29,10 @@ final readonly class InventoryCommands
      */
     public function byName(): array
     {
+        $vehicleRepository = new VehicleRepository(new EntityStore($this->consoleContext->database()));
+
         return [
-            'inventory:seed' => new InventorySeed(new VehicleRepository($this->consoleContext->database())),
+            'inventory:seed' => new InventorySeed($vehicleRepository),
         ];
     }
 }
