@@ -22,13 +22,6 @@
             "path": "/sign-out"
         },
         {
-            "handler": "App\\Staff\\Controller\\StaffHomePage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "staff",
-            "path": "/app"
-        },
-        {
             "handler": "App\\Customers\\Controller\\CustomerListPage",
             "kind": "Page",
             "method": "GET",
@@ -181,6 +174,13 @@
             "method": "POST",
             "module": "sales",
             "path": "/app/sales/{id:int}/void"
+        },
+        {
+            "handler": "App\\Dashboard\\Controller\\DashboardPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "dashboard",
+            "path": "/app"
         },
         {
             "handler": "App\\Site\\Controller\\HealthApi",
@@ -407,6 +407,23 @@
             "requires": [
                 "inventory",
                 "customers",
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "dashboard",
+            "namespace": "App\\Dashboard\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "inventory",
+                "sales",
                 "staff"
             ]
         },

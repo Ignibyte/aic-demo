@@ -13,5 +13,5 @@ test('a signed-out visit to /app lands on sign-in and comes back after it', asyn
     await page.locator('#sign-in-submit').click();
 
     await expect(page).toHaveURL(/\/app$/);
-    await expect(page.locator('#welcome-heading')).toHaveText(`Welcome, ${login}`);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Welcome, ${login}`);
 });

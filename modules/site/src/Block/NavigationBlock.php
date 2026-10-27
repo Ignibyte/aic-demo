@@ -22,7 +22,8 @@ use function str_starts_with;
 /**
  * Lotline's sidebar, in `sidebar` on every page: the site's name, then a link to each area with its icon, the current
  * one marked from the page's request. Areas join the list as their pages land; the staff areas show only to signed-in
- * staff.
+ * staff, for whom Dashboard goes to the dashboard at `/app` (#8), current there alone since every staff page sits under
+ * it; signed out it goes to `/`.
  */
 final readonly class NavigationBlock implements Block
 {
@@ -62,9 +63,13 @@ final readonly class NavigationBlock implements Block
     {
         $path = $serverRequest->getUri()->getPath();
         $heroicons = new Heroicons();
-        $links = [new KeyedComponent('dashboard', new NavLink('/', 'Dashboard', $heroicons->home(), self::isCurrent('/', $path)))];
+        $signedIn = $this->staffSession->member($serverRequest) !== null;
+        $home = $signedIn
+            ? '/app'
+            : '/';
+        $links = [new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home))];
 
-        if ($this->staffSession->member($serverRequest) !== null) {
+        if ($signedIn) {
             $navLink = new NavLink('/app/inventory', 'Inventory', $heroicons->truck(), self::isCurrent('/app/inventory', $path));
             $links[] = new KeyedComponent('inventory', $navLink);
             $customersLink = new NavLink('/app/customers', 'Customers', $heroicons->users(), self::isCurrent('/app/customers', $path));
@@ -82,10 +87,10 @@ final readonly class NavigationBlock implements Block
      * @param string $href A link's path.
      * @param string $path The page's path.
      *
-     * @return bool Whether the link is the page or a parent of it; `/` is current only on itself.
+     * @return bool Whether the link is the page or a parent of it.
      */
     private static function isCurrent(string $href, string $path): bool
     {
-        return $path === $href || ($href !== '/' && str_starts_with($path, $href . '/'));
+        return $path === $href || str_starts_with($path, $href . '/');
     }
 }

@@ -39,6 +39,7 @@ final readonly class ModuleHandlers
             (new InventoryHandlersPart2($this->handlerContext))->byId(),
             (new SalesHandlers($this->handlerContext))->byId(),
             (new SalesHandlersPart2($this->handlerContext))->byId(),
+            (new DashboardHandlers($this->handlerContext))->byId(),
             (new SiteHandlers($this->handlerContext))->byId(),
         );
     }
