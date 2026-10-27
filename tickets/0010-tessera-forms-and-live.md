@@ -2,9 +2,10 @@
 number: 10
 title: "Tessera: forms in place, and the dashboard live"
 type: feature
-status: open
+status: in-review
 created: 2026-10-27T11:00:00Z
-updated: 2026-10-27T11:00:00Z
+updated: 2026-10-27T10:45:29Z
+phase: "docs"
 ---
 
 Old Lotline's ticket 11 (`/srv/stacks/lotline`, read only) is the reference for behaviour.

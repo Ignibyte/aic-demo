@@ -6,9 +6,11 @@ namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
+use App\Dashboard\Controller\DashboardEvents;
 use App\Dashboard\Controller\DashboardPage;
 use App\Dashboard\Repository\DashboardRepository;
 use App\Dashboard\Service\DashboardCharts;
+use App\Dashboard\Service\DashboardSources;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -36,6 +38,7 @@ final readonly class DashboardHandlers
         $dashboardRepository = new DashboardRepository($this->handlerContext->database());
 
         return [
+            DashboardEvents::class => $this->handlerContext->stream(new DashboardEvents(new DashboardSources($dashboardRepository))),
             DashboardPage::class => $this->handlerContext->page(
                 new DashboardPage(
                     new StaffPages($this->handlerContext->documents()),
