@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use AIC\Controller\Application\PageDocuments;
-use AIC\Database\Contracts\Database;
+use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\EnvelopeCodec;
 use AIC\Module\Attribute\Tagged;
 use App\Inventory\Form\VehicleChecks;
@@ -19,7 +19,7 @@ use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
 
 /**
- * The factory the manifest names for the vehicle record's services: each from the database, the envelope codec, the
+ * The factory the manifest names for the vehicle record's services: each from the entity store, the envelope codec, the
  * page documents and the `VehicleSales` plugins. The build splits the module's handlers into parts and each part
  * builds what its controllers take, so a graph the controllers share would be written out in every part; through here
  * each part makes one call.
@@ -27,13 +27,13 @@ use App\Staff\Service\StaffPanels;
 final readonly class VehicleServices
 {
     /**
-     * @param Database      $database      The database.
+     * @param EntityStore   $entityStore   The entity store.
      * @param EnvelopeCodec $envelopeCodec Seals and opens envelopes with the app secret.
      * @param PageDocuments $pageDocuments The theme's document around a page.
      * @param list<object>  $vehicleSales  The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
-        private Database $database,
+        private EntityStore $entityStore,
         private EnvelopeCodec $envelopeCodec,
         private PageDocuments $pageDocuments,
         #[Tagged(VehicleSales::class)]
@@ -87,7 +87,7 @@ final readonly class VehicleServices
      */
     private function repository(): VehicleRecordRepository
     {
-        return new VehicleRecordRepository($this->database);
+        return new VehicleRecordRepository($this->entityStore);
     }
 
     /**
@@ -95,7 +95,7 @@ final readonly class VehicleServices
      */
     private function soldVehicles(): SoldVehicles
     {
-        return new SoldVehicles($this->database, $this->vehicleSales);
+        return new SoldVehicles($this->entityStore, $this->vehicleSales);
     }
 
     /**

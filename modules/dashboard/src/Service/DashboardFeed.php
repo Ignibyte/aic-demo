@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Dashboard\Service;
 
 use AIC\Component\Domain\KeyedComponent;
-use App\Dashboard\Entity\LatestSale;
+use App\Sales\Entity\Sale;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
 use App\Theme\Components\Panel\Panel;
@@ -42,11 +42,6 @@ final readonly class DashboardFeed
     private const array HEADS = ['Sold on', 'Vehicle', 'Customer', 'Salesperson'];
 
     /**
-     * Where a sale's day links: the sale's page under this path.
-     */
-    private const string SALES = '/app/sales/';
-
-    /**
      * @param DashboardWords $dashboardWords Writes counts and money.
      */
     public function __construct(
@@ -55,7 +50,7 @@ final readonly class DashboardFeed
     }
 
     /**
-     * @param list<LatestSale> $sales The sales recorded last, the latest first.
+     * @param list<Sale> $sales The sales recorded last, the latest first.
      *
      * @throws InvalidArgumentException When a key is malformed.
      *
@@ -73,7 +68,7 @@ final readonly class DashboardFeed
     }
 
     /**
-     * @param list<LatestSale> $sales The sales recorded last, the latest first.
+     * @param list<Sale> $sales The sales recorded last, the latest first.
      *
      * @throws InvalidArgumentException When a key is malformed.
      *
@@ -102,18 +97,18 @@ final readonly class DashboardFeed
     }
 
     /**
-     * @param LatestSale $latestSale A sale.
+     * @param Sale $sale A sale.
      *
      * @return TableRow Its row.
      */
-    private function row(LatestSale $latestSale): TableRow
+    private function row(Sale $sale): TableRow
     {
         return new TableRow([
-            new TableCell($latestSale->soldOn, self::SALES . $latestSale->id, false, false, null),
-            new TableCell($latestSale->vehicle, '', false, false, null),
-            new TableCell($latestSale->customer, '', false, false, null),
-            new TableCell($latestSale->salesperson, '', false, false, null),
-            new TableCell($this->dashboardWords->money($latestSale->price), '', false, true, null),
+            new TableCell($sale->soldOn, $sale->path(), false, false, null),
+            new TableCell($sale->vehicle, '', false, false, null),
+            new TableCell($sale->customer, '', false, false, null),
+            new TableCell($sale->salesperson, '', false, false, null),
+            new TableCell($this->dashboardWords->money($sale->price), '', false, true, null),
         ]);
     }
 }

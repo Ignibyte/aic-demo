@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
 use AIC\Controller\Contracts\Command;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\ConsoleContext;
 use App\Staff\Command\StaffSeed;
 use App\Staff\Command\UserAdd;
@@ -34,7 +35,8 @@ final readonly class StaffCommands
      */
     public function byName(): array
     {
-        $staffRepository = new StaffRepository($this->consoleContext->database());
+        $entityStore = new EntityStore($this->consoleContext->database());
+        $staffRepository = new StaffRepository($entityStore);
         $pgcryptoPasswordHasher = new PgcryptoPasswordHasher($this->consoleContext->database());
 
         return [

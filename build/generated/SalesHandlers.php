@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use App\Inventory\Repository\TodayRepository;
 use App\Inventory\Repository\VehicleStatusRepository;
 use App\Sales\Controller\SaleCreatePost;
 use App\Sales\Controller\SaleListPage;
@@ -39,13 +41,12 @@ final readonly class SalesHandlers
      */
     public function byId(): array
     {
-        $saleList = new SaleList(
-            new SaleRepository($this->handlerContext->database()),
-            new SaleChoiceRepository($this->handlerContext->database()),
-        );
-        $vehicleStatusRepository = new VehicleStatusRepository($this->handlerContext->database());
-        $saleRecordRepository = new SaleRecordRepository($this->handlerContext->database(), $vehicleStatusRepository);
-        $saleServices = new SaleServices($this->handlerContext->database(), $this->handlerContext->documents(), $saleRecordRepository);
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $saleChoiceRepository = new SaleChoiceRepository($entityStore, new TodayRepository($entityStore));
+        $saleList = new SaleList(new SaleRepository($entityStore), $saleChoiceRepository);
+        $vehicleStatusRepository = new VehicleStatusRepository($entityStore);
+        $saleRecordRepository = new SaleRecordRepository($entityStore, $vehicleStatusRepository);
+        $saleServices = new SaleServices($entityStore, $this->handlerContext->documents(), $saleRecordRepository);
         $saleSaves = $saleServices->saleSaves();
 
         return [

@@ -11,7 +11,8 @@ declare(strict_types=1);
  * exports the staff pages' document and the signed-in member (#4), for the
  * pages and the navigation other modules add, and a record page's panel, its
  * one-time notice and the envelope sealing its path (#6), which inventory and
- * customers share. The build reads it; nothing reads it at run time.
+ * customers share, and the `users` entity type, which sales references and
+ * reads (#14). The build reads it; nothing reads it at run time.
  */
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
@@ -27,6 +28,7 @@ use App\Staff\Command\UserAdd;
 use App\Staff\Controller\SignInPage;
 use App\Staff\Controller\SignInPost;
 use App\Staff\Controller\SignOutPost;
+use App\Staff\Entity\StaffTable;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Migration\CreateUsersTable;
 use App\Staff\Repository\StaffRepository;
@@ -57,4 +59,5 @@ return (new ModuleManifest('staff'))
     ->export(StaffPanels::class)
     ->export(StaffNotices::class)
     ->export(StaffSeals::class)
-    ->export(StaffRequests::class);
+    ->export(StaffRequests::class)
+    ->export(StaffTable::class);

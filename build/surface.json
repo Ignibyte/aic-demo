@@ -22,13 +22,6 @@
             "path": "/sign-out"
         },
         {
-            "handler": "App\\Customers\\Controller\\CustomerListPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers"
-        },
-        {
             "handler": "App\\Customers\\Controller\\CustomerNewPage",
             "kind": "Page",
             "method": "GET",
@@ -78,11 +71,11 @@
             "path": "/app/customers/{id:int}/delete"
         },
         {
-            "handler": "App\\Inventory\\Controller\\InventoryListPage",
+            "handler": "App\\Customers\\Controller\\CustomerListPage",
             "kind": "Page",
             "method": "GET",
-            "module": "inventory",
-            "path": "/app/inventory"
+            "module": "customers",
+            "path": "/app/customers"
         },
         {
             "handler": "App\\Inventory\\Controller\\VehicleNewPage",
@@ -132,6 +125,13 @@
             "method": "POST",
             "module": "inventory",
             "path": "/app/inventory/{vin}/delete"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\InventoryListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory"
         },
         {
             "handler": "App\\Sales\\Controller\\SaleListPage",
@@ -303,7 +303,8 @@
                 "App\\Staff\\Service\\StaffPanels",
                 "App\\Staff\\Service\\StaffNotices",
                 "App\\Staff\\Form\\StaffSeals",
-                "App\\Staff\\Service\\StaffRequests"
+                "App\\Staff\\Service\\StaffRequests",
+                "App\\Staff\\Entity\\StaffTable"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -333,7 +334,8 @@
                 "App\\Customers\\Service\\CustomerPurchases",
                 "App\\Customers\\Entity\\Purchase",
                 "App\\Customers\\Service\\SeedCustomers",
-                "App\\Customers\\Entity\\CustomerDetails"
+                "App\\Customers\\Entity\\CustomerDetails",
+                "App\\Customers\\Entity\\CustomerTable"
             ],
             "factories": [
                 "App\\Customers\\Service\\CustomerServices"
@@ -362,14 +364,17 @@
                 "App\\Inventory\\Service\\Vins",
                 "App\\Inventory\\Repository\\VehicleRepository",
                 "App\\Inventory\\Repository\\VehicleStatusRepository",
-                "App\\Inventory\\Service\\SeedVehicles"
+                "App\\Inventory\\Service\\SeedVehicles",
+                "App\\Inventory\\Entity\\VehicleTable",
+                "App\\Inventory\\Repository\\TodayRepository"
             ],
             "factories": [
                 "App\\Inventory\\Service\\VehicleServices"
             ],
             "middleware": [],
             "migrations": [
-                "App\\Inventory\\Migration\\CreateVehiclesTable"
+                "App\\Inventory\\Migration\\CreateVehiclesTable",
+                "App\\Inventory\\Migration\\CreateTodayView"
             ],
             "name": "inventory",
             "namespace": "App\\Inventory\\",
@@ -382,7 +387,10 @@
         {
             "bindings": [],
             "blocks": [],
-            "exports": [],
+            "exports": [
+                "App\\Sales\\Repository\\SaleRepository",
+                "App\\Sales\\Entity\\Sale"
+            ],
             "factories": [
                 "App\\Sales\\Service\\SaleServices",
                 "App\\Sales\\Service\\SaleRecordServices"
@@ -416,7 +424,9 @@
             "exports": [],
             "factories": [],
             "middleware": [],
-            "migrations": [],
+            "migrations": [
+                "App\\Dashboard\\Migration\\CreateDashboardViews"
+            ],
             "name": "dashboard",
             "namespace": "App\\Dashboard\\",
             "plugins": [],

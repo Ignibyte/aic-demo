@@ -8,8 +8,10 @@ declare(strict_types=1);
  * customer's page, form and delete, found by its id, all under /app, which the
  * staff module's protected prefix keeps to signed-in staff. It exports the
  * plugin type a customer's pages ask what the customer bought (#7), and the
- * seed's customers for the sales seed. The build reads it; nothing reads it at
- * run time.
+ * seed's customers for the sales seed, and the customers' entity type, which
+ * sales references and the dashboard counts (#14). The list's route comes last,
+ * so the generated handler parts do not each open with the record services
+ * (gate:14). The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -24,6 +26,7 @@ use App\Customers\Controller\CustomerNewPage;
 use App\Customers\Controller\CustomerPage;
 use App\Customers\Controller\CustomerUpdatePost;
 use App\Customers\Entity\CustomerDetails;
+use App\Customers\Entity\CustomerTable;
 use App\Customers\Entity\Purchase;
 use App\Customers\Migration\CreateCustomersTable;
 use App\Customers\Service\CustomerPurchases;
@@ -32,7 +35,6 @@ use App\Customers\Service\SeedCustomers;
 
 return (new ModuleManifest('customers'))
     ->requires('staff')
-    ->route(RouteMethod::Get, '/app/customers', CustomerListPage::class)
     ->route(RouteMethod::Get, '/app/customers/new', CustomerNewPage::class)
     ->route(RouteMethod::Post, '/app/customers', CustomerCreatePost::class)
     ->route(RouteMethod::Get, '/app/customers/{id:int}', CustomerPage::class)
@@ -40,10 +42,12 @@ return (new ModuleManifest('customers'))
     ->route(RouteMethod::Post, '/app/customers/{id:int}', CustomerUpdatePost::class)
     ->route(RouteMethod::Get, '/app/customers/{id:int}/delete', CustomerDeletePage::class)
     ->route(RouteMethod::Post, '/app/customers/{id:int}/delete', CustomerDeletePost::class)
+    ->route(RouteMethod::Get, '/app/customers', CustomerListPage::class)
     ->factory(CustomerServices::class)
     ->command('customers:seed', CustomersSeed::class)
     ->migration(CreateCustomersTable::class)
     ->export(CustomerPurchases::class)
     ->export(Purchase::class)
     ->export(SeedCustomers::class)
-    ->export(CustomerDetails::class);
+    ->export(CustomerDetails::class)
+    ->export(CustomerTable::class);

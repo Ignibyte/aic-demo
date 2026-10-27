@@ -7,17 +7,17 @@ namespace App\Site\Controller;
 use AIC\Controller\Contracts\Api;
 use AIC\Controller\Contracts\ApiResponse;
 use AIC\Controller\Domain\JsonResponse;
-use AIC\Database\Contracts\Database;
+use AIC\Database\Application\DatabaseStatus;
 use AIC\Database\Contracts\QueryException;
 use App\Site\Service\HealthBody;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** Report whether Lotline can reach its database. */
+/** Report whether Lotline can reach its database, asked through AIC's `DatabaseStatus` (#14). */
 final readonly class HealthApi implements Api
 {
-    /** @param Database $database The application database. */
-    public function __construct(private Database $database)
+    /** @param DatabaseStatus $databaseStatus What the database says about itself. */
+    public function __construct(private DatabaseStatus $databaseStatus)
     {
     }
 
@@ -32,7 +32,7 @@ final readonly class HealthApi implements Api
         $protocol = $serverRequest->getProtocolVersion();
 
         try {
-            $this->database->fetchOne('SELECT 1 AS ready', []);
+            $this->databaseStatus->ping();
         } catch (QueryException) {
             return new JsonResponse(new HealthBody(false, $protocol), 503);
         }

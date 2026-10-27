@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use AIC\Component\Domain\KeyedComponent;
-use AIC\Database\Contracts\Database;
 use AIC\Database\Contracts\QueryException;
+use AIC\Entity\Application\EntityStore;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehicleSale;
 use App\Inventory\Entity\VehicleStatus;
@@ -14,6 +14,7 @@ use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
 use App\Theme\Components\TableRow\TableCell;
 use App\Theme\Components\TableRow\TableRow;
+use InvalidArgumentException;
 use LogicException;
 
 use function number_format;
@@ -27,11 +28,11 @@ use function number_format;
 final readonly class SoldVehicles
 {
     /**
-     * @param Database     $database     The database, handed to each plugin.
+     * @param EntityStore  $entityStore  The entity store, handed to each plugin.
      * @param list<object> $vehicleSales The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
-        private Database $database,
+        private EntityStore $entityStore,
         private array $vehicleSales,
     ) {
     }
@@ -50,7 +51,7 @@ final readonly class SoldVehicles
                 continue;
             }
 
-            $vehicleSale = $plugin->sale($this->database, $vin);
+            $vehicleSale = $this->pluginSale($plugin, $vin);
 
             if ($vehicleSale instanceof VehicleSale) {
                 return $vehicleSale;
@@ -75,7 +76,7 @@ final readonly class SoldVehicles
 
         foreach ($this->vehicleSales as $plugin) {
             if ($plugin instanceof VehicleSales) {
-                return $plugin->recordPath($vehicle->vin);
+                return $this->pluginPath($plugin, $vehicle->vin);
             }
         }
 
@@ -108,5 +109,36 @@ final readonly class SoldVehicles
             new TableColumn('Sold by', '', 'none', '', false),
             new TableColumn('Price', '', 'none', '', true),
         ], [new KeyedComponent('sale', $tableRow)])];
+    }
+
+    /**
+     * Asks one plugin through a parameter typed with the plugin type: natively an `instanceof` does not narrow an
+     * `object` local, so a call on it dispatches dynamically and what it returns is never released (AIC #61,
+     * framework/docs/native.md, "Write code with concrete types").
+     *
+     * @param VehicleSales $vehicleSales A plugin.
+     * @param string       $vin          A vehicle's VIN.
+     *
+     * @throws QueryException           When the plugin cannot read the sale.
+     * @throws InvalidArgumentException When an entity type the plugin reads through is malformed.
+     *
+     * @return VehicleSale|null The plugin's sale of the vehicle; null when it has none.
+     */
+    private function pluginSale(VehicleSales $vehicleSales, string $vin): ?VehicleSale
+    {
+        return $vehicleSales->sale($this->entityStore, $vin);
+    }
+
+    /**
+     * Asks one plugin through a parameter typed with the plugin type, as `pluginSale()` does.
+     *
+     * @param VehicleSales $vehicleSales A plugin.
+     * @param string       $vin          A vehicle's VIN.
+     *
+     * @return string The plugin's path to the form that records the vehicle's sale.
+     */
+    private function pluginPath(VehicleSales $vehicleSales, string $vin): string
+    {
+        return $vehicleSales->recordPath($vin);
     }
 }

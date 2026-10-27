@@ -42,10 +42,12 @@ test('a sale recorded in one page appears on the dashboard open in another withi
     await expect(page.locator('#tile-revenue')).toHaveText(money(figures.revenue));
     await expect(page.locator('#tile-in-stock')).toHaveText(count(figures.inStock));
 
-    // No reload: the same document, and every request since load a finished refresh of the live part alone.
+    // No reload: the same document, and every request since load a finished refresh of the live part alone, answered
+    // 204 while nothing changed and with the part once the sale was in.
     await expectMarksKept(page);
     expect(requests.length).toBeGreaterThan(0);
     await expectRefreshes(page, requests);
+    expect(requests.some((request) => request.status === 200)).toBe(true);
     expect(requests.filter((request) => request.path.startsWith('/app/events'))).toEqual([]);
 
     await other.close();

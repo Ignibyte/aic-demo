@@ -9,27 +9,20 @@ use AIC\Database\Contracts\Row;
 use App\Customers\Entity\Customer;
 use App\Customers\Entity\CustomerDetails;
 
+use function substr;
+
 /**
- * A row of `customers` read into a `Customer`, and a customer's details as the values a statement saves, for both
- * repositories: the list's and the one that writes a customer at a time.
+ * A row of `customers` read into a `Customer`, and a customer's details as the values the entity store saves by field,
+ * for both repositories: the list's and the one that writes a customer at a time.
  */
 final readonly class CustomerRows
 {
     /**
-     * The columns a customer is read from, the day it was added as text.
-     */
-    public const string SELECTED = "id, name, email, phone, address, notes, to_char(created_at, 'YYYY-MM-DD') AS added_on";
-
-    /**
-     * The columns its details are saved to, in `values()`'s order.
-     */
-    public const string SAVED = 'name, email, phone, address, notes';
-
-    /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `fetchAll()` list
-     * has no type to it, as `VehicleRows` found at gate:23. No AIC ticket carries this yet.
+     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
+     * no type to it, as `VehicleRows` found at gate:23. No AIC ticket carries this yet. The day it was added is the date
+     * that leads `created_at`'s text, which Postgres writes `YYYY-MM-DD hh:mm:ss…` in the session's time zone.
      *
-     * @param Row $row A row with every column of `SELECTED`.
+     * @param Row $row A row of the `customers` entity type.
      *
      * @throws QueryException When a column is missing or of another type.
      *
@@ -45,22 +38,22 @@ final readonly class CustomerRows
             $row->string('notes'),
         );
 
-        return new Customer($row->int('id'), $customerDetails, $row->string('added_on'));
+        return new Customer($row->int('id'), $customerDetails, substr($row->string('created_at'), 0, 10));
     }
 
     /**
      * @param CustomerDetails $customerDetails A customer's details.
      *
-     * @return list<string> Its values for the `?`s of a statement naming `SAVED`, in that order.
+     * @return array<string, string> Its values by field, every writable field of `CustomerTable`'s.
      */
     public function values(CustomerDetails $customerDetails): array
     {
         return [
-            $customerDetails->name,
-            $customerDetails->email,
-            $customerDetails->phone,
-            $customerDetails->address,
-            $customerDetails->notes,
+            'address' => $customerDetails->address,
+            'email' => $customerDetails->email,
+            'name' => $customerDetails->name,
+            'notes' => $customerDetails->notes,
+            'phone' => $customerDetails->phone,
         ];
     }
 }

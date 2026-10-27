@@ -4,35 +4,26 @@ declare(strict_types=1);
 
 namespace App\Inventory\Repository;
 
-use AIC\Database\Contracts\Database;
 use AIC\Database\Contracts\QueryException;
-use AIC\Database\Contracts\Row;
+use AIC\Entity\Application\EntityQuery;
+use AIC\Entity\Application\EntityStore;
+use AIC\Entity\Domain\Comparison;
 use App\Inventory\Entity\Vehicle;
+use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Form\InventoryQuery;
 use App\Inventory\Service\VehicleRows;
+use InvalidArgumentException;
 use UnexpectedValueException;
 
-use function str_replace;
-
 /**
- * The vehicles table: one row per VIN, which the table holds unique; the makes on the lot; and the vehicles a list's
- * query keeps, counted and a page at a time. Every value travels as a bound parameter, and the order's column comes
- * only from this class's own list.
+ * The vehicles table through the entity store (#14): one row per VIN, which the table holds unique; the makes on the
+ * lot; and the vehicles a list's query keeps, counted and a page at a time. The entity API binds every value, and the
+ * order's field comes only from this class's own list.
  */
 final readonly class VehicleRepository
 {
     /**
-     * Inserts a vehicle, or on its VIN gives the row every other value.
-     */
-    private const string UPSERT = 'INSERT INTO vehicles (' . VehicleRows::COLUMNS . ', created_at, updated_at)'
-        . ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())'
-        . ' ON CONFLICT (vin) DO UPDATE SET year = EXCLUDED.year, make = EXCLUDED.make, model = EXCLUDED.model,'
-        . ' trim = EXCLUDED.trim, body_style = EXCLUDED.body_style, mileage = EXCLUDED.mileage,'
-        . ' exterior_colour = EXCLUDED.exterior_colour, list_price = EXCLUDED.list_price, cost = EXCLUDED.cost,'
-        . ' status = EXCLUDED.status, added_on = EXCLUDED.added_on, updated_at = now()';
-
-    /**
-     * The column each sort key orders by.
+     * The field each sort key orders by.
      */
     private const array ORDER = [
         'added' => 'added_on',
@@ -45,11 +36,13 @@ final readonly class VehicleRepository
     ];
 
     /**
-     * @param Database    $database    The database.
-     * @param VehicleRows $vehicleRows Reads a row into a vehicle.
+     * @param EntityStore  $entityStore  The entity store.
+     * @param VehicleTable $vehicleTable The `vehicles` entity type.
+     * @param VehicleRows  $vehicleRows  Reads a row into a vehicle, and a vehicle into its values.
      */
     public function __construct(
-        private Database $database,
+        private EntityStore $entityStore,
+        private VehicleTable $vehicleTable = new VehicleTable(),
         private VehicleRows $vehicleRows = new VehicleRows(),
     ) {
     }
@@ -59,64 +52,58 @@ final readonly class VehicleRepository
      *
      * @param Vehicle $vehicle The vehicle.
      *
-     * @throws QueryException When the statement fails.
+     * @throws QueryException           When the statement fails.
+     * @throws InvalidArgumentException When a value does not fit its field.
      */
     public function save(Vehicle $vehicle): void
     {
-        $this->database->execute(self::UPSERT, $this->vehicleRows->values($vehicle));
+        $this->entityStore->upsert($this->vehicleTable->type(), $this->vehicleRows->values($vehicle), 'vin');
     }
 
     /**
-     * @throws QueryException When the query fails.
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
      *
      * @return list<string> Every make on the lot, in alphabetical order.
      */
     public function makes(): array
     {
-        $makes = [];
-
-        foreach ($this->database->fetchAll('SELECT DISTINCT make FROM vehicles ORDER BY make', []) as $row) {
-            $makes[] = $this->make($row);
-        }
-
-        return $makes;
+        return $this->entityStore->query($this->vehicleTable->type())->totals()->values('make');
     }
 
     /**
      * @param InventoryQuery $inventoryQuery What the list was asked for.
      *
-     * @throws QueryException When the query fails.
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
      *
      * @return int How many vehicles it keeps.
      */
     public function count(InventoryQuery $inventoryQuery): int
     {
-        $sql = 'SELECT count(*)::integer AS total FROM vehicles' . $this->where($inventoryQuery);
-
-        return $this->database->fetchOne($sql, $this->values($inventoryQuery))->int('total');
+        return $this->matching($inventoryQuery)->totals()->count();
     }
 
     /**
      * @param InventoryQuery $inventoryQuery What the list was asked for.
-     * @param int            $limit          How many vehicles a page holds.
+     * @param int            $limit          How many vehicles a page holds, at least 1.
      * @param int            $offset         How many come before the page.
      *
      * @throws QueryException           When the query fails.
      * @throws UnexpectedValueException When a stored status is no status.
+     * @throws InvalidArgumentException When the limit is below 1 or the offset negative.
      *
      * @return list<Vehicle> The page's vehicles, in the query's order and then by VIN.
      */
     public function page(InventoryQuery $inventoryQuery, int $limit, int $offset): array
     {
-        $direction = $inventoryQuery->descending
-            ? ' DESC'
-            : ' ASC';
-        $column = self::ORDER[$inventoryQuery->sort] ?? 'added_on';
-        $sql = 'SELECT ' . VehicleRows::COLUMNS . ' FROM vehicles' . $this->where($inventoryQuery)
-            . ' ORDER BY ' . $column . $direction . ', vin ASC LIMIT ? OFFSET ?';
+        $field = self::ORDER[$inventoryQuery->sort] ?? 'added_on';
+        $entityQuery = $inventoryQuery->descending
+            ? $this->matching($inventoryQuery)->orderByDescending($field)
+            : $this->matching($inventoryQuery)->orderBy($field);
         $vehicles = [];
 
-        foreach ($this->database->fetchAll($sql, [...$this->values($inventoryQuery), $limit, $offset]) as $row) {
+        foreach ($entityQuery->orderBy('vin')->limit($limit)->offset($offset)->rows() as $row) {
             $vehicles[] = $this->vehicleRows->vehicle($row);
         }
 
@@ -126,91 +113,31 @@ final readonly class VehicleRepository
     /**
      * @param InventoryQuery $inventoryQuery What the list was asked for.
      *
-     * @return string The `WHERE` clause its search and filters make, `?` for each value; `TRUE` alone for none.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return EntityQuery The vehicles its search (in make, model and VIN, as typed) and filters keep.
      */
-    private function where(InventoryQuery $inventoryQuery): string
+    private function matching(InventoryQuery $inventoryQuery): EntityQuery
     {
-        $conditions = ' WHERE TRUE';
-
-        if ($inventoryQuery->search !== '') {
-            $conditions .= ' AND (make ILIKE ? OR model ILIKE ? OR vin ILIKE ?)';
-        }
+        $entityQuery = $this->entityStore->query($this->vehicleTable->type())
+            ->search(['make', 'model', 'vin'], $inventoryQuery->search);
 
         if ($inventoryQuery->make !== '') {
-            $conditions .= ' AND make = ?';
+            $entityQuery->where('make', $inventoryQuery->make);
         }
 
         if ($inventoryQuery->status !== '') {
-            $conditions .= ' AND status = ?';
+            $entityQuery->where('status', $inventoryQuery->status);
         }
 
         if ($inventoryQuery->minPrice !== null) {
-            $conditions .= ' AND list_price >= ?';
+            $entityQuery->where('list_price', $inventoryQuery->minPrice, Comparison::GreaterOrEqual);
         }
 
         if ($inventoryQuery->maxPrice !== null) {
-            $conditions .= ' AND list_price <= ?';
+            $entityQuery->where('list_price', $inventoryQuery->maxPrice, Comparison::LessOrEqual);
         }
 
-        return $conditions;
-    }
-
-    /**
-     * @param InventoryQuery $inventoryQuery What the list was asked for.
-     *
-     * @return list<string|int> The values for `where()`'s placeholders, in order.
-     */
-    private function values(InventoryQuery $inventoryQuery): array
-    {
-        $values = [];
-
-        if ($inventoryQuery->search !== '') {
-            $pattern = '%' . $this->literal($inventoryQuery->search) . '%';
-            $values = [$pattern, $pattern, $pattern];
-        }
-
-        if ($inventoryQuery->make !== '') {
-            $values[] = $inventoryQuery->make;
-        }
-
-        if ($inventoryQuery->status !== '') {
-            $values[] = $inventoryQuery->status;
-        }
-
-        if ($inventoryQuery->minPrice !== null) {
-            $values[] = $inventoryQuery->minPrice;
-        }
-
-        if ($inventoryQuery->maxPrice !== null) {
-            $values[] = $inventoryQuery->maxPrice;
-        }
-
-        return $values;
-    }
-
-    /**
-     * @param string $text Search text.
-     *
-     * @return string The text with `\`, `%` and `_` escaped, so `ILIKE` matches it as written.
-     */
-    private function literal(string $text): string
-    {
-        return str_replace('_', '\\_', str_replace('%', '\\%', str_replace('\\', '\\\\', $text)));
-    }
-
-    /**
-     * Reads a row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `fetchAll()` list
-     * has no type to it, and `->string()` there would be resolved against every class with that method, as
-     * `StaffRepository::first()` found at gate:23. No AIC ticket carries this yet.
-     *
-     * @param Row $row A row of `makes()`'s query.
-     *
-     * @throws QueryException When the row has no make.
-     *
-     * @return string Its make.
-     */
-    private function make(Row $row): string
-    {
-        return $row->string('make');
+        return $entityQuery;
     }
 }

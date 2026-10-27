@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Tessera\Application\TesseraProps;
 use App\Dashboard\Controller\DashboardPage;
 use App\Dashboard\Repository\DashboardRepository;
 use App\Dashboard\Service\DashboardCharts;
 use App\Dashboard\Service\DashboardLive;
+use App\Dashboard\Service\DashboardPoll;
+use App\Inventory\Repository\TodayRepository;
+use App\Sales\Repository\SaleRepository;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -34,15 +39,22 @@ final readonly class DashboardHandlers
      */
     public function byId(): array
     {
-        $dashboardRepository = new DashboardRepository($this->handlerContext->database());
+        $staffPages = new StaffPages($this->handlerContext->documents());
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $saleRepository = new SaleRepository($entityStore);
+        $todayRepository = new TodayRepository($entityStore);
+        $dashboardRepository = new DashboardRepository($entityStore, $saleRepository, $todayRepository);
+        $dashboardLive = new DashboardLive($dashboardRepository);
+        $dashboardPoll = new DashboardPoll(
+            $staffPages,
+            $dashboardLive,
+            new TesseraProps($this->handlerContext->envelopeCodec()),
+            $this->handlerContext->envelopeCodec(),
+        );
 
         return [
             DashboardPage::class => $this->handlerContext->page(
-                new DashboardPage(
-                    new StaffPages($this->handlerContext->documents()),
-                    new DashboardLive($dashboardRepository),
-                    new DashboardCharts($dashboardRepository),
-                ),
+                new DashboardPage($staffPages, $dashboardLive, $dashboardPoll, new DashboardCharts($dashboardRepository)),
             ),
         ];
     }

@@ -31,13 +31,13 @@ final readonly class InventoryRoutes
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
-            ->get('/app/inventory', InventoryListPage::class)
             ->get('/app/inventory/new', VehicleNewPage::class)
             ->post('/app/inventory', VehicleCreatePost::class)
             ->get('/app/inventory/{vin}', VehiclePage::class)
             ->get('/app/inventory/{vin}/edit', VehicleEditPage::class)
             ->post('/app/inventory/{vin}', VehicleUpdatePost::class)
             ->get('/app/inventory/{vin}/delete', VehicleDeletePage::class)
-            ->post('/app/inventory/{vin}/delete', VehicleDeletePost::class);
+            ->post('/app/inventory/{vin}/delete', VehicleDeletePost::class)
+            ->get('/app/inventory', InventoryListPage::class);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Controller\Contracts\Command;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\ConsoleContext;
 use App\Inventory\Repository\VehicleRepository;
 use App\Sales\Command\SalesSeed;
@@ -29,11 +30,10 @@ final readonly class SalesCommands
      */
     public function byName(): array
     {
+        $entityStore = new EntityStore($this->consoleContext->database());
+
         return [
-            'sales:seed' => new SalesSeed(
-                new SaleRepository($this->consoleContext->database()),
-                new VehicleRepository($this->consoleContext->database()),
-            ),
+            'sales:seed' => new SalesSeed(new SaleRepository($entityStore), new VehicleRepository($entityStore)),
         ];
     }
 }

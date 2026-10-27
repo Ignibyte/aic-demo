@@ -102,6 +102,7 @@ final readonly class VehicleDeletes
      * @param Vehicle $vehicle A vehicle that was not sold when it was read.
      *
      * @throws QueryException When it cannot be deleted for any reason but a sale recorded since it was read.
+     * @throws LogicException When an entity type it goes through is malformed.
      *
      * @return bool Whether it was deleted; false when it is gone, sold meanwhile, or held by a sale's foreign key.
      */

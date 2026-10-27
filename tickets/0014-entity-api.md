@@ -2,9 +2,10 @@
 number: 14
 title: "Every table through the entity API; dashboard parts built from sources, idle polls 204"
 type: chore
-status: open
+status: in-review
 created: 2026-10-27T18:00:00Z
-updated: 2026-10-27T18:00:00Z
+updated: 2026-10-27T23:31:02Z
+phase: "docs"
 ---
 
 AIC moved under this branch (operator, before the run) to the commit that holds its tables to

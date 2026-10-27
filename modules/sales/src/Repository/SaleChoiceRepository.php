@@ -4,207 +4,232 @@ declare(strict_types=1);
 
 namespace App\Sales\Repository;
 
-use AIC\Database\Contracts\Database;
 use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
+use AIC\Entity\Application\EntityQuery;
+use AIC\Entity\Application\EntityStore;
+use AIC\Entity\Domain\Comparison;
+use AIC\Entity\Domain\Condition;
+use AIC\Entity\Domain\EntityType;
+use App\Customers\Entity\CustomerTable;
+use App\Inventory\Entity\VehicleStatus;
+use App\Inventory\Entity\VehicleTable;
+use App\Inventory\Repository\TodayRepository;
 use App\Sales\Entity\Choice;
 use App\Sales\Entity\SaleVehicle;
+use App\Staff\Entity\StaffTable;
+use InvalidArgumentException;
+
+use function trim;
 
 /**
- * What a sale form chooses from and names: the vehicles not sold, the customers and the staff as options, each keyed
- * by what is unique in its table (a VIN, an email, a login); a vehicle, a customer and a member of staff found by that
- * key; and the database's today.
+ * What a sale form chooses from and names, read through the entity types the other modules export (#14): the vehicles
+ * not sold, the customers and the staff as options, each keyed by what is unique in its table (a VIN, an email, a
+ * login) and labelled here; a vehicle, a customer and a member of staff found by that key; and the database's today.
  */
 final readonly class SaleChoiceRepository
 {
     /**
-     * The vehicles not sold, and the one a form chose, by make, model and VIN.
-     */
-    private const string VEHICLES = "SELECT vin AS key, trim(year || ' ' || make || ' ' || model || ' ' || trim) || ', ' || vin AS label"
-        . " FROM vehicles WHERE status <> 'sold' OR vin = ? ORDER BY make, model, vin";
-
-    /**
-     * The customers by name, each with the email that tells two of a name apart.
-     */
-    private const string CUSTOMERS = "SELECT email AS key, name || ' (' || email || ')' AS label FROM customers ORDER BY name, id";
-
-    /**
-     * The staff by name.
-     */
-    private const string STAFF = 'SELECT email AS key, name AS label FROM users ORDER BY name, id';
-
-    /**
-     * A vehicle by VIN, as a sale needs it.
-     */
-    private const string VEHICLE = "SELECT id, status, list_price, to_char(added_on, 'YYYY-MM-DD') AS added_on FROM vehicles"
-        . ' WHERE vin = ? LIMIT 1';
-
-    /**
-     * The database's today.
-     */
-    private const string DAY = 'SELECT current_date::text AS day';
-
-    /**
-     * @param Database $database The database.
+     * @param EntityStore     $entityStore     The entity store.
+     * @param TodayRepository $todayRepository The database's today, inventory's.
+     * @param VehicleTable    $vehicleTable    The `vehicles` entity type, inventory's.
+     * @param CustomerTable   $customerTable   The `customers` entity type, customers'.
+     * @param StaffTable      $staffTable      The `users` entity type, staff's.
      */
     public function __construct(
-        private Database $database,
+        private EntityStore $entityStore,
+        private TodayRepository $todayRepository,
+        private VehicleTable $vehicleTable = new VehicleTable(),
+        private CustomerTable $customerTable = new CustomerTable(),
+        private StaffTable $staffTable = new StaffTable(),
     ) {
     }
 
     /**
      * @param string $chosen The VIN a form chose, offered even when it is sold; empty for none.
      *
-     * @throws QueryException When the query fails.
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return list<Choice> The vehicles a sale may name, by VIN.
+     * @return list<Choice> The vehicles a sale may name, by VIN, ordered by make, model and VIN; each labelled with its
+     *                      year, make, model and trim, then its VIN.
      */
     public function vehicles(string $chosen): array
     {
-        return $this->choices(self::VEHICLES, [$chosen]);
-    }
-
-    /**
-     * @throws QueryException When the query fails.
-     *
-     * @return list<Choice> The customers, by email.
-     */
-    public function customers(): array
-    {
-        return $this->choices(self::CUSTOMERS, []);
-    }
-
-    /**
-     * @throws QueryException When the query fails.
-     *
-     * @return list<Choice> The staff, by login.
-     */
-    public function staff(): array
-    {
-        return $this->choices(self::STAFF, []);
-    }
-
-    /**
-     * @param string $vin A VIN, in capitals.
-     *
-     * @throws QueryException When the query fails.
-     *
-     * @return SaleVehicle|null The vehicle with it; null when none has it.
-     */
-    public function vehicle(string $vin): ?SaleVehicle
-    {
-        foreach ($this->database->fetchAll(self::VEHICLE, [$vin]) as $row) {
-            return $this->saleVehicle($row);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $email A customer's email.
-     *
-     * @throws QueryException When the query fails.
-     *
-     * @return int The customer's id; 0 when no customer has it.
-     */
-    public function customerId(string $email): int
-    {
-        return $this->idFor('SELECT id FROM customers WHERE email = ? LIMIT 1', $email);
-    }
-
-    /**
-     * @param string $login A member of staff's login.
-     *
-     * @throws QueryException When the query fails.
-     *
-     * @return int Their id; 0 when no member of staff has it.
-     */
-    public function memberId(string $login): int
-    {
-        return $this->idFor('SELECT id FROM users WHERE email = ? LIMIT 1', $login);
-    }
-
-    /**
-     * @throws QueryException When the query fails.
-     *
-     * @return string The database's today, `YYYY-MM-DD`.
-     */
-    public function currentDay(): string
-    {
-        return $this->database->fetchOne(self::DAY, [])->string('day');
-    }
-
-    /**
-     * @param string       $sql    A query giving `key` and `label`.
-     * @param list<string> $values Its values.
-     *
-     * @throws QueryException When the query fails.
-     *
-     * @return list<Choice> Its rows as choices, in order.
-     */
-    private function choices(string $sql, array $values): array
-    {
+        $entityQuery = $this->entityStore->query($this->vehicleTable->type())
+            ->whereAny([new Condition('status', VehicleStatus::Sold->value, Comparison::NotEquals), new Condition('vin', $chosen)])
+            ->orderBy('make')
+            ->orderBy('model')
+            ->orderBy('vin');
         $choices = [];
 
-        foreach ($this->database->fetchAll($sql, $values) as $row) {
-            $choices[] = $this->choice($row);
+        foreach ($entityQuery->rows() as $row) {
+            $choices[] = $this->vehicleChoice($row);
         }
 
         return $choices;
     }
 
     /**
-     * @param string $sql A query giving one `id` for one `?`.
-     * @param string $key Its value.
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @throws QueryException When the query fails.
-     *
-     * @return int The id; 0 when no row has the key.
+     * @return list<Choice> The customers by name, by email, each labelled with the email that tells two of a name apart.
      */
-    private function idFor(string $sql, string $key): int
+    public function customers(): array
     {
-        foreach ($this->database->fetchAll($sql, [$key]) as $row) {
-            return $this->rowId($row);
+        $choices = [];
+
+        foreach ($this->byName($this->customerTable->type())->rows() as $row) {
+            $choices[] = $this->customerChoice($row);
         }
 
-        return 0;
+        return $choices;
+    }
+
+    /**
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return list<Choice> The staff by name, by login.
+     */
+    public function staff(): array
+    {
+        $choices = [];
+
+        foreach ($this->byName($this->staffTable->type())->rows() as $row) {
+            $choices[] = $this->staffChoice($row);
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @param string $vin A VIN, in capitals.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return SaleVehicle|null The vehicle with it; null when none has it.
+     */
+    public function vehicle(string $vin): ?SaleVehicle
+    {
+        $row = $this->entityStore->query($this->vehicleTable->type())->where('vin', $vin)->first();
+
+        return $row instanceof Row
+            ? new SaleVehicle(
+                $row->int('id'),
+                $row->string('status') === VehicleStatus::Sold->value,
+                $row->int('list_price'),
+                $row->string('added_on'),
+            )
+            : null;
+    }
+
+    /**
+     * @param string $email A customer's email.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return int The customer's id; 0 when no customer has it.
+     */
+    public function customerId(string $email): int
+    {
+        return $this->idByEmail($this->customerTable->type(), $email);
+    }
+
+    /**
+     * @param string $login A member of staff's login.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return int Their id; 0 when no member of staff has it.
+     */
+    public function memberId(string $login): int
+    {
+        return $this->idByEmail($this->staffTable->type(), $login);
+    }
+
+    /**
+     * @throws QueryException           When the query fails, or the today view gives no row.
+     * @throws InvalidArgumentException When its entity type is malformed.
+     *
+     * @return string The database's today, `YYYY-MM-DD`.
+     */
+    public function currentDay(): string
+    {
+        return $this->todayRepository->today();
+    }
+
+    /**
+     * @param EntityType $entityType An entity type with a name.
+     *
+     * @throws InvalidArgumentException When it has no name.
+     *
+     * @return EntityQuery Its rows by name, then by id.
+     */
+    private function byName(EntityType $entityType): EntityQuery
+    {
+        return $this->entityStore->query($entityType)->orderBy('name')->orderBy('id');
+    }
+
+    /**
+     * @param EntityType $entityType An entity type whose email is unique.
+     * @param string     $email      An email.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When it has no email.
+     *
+     * @return int The id of the row that has it; 0 when none has it.
+     */
+    private function idByEmail(EntityType $entityType, string $email): int
+    {
+        $row = $this->entityStore->query($entityType)->where('email', $email)->first();
+
+        return $row instanceof Row
+            ? $row->int('id')
+            : 0;
     }
 
     /**
      * Reads the row through a native `Row` parameter, as `SaleRows::sale()` does; so do the two below.
      *
-     * @param Row $row A row of `choices()`'s query.
+     * @param Row $row A row of the vehicles.
      *
      * @throws QueryException When a column is missing.
      *
-     * @return Choice The choice.
+     * @return Choice The vehicle as a choice: `2023 Toyota Camry SE, {VIN}`.
      */
-    private function choice(Row $row): Choice
+    private function vehicleChoice(Row $row): Choice
     {
-        return new Choice($row->string('key'), $row->string('label'));
+        $title = trim($row->int('year') . ' ' . $row->string('make') . ' ' . $row->string('model') . ' ' . $row->string('trim'));
+
+        return new Choice($row->string('vin'), $title . ', ' . $row->string('vin'));
     }
 
     /**
-     * @param Row $row A row of `idFor()`'s query.
-     *
-     * @throws QueryException When it has no id.
-     *
-     * @return int The id.
-     */
-    private function rowId(Row $row): int
-    {
-        return $row->int('id');
-    }
-
-    /**
-     * @param Row $row A row of `VEHICLE`.
+     * @param Row $row A row of the customers.
      *
      * @throws QueryException When a column is missing.
      *
-     * @return SaleVehicle The vehicle.
+     * @return Choice The customer as a choice: `{name} ({email})`.
      */
-    private function saleVehicle(Row $row): SaleVehicle
+    private function customerChoice(Row $row): Choice
     {
-        return new SaleVehicle($row->int('id'), $row->string('status') === 'sold', $row->int('list_price'), $row->string('added_on'));
+        return new Choice($row->string('email'), $row->string('name') . ' (' . $row->string('email') . ')');
+    }
+
+    /**
+     * @param Row $row A row of the staff.
+     *
+     * @throws QueryException When a column is missing.
+     *
+     * @return Choice The member as a choice, labelled with their name.
+     */
+    private function staffChoice(Row $row): Choice
+    {
+        return new Choice($row->string('email'), $row->string('name'));
     }
 }

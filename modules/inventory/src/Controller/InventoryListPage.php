@@ -13,7 +13,6 @@ use App\Staff\Service\StaffPages;
 use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
-use UnexpectedValueException;
 
 /**
  * GET /app/inventory: the vehicles on the lot, searched, filtered, sorted and paged by plain GET parameters. The
@@ -34,9 +33,8 @@ final readonly class InventoryListPage implements Page
     /**
      * @param ServerRequestInterface $serverRequest The request, from a signed-in member of staff.
      *
-     * @throws QueryException           When the vehicles cannot be read.
-     * @throws UnexpectedValueException When a stored status is no status.
-     * @throws LogicException           When the request has no session, or a key or a region does not fit the theme.
+     * @throws QueryException When the makes cannot be read.
+     * @throws LogicException When the request has no session, or a key or a region does not fit the theme.
      *
      * @return PageResponse The list.
      */

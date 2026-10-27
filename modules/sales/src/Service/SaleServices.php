@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Sales\Service;
 
 use AIC\Controller\Application\PageDocuments;
-use AIC\Database\Contracts\Database;
+use AIC\Entity\Application\EntityStore;
+use App\Inventory\Repository\TodayRepository;
 use App\Sales\Form\SaleChecks;
 use App\Sales\Form\SaleFields;
 use App\Sales\Form\SaleForm;
@@ -16,20 +17,20 @@ use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
 
 /**
- * The factory the manifest names for the sale form's services, built from the database and the page documents, so the
+ * The factory the manifest names for the sale form's services, built from the entity store and the page documents, so the
  * generated handler parts make one call apiece rather than each writing out the graph the controllers share (gate:14).
  * `SaleRecordServices` builds the sale page's and the void's.
  */
 final readonly class SaleServices
 {
     /**
-     * @param Database             $database             The database.
+     * @param EntityStore          $entityStore          The entity store.
      * @param PageDocuments        $pageDocuments        The theme's document around a page.
      * @param SaleRecordRepository $saleRecordRepository One sale at a time, changing its vehicle's status through
      *                                                   inventory.
      */
     public function __construct(
-        private Database $database,
+        private EntityStore $entityStore,
         private PageDocuments $pageDocuments,
         private SaleRecordRepository $saleRecordRepository,
     ) {
@@ -40,7 +41,7 @@ final readonly class SaleServices
      */
     public function saleSaves(): SaleSaves
     {
-        $saleChoiceRepository = new SaleChoiceRepository($this->database);
+        $saleChoiceRepository = new SaleChoiceRepository($this->entityStore, new TodayRepository($this->entityStore));
         $saleForm = new SaleForm($this->staffPanels(), new SaleFields($saleChoiceRepository));
 
         return new SaleSaves($saleChoiceRepository, $this->saleRecordRepository, new SaleChecks($saleChoiceRepository), $saleForm);

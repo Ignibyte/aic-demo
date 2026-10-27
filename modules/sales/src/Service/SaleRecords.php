@@ -36,7 +36,8 @@ final readonly class SaleRecords
     /**
      * @param ServerRequestInterface $serverRequest A request to a sale's route.
      *
-     * @throws QueryException When the sale cannot be read.
+     * @throws QueryException           When the sale cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return Sale|null The sale its `id` names; null when that is not 1 to 999,999,999 or no sale has it.
      */

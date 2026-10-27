@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Repository\VehicleStatusRepository;
 use App\Sales\Controller\SalePage;
@@ -35,8 +36,9 @@ final readonly class SalesHandlersPart2
      */
     public function byId(): array
     {
-        $vehicleStatusRepository = new VehicleStatusRepository($this->handlerContext->database());
-        $saleRecordRepository = new SaleRecordRepository($this->handlerContext->database(), $vehicleStatusRepository);
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $vehicleStatusRepository = new VehicleStatusRepository($entityStore);
+        $saleRecordRepository = new SaleRecordRepository($entityStore, $vehicleStatusRepository);
         $saleRecordServices = new SaleRecordServices(
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),

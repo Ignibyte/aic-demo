@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Controller\Contracts\Command;
+use AIC\Database\Application\DatabaseStatus;
 use AIC\Module\Application\ConsoleContext;
 use App\Site\Command\DatabasePing;
 
@@ -28,7 +29,7 @@ final readonly class SiteCommands
     public function byName(): array
     {
         return [
-            'db:ping' => new DatabasePing($this->consoleContext->database()),
+            'db:ping' => new DatabasePing(new DatabaseStatus($this->consoleContext->database())),
         ];
     }
 }

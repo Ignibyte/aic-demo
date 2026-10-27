@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Inventory\Controller\InventoryListPage;
 use App\Inventory\Controller\VehicleCreatePost;
 use App\Inventory\Controller\VehicleDeletePage;
+use App\Inventory\Controller\VehicleDeletePost;
 use App\Inventory\Controller\VehicleEditPage;
 use App\Inventory\Controller\VehicleNewPage;
 use App\Inventory\Controller\VehiclePage;
 use App\Inventory\Controller\VehicleUpdatePost;
-use App\Inventory\Repository\VehicleRepository;
-use App\Inventory\Service\InventoryList;
 use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
-use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -41,21 +39,20 @@ final readonly class InventoryHandlers
      */
     public function byId(): array
     {
-        $inventoryList = new InventoryList(new VehicleRepository($this->handlerContext->database()));
+        $entityStore = new EntityStore($this->handlerContext->database());
         $vehicleServices = new VehicleServices(
-            $this->handlerContext->database(),
+            $entityStore,
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
             $this->handlerContext->tagged(VehicleSales::class),
         );
         $vehicleSaves = $vehicleServices->vehicleSaves();
+        $vehicleDeletes = $vehicleServices->vehicleDeletes();
 
         return [
-            InventoryListPage::class => $this->handlerContext->page(
-                new InventoryListPage(new StaffPages($this->handlerContext->documents()), $inventoryList),
-            ),
             VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($vehicleSaves)),
-            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($vehicleServices->vehicleDeletes())),
+            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($vehicleDeletes)),
+            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($vehicleDeletes)),
             VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($vehicleSaves)),
             VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($vehicleSaves)),
             VehiclePage::class => $this->handlerContext->page(new VehiclePage($vehicleServices->vehicleCards())),

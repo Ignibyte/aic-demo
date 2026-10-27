@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Controller\Contracts\Command;
+use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\ConsoleContext;
 use App\Customers\Command\CustomersSeed;
 use App\Customers\Repository\CustomerRepository;
@@ -28,8 +29,10 @@ final readonly class CustomersCommands
      */
     public function byName(): array
     {
+        $customerRepository = new CustomerRepository(new EntityStore($this->consoleContext->database()));
+
         return [
-            'customers:seed' => new CustomersSeed(new CustomerRepository($this->consoleContext->database())),
+            'customers:seed' => new CustomersSeed($customerRepository),
         ];
     }
 }

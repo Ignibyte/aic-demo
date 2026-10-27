@@ -8,6 +8,7 @@ use AIC\Database\Contracts\QueryException;
 use App\Sales\Entity\SaleDetails;
 use App\Sales\Entity\SaleVehicle;
 use App\Sales\Repository\SaleChoiceRepository;
+use InvalidArgumentException;
 
 use function checkdate;
 use function preg_match;
@@ -42,7 +43,8 @@ final readonly class SaleChecks
      * @param SaleEntry $saleEntry What was posted.
      * @param string    $today     The database's today, `YYYY-MM-DD`.
      *
-     * @throws QueryException When what the entry names cannot be read.
+     * @throws QueryException           When what the entry names cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
      *
      * @return SaleCheck Each refused field's message, or the sale to record.
      */
