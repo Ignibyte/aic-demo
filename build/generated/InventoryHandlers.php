@@ -7,8 +7,15 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Controller\InventoryListPage;
+use App\Inventory\Controller\VehicleCreatePost;
+use App\Inventory\Controller\VehicleDeletePage;
+use App\Inventory\Controller\VehicleEditPage;
+use App\Inventory\Controller\VehicleNewPage;
+use App\Inventory\Controller\VehiclePage;
+use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Service\InventoryList;
+use App\Inventory\Service\VehicleServices;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -34,11 +41,23 @@ final readonly class InventoryHandlers
     public function byId(): array
     {
         $inventoryList = new InventoryList(new VehicleRepository($this->handlerContext->database()));
+        $vehicleServices = new VehicleServices(
+            $this->handlerContext->database(),
+            $this->handlerContext->envelopeCodec(),
+            $this->handlerContext->documents(),
+        );
+        $vehicleSaves = $vehicleServices->vehicleSaves();
 
         return [
             InventoryListPage::class => $this->handlerContext->page(
                 new InventoryListPage(new StaffPages($this->handlerContext->documents()), $inventoryList),
             ),
+            VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($vehicleSaves)),
+            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($vehicleServices->vehicleDeletes())),
+            VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($vehicleSaves)),
+            VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($vehicleSaves)),
+            VehiclePage::class => $this->handlerContext->page(new VehiclePage($vehicleServices->vehicleCards())),
+            VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($vehicleSaves)),
         ];
     }
 }

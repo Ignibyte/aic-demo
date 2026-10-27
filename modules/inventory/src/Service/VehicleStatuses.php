@@ -6,11 +6,12 @@ namespace App\Inventory\Service;
 
 use App\Inventory\Entity\VehicleStatus;
 use App\Theme\Components\StatusBadge\BadgeTone;
+use App\Theme\Components\StatusBadge\StatusBadge;
 use UnexpectedValueException;
 
 /**
  * The three statuses in order, a stored value read back as its status (anything else is refused rather than read as
- * some status), and each status's badge colour.
+ * some status), and each status's badge colour and badge.
  */
 final readonly class VehicleStatuses
 {
@@ -57,5 +58,16 @@ final readonly class VehicleStatuses
         }
 
         return BadgeTone::Neutral;
+    }
+
+    /**
+     * @param VehicleStatus $vehicleStatus A status.
+     * @param string        $id            The badge's id.
+     *
+     * @return StatusBadge Its badge: its label in its colour.
+     */
+    public function badge(VehicleStatus $vehicleStatus, string $id): StatusBadge
+    {
+        return new StatusBadge($vehicleStatus->label(), $this->tone($vehicleStatus), $id);
     }
 }

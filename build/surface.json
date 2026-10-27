@@ -36,6 +36,55 @@
             "path": "/app/inventory"
         },
         {
+            "handler": "App\\Inventory\\Controller\\VehicleNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/new"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehiclePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleEditPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/edit"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleUpdatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleDeletePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/delete"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleDeletePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/delete"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -167,7 +216,9 @@
             "bindings": [],
             "blocks": [],
             "exports": [],
-            "factories": [],
+            "factories": [
+                "App\\Inventory\\Service\\VehicleServices"
+            ],
             "middleware": [],
             "migrations": [
                 "App\\Inventory\\Migration\\CreateVehiclesTable"

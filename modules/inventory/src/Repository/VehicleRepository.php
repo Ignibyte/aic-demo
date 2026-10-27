@@ -8,9 +8,8 @@ use AIC\Database\Contracts\Database;
 use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use App\Inventory\Entity\Vehicle;
-use App\Inventory\Entity\VehiclePrice;
 use App\Inventory\Form\InventoryQuery;
-use App\Inventory\Service\VehicleStatuses;
+use App\Inventory\Service\VehicleRows;
 use UnexpectedValueException;
 
 use function str_replace;
@@ -23,15 +22,9 @@ use function str_replace;
 final readonly class VehicleRepository
 {
     /**
-     * The columns a vehicle is read from and saved to, in its constructor's order.
-     */
-    private const string COLUMNS = 'vin, year, make, model, trim, body_style, mileage, exterior_colour, list_price, cost,'
-        . ' status, added_on';
-
-    /**
      * Inserts a vehicle, or on its VIN gives the row every other value.
      */
-    private const string UPSERT = 'INSERT INTO vehicles (' . self::COLUMNS . ', created_at, updated_at)'
+    private const string UPSERT = 'INSERT INTO vehicles (' . VehicleRows::COLUMNS . ', created_at, updated_at)'
         . ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())'
         . ' ON CONFLICT (vin) DO UPDATE SET year = EXCLUDED.year, make = EXCLUDED.make, model = EXCLUDED.model,'
         . ' trim = EXCLUDED.trim, body_style = EXCLUDED.body_style, mileage = EXCLUDED.mileage,'
@@ -52,12 +45,12 @@ final readonly class VehicleRepository
     ];
 
     /**
-     * @param Database        $database        The database.
-     * @param VehicleStatuses $vehicleStatuses Reads a stored status.
+     * @param Database    $database    The database.
+     * @param VehicleRows $vehicleRows Reads a row into a vehicle.
      */
     public function __construct(
         private Database $database,
-        private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
+        private VehicleRows $vehicleRows = new VehicleRows(),
     ) {
     }
 
@@ -70,23 +63,7 @@ final readonly class VehicleRepository
      */
     public function save(Vehicle $vehicle): void
     {
-        $this->database->execute(
-            self::UPSERT,
-            [
-                $vehicle->vin,
-                $vehicle->year,
-                $vehicle->make,
-                $vehicle->model,
-                $vehicle->trim,
-                $vehicle->bodyStyle,
-                $vehicle->mileage,
-                $vehicle->exteriorColour,
-                $vehicle->price->list,
-                $vehicle->price->cost,
-                $vehicle->status->value,
-                $vehicle->addedOn,
-            ],
-        );
+        $this->database->execute(self::UPSERT, $this->vehicleRows->values($vehicle));
     }
 
     /**
@@ -135,12 +112,12 @@ final readonly class VehicleRepository
             ? ' DESC'
             : ' ASC';
         $column = self::ORDER[$inventoryQuery->sort] ?? 'added_on';
-        $sql = 'SELECT ' . self::COLUMNS . ' FROM vehicles' . $this->where($inventoryQuery)
+        $sql = 'SELECT ' . VehicleRows::COLUMNS . ' FROM vehicles' . $this->where($inventoryQuery)
             . ' ORDER BY ' . $column . $direction . ', vin ASC LIMIT ? OFFSET ?';
         $vehicles = [];
 
         foreach ($this->database->fetchAll($sql, [...$this->values($inventoryQuery), $limit, $offset]) as $row) {
-            $vehicles[] = $this->vehicle($row);
+            $vehicles[] = $this->vehicleRows->vehicle($row);
         }
 
         return $vehicles;
@@ -235,32 +212,5 @@ final readonly class VehicleRepository
     private function make(Row $row): string
     {
         return $row->string('make');
-    }
-
-    /**
-     * Reads a row through a native `Row` parameter, as `make()` does.
-     *
-     * @param Row $row A row with every column of `COLUMNS`.
-     *
-     * @throws QueryException           When a column is missing or of another type.
-     * @throws UnexpectedValueException When its status is no status.
-     *
-     * @return Vehicle The vehicle.
-     */
-    private function vehicle(Row $row): Vehicle
-    {
-        return new Vehicle(
-            $row->string('vin'),
-            $row->int('year'),
-            $row->string('make'),
-            $row->string('model'),
-            $row->string('trim'),
-            $row->string('body_style'),
-            $row->int('mileage'),
-            $row->string('exterior_colour'),
-            new VehiclePrice($row->int('list_price'), $row->int('cost')),
-            $this->vehicleStatuses->stored($row->string('status')),
-            $row->string('added_on'),
-        );
     }
 }

@@ -10,7 +10,7 @@ use AIC\Controller\Contracts\PageResponse;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Service\InventoryList;
 use App\Staff\Service\StaffPages;
-use InvalidArgumentException;
+use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
@@ -36,7 +36,7 @@ final readonly class InventoryListPage implements Page
      *
      * @throws QueryException           When the vehicles cannot be read.
      * @throws UnexpectedValueException When a stored status is no status.
-     * @throws InvalidArgumentException When a key or a region does not fit the theme.
+     * @throws LogicException           When the request has no session, or a key or a region does not fit the theme.
      *
      * @return PageResponse The list.
      */
