@@ -23,7 +23,7 @@ use Override;
 final readonly class DashboardLive implements ComponentSource
 {
     /**
-     * The part's key: a child of `content` itself, before the grid, since only a region's child carries props.
+     * The part's key: the panel grid's first item, before the charts.
      */
     public const string KEY = 'live';
 

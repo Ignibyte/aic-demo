@@ -76,11 +76,10 @@ final readonly class DashboardPage implements Page
 
         return $this->staffPages->page(
             'Welcome, ' . $staffMember->name,
-            $this->dashboardCharts->parts(),
+            [$this->dashboardPoll->part($version), ...$this->dashboardCharts->parts()],
             200,
             $staffMember->role->label() . ' at Ridgeway Motors',
             'Dashboard',
-            [$this->dashboardPoll->part($version)],
         );
     }
 }

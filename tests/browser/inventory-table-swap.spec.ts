@@ -72,7 +72,7 @@ test('a filter, a sort and a page each swap the table alone, in one Tessera visi
         const response = await fetch('/app/inventory', {
             headers: {
                 'Tessera-Request': 'visit',
-                'Tessera-Protocol': '1',
+                'Tessera-Protocol': '2',
                 'Tessera-Layout': 'lotline',
                 'Tessera-Targets': targets,
             },
