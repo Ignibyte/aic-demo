@@ -84,8 +84,9 @@ export async function expectFeed(page: Page): Promise<void> {
 // The anchor of the dashboard's live part (AIC #188), which holds the tiles and the feed and which its poll refreshes.
 export const LIVE = 'dashboard-live';
 
-// One request the page sent, with its answer once it has finished. `targets` is the path `Tessera-Targets` names, and
-// `props` whether a props token followed it, as Tessera sends the one the part carries.
+// One request the page sent, with its answer once it has finished. `targets` is the path `Tessera-Targets` names,
+// `props` whether a props token followed it, as Tessera sends the one the part carries, and `anchor` the `@NAME`
+// Tessera 0.3.0 sends last for an anchored part (protocol 2, AIC #194); empty for none.
 export interface SentRequest {
     resourceType: string;
     method: string;
@@ -93,6 +94,7 @@ export interface SentRequest {
     tesseraRequest: string;
     targets: string;
     props: boolean;
+    anchor: string;
     status: number;
     contentType: string;
     templates: string[];
@@ -110,14 +112,15 @@ export async function recordPolls(page: Page): Promise<SentRequest[]> {
         const request = route.request();
         const url = new URL(request.url());
         const headers = await request.allHeaders();
-        const [targets, props] = (headers['tessera-targets'] ?? '').split(' ');
+        const [targets, ...rest] = (headers['tessera-targets'] ?? '').split(' ');
         const sent: SentRequest = {
             resourceType: request.resourceType(),
             method: request.method(),
             path: url.pathname + url.search,
             tesseraRequest: headers['tessera-request'] ?? '',
             targets,
-            props: (props ?? '') !== '',
+            props: rest.some((token) => !token.startsWith('@')),
+            anchor: rest.find((token) => token.startsWith('@')) ?? '',
             status: 0,
             contentType: '',
             templates: [],
@@ -156,7 +159,7 @@ export async function expectRefreshes(page: Page, requests: SentRequest[]): Prom
     expect(live).not.toBe('');
 
     for (const request of requests) {
-        const sent = { resourceType: 'fetch', method: 'GET', path: '/app', tesseraRequest: 'refresh', targets: live, props: true, failure: '', finished: true };
+        const sent = { resourceType: 'fetch', method: 'GET', path: '/app', tesseraRequest: 'refresh', targets: live, props: true, anchor: `@${LIVE}`, failure: '', finished: true };
         const answer = request.status === 204
             ? { status: 204, contentType: expect.any(String), templates: [] }
             : { status: 200, contentType: expect.stringMatching(/^text\/vnd\.tessera\+html/), templates: [live] };

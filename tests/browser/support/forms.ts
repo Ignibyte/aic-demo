@@ -137,7 +137,9 @@ export function expectSubmit(request: SentRequest, action: string): void {
     expect(request.path).toBe(action);
     expect(request.tesseraRequest).toBe('submit');
     expect(request.writeId).toMatch(WRITE_ID);
-    expect(request.targets).toBe('content');
+    // The target alone: protocol 2 ends an anchored target's entry with `@NAME` (AIC #194), and a region carries none
+    // today.
+    expect(request.targets.split(' ')[0]).toBe('content');
 }
 
 // Waits for the one request a refused submit makes, and holds it to a 422 answered as a fragment of `content`.
