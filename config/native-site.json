@@ -40,7 +40,7 @@
         {
             "name": "pinned Tessera script",
             "method": "GET",
-            "path": "/assets/tessera-0.2.0/tessera.csp.iife.js",
+            "path": "/assets/tessera-0.3.0/tessera.csp.iife.js",
             "form": "",
             "header": "",
             "status": 200,
@@ -49,7 +49,7 @@
         {
             "name": "pinned Tessera source map",
             "method": "GET",
-            "path": "/assets/tessera-0.2.0/tessera.csp.iife.js.map",
+            "path": "/assets/tessera-0.3.0/tessera.csp.iife.js.map",
             "form": "",
             "header": "",
             "status": 200,
@@ -870,7 +870,7 @@
             "method": "GET",
             "path": "/app/inventory?make=Toyota&sort=-price",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,
             "captures": false
         },
@@ -879,7 +879,7 @@
             "method": "GET",
             "path": "/app/inventory?status=in_stock&sort=price&page=2",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,
             "captures": false
         },
@@ -888,7 +888,7 @@
             "method": "GET",
             "path": "/app/inventory",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:nope",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content/c0/PanelGrid.1:vehicles/Panel.1:nope",
             "status": 200,
             "captures": false
         },
@@ -897,7 +897,7 @@
             "method": "GET",
             "path": "/app/customers",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: sidebar",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: sidebar",
             "status": 200,
             "captures": false
         },
@@ -906,7 +906,7 @@
             "method": "GET",
             "path": "/app",
             "form": "",
-            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
             "status": 200,
             "captures": false
         },
@@ -915,7 +915,7 @@
             "method": "GET",
             "path": "/app/inventory?make=Toyota&sort=-price",
             "form": "",
-            "header": "Tessera-Request: visit\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,
             "captures": false
         },
@@ -924,7 +924,7 @@
             "method": "GET",
             "path": "/app",
             "form": "",
-            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
             "status": 200,
             "captures": false
         },
@@ -933,7 +933,7 @@
             "method": "GET",
             "path": "/app",
             "form": "",
-            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 1\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-makes",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-makes",
             "status": 200,
             "captures": false
         }
