@@ -96,7 +96,7 @@ export function pathOf(url: string): string {
 }
 
 // Waits for the one request a change makes, then holds it to a Tessera visit of the results, by the path their anchor
-// has on the page, answered with the results alone.
+// has on the page and then the anchor, as protocol 2 ends each entry (AIC #194), answered with the results alone.
 export async function expectTableVisit(page: Page, requests: ListRequest[], path: string): Promise<void> {
     await expect.poll(() => requests.length).toBe(1);
     const [request] = requests;
@@ -105,7 +105,7 @@ export async function expectTableVisit(page: Page, requests: ListRequest[], path
     expect(request.resourceType).toBe('fetch');
     expect(pathOf(request.url)).toBe(path);
     expect(request.tesseraRequest).toBe('visit');
-    expect(request.targets).toBe(results);
+    expect(request.targets).toBe(`${results} @${RESULTS}`);
     expect(request.contentType).toMatch(/^text\/vnd\.tessera\+html/);
     expectTesseraVary(request.vary);
     expect(request.templates).toEqual([results]);

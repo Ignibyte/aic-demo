@@ -43,7 +43,7 @@ test('every page marks its components on their root element, with no comment mar
         const response = await fetch('/app/inventory', {
             headers: {
                 'Tessera-Request': 'visit',
-                'Tessera-Protocol': '1',
+                'Tessera-Protocol': '2',
                 'Tessera-Layout': 'lotline',
                 'Tessera-Targets': targets,
             },

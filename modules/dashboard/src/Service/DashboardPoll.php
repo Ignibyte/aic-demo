@@ -18,14 +18,15 @@ use JsonException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * The dashboard's live part as Tessera polls it (#14, AIC #193): the part leads `content`, its version sealed in its
- * props, and a refresh of it alone whose props carry the version it has now answers 204 before anything is built. Only
- * a region's child carries a props token, so `StaffPages` places the part and gives its path; no code here spells one.
+ * The dashboard's live part as Tessera polls it (#14, AIC #193): the part leads the panel grid, its version sealed in
+ * its props, and a refresh of it alone whose props carry the version it has now answers 204 before anything is built.
+ * Tessera sends the part's anchor after its props (protocol 2, AIC #194), so its props are read by `@dashboard-live`
+ * wherever the page places it (#15); no code here spells a path.
  */
 final readonly class DashboardPoll
 {
     /**
-     * @param StaffPages    $staffPages    The staff pages' document, which places the part and names its path.
+     * @param StaffPages    $staffPages    The staff pages' document, for the page a refusal answers with.
      * @param DashboardLive $dashboardLive The live part's source.
      * @param TesseraProps  $tesseraProps  Opens a refresh's props.
      * @param EnvelopeCodec $envelopeCodec Seals the part's props.
@@ -53,7 +54,7 @@ final readonly class DashboardPoll
      */
     public function answer(ServerRequestInterface $serverRequest, string $version): ?PageResponse
     {
-        $target = $this->staffPages->target(DashboardLive::KEY);
+        $target = '@' . DashboardLive::ANCHOR;
 
         try {
             $this->tesseraProps->forTarget($serverRequest, $target);

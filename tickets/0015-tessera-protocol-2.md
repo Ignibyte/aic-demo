@@ -2,9 +2,10 @@
 number: 15
 title: "Tessera protocol 2: read props by anchor; the live part back in its panel grid"
 type: chore
-status: open
+status: in-review
 created: 2026-10-28T04:30:00Z
-updated: 2026-10-28T04:30:00Z
+updated: 2026-10-28T04:37:15Z
+phase: "docs"
 ---
 
 AIC moved under this branch (operator, before the run): the stable checkout is at AIC `ec14588`,

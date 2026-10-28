@@ -936,6 +936,15 @@
             "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-makes",
             "status": 200,
             "captures": false
+        },
+        {
+            "name": "dashboard, a Tessera refresh of the live part and the sales chart together by their anchors",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live, @dashboard-sales",
+            "status": 200,
+            "captures": false
         }
     ]
 }
