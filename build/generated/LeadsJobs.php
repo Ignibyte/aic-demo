@@ -11,9 +11,7 @@ use AIC\Notification\Application\Notifier;
 use AIC\Queue\Application\PostgresQueue;
 use App\Leads\Job\SendLeadNotices;
 use App\Leads\Repository\LeadRepository;
-use App\Leads\Repository\SellerRepository;
 use App\Leads\Service\LeadNotices;
-use App\Settings\Repository\ProfileRepository;
 use App\Settings\Service\DealershipProfiles;
 
 /**
@@ -36,12 +34,11 @@ final readonly class LeadsJobs
     public function byName(): array
     {
         $entityStore = new EntityStore($this->consoleContext->database());
-        $leadRepository = new LeadRepository($entityStore, new SellerRepository($entityStore));
         $notifier = new Notifier(new PostgresQueue($this->consoleContext->database()));
-        $leadNotices = new LeadNotices($notifier, new DealershipProfiles(new ProfileRepository($entityStore)));
+        $leadNotices = new LeadNotices($notifier, new DealershipProfiles($entityStore));
 
         return [
-            'lead-notices' => new SendLeadNotices($leadRepository, $leadNotices),
+            'lead-notices' => new SendLeadNotices(new LeadRepository($entityStore), $leadNotices),
         ];
     }
 }

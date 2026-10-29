@@ -17,7 +17,7 @@ use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
-use UnexpectedValueException;
+use RuntimeException;
 
 /**
  * Deleting a vehicle: the page that asks first, and the delete itself, which keeps a sold vehicle (422), removes the
@@ -26,10 +26,14 @@ use UnexpectedValueException;
 final readonly class VehicleDeletes
 {
     /**
+     * The delete page.
+     */
+    private VehicleDeleteForm $vehicleDeleteForm;
+
+    /**
      * @param VehicleRecords          $vehicleRecords          The route's vehicle and the 404 and 400 pages.
      * @param VehicleRecordRepository $vehicleRecordRepository Deletes the vehicle.
-     * @param VehicleDeleteForm       $vehicleDeleteForm       The delete page.
-     * @param StaffSeals              $staffSeals              Checks the form's envelope.
+     * @param StaffSeals              $staffSeals              Seals and checks the form's envelope.
      * @param SoldVehicles            $soldVehicles            Whether a vehicle has a recorded sale.
      * @param VehiclePhotos           $vehiclePhotos           Forgets a deleted vehicle's photo files.
      * @param StaffNotices            $staffNotices            Leaves the delete's notice for the list.
@@ -37,20 +41,20 @@ final readonly class VehicleDeletes
     public function __construct(
         private VehicleRecords $vehicleRecords,
         private VehicleRecordRepository $vehicleRecordRepository,
-        private VehicleDeleteForm $vehicleDeleteForm,
         private StaffSeals $staffSeals,
         private SoldVehicles $soldVehicles,
         private VehiclePhotos $vehiclePhotos,
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
+        $this->vehicleDeleteForm = new VehicleDeleteForm($vehicleRecords->panels(), $staffSeals);
     }
 
     /**
      * @param ServerRequestInterface $serverRequest A request for a vehicle's delete page, with its session.
      *
-     * @throws QueryException           When the vehicle cannot be read.
-     * @throws UnexpectedValueException When its stored status is no status.
-     * @throws LogicException           When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
+     * @throws RuntimeException When the vehicle cannot be read (`QueryException`), or its stored status is no status
+     *                          (`UnexpectedValueException`).
+     * @throws LogicException   When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
      *
      * @return PageResponse The page that asks first, or that says a sold vehicle stays; or 404.
      */
@@ -68,9 +72,9 @@ final readonly class VehicleDeletes
     /**
      * @param ServerRequestInterface $serverRequest A posted delete form, with its session.
      *
-     * @throws QueryException           When the vehicle cannot be read or deleted.
-     * @throws UnexpectedValueException When its stored status is no status.
-     * @throws LogicException           When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
+     * @throws RuntimeException When the vehicle or its photos cannot be read, it cannot be deleted (`QueryException`),
+     *                          or its stored status is no status (`UnexpectedValueException`).
+     * @throws LogicException   When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
      *
      * @return PageResponse 303 to the list; the delete page again as 422 for a sold vehicle; 400 for an envelope that
      *                      is not this vehicle's; or 404.
@@ -88,10 +92,10 @@ final readonly class VehicleDeletes
         }
 
         // Read before the delete: the photos' rows go with the vehicle, by their foreign key, and their files after.
-        $vehicleId = $this->vehicleRecords->vehicleId($serverRequest);
+        $vehiclePhotos = $this->vehiclePhotos->photos($this->vehicleRecords->vehicleId($serverRequest));
 
         if ($vehicle->status !== VehicleStatus::Sold && $this->deleted($vehicle)) {
-            $this->vehiclePhotos->forget($vehicleId);
+            $this->vehiclePhotos->forget($vehiclePhotos);
             $this->staffNotices->keep($serverRequest, 'Deleted the ' . $vehicle->title() . ', VIN ' . $vehicle->vin . '.');
 
             return new PageRedirect(Vehicle::PAGES);

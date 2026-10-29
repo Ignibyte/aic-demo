@@ -9,12 +9,13 @@ use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\EnvelopeCodec;
 use AIC\Module\Attribute\Tagged;
 use App\Customers\Form\CustomerChecks;
-use App\Customers\Form\CustomerDeleteForm;
 use App\Customers\Form\CustomerDeletes;
 use App\Customers\Form\CustomerForm;
 use App\Customers\Form\CustomerSaves;
 use App\Customers\Repository\CustomerRecordRepository;
 use App\Staff\Form\StaffSeals;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
 
@@ -30,6 +31,8 @@ final readonly class CustomerServices
      * @param EnvelopeCodec $envelopeCodec     Seals and opens envelopes with the app secret.
      * @param PageDocuments $pageDocuments     The theme's document around a page.
      * @param list<object>  $customerPurchases The `CustomerPurchases` plugins, in tag order (`#[Tagged]`).
+     * @param list<object>  $dealershipNames   The `DealershipNames` plugins (`#[Tagged]`), which name the dealership on the
+     *                                         record and the delete page.
      */
     public function __construct(
         private EntityStore $entityStore,
@@ -37,6 +40,8 @@ final readonly class CustomerServices
         private PageDocuments $pageDocuments,
         #[Tagged(CustomerPurchases::class)]
         private array $customerPurchases,
+        #[Tagged(DealershipNames::class)]
+        private array $dealershipNames,
     ) {
     }
 
@@ -65,11 +70,17 @@ final readonly class CustomerServices
     {
         $staffSeals = new StaffSeals($this->envelopeCodec);
         $staffPanels = $this->staffPanels();
-        $customerDeleteForm = new CustomerDeleteForm($staffPanels, $staffSeals);
         $customerRecordRepository = new CustomerRecordRepository($this->entityStore);
         $customerRecords = new CustomerRecords($customerRecordRepository, $staffPanels);
 
-        return new CustomerDeletes($customerRecords, $customerRecordRepository, $customerDeleteForm, $staffSeals, $this->boughtVehicles());
+        return new CustomerDeletes(
+            $customerRecords,
+            $customerRecordRepository,
+            $staffPanels,
+            $staffSeals,
+            $this->boughtVehicles(),
+            $this->staffDealership(),
+        );
     }
 
     /**
@@ -81,7 +92,7 @@ final readonly class CustomerServices
 
         $customerRecords = new CustomerRecords(new CustomerRecordRepository($this->entityStore), $staffPanels);
 
-        return new CustomerCards($customerRecords, $staffPanels, $this->boughtVehicles());
+        return new CustomerCards($customerRecords, $staffPanels, $this->boughtVehicles(), $this->staffDealership());
     }
 
     /**
@@ -90,6 +101,14 @@ final readonly class CustomerServices
     private function boughtVehicles(): BoughtVehicles
     {
         return new BoughtVehicles($this->entityStore, $this->customerPurchases);
+    }
+
+    /**
+     * @return StaffDealership The dealership's name, from the first `DealershipNames` plugin.
+     */
+    private function staffDealership(): StaffDealership
+    {
+        return new StaffDealership($this->entityStore, $this->dealershipNames);
     }
 
     /**

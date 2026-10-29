@@ -7,9 +7,9 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Storage\Application\PublicFiles;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
-use App\Settings\Repository\ProfileRepository;
 use App\Settings\Service\DealershipProfiles;
 use App\Storefront\Controller\CarListPage;
 use App\Storefront\Service\CarListing;
@@ -39,8 +39,9 @@ final readonly class StorefrontHandlersPart3
     public function byId(): array
     {
         $entityStore = new EntityStore($this->handlerContext->database());
-        $storePages = new StorePages($this->handlerContext->documents(), new DealershipProfiles(new ProfileRepository($entityStore)));
-        $carListing = new CarListing(new ListedVehicleRepository($entityStore), new CarTiles(new VehiclePhotos($entityStore)));
+        $storePages = new StorePages($this->handlerContext->documents(), new DealershipProfiles($entityStore));
+        $vehiclePhotos = new VehiclePhotos($entityStore, new PublicFiles($this->handlerContext->root()));
+        $carListing = new CarListing(new ListedVehicleRepository($entityStore), new CarTiles($vehiclePhotos));
 
         return [
             CarListPage::class => $this->handlerContext->page(new CarListPage($storePages, $carListing)),

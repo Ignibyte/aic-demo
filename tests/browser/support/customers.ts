@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
 import { literal, sql } from './inventory';
 
 // The gate's user, made by `bin/aic user:add` for each run.
@@ -67,7 +67,8 @@ export async function signIn(page: Page): Promise<void> {
     await page.locator('#sign-in-email').fill(login);
     await page.locator('#sign-in-password').fill(password);
     await page.locator('#sign-in-submit').click();
-    await expect(page).toHaveURL(/\/app$/);
+    // The navigation, not expect's five seconds: a stalled renderer can take longer to commit /app.
+    await page.waitForURL(/\/app$/);
 }
 
 // Signs the gate's user in and opens a path.

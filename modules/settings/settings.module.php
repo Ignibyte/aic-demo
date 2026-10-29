@@ -10,7 +10,8 @@ declare(strict_types=1);
  * edited, deactivated and reactivated through staff's exported
  * `AccountRepository`; and the password links a new or reset member is
  * mailed, which land on /password/{link}. It requires staff alone: the users
- * table and its rules are staff's. The build reads it; nothing reads it at
+ * table and its rules are staff's, and it names the dealership on the staff
+ * pages through staff's `DealershipNames` plugin type (#23). The build reads it; nothing reads it at
  * run time.
  */
 
@@ -30,9 +31,11 @@ use App\Settings\Entity\OpeningHours;
 use App\Settings\Migration\CreateDealershipProfileTable;
 use App\Settings\Migration\CreatePasswordLinksTable;
 use App\Settings\Migration\CreatePasswordLinkStatesView;
+use App\Settings\Repository\DealershipNameRepository;
 use App\Settings\Service\DealershipProfiles;
 use App\Settings\Service\MemberServices;
 use App\Settings\Service\SettingsServices;
+use App\Staff\Service\DealershipNames;
 
 return (new ModuleManifest('settings'))
     ->requires('staff')
@@ -45,6 +48,7 @@ return (new ModuleManifest('settings'))
     ->route(RouteMethod::Post, '/app/settings/staff/{id:int}/link', MemberLinkPost::class)
     ->route(RouteMethod::Get, '/password/{link}', PasswordPage::class)
     ->route(RouteMethod::Post, '/password/{link}', PasswordPost::class)
+    ->plugin(DealershipNames::class, DealershipNameRepository::class)
     ->factory(SettingsServices::class)
     ->factory(MemberServices::class)
     ->migration(CreateDealershipProfileTable::class)

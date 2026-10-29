@@ -8,15 +8,12 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Repository\TodayRepository;
-use App\Inventory\Repository\VehicleStatusRepository;
-use App\Sales\Controller\SaleCreatePost;
 use App\Sales\Controller\SaleListPage;
-use App\Sales\Controller\SaleNewPage;
 use App\Sales\Repository\SaleChoiceRepository;
-use App\Sales\Repository\SaleRecordRepository;
 use App\Sales\Repository\SaleRepository;
 use App\Sales\Service\SaleList;
-use App\Sales\Service\SaleServices;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -43,18 +40,13 @@ final readonly class SalesHandlers
     {
         $entityStore = new EntityStore($this->handlerContext->database());
         $saleChoiceRepository = new SaleChoiceRepository($entityStore, new TodayRepository($entityStore));
-        $saleList = new SaleList(new SaleRepository($entityStore), $saleChoiceRepository);
-        $vehicleStatusRepository = new VehicleStatusRepository($entityStore);
-        $saleRecordRepository = new SaleRecordRepository($entityStore, $vehicleStatusRepository);
-        $saleServices = new SaleServices($entityStore, $this->handlerContext->documents(), $saleRecordRepository);
-        $saleSaves = $saleServices->saleSaves();
+        $staffDealership = new StaffDealership($entityStore, $this->handlerContext->tagged(DealershipNames::class));
+        $saleList = new SaleList(new SaleRepository($entityStore), $saleChoiceRepository, $staffDealership);
 
         return [
-            SaleCreatePost::class => $this->handlerContext->page(new SaleCreatePost($saleSaves)),
             SaleListPage::class => $this->handlerContext->page(
                 new SaleListPage(new StaffPages($this->handlerContext->documents()), $saleList),
             ),
-            SaleNewPage::class => $this->handlerContext->page(new SaleNewPage($saleSaves)),
         ];
     }
 }

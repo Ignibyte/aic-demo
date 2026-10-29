@@ -10,6 +10,7 @@ use AIC\Controller\Domain\PageRedirect;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Service\VehicleCards;
 use App\Inventory\Service\VehicleRecords;
+use App\Inventory\Service\VehicleServices;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
@@ -23,8 +24,8 @@ use function preg_match;
 /**
  * A vehicle's photos (#16) through its routes: adding one from the page's upload form, deleting one by its position,
  * and serving one. Only a sales manager or an admin adds or deletes (403 otherwise); a refused upload answers the
- * vehicle's page as 422 with the reason, and a done change goes back to it (303) with a notice. The wiring builds it
- * from `VehicleServices`' products.
+ * vehicle's page as 422 with the reason, and a done change goes back to it (303) with a notice. It takes the vehicle's
+ * records and cards from `VehicleServices`, so the photo routes' generated part stays one short method.
  */
 final readonly class VehiclePhotoForms
 {
@@ -45,21 +46,31 @@ final readonly class VehiclePhotoForms
         . ' deleted. Open the vehicle again.';
 
     /**
-     * @param VehiclePhotos  $vehiclePhotos  The vehicle's photos.
-     * @param StaffSeals     $staffSeals     Checks a delete form's envelope.
-     * @param VehicleRecords $vehicleRecords The route's vehicle, its id, and the 404 and warning pages.
-     * @param VehicleCards   $vehicleCards   The vehicle's page, with a refusal.
-     * @param StaffNotices   $staffNotices   Leaves a change's notice for the vehicle's page.
-     * @param StaffRequests  $staffRequests  Reads the route's position.
+     * The route's vehicle, its id, and the 404 and warning pages.
+     */
+    private VehicleRecords $vehicleRecords;
+
+    /**
+     * The vehicle's page, with a refusal.
+     */
+    private VehicleCards $vehicleCards;
+
+    /**
+     * @param StaffSeals      $staffSeals      Checks a delete form's envelope.
+     * @param VehiclePhotos   $vehiclePhotos   The vehicle's photos.
+     * @param VehicleServices $vehicleServices The vehicle's records and cards.
+     * @param StaffNotices    $staffNotices    Leaves a change's notice for the vehicle's page.
+     * @param StaffRequests   $staffRequests   Reads the route's position.
      */
     public function __construct(
-        private VehiclePhotos $vehiclePhotos,
         private StaffSeals $staffSeals,
-        private VehicleRecords $vehicleRecords,
-        private VehicleCards $vehicleCards,
+        private VehiclePhotos $vehiclePhotos,
+        VehicleServices $vehicleServices,
         private StaffNotices $staffNotices = new StaffNotices(),
         private StaffRequests $staffRequests = new StaffRequests(),
     ) {
+        $this->vehicleRecords = $vehicleServices->vehicleRecords();
+        $this->vehicleCards = $vehicleServices->vehicleCards();
     }
 
     /**

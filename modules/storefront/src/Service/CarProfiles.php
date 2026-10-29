@@ -24,12 +24,10 @@ final readonly class CarProfiles
 {
     /**
      * @param VehiclePhotos $vehiclePhotos The car's photos.
-     * @param CarSlugs      $carSlugs      The car's page, under which its photos are served.
      * @param CarFigures    $carFigures    Its price and mileage as written.
      */
     public function __construct(
         private VehiclePhotos $vehiclePhotos,
-        private CarSlugs $carSlugs = new CarSlugs(),
         private CarFigures $carFigures = new CarFigures(),
     ) {
     }
@@ -66,11 +64,10 @@ final readonly class CarProfiles
      * @throws LogicException   When the photos' entity type is malformed.
      * @throws RuntimeException When its photos cannot be read.
      *
-     * @return list<GalleryPhoto> Its photos, the first the main one, each served under its page.
+     * @return list<GalleryPhoto> Its photos, the first the main one, each from AIC's public files.
      */
     private function photos(ListedVehicle $listedVehicle): array
     {
-        $path = $this->carSlugs->path($listedVehicle);
         $photos = $this->vehiclePhotos->photos($listedVehicle->id);
         $total = count($photos);
         $galleryPhotos = [];
@@ -78,7 +75,7 @@ final readonly class CarProfiles
         foreach ($photos as $photo) {
             $number = $photo->position;
             $alt = $listedVehicle->title() . ', photo ' . $number . ' of ' . $total;
-            $galleryPhotos[] = new GalleryPhoto('car-photo-' . $number, $photo->source($path), $alt, $number === 1, []);
+            $galleryPhotos[] = new GalleryPhoto('car-photo-' . $number, $photo->source(), $alt, $number === 1, []);
         }
 
         return $galleryPhotos;

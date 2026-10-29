@@ -7,6 +7,7 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Storage\Application\PublicFiles;
 use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
@@ -15,7 +16,6 @@ use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Form\StaffSeals;
-use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -39,14 +39,18 @@ final readonly class InventoryHandlersPart2
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $vehiclePhotos = new VehiclePhotos($entityStore);
         $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
-        $staffPages = new StaffPages($this->handlerContext->documents());
-        $vehicleServices = new VehicleServices($entityStore, $staffPages, $staffSeals, $this->handlerContext->tagged(VehicleSales::class));
-        $vehicleRecords = $vehicleServices->vehicleRecords();
-        $vehicleCards = $vehicleServices->vehicleCards();
-        $vehiclePhotoForms = new VehiclePhotoForms($vehiclePhotos, $staffSeals, $vehicleRecords, $vehicleCards);
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $publicFiles = new PublicFiles($this->handlerContext->root());
+        $vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
+        $vehicleServices = new VehicleServices(
+            $entityStore,
+            $this->handlerContext->documents(),
+            $this->handlerContext->envelopeCodec(),
+            $this->handlerContext->tagged(VehicleSales::class),
+            $publicFiles,
+        );
+        $vehiclePhotoForms = new VehiclePhotoForms($staffSeals, $vehiclePhotos, $vehicleServices);
 
         return [
             VehiclePhotoDeletePost::class => $this->handlerContext->page(new VehiclePhotoDeletePost($vehiclePhotoForms)),

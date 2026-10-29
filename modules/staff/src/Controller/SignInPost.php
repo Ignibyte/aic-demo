@@ -8,17 +8,17 @@ use AIC\Auth\Application\Authenticator;
 use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageFullVisit;
-use AIC\Database\Contracts\QueryException;
 use AIC\Form\Application\PostedFields;
 use AIC\Form\Domain\SameOriginPath;
 use App\Staff\Entity\StaffMember;
 use App\Staff\Form\SignInForm;
 use App\Staff\Repository\StaffRepository;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffSession;
 use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
-use UnexpectedValueException;
+use RuntimeException;
 
 /**
  * POST /sign-in: signs the member of staff in and goes to `next` when it is a path on this site, else to /app, as a
@@ -35,6 +35,7 @@ final readonly class SignInPost implements Page
      * @param SignInForm      $signInForm      The sign-in page, shown again on a refusal.
      * @param Authenticator   $authenticator   Signs the member in.
      * @param StaffRepository $staffRepository Reads who signed in.
+     * @param StaffDealership $staffDealership The dealership's name, for the panel's line.
      * @param StaffSession    $staffSession    Keeps them in the session.
      * @param PostedFields    $postedFields    Reads the posted fields.
      */
@@ -42,6 +43,7 @@ final readonly class SignInPost implements Page
         private SignInForm $signInForm,
         private Authenticator $authenticator,
         private StaffRepository $staffRepository,
+        private StaffDealership $staffDealership,
         private StaffSession $staffSession = new StaffSession(),
         private PostedFields $postedFields = new PostedFields(),
     ) {
@@ -50,9 +52,9 @@ final readonly class SignInPost implements Page
     /**
      * @param ServerRequestInterface $serverRequest The posted form, with its session.
      *
-     * @throws QueryException           When the member cannot be read.
-     * @throws UnexpectedValueException When their stored role is no role.
-     * @throws LogicException           When the page does not fit the theme, or the request carries no session.
+     * @throws RuntimeException When the member or the dealership's name cannot be read (`QueryException`), or their
+     *                          stored role is no role (`UnexpectedValueException`).
+     * @throws LogicException   When the page does not fit the theme, or the request carries no session.
      *
      * @return PageResponse A full visit to `next` or /app, or the form again as 422.
      */
@@ -67,7 +69,7 @@ final readonly class SignInPost implements Page
             : null;
 
         if (!$staffMember instanceof StaffMember) {
-            return $this->signInForm->page($serverRequest, $email, $next, self::REFUSED, 422);
+            return $this->signInForm->page($serverRequest, $email, $next, self::REFUSED, 422, $this->staffDealership->name());
         }
 
         $this->staffSession->remember($serverRequest, $staffMember);

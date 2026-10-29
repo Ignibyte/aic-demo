@@ -166,7 +166,7 @@ none
 | [customers](customers.md) | `App\Customers\Entity\CustomerTable`, `App\Customers\Entity\Purchase`, `App\Customers\Service\CustomerPurchases`, `App\Customers\Service\SeedCustomers` |
 | [holds](holds.md) | `App\Holds\Repository\HoldRepository` |
 | [inventory](inventory.md) | `App\Inventory\Entity\Vehicle`, `App\Inventory\Entity\VehiclePrice`, `App\Inventory\Entity\VehicleSale`, `App\Inventory\Entity\VehicleStatus`, `App\Inventory\Entity\VehicleTable`, `App\Inventory\Repository\TodayRepository`, `App\Inventory\Repository\VehicleRepository`, `App\Inventory\Repository\VehicleStatusRepository`, `App\Inventory\Service\SeedVehicles`, `App\Inventory\Service\VehicleSales`, `App\Inventory\Service\Vins` |
-| [staff](staff.md) | `App\Staff\Entity\StaffTable`, `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
+| [staff](staff.md) | `App\Staff\Entity\StaffTable`, `App\Staff\Form\StaffSeals`, `App\Staff\Service\DealershipNames`, `App\Staff\Service\StaffDealership`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 
 ## Used by
 

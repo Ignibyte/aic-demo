@@ -116,7 +116,7 @@ none
 | [customers](customers.md) | `App\Customers\Entity\CustomerTable` |
 | [inventory](inventory.md) | `App\Inventory\Entity\VehicleTable`, `App\Inventory\Repository\TodayRepository` |
 | [sales](sales.md) | `App\Sales\Entity\Sale`, `App\Sales\Repository\SaleRepository` |
-| [staff](staff.md) | `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffSession` |
+| [staff](staff.md) | `App\Staff\Service\StaffDealership`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffSession` |
 
 ## Used by
 

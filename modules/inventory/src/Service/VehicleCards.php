@@ -8,7 +8,6 @@ use AIC\Controller\Contracts\PageResponse;
 use App\Inventory\Entity\Vehicle;
 use App\Photos\Service\PhotoGalleries;
 use App\Staff\Service\StaffNotices;
-use App\Staff\Service\StaffPanels;
 use App\Theme\Components\DetailCard\ButtonLink;
 use App\Theme\Components\DetailCard\ButtonTone;
 use App\Theme\Components\DetailCard\DetailCard;
@@ -28,8 +27,7 @@ use function number_format;
 final readonly class VehicleCards
 {
     /**
-     * @param VehicleRecords  $vehicleRecords  The route's vehicle and the 404 page.
-     * @param StaffPanels     $staffPanels     The vehicle pages' frame.
+     * @param VehicleRecords  $vehicleRecords  The route's vehicle, the 404 page and the vehicle pages' frame.
      * @param SoldVehicles    $soldVehicles    The vehicle's sale, and where to record one.
      * @param PhotoGalleries  $photoGalleries  The vehicle's photos.
      * @param VehicleStatuses $vehicleStatuses Gives the status its badge.
@@ -37,7 +35,6 @@ final readonly class VehicleCards
      */
     public function __construct(
         private VehicleRecords $vehicleRecords,
-        private StaffPanels $staffPanels,
         private SoldVehicles $soldVehicles,
         private PhotoGalleries $photoGalleries,
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
@@ -76,7 +73,9 @@ final readonly class VehicleCards
             $body[$key] = $dataTable;
         }
 
-        return $this->staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, $status);
+        $staffPanels = $this->vehicleRecords->panels();
+
+        return $staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, $status);
     }
 
     /**

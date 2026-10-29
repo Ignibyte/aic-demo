@@ -14,6 +14,8 @@ use App\Staff\Controller\SignInPost;
 use App\Staff\Controller\SignOutPost;
 use App\Staff\Form\SignInForm;
 use App\Staff\Repository\StaffRepository;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -41,13 +43,16 @@ final readonly class StaffHandlers
         $staffPages = new StaffPages($this->handlerContext->documents());
         $signInForm = new SignInForm($staffPages);
         $entityStore = new EntityStore($this->handlerContext->database());
+        $staffDealership = new StaffDealership($entityStore, $this->handlerContext->tagged(DealershipNames::class));
         $staffRepository = new StaffRepository($entityStore);
         $pgcryptoPasswordHasher = new PgcryptoPasswordHasher($this->handlerContext->database());
         $authenticator = new Authenticator($staffRepository, $pgcryptoPasswordHasher);
 
         return [
-            SignInPage::class => $this->handlerContext->page(new SignInPage($signInForm)),
-            SignInPost::class => $this->handlerContext->page(new SignInPost($signInForm, $authenticator, $staffRepository)),
+            SignInPage::class => $this->handlerContext->page(new SignInPage($signInForm, $staffDealership)),
+            SignInPost::class => $this->handlerContext->page(
+                new SignInPost($signInForm, $authenticator, $staffRepository, $staffDealership),
+            ),
             SignOutPost::class => $this->handlerContext->page(new SignOutPost($authenticator)),
         ];
     }

@@ -11,8 +11,9 @@ declare(strict_types=1);
  * profile (#22), the threshold and the name, which it requires settings for. And the managers' reports
  * page (#21), /app/reports: sales by month, salespeople, inventory by make and
  * leads by kind over a range, each exported as CSV by the report-export job to
- * a download only its member gets, which the prune-exports schedule removes
- * after seven days; and the sales report as JSON at /api/reports/sales. It
+ * a download only its member gets, kept in AIC's private files (#23) with the
+ * command that moves those kept under var/exports/ before, which the
+ * prune-exports schedule removes after seven days; and the sales report as JSON at /api/reports/sales. It
  * owns the views they read, which read the tables of inventory, sales, leads
  * and customers, and the exports' table; it requires staff for the users by
  * role. The build reads it; nothing reads it at run time.
@@ -20,6 +21,7 @@ declare(strict_types=1);
 
 use AIC\Module\Contracts\ModuleManifest;
 use AIC\Module\Contracts\RouteMethod;
+use App\Reports\Command\ReportsMoveExports;
 use App\Reports\Controller\ReportExportPost;
 use App\Reports\Controller\ReportExportStream;
 use App\Reports\Controller\ReportsPage;
@@ -52,6 +54,7 @@ return (new ModuleManifest('reports'))
     ->job('daily-digest', SendDailyDigest::class)
     ->job('report-export', WriteReportExport::class)
     ->job('prune-exports', PruneReportExports::class)
+    ->command('reports:move-exports', ReportsMoveExports::class)
     ->schedule('aged-stock', 'aged-stock', [], '0 7 * * *')
     ->schedule('daily-digest', 'daily-digest', [], '0 21 * * *')
     ->schedule('prune-exports', 'prune-exports', [], '15 4 * * *')

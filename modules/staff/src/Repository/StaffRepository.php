@@ -18,7 +18,9 @@ use Override;
 use RuntimeException;
 use UnexpectedValueException;
 
+use function hash;
 use function preg_match;
+use function substr;
 
 /**
  * The users table, as the Authenticator reads it: a member of staff signs in with their email, and the session keeps
@@ -82,7 +84,7 @@ final readonly class StaffRepository implements UserProvider
             return null;
         }
 
-        return new StaffMember($row->string('email'), $row->string('name'), $this->roles->stored($row->string('role')));
+        return $this->staffMember($row);
     }
 
     /**
@@ -107,7 +109,7 @@ final readonly class StaffRepository implements UserProvider
             return null;
         }
 
-        return new StaffMember($row->string('email'), $row->string('name'), $this->roles->stored($row->string('role')));
+        return $this->staffMember($row);
     }
 
     /**
@@ -184,5 +186,21 @@ final readonly class StaffRepository implements UserProvider
     private function byEmail(string $email): ?Row
     {
         return $this->entityStore->query($this->staffTable->type())->where('email', $email)->first();
+    }
+
+    /**
+     * @param Row $row A `users` row.
+     *
+     * @throws QueryException           When a column is missing or not of its type.
+     * @throws UnexpectedValueException When the stored role is no role.
+     *
+     * @return StaffMember The member, with the stamp of their stored password hash (#23): a session keeps it at
+     *                     sign-in, and a new password, a new hash, no longer matches it.
+     */
+    private function staffMember(Row $row): StaffMember
+    {
+        $stamp = substr(hash('sha256', $row->string('password_hash')), 0, 16);
+
+        return new StaffMember($row->string('email'), $row->string('name'), $this->roles->stored($row->string('role')), $stamp);
     }
 }

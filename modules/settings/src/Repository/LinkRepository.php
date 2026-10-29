@@ -11,6 +11,7 @@ use AIC\Entity\Application\EntityStore;
 use App\Settings\Entity\LinkTables;
 use App\Settings\Entity\PasswordLink;
 use App\Settings\Entity\SettingsWrite;
+use App\Staff\Entity\StaffMember;
 use App\Staff\Repository\StaffRepository;
 use InvalidArgumentException;
 use RuntimeException;
@@ -54,6 +55,21 @@ final readonly class LinkRepository
         $this->entityStore->query($entityType)->where('user_id', $userId)->where('used', false)->changes()->update(['used' => true]);
 
         return $this->entityStore->insert($entityType, ['used' => false, 'user_id' => $userId]);
+    }
+
+    /**
+     * @param int $userId A member's id.
+     *
+     * @throws InvalidArgumentException When the users' type is malformed.
+     * @throws RuntimeException         When the member cannot be read (`QueryException`), or their stored role is no
+     *                                  role.
+     *
+     * @return StaffMember|null The member as the users table has them now, with the stamp of their password (#23); null
+     *                          when they are gone or deactivated.
+     */
+    public function member(int $userId): ?StaffMember
+    {
+        return $this->staffRepository->standing((string) $userId);
     }
 
     /**

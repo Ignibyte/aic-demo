@@ -42,8 +42,8 @@ final readonly class LeadsHandlers
     public function byId(): array
     {
         $entityStore = new EntityStore($this->handlerContext->database());
+        $leadRepository = new LeadRepository($entityStore);
         $sellerRepository = new SellerRepository($entityStore);
-        $leadRepository = new LeadRepository($entityStore, $sellerRepository);
         $leadServices = new LeadServices($this->handlerContext->documents());
         $staffPanels = $leadServices->staffPanels();
         $leadCards = new LeadCards($leadRepository, $sellerRepository, $staffPanels);

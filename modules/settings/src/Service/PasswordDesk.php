@@ -22,8 +22,10 @@ use Throwable;
  * The page a password link lands on, `/password/{token}` (#22), open to anyone who holds the link. A link whose token is
  * altered answers 400, and one used, voided by a newer one or past its 24 hours 404, each in the app's look with
  * nothing changed. An open link shows the set-password form; its post sets the password and spends the link in one
- * transaction, keeps "Your password is set." for the sign-in page and goes there (303). The page reads no destination
- * from its request: its one redirect is to `/sign-in`.
+ * transaction, keeps "Your password is set." for the sign-in page and goes there (303). The new password ends the
+ * member's other sessions, whose stamp of the old one staff's `StaffStanding` no longer accepts (#23); when the session
+ * that set it is the member's own, `SettingsAccess::restamp()` gives it the new stamp, so it stays signed in. The page
+ * reads no destination from its request: its one redirect is to `/sign-in`.
  */
 final readonly class PasswordDesk
 {
@@ -117,6 +119,7 @@ final readonly class PasswordDesk
             return $this->settingsAccess->linkSpent();
         }
 
+        $this->settingsAccess->restamp($serverRequest, $staffAccount, $this->linkRepository->member($staffAccount->id));
         $this->staffNotices->keep($serverRequest, 'Your password is set. Sign in with it.');
 
         return new PageRedirect('/sign-in');

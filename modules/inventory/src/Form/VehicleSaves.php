@@ -24,11 +24,15 @@ use UnexpectedValueException;
 final readonly class VehicleSaves
 {
     /**
+     * The form's page.
+     */
+    private VehicleForm $vehicleForm;
+
+    /**
      * @param VehicleRecords          $vehicleRecords          The route's vehicle and the 404 and 400 pages.
      * @param VehicleRecordRepository $vehicleRecordRepository Saves the vehicle.
      * @param VehicleChecks           $vehicleChecks           Checks the form.
-     * @param VehicleForm             $vehicleForm             The form's page.
-     * @param StaffSeals              $staffSeals              Checks an edit form's envelope.
+     * @param StaffSeals              $staffSeals              Seals and checks an edit form's envelope.
      * @param VehicleEntries          $vehicleEntries          Fills the form.
      * @param StaffNotices            $staffNotices            Leaves the save's notice.
      */
@@ -36,11 +40,11 @@ final readonly class VehicleSaves
         private VehicleRecords $vehicleRecords,
         private VehicleRecordRepository $vehicleRecordRepository,
         private VehicleChecks $vehicleChecks,
-        private VehicleForm $vehicleForm,
         private StaffSeals $staffSeals,
         private VehicleEntries $vehicleEntries = new VehicleEntries(),
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
+        $this->vehicleForm = new VehicleForm($vehicleRecords->panels(), $staffSeals);
     }
 
     /**

@@ -79,8 +79,9 @@ final readonly class DashboardFeed
     {
         $rows = [];
 
+        // Keyed by the car's VIN, as a sale is one per vehicle: the row id would differ between gate:23's passes (#23).
         foreach ($sales as $sale) {
-            $rows[] = new KeyedComponent('sale-' . $sale->id, $this->row($sale));
+            $rows[] = new KeyedComponent('sale-' . $sale->vin, $this->row($sale));
         }
 
         $summary = $this->dashboardWords->count(count($sales), 'sale', 'sales') . ', the latest recorded first';

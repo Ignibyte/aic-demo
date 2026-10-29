@@ -75,6 +75,8 @@ final readonly class WebModules implements BlockWiring, HandlerWiring, Middlewar
     /**
      * @param HandlerContext $handlerContext The roots.
      *
+     * @throws RuntimeException When a called constructor or service fails.
+     *
      * @return list<Block> The modules' blocks, in build order.
      */
     #[Override]

@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Storage\Application\PublicFiles;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
 use App\Storefront\Controller\CarPhotoStream;
@@ -36,7 +37,8 @@ final readonly class StorefrontHandlersPart2
     {
         $entityStore = new EntityStore($this->handlerContext->database());
         $listedVehicleRepository = new ListedVehicleRepository($entityStore);
-        $vehiclePhotos = new VehiclePhotos($entityStore);
+        $publicFiles = new PublicFiles($this->handlerContext->root());
+        $vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
         $carFinder = new CarFinder($listedVehicleRepository, $vehiclePhotos);
         $feedVehicles = new FeedVehicles($listedVehicleRepository, $vehiclePhotos);
 

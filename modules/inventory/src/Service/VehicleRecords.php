@@ -6,6 +6,7 @@ namespace App\Inventory\Service;
 
 use AIC\Controller\Domain\PageDocument;
 use AIC\Database\Contracts\QueryException;
+use AIC\Entity\Application\EntityStore;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Repository\VehicleRecordRepository;
 use App\Staff\Service\StaffPanels;
@@ -25,13 +26,35 @@ use function preg_match;
 final readonly class VehicleRecords
 {
     /**
-     * @param VehicleRecordRepository $vehicleRecordRepository Reads a vehicle by its VIN.
-     * @param StaffPanels             $staffPanels             The vehicle pages' frame.
+     * Reads a vehicle by its VIN.
+     */
+    private VehicleRecordRepository $vehicleRecordRepository;
+
+    /**
+     * @param EntityStore $entityStore The entity store, through which the vehicle is read.
+     * @param StaffPanels $staffPanels The vehicle pages' frame.
      */
     public function __construct(
-        private VehicleRecordRepository $vehicleRecordRepository,
+        EntityStore $entityStore,
         private StaffPanels $staffPanels,
     ) {
+        $this->vehicleRecordRepository = new VehicleRecordRepository($entityStore);
+    }
+
+    /**
+     * @return VehicleRecordRepository One vehicle at a time, by VIN, for the forms that save and delete it.
+     */
+    public function repository(): VehicleRecordRepository
+    {
+        return $this->vehicleRecordRepository;
+    }
+
+    /**
+     * @return StaffPanels The vehicle pages' frame, for a form that builds its page in it.
+     */
+    public function panels(): StaffPanels
+    {
+        return $this->staffPanels;
     }
 
     /**

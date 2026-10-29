@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Storefront\Service;
 
-use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
+use AIC\Storage\Application\PublicFiles;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Leads\Service\LeadDesk;
 use App\Photos\Service\VehiclePhotos;
-use App\Settings\Service\DealershipProfiles;
 
 /**
  * The storefront module's factory (#18): the car's page, which `CarPage` and both lead posts share. Built here, it
@@ -19,16 +18,16 @@ use App\Settings\Service\DealershipProfiles;
 final readonly class StoreServices
 {
     /**
-     * @param EntityStore        $entityStore        The tables.
-     * @param PageDocuments      $pageDocuments      The theme's documents.
-     * @param LeadDesk           $leadDesk           The lead forms, and a sent one recorded.
-     * @param DealershipProfiles $dealershipProfiles The dealership's profile, which the public header and footer show.
+     * @param EntityStore $entityStore The tables.
+     * @param StorePages  $storePages  The public pages' frame, the dealership's profile in its header and footer.
+     * @param LeadDesk    $leadDesk    The lead forms, and a sent one recorded.
+     * @param PublicFiles $publicFiles AIC's public files, where the photos are kept.
      */
     public function __construct(
         private EntityStore $entityStore,
-        private PageDocuments $pageDocuments,
+        private StorePages $storePages,
         private LeadDesk $leadDesk,
-        private DealershipProfiles $dealershipProfiles,
+        private PublicFiles $publicFiles,
     ) {
     }
 
@@ -37,11 +36,9 @@ final readonly class StoreServices
      */
     public function carPages(): CarPages
     {
-        $vehiclePhotos = new VehiclePhotos($this->entityStore);
+        $vehiclePhotos = new VehiclePhotos($this->entityStore, $this->publicFiles);
         $carFinder = new CarFinder(new ListedVehicleRepository($this->entityStore), $vehiclePhotos);
 
-        $storePages = new StorePages($this->pageDocuments, $this->dealershipProfiles);
-
-        return new CarPages($storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk);
+        return new CarPages($this->storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk);
     }
 }

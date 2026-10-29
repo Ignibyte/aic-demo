@@ -11,6 +11,7 @@ use AIC\Database\Contracts\QueryException;
 use App\Dashboard\Service\DashboardCharts;
 use App\Dashboard\Service\DashboardLive;
 use App\Dashboard\Service\DashboardPoll;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffSession;
 use JsonException;
@@ -35,6 +36,7 @@ final readonly class DashboardPage implements Page
      * @param DashboardLive   $dashboardLive   The tiles and the latest sales, and what their figures are now.
      * @param DashboardPoll   $dashboardPoll   The live part's poll: its 204, and the part with its version sealed.
      * @param DashboardCharts $dashboardCharts The chart panels.
+     * @param StaffDealership $staffDealership The dealership's name, for the role line.
      * @param StaffSession    $staffSession    Who is signed in.
      */
     public function __construct(
@@ -42,6 +44,7 @@ final readonly class DashboardPage implements Page
         private DashboardLive $dashboardLive,
         private DashboardPoll $dashboardPoll,
         private DashboardCharts $dashboardCharts,
+        private StaffDealership $staffDealership,
         private StaffSession $staffSession = new StaffSession(),
     ) {
     }
@@ -78,7 +81,7 @@ final readonly class DashboardPage implements Page
             'Welcome, ' . $staffMember->name,
             [$this->dashboardPoll->part($version), ...$this->dashboardCharts->parts()],
             200,
-            $staffMember->role->label() . ' at Ridgeway Motors',
+            $staffMember->role->label() . ' at ' . $this->staffDealership->name(),
             'Dashboard',
         );
     }

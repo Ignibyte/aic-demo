@@ -79,7 +79,7 @@ final readonly class CarTiles
         $photos = $this->vehiclePhotos->photos($listedVehicle->id);
         $source = $photos === []
             ? ''
-            : $photos[0]->source($path);
+            : $photos[0]->source();
 
         return new CarTile(
             'car-' . $this->carSlugs->slug($listedVehicle),

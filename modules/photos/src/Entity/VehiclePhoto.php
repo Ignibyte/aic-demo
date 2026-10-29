@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Photos\Entity;
 
-use function substr;
+use AIC\Storage\Application\PublicFiles;
 
 /**
  * One photo of a vehicle: its row's id, its place among the vehicle's photos in the order they were added, from 1,
- * its media type and the SHA-256 of its bytes. A photo is addressed by its vehicle's page and its position, so
- * gate:23's two passes, whose rows get different ids, request the same paths.
+ * its media type and the SHA-256 of its bytes. Its file is kept in AIC's public files under a key named by its bytes
+ * (#23); its staff and storefront Streams address it by its vehicle's page and its position, so gate:23's two passes,
+ * whose rows get different ids, request the same paths.
  */
 final readonly class VehiclePhoto
 {
@@ -38,17 +39,21 @@ final readonly class VehiclePhoto
     }
 
     /**
-     * A browser keeps the images a document has shown by their URL, whatever their cache headers say, so when a delete
-     * moves another photo to this position, the same path would show the deleted photo again. The source names the
-     * bytes too; it is the same on both of gate:23's passes, which upload the same files.
-     *
-     * @param string $vehiclePath The vehicle's page.
-     *
-     * @return string The image's source: its path, and the start of its hash as `?v=`.
+     * @return string Its key in AIC's public files, `photos/{sha256}.{extension}`: named by its bytes, so gate:23's two
+     *                passes, which upload the same files, name the same keys, and a browser that kept an image by its
+     *                URL never shows another photo's bytes there.
      */
-    public function source(string $vehiclePath): string
+    public function key(): string
     {
-        return $this->path($vehiclePath) . '?v=' . substr($this->sha256, 0, 16);
+        return 'photos/' . $this->sha256 . '.' . $this->extension();
+    }
+
+    /**
+     * @return string The image's source, where AIC serves its key: `/files/photos/{sha256}.{extension}`.
+     */
+    public function source(): string
+    {
+        return PublicFiles::PREFIX . $this->key();
     }
 
     /**
@@ -60,5 +65,21 @@ final readonly class VehiclePhoto
     public function sealed(string $vehiclePath): string
     {
         return $this->path($vehiclePath) . '#' . $this->id;
+    }
+
+    /**
+     * @return string The extension its media type is stored under: `png`, `webp`, or `jpg` for a JPEG.
+     */
+    private function extension(): string
+    {
+        if ($this->mediaType === 'image/png') {
+            return 'png';
+        }
+
+        if ($this->mediaType === 'image/webp') {
+            return 'webp';
+        }
+
+        return 'jpg';
     }
 }

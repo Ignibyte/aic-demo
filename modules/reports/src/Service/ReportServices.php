@@ -7,6 +7,7 @@ namespace App\Reports\Service;
 use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
 use AIC\Queue\Application\PostgresQueue;
+use AIC\Storage\Application\PrivateFiles;
 use App\Reports\Form\RangeChecks;
 use App\Reports\Repository\ExportRepository;
 use App\Reports\Repository\FigureRepository;
@@ -24,18 +25,23 @@ use App\Staff\Service\StaffPanels;
 final readonly class ReportServices
 {
     /**
-     * @param RangeRepository $rangeRepository The calendar and the presets, which the range's check, the figures and the
-     *                                         page share.
-     * @param EntityStore     $entityStore     The entity store.
-     * @param PostgresQueue   $postgresQueue   Queues an export's job.
-     * @param PageDocuments   $pageDocuments   The theme's documents.
+     * The calendar and the presets, which the range's check, the figures and the page share.
+     */
+    private RangeRepository $rangeRepository;
+
+    /**
+     * @param EntityStore   $entityStore   The entity store.
+     * @param PostgresQueue $postgresQueue Queues an export's job.
+     * @param PageDocuments $pageDocuments The theme's documents.
+     * @param PrivateFiles  $privateFiles  AIC's private files, where the exports are kept.
      */
     public function __construct(
-        private RangeRepository $rangeRepository,
         private EntityStore $entityStore,
         private PostgresQueue $postgresQueue,
         private PageDocuments $pageDocuments,
+        private PrivateFiles $privateFiles,
     ) {
+        $this->rangeRepository = new RangeRepository($entityStore);
     }
 
     /**
@@ -77,7 +83,7 @@ final readonly class ReportServices
      */
     public function exportDesk(): ExportDesk
     {
-        return new ExportDesk(new ExportRepository($this->entityStore, $this->postgresQueue), $this->reportAccess(), new ExportFiles());
+        return new ExportDesk(new ExportRepository($this->entityStore, $this->postgresQueue), $this->reportAccess(), $this->privateFiles);
     }
 
     /**

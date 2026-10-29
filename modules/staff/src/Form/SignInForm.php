@@ -22,7 +22,8 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * The sign-in page: the email and password, where to go after, and the error when the last attempt failed. The email
  * is a text field, since the gate's user signs in as `gate`. A line kept for it shows above the form once, as the
- * settings' set-password page keeps "Your password is set." (#22).
+ * settings' set-password page keeps "Your password is set." (#22). The panel's line names the dealership its page
+ * passes, from the profile (#23).
  */
 final readonly class SignInForm
 {
@@ -44,6 +45,7 @@ final readonly class SignInForm
      * @param string                 $next          Where to go after; SignInPost keeps it on the site.
      * @param string                 $error         Why the last attempt failed; empty for none.
      * @param int                    $status        200, or 422 after a refusal.
+     * @param string                 $dealership    The dealership's name, from its profile, for the panel's line.
      *
      * @throws LogicException When a key or the status is malformed, or the request carries no session.
      *
@@ -55,6 +57,7 @@ final readonly class SignInForm
         string $next,
         string $error,
         int $status,
+        string $dealership,
     ): PageDocument {
         $body = [];
 
@@ -63,7 +66,7 @@ final readonly class SignInForm
         }
 
         $body[] = new KeyedComponent('form', $this->form($serverRequest, $email, $next, $error));
-        $panel = new Panel('sign-in', 'Staff sign in', 'Ridgeway Motors staff only.', false, $body);
+        $panel = new Panel('sign-in', 'Staff sign in', $dealership . ' staff only.', false, $body);
 
         return $this->staffPages->page('Sign in', [new KeyedComponent('sign-in', $panel)], $status);
     }

@@ -19,7 +19,9 @@ use RuntimeException;
 /**
  * Holds a signed-in session to the users table on every request (#22), after the session and before the sign-in guard,
  * which the manifest lists after it. A member deleted or deactivated since they signed in is signed out here, so the
- * guard sends them to sign-in from anything under `/app`, and the rest of the site sees a visitor; anyone else has the
+ * guard sends them to sign-in from anything under `/app`, and the rest of the site sees a visitor. So is a session
+ * whose kept password stamp is not the table's (#23): their password was set anew since it signed in, through a link,
+ * which ends every other session they had, or the session is from before the stamp was kept. Anyone else has the
  * name, email and role the table holds now written into their session, so a role an admin took away is gone on their
  * next page. A visitor's request reads nothing.
  */
@@ -57,7 +59,7 @@ final readonly class StaffStanding implements MiddlewareInterface
 
         $staffMember = $this->staffRepository->standing($userId);
 
-        if (!$staffMember instanceof StaffMember) {
+        if (!$staffMember instanceof StaffMember || $this->staffSession->stamp($request) !== $staffMember->stamp) {
             $this->authenticator->logout($request);
 
             return $handler->handle($request);
