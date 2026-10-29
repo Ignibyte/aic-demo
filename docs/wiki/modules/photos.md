@@ -14,7 +14,9 @@ none
 
 ## Commands
 
-none
+| Name | Class |
+| --- | --- |
+| `photos:move-files` | `App\Photos\Command\PhotosMoveFiles` |
 
 ## Jobs
 
@@ -55,6 +57,12 @@ none
 ## Classes
 
 
+### `src/Command/`
+
+| Class | File |
+| --- | --- |
+| `App\Photos\Command\PhotosMoveFiles` | [modules/photos/src/Command/PhotosMoveFiles.php](../../../modules/photos/src/Command/PhotosMoveFiles.php) |
+
 ### `src/Entity/`
 
 | Class | File |
@@ -84,7 +92,6 @@ none
 
 | Class | File |
 | --- | --- |
-| `App\Photos\Service\PhotoFiles` | [modules/photos/src/Service/PhotoFiles.php](../../../modules/photos/src/Service/PhotoFiles.php) |
 | `App\Photos\Service\PhotoGalleries` | [modules/photos/src/Service/PhotoGalleries.php](../../../modules/photos/src/Service/PhotoGalleries.php) |
 | `App\Photos\Service\VehiclePhotos` | [modules/photos/src/Service/VehiclePhotos.php](../../../modules/photos/src/Service/VehiclePhotos.php) |
 
@@ -100,6 +107,7 @@ none
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 - [AIC\Routing](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
 - [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Storage](../../../vendor/aic/framework/docs/systems.md#3-data)
 
 ### Other modules
 

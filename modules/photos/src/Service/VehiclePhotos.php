@@ -10,6 +10,7 @@ use AIC\Form\Application\UploadCheck;
 use AIC\Form\Domain\UploadKind;
 use AIC\Form\Exception\RefusedUpload;
 use AIC\Routing\Domain\RouteNotFoundException;
+use AIC\Storage\Application\PublicFiles;
 use App\Photos\Entity\VehiclePhoto;
 use App\Photos\Repository\VehiclePhotoRepository;
 use App\Staff\Entity\Role;
@@ -19,9 +20,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
+use function hash;
+use function strlen;
+
 /**
  * A vehicle's photos, which inventory's pages show and change by the vehicle's id: read, added from a posted file,
- * removed, forgotten with a deleted vehicle, and served. Who may change them is a sales manager or an admin.
+ * removed, forgotten with a deleted vehicle, and served. Their files are kept in AIC's public files (#23), each under a
+ * key named by its bytes, so two rows with the same bytes share one file, which goes when the last of them does. Who
+ * may change them is a sales manager or an admin.
  */
 final readonly class VehiclePhotos
 {
@@ -52,12 +58,12 @@ final readonly class VehiclePhotos
 
     /**
      * @param EntityStore  $entityStore  The entity store.
-     * @param PhotoFiles   $photoFiles   The photos' files.
+     * @param PublicFiles  $publicFiles  AIC's public files, where the photos' files are kept.
      * @param StaffSession $staffSession Who is signed in.
      */
     public function __construct(
         EntityStore $entityStore,
-        private PhotoFiles $photoFiles = new PhotoFiles(),
+        private PublicFiles $publicFiles,
         private StaffSession $staffSession = new StaffSession(),
     ) {
         $this->vehiclePhotoRepository = new VehiclePhotoRepository($entityStore);
@@ -103,7 +109,8 @@ final readonly class VehiclePhotos
      * @param int                    $vehicleId     The vehicle it is for.
      *
      * @throws LogicException   When a value does not fit its field.
-     * @throws RuntimeException When the photos cannot be counted, or the row written, or the file read or moved.
+     * @throws RuntimeException When the photos cannot be counted, or the row written, or the upload read or its file
+     *                          written.
      *
      * @return string Why it was refused; empty when it was kept.
      */
@@ -120,12 +127,12 @@ final readonly class VehiclePhotos
         }
 
         try {
-            $label = $this->uploadCheck()->check($uploadedFile);
+            $extension = $this->uploadCheck()->kind($uploadedFile)->extension;
         } catch (RefusedUpload $refusedUpload) {
             return $refusedUpload->getMessage();
         }
 
-        return $this->keep($uploadedFile, $vehicleId, $this->mediaType($label))
+        return $this->keep($uploadedFile, $vehicleId, $this->mediaType($extension))
             ? ''
             : self::FULL;
     }
@@ -135,9 +142,10 @@ final readonly class VehiclePhotos
      * @param VehiclePhoto $vehiclePhoto One of its photos.
      *
      * @throws LogicException   When its entity type is malformed.
-     * @throws RuntimeException When the row cannot be deleted.
+     * @throws RuntimeException When the row cannot be deleted or the others holding its bytes counted.
      *
-     * @return bool Whether it was deleted, its file with it; false when it was gone already.
+     * @return bool Whether it was deleted, its file with it when no other photo holds the same bytes; false when it was
+     *              gone already.
      */
     public function remove(int $vehicleId, VehiclePhoto $vehiclePhoto): bool
     {
@@ -145,19 +153,25 @@ final readonly class VehiclePhotos
             return false;
         }
 
-        $this->photoFiles->remove($vehicleId, $vehiclePhoto->id);
+        $this->release($vehiclePhoto);
 
         return true;
     }
 
     /**
-     * Removes a deleted vehicle's files; its rows went with it, by the foreign key's cascade.
+     * Removes the files of a deleted vehicle's photos, read before its delete; their rows went with it, by the foreign
+     * key's cascade. A file another vehicle's photo holds stays.
      *
-     * @param int $vehicleId The deleted vehicle's id.
+     * @param list<VehiclePhoto> $vehiclePhotos The deleted vehicle's photos.
+     *
+     * @throws LogicException   When their entity type is malformed.
+     * @throws RuntimeException When the photos holding a file's bytes cannot be counted.
      */
-    public function forget(int $vehicleId): void
+    public function forget(array $vehiclePhotos): void
     {
-        $this->photoFiles->forget($vehicleId);
+        foreach ($vehiclePhotos as $vehiclePhoto) {
+            $this->release($vehiclePhoto);
+        }
     }
 
     /**
@@ -166,11 +180,11 @@ final readonly class VehiclePhotos
      * @param int                    $position      The photo's position, from 1.
      *
      * @throws LogicException   When their entity type is malformed.
-     * @throws RuntimeException When the photos cannot be read, or the vehicle has no photo there
+     * @throws RuntimeException When the photos cannot be read, or the vehicle has no photo there or its file is gone
      *                          (`RouteNotFoundException`, which AIC answers 404).
      *
-     * @return FileDownload The photo, inline, with its media type; AIC sends its ETag and honours the request's
-     *                      conditions and range.
+     * @return FileDownload The photo, inline, with its media type, from AIC's public files; AIC sends its ETag and
+     *                      honours the request's conditions and range.
      */
     public function download(ServerRequestInterface $serverRequest, int $vehicleId, int $position): FileDownload
     {
@@ -182,7 +196,13 @@ final readonly class VehiclePhotos
             throw new RouteNotFoundException($serverRequest->getUri()->getPath());
         }
 
-        return new FileDownload($this->photoFiles->path($vehicleId, $vehiclePhoto->id), $vehiclePhoto->mediaType, '', $serverRequest);
+        $path = $this->publicFiles->served($vehiclePhoto->key());
+
+        if ($path === null) {
+            throw new RouteNotFoundException($serverRequest->getUri()->getPath());
+        }
+
+        return new FileDownload($path, $vehiclePhoto->mediaType, '', $serverRequest);
     }
 
     /**
@@ -202,23 +222,25 @@ final readonly class VehiclePhotos
     }
 
     /**
-     * The row first, so the file is named by its id. The vehicle's photos are counted again after it: two uploads sent
-     * together past the count before it may both have written, and a row that takes the vehicle over the limit is
-     * deleted, so at most `MOST` stay whatever the timing. Then the file is moved and its hash read from it, rather
-     * than from an 8 MB string; when either fails, the file and the row both go.
+     * The upload is read once, and its hash taken from those bytes, which name its file. The row comes first; the
+     * vehicle's photos are counted again after it: two uploads sent together past the count before it may both have
+     * written, and a row that takes the vehicle over the limit is deleted, so at most `MOST` stay whatever the timing.
+     * Then the file is written, over any file with the same bytes; when that fails, the row goes too.
      *
      * @param UploadedFileInterface $uploadedFile A checked upload.
      * @param int                   $vehicleId    The vehicle it is for.
      * @param string                $mediaType    Its media type.
      *
      * @throws LogicException   When a value does not fit its field.
-     * @throws RuntimeException When a row cannot be written or counted, or the file moved or read.
+     * @throws RuntimeException When a row cannot be written or counted, or the upload read or its file written.
      *
      * @return bool Whether it was kept; false when the vehicle was full by the time its row was written.
      */
     private function keep(UploadedFileInterface $uploadedFile, int $vehicleId, string $mediaType): bool
     {
-        $photoId = $this->vehiclePhotoRepository->add($vehicleId, $mediaType, $uploadedFile->getSize() ?? 0);
+        $contents = (string) $uploadedFile->getStream();
+        $sha256 = hash('sha256', $contents);
+        $photoId = $this->vehiclePhotoRepository->add($vehicleId, $mediaType, strlen($contents), $sha256);
 
         if ($this->vehiclePhotoRepository->count($vehicleId) > self::MOST) {
             $this->vehiclePhotoRepository->delete($vehicleId, $photoId);
@@ -227,16 +249,29 @@ final readonly class VehiclePhotos
         }
 
         try {
-            $this->photoFiles->keep($uploadedFile, $vehicleId, $photoId);
-            $this->vehiclePhotoRepository->hashed($vehicleId, $photoId, $this->photoFiles->sha256($vehicleId, $photoId));
+            $this->publicFiles->put((new VehiclePhoto($photoId, 0, $mediaType, $sha256))->key(), $contents);
         } catch (RuntimeException $runtimeException) {
-            $this->photoFiles->remove($vehicleId, $photoId);
             $this->vehiclePhotoRepository->delete($vehicleId, $photoId);
 
             throw $runtimeException;
         }
 
         return true;
+    }
+
+    /**
+     * @param VehiclePhoto $vehiclePhoto A photo whose row is gone.
+     *
+     * @throws LogicException   When the entity type is malformed.
+     * @throws RuntimeException When the photos holding its bytes cannot be counted.
+     */
+    private function release(VehiclePhoto $vehiclePhoto): void
+    {
+        if ($this->vehiclePhotoRepository->holding($vehiclePhoto->sha256) > 0) {
+            return;
+        }
+
+        $this->publicFiles->delete($vehiclePhoto->key());
     }
 
     /**
@@ -248,17 +283,17 @@ final readonly class VehiclePhotos
     }
 
     /**
-     * @param string $label The kind `UploadCheck` accepted, for a person (`PNG image`).
+     * @param string $extension The extension `UploadCheck` found the upload stored under (`png`).
      *
      * @return string Its media type.
      */
-    private function mediaType(string $label): string
+    private function mediaType(string $extension): string
     {
-        if ($label === UploadKind::Png->label()) {
+        if ($extension === 'png') {
             return 'image/png';
         }
 
-        if ($label === UploadKind::WebP->label()) {
+        if ($extension === 'webp') {
             return 'image/webp';
         }
 

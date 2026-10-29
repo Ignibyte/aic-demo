@@ -115,6 +115,7 @@ none
 - [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
 - [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
+- [AIC\Storage](../../../vendor/aic/framework/docs/systems.md#3-data)
 
 ### Other modules
 

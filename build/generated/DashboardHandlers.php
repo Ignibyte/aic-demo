@@ -15,6 +15,8 @@ use App\Dashboard\Service\DashboardLive;
 use App\Dashboard\Service\DashboardPoll;
 use App\Inventory\Repository\TodayRepository;
 use App\Sales\Repository\SaleRepository;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -51,10 +53,11 @@ final readonly class DashboardHandlers
             new TesseraProps($this->handlerContext->envelopeCodec()),
             $this->handlerContext->envelopeCodec(),
         );
+        $staffDealership = new StaffDealership($entityStore, $this->handlerContext->tagged(DealershipNames::class));
 
         return [
             DashboardPage::class => $this->handlerContext->page(
-                new DashboardPage($staffPages, $dashboardLive, $dashboardPoll, new DashboardCharts($dashboardRepository)),
+                new DashboardPage($staffPages, $dashboardLive, $dashboardPoll, new DashboardCharts($dashboardRepository), $staffDealership),
             ),
         ];
     }

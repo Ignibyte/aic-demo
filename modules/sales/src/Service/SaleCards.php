@@ -7,6 +7,7 @@ namespace App\Sales\Service;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Database\Contracts\QueryException;
 use App\Sales\Entity\Sale;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPanels;
 use App\Theme\Components\DetailCard\ButtonLink;
@@ -27,13 +28,15 @@ use function number_format;
 final readonly class SaleCards
 {
     /**
-     * @param SaleRecords  $saleRecords  The route's sale and the 404 page.
-     * @param StaffPanels  $staffPanels  The sale pages' frame.
-     * @param StaffNotices $staffNotices The recording's notice.
+     * @param SaleRecords     $saleRecords     The route's sale and the 404 page.
+     * @param StaffPanels     $staffPanels     The sale pages' frame.
+     * @param StaffDealership $staffDealership The dealership's name, for the page's line.
+     * @param StaffNotices    $staffNotices    The recording's notice.
      */
     public function __construct(
         private SaleRecords $saleRecords,
         private StaffPanels $staffPanels,
+        private StaffDealership $staffDealership,
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
@@ -59,7 +62,9 @@ final readonly class SaleCards
         $body['card'] = $this->card($sale);
         $title = 'Sale of the ' . $sale->vehicle;
 
-        return $this->staffPanels->page($title, 'Sale record', 'What Ridgeway Motors keeps on this sale.', $body, 200);
+        $line = 'What ' . $this->staffDealership->name() . ' keeps on this sale.';
+
+        return $this->staffPanels->page($title, 'Sale record', $line, $body, 200);
     }
 
     /**

@@ -8,15 +8,15 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Queue\Application\PostgresQueue;
+use AIC\Storage\Application\PublicFiles;
 use App\Inventory\Repository\TodayRepository;
 use App\Leads\Repository\LeadRepository;
-use App\Leads\Repository\SellerRepository;
 use App\Leads\Service\LeadDesk;
-use App\Settings\Repository\ProfileRepository;
 use App\Settings\Service\DealershipProfiles;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarPage;
 use App\Storefront\Controller\CarTestDrivePost;
+use App\Storefront\Service\StorePages;
 use App\Storefront\Service\StoreServices;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -42,14 +42,14 @@ final readonly class StorefrontHandlers
     public function byId(): array
     {
         $entityStore = new EntityStore($this->handlerContext->database());
+        $dealershipProfiles = new DealershipProfiles($entityStore);
+        $storePages = new StorePages($this->handlerContext->documents(), $dealershipProfiles);
         $postgresQueue = new PostgresQueue($this->handlerContext->database());
         $todayRepository = new TodayRepository($entityStore);
-        $sellerRepository = new SellerRepository($entityStore);
-        $leadRepository = new LeadRepository($entityStore, $sellerRepository);
-        $profileRepository = new ProfileRepository($entityStore);
-        $dealershipProfiles = new DealershipProfiles($profileRepository);
+        $leadRepository = new LeadRepository($entityStore);
         $leadDesk = new LeadDesk($postgresQueue, $todayRepository, $leadRepository, $dealershipProfiles);
-        $storeServices = new StoreServices($entityStore, $this->handlerContext->documents(), $leadDesk, $dealershipProfiles);
+        $publicFiles = new PublicFiles($this->handlerContext->root());
+        $storeServices = new StoreServices($entityStore, $storePages, $leadDesk, $publicFiles);
         $carPages = $storeServices->carPages();
 
         return [

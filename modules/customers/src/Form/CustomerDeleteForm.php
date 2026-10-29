@@ -10,12 +10,14 @@ use AIC\Controller\Domain\PageDocument;
 use AIC\Form\Application\FormTokens;
 use App\Customers\Entity\Customer;
 use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPanels;
 use App\Theme\Components\ConfirmCard\ConfirmCard;
 use App\Theme\Components\DetailCard\ButtonLink;
 use App\Theme\Components\DetailCard\ButtonTone;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 /**
  * A customer's delete page: the question, with the form that deletes the record (its envelope sealing the customer's
@@ -25,13 +27,15 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class CustomerDeleteForm
 {
     /**
-     * @param StaffPanels $staffPanels The customer pages' frame.
-     * @param StaffSeals  $staffSeals  Seals the customer's path.
-     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
+     * @param StaffPanels     $staffPanels     The customer pages' frame.
+     * @param StaffSeals      $staffSeals      Seals the customer's path.
+     * @param StaffDealership $staffDealership The dealership's name, for a refusal.
+     * @param FormTokens      $formTokens      Issues the visitor's CSRF token.
      */
     public function __construct(
         private StaffPanels $staffPanels,
         private StaffSeals $staffSeals,
+        private StaffDealership $staffDealership,
         private FormTokens $formTokens = new FormTokens(),
     ) {
     }
@@ -42,7 +46,8 @@ final readonly class CustomerDeleteForm
      * @param bool                   $bought        Whether they bought a vehicle.
      * @param int                    $status        200, or 422 after a refused delete.
      *
-     * @throws LogicException When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
+     * @throws LogicException   When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
+     * @throws RuntimeException When the dealership's name cannot be read.
      *
      * @return PageDocument The page that asks first, or the warning.
      */
@@ -56,7 +61,7 @@ final readonly class CustomerDeleteForm
         $title = 'Delete ' . $customerDetails->name;
 
         if ($bought) {
-            $message = 'This customer has bought from Ridgeway Motors, so the record stays.';
+            $message = 'This customer has bought from ' . $this->staffDealership->name() . ', so the record stays.';
 
             return $this->staffPanels->warning($title, $message, 'customer-bought', 'Back to the customer', $customer->path(), $status);
         }

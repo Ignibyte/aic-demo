@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Settings\Service;
 
 use AIC\Database\Contracts\QueryException;
+use AIC\Entity\Application\EntityStore;
 use App\Settings\Entity\DealershipProfile;
 use App\Settings\Repository\ProfileRepository;
 use InvalidArgumentException;
@@ -17,11 +18,17 @@ use InvalidArgumentException;
 final readonly class DealershipProfiles
 {
     /**
-     * @param ProfileRepository $profileRepository The profile's row.
+     * The profile's row.
+     */
+    private ProfileRepository $profileRepository;
+
+    /**
+     * @param EntityStore $entityStore The entity store, through which the profile's row is read.
      */
     public function __construct(
-        private ProfileRepository $profileRepository,
+        EntityStore $entityStore,
     ) {
+        $this->profileRepository = new ProfileRepository($entityStore);
     }
 
     /**

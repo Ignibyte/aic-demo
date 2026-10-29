@@ -31,19 +31,23 @@ final readonly class LeadRepository
     private const string OPEN = 'open';
 
     /**
-     * @param EntityStore      $entityStore      The tables.
-     * @param SellerRepository $sellerRepository Whose turn it is.
-     * @param LeadTable        $leadTable        The leads' type.
-     * @param CustomerTable    $customerTable    The customers' type.
-     * @param LeadRows         $leadRows         Reads a lead's row.
+     * Whose turn it is.
+     */
+    private SellerRepository $sellerRepository;
+
+    /**
+     * @param EntityStore   $entityStore   The tables.
+     * @param LeadTable     $leadTable     The leads' type.
+     * @param CustomerTable $customerTable The customers' type.
+     * @param LeadRows      $leadRows      Reads a lead's row.
      */
     public function __construct(
         private EntityStore $entityStore,
-        private SellerRepository $sellerRepository,
         private LeadTable $leadTable = new LeadTable(),
         private CustomerTable $customerTable = new CustomerTable(),
         private LeadRows $leadRows = new LeadRows(),
     ) {
+        $this->sellerRepository = new SellerRepository($entityStore);
     }
 
     /**

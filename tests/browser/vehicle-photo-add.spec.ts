@@ -5,7 +5,7 @@ import { collectFormErrors } from './support/forms';
 import { expectMarksKept, markPage, ready } from './support/tessera';
 import {
     FIXTURES, TITLE, VINS, addPhoto, expectChangedInPlace, fetchInPage, insertPhotoVehicle, naturalWidth, photoCount,
-    photoDirectory, recordAnswers, removePhotoLooks, vehiclePath,
+    photoFiles, recordAnswers, removePhotoLooks, vehiclePath,
 } from './support/photos';
 
 test.beforeEach(() => {
@@ -30,7 +30,7 @@ test('a photo added on a vehicle page appears as its main photo in the same docu
     await expectChangedInPlace(answers, `${path}/photos`, path);
     await expect(page.locator('#vehicle-photos-empty')).toHaveCount(0);
     await expect(page.locator('#vehicle-photo-1')).toHaveAttribute('alt', `${TITLE}, photo 1 of 1`);
-    await expect(page.locator('#vehicle-photo-1')).toHaveAttribute('src', new RegExp(`^${path}/photos/1\\?v=[0-9a-f]{16}$`));
+    await expect(page.locator('#vehicle-photo-1')).toHaveAttribute('src', /^\/files\/photos\/[0-9a-f]{64}\.jpg$/);
     await expect.poll(() => naturalWidth(page, '#vehicle-photo-1')).toBe(640);
     await expect(page.locator('#vehicle-photos li').first()).toContainText('Main photo');
     expect(new URL(page.url()).pathname).toBe(path);
@@ -57,14 +57,14 @@ test('a photo added on a vehicle page appears as its main photo in the same docu
     await expectMarksKept(page);
     expect(photoCount(VINS.added)).toBe(1);
 
-    // Deleting the vehicle deletes its photo: the row by its foreign key, the file after it. The file is looked for
-    // only when this checkout's `var/photos/` holds it, as DDEV's site does; the compiled site keeps its own.
-    const directory = photoDirectory(VINS.added);
+    // Deleting the vehicle deletes its photo: the row by its foreign key, then the file, which no other photo holds.
+    const [file] = photoFiles(VINS.added);
     await page.locator('#vehicle-delete').click();
     await page.locator('#vehicle-delete-confirm').click();
     await expect(page).toHaveURL(/\/app\/inventory$/);
     expect(photoCount(VINS.added)).toBe(0);
-    expect(existsSync(directory)).toBe(false);
+    expect(file.held).toBe(1);
+    expect(existsSync(file.path)).toBe(false);
     expect((await fetchInPage(page, `${path}/photos/1`)).status).toBe(404);
 
     expect(errors.filter((error) => !error.includes('status of 404'))).toEqual([]);

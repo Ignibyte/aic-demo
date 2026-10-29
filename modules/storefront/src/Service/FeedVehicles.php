@@ -80,7 +80,7 @@ final readonly class FeedVehicles
         $photos = [];
 
         foreach ($this->vehiclePhotos->photos($listedVehicle->id) as $vehiclePhoto) {
-            $photos[] = $vehiclePhoto->source($path);
+            $photos[] = $vehiclePhoto->source();
         }
 
         return new FeedVehicle(

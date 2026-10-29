@@ -25,7 +25,8 @@ use function preg_match;
  * read or written. The session's role is the users table's, refreshed by staff's `StaffStanding` on each request, so a
  * demoted admin is refused on their next request. Also the member a route's id names, and the other refusals: a member
  * that is not there (404), a form whose envelope is altered or another's (400), and a password link altered (400) or
- * spent (404); and the frame the set-password page shows in.
+ * spent (404); the frame the set-password page shows in; and, after a link sets a password, the new password's stamp
+ * in the session that set it when that session is the member's own (#23).
  */
 final readonly class SettingsAccess
 {
@@ -89,19 +90,33 @@ final readonly class SettingsAccess
     }
 
     /**
-     * @param ServerRequestInterface $serverRequest A request, with its session.
-     * @param StaffAccount           $staffAccount  A member.
+     * Keeps signed in the session that set a member's password through a link, when it is the member's own: it takes
+     * the new password's stamp, which `StaffStanding` holds every other session of theirs to, and signs those out.
      *
-     * @throws RuntimeException When the session cannot be read, or the kept role is no role.
-     * @throws LogicException   When the request carries no session.
+     * @param ServerRequestInterface $serverRequest The post that set the password, with its session.
+     * @param StaffAccount           $staffAccount  The member.
+     * @param StaffMember|null       $staffMember   The member as the users table has them now, with the new stamp; null
+     *                                              when they are gone or deactivated.
      *
-     * @return bool Whether the member is the one signed in.
+     * @throws RuntimeException When the session or the member cannot be read, or a role is no role.
+     * @throws LogicException   When the request carries no session, or an entity type is malformed.
      */
-    public function self(ServerRequestInterface $serverRequest, StaffAccount $staffAccount): bool
-    {
-        $staffMember = $this->staffSession->member($serverRequest);
+    public function restamp(
+        ServerRequestInterface $serverRequest,
+        StaffAccount $staffAccount,
+        ?StaffMember $staffMember,
+    ): void {
+        $signedIn = $this->staffSession->member($serverRequest);
 
-        return $staffMember instanceof StaffMember && $staffMember->email === $staffAccount->email;
+        if (!$signedIn instanceof StaffMember || $signedIn->email !== $staffAccount->email) {
+            return;
+        }
+
+        if (!$staffMember instanceof StaffMember) {
+            return;
+        }
+
+        $this->staffSession->remember($serverRequest, $staffMember);
     }
 
     /**

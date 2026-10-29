@@ -12,7 +12,6 @@ use AIC\Queue\Application\PostgresQueue;
 use App\Settings\Entity\SettingsConfig;
 use App\Settings\Form\SettingsSeals;
 use App\Settings\Repository\LinkRepository;
-use App\Settings\Repository\ProfileRepository;
 use App\Staff\Repository\StaffRepository;
 use RuntimeException;
 
@@ -56,7 +55,7 @@ final readonly class LinkServices
         return new LinkMails(
             $this->linkRepository(),
             new SettingsSeals($this->envelopeCodec),
-            new DealershipProfiles(new ProfileRepository($this->entityStore)),
+            new DealershipProfiles($this->entityStore),
             new Notifier($this->postgresQueue),
             $this->settingsConfig(),
         );

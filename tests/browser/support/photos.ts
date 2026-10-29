@@ -49,22 +49,38 @@ export function insertPhotoVehicle(vin: string): void {
     insertVehicle(testVehicle(vin));
 }
 
-// Deletes the photo looks' vehicles, their photos' rows going with them, and the salesperson. Their photos' files are
-// removed too when the site keeps them in this checkout's `var/photos/`, as DDEV's does.
-export function removePhotoLooks(): void {
-    for (const id of sql(`SELECT id FROM vehicles WHERE vin LIKE '${STEM}%'`)) {
-        rmSync(resolve('var/photos', id), { recursive: true, force: true });
-    }
+// The SQL for a photo's key in AIC's public files, `photos/{sha256}.{extension}`, as the app names it.
+const KEY = "'photos/' || p.sha256 || '.' || CASE p.media_type WHEN 'image/png' THEN 'png' WHEN 'image/webp' THEN 'webp' ELSE 'jpg' END";
 
-    sql(`DELETE FROM vehicles WHERE vin LIKE '${STEM}%'`);
-    sql(`DELETE FROM users WHERE email = ${literal(SALESPERSON)}`);
+// Where this checkout keeps a photo's file, as DDEV's site writes it into AIC's public files.
+export function photoFile(key: string): string {
+    return resolve('var/storage/public', key);
 }
 
-// Where this checkout keeps the vehicle's photo files, as DDEV's site writes them; empty when no vehicle has the VIN.
-export function photoDirectory(vin: string): string {
-    const [id] = sql(`SELECT id FROM vehicles WHERE vin = ${literal(vin)}`);
+// Deletes the photo looks' vehicles, their photos' rows going with them, and the salesperson. A photo file no other
+// row holds is removed too, from this checkout's public files, where DDEV's site keeps it.
+export function removePhotoLooks(): void {
+    const keys = sql(`SELECT DISTINCT ${KEY} FROM vehicle_photos p JOIN vehicles v ON v.id = p.vehicle_id WHERE v.vin LIKE '${STEM}%'`);
+    sql(`DELETE FROM vehicles WHERE vin LIKE '${STEM}%'`);
+    sql(`DELETE FROM users WHERE email = ${literal(SALESPERSON)}`);
+    const held = new Set(sql(`SELECT DISTINCT ${KEY} FROM vehicle_photos p`));
 
-    return id === undefined ? '' : resolve('var/photos', id);
+    for (const key of keys.filter((stored) => !held.has(stored))) {
+        rmSync(photoFile(key), { force: true });
+    }
+}
+
+// The vehicle's photo files, first added first: where this checkout keeps each, and how many photo rows of any vehicle
+// hold its bytes.
+export function photoFiles(vin: string): { path: string; held: number }[] {
+    return sql(
+        `SELECT ${KEY} || '|' || (SELECT count(*) FROM vehicle_photos o WHERE o.sha256 = p.sha256) `
+            + `FROM vehicle_photos p JOIN vehicles v ON v.id = p.vehicle_id WHERE v.vin = ${literal(vin)} ORDER BY p.id`,
+    ).map((row) => {
+        const [key, held] = row.split('|');
+
+        return { path: photoFile(key), held: Number(held) };
+    });
 }
 
 // How many photos the vehicle with this VIN has.

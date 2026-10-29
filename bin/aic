@@ -8,8 +8,9 @@ declare(strict_types=1);
  *
  * It reads config/database.php and config/mail.php, wires the console kernel
  * (AIC\Module\Application\ConsoleKernel) over the generated wiring
- * (App\Generated\ConsoleModules, #93) and runs the command line through the
- * console. Output goes to STDOUT, a line at a time, through the CommandWriter
+ * (App\Generated\ConsoleModules, #93), with the app's root for its stored
+ * files (AIC #213), and runs the command line through the console. Output goes
+ * to STDOUT, a line at a time, through the CommandWriter
  * below; the exit code is the command's. With no command, or an unknown one, it
  * lists the commands and exits 2. The database connection opens on the first
  * query, so a command that does not query runs without one. When the dev-only
@@ -42,7 +43,13 @@ try {
         throw new RuntimeException('config/mail.php must return an ' . MailConfig::class . '.');
     }
 
-    $consoleKernel = new ConsoleKernel(new PdoDatabase($databaseConfig), new SmtpTransport($mailConfig), $mailConfig, new ConsoleModules());
+    $consoleKernel = new ConsoleKernel(
+        new PdoDatabase($databaseConfig),
+        new SmtpTransport($mailConfig),
+        $mailConfig,
+        new ConsoleModules(),
+        dirname(__DIR__),
+    );
     $commands = $consoleKernel->commands();
 
     if (class_exists(WorkflowKernel::class)) {

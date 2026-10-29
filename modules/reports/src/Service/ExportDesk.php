@@ -7,6 +7,7 @@ namespace App\Reports\Service;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Controller\Domain\FileDownload;
 use AIC\Routing\Domain\RouteNotFoundException;
+use AIC\Storage\Application\PrivateFiles;
 use App\Reports\Entity\ReportExport;
 use App\Reports\Repository\ExportRepository;
 use App\Staff\Service\StaffRequests;
@@ -40,13 +41,13 @@ final readonly class ExportDesk
     /**
      * @param ExportRepository $exportRepository The exports.
      * @param ReportAccess     $reportAccess     Whose exports they are.
-     * @param ExportFiles      $exportFiles      The exports' files.
+     * @param PrivateFiles     $privateFiles     AIC's private files, where the exports are kept.
      * @param StaffRequests    $staffRequests    Reads the query and the route's id.
      */
     public function __construct(
         private ExportRepository $exportRepository,
         private ReportAccess $reportAccess,
-        private ExportFiles $exportFiles,
+        private PrivateFiles $privateFiles,
         private StaffRequests $staffRequests = new StaffRequests(),
     ) {
     }
@@ -100,12 +101,12 @@ final readonly class ExportDesk
         if (
             !$reportExport instanceof ReportExport
             || !$reportExport->ready
-            || !$this->exportFiles->exists($reportExport->id)
+            || !$this->privateFiles->exists($reportExport->key())
         ) {
             throw new RouteNotFoundException($serverRequest->getUri()->getPath());
         }
 
-        return new FileDownload($this->exportFiles->path($reportExport->id), self::CSV, $reportExport->fileName(), $serverRequest);
+        return $this->privateFiles->download($reportExport->key(), self::CSV, $reportExport->fileName(), $serverRequest);
     }
 
     /**

@@ -32,6 +32,7 @@ final readonly class ModuleHandlersPart2
     public function byId(): array
     {
         return array_merge(
+            (new InboxHandlers($this->handlerContext))->byId(),
             (new InboxHandlersPart2($this->handlerContext))->byId(),
             (new SettingsHandlers($this->handlerContext))->byId(),
             (new SettingsHandlersPart2($this->handlerContext))->byId(),

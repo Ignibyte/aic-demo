@@ -18,7 +18,9 @@ declare(strict_types=1);
  * before the sign-in guard runs (`StaffStanding`), removes a member who made no
  * records (`user:remove`), and exports the members' guarded reads and writes
  * (`AccountRepository`, `StaffAccount`, `AccountWrite`) and the roles in order
- * (`Roles`). The build reads it; nothing reads it at run time.
+ * (`Roles`). It exports the plugin type through which settings names the
+ * dealership on the staff pages, and the reader those pages use
+ * (`DealershipNames`, `StaffDealership`, #23). The build reads it; nothing reads it at run time.
  */
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
@@ -47,7 +49,9 @@ use App\Staff\Migration\CreateUsersTable;
 use App\Staff\Repository\AccountRepository;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\AccessRules;
+use App\Staff\Service\DealershipNames;
 use App\Staff\Service\Roles;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
@@ -85,4 +89,6 @@ return (new ModuleManifest('staff'))
     ->export(AccountRepository::class)
     ->export(StaffRepository::class)
     ->export(StaffAccount::class)
-    ->export(AccountWrite::class);
+    ->export(AccountWrite::class)
+    ->export(DealershipNames::class)
+    ->export(StaffDealership::class);

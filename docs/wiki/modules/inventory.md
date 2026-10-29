@@ -167,6 +167,7 @@ none
 - [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 - [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Storage](../../../vendor/aic/framework/docs/systems.md#3-data)
 
 ### Other modules
 

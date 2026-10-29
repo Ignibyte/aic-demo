@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
 use AIC\Database\Application\DatabaseStatus;
+use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\PostedFields;
 use AIC\Module\Application\HandlerContext;
 use App\Site\Controller\BootstrapPage;
@@ -13,6 +14,8 @@ use App\Site\Controller\HealthApi;
 use App\Site\Controller\ThemeGuidePage;
 use App\Site\Controller\ThemeGuidePost;
 use App\Site\Service\ThemeSamples;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -36,11 +39,15 @@ final readonly class SiteHandlers
      */
     public function byId(): array
     {
+        $staffDealership = new StaffDealership(
+            new EntityStore($this->handlerContext->database()),
+            $this->handlerContext->tagged(DealershipNames::class),
+        );
         $themeSamples = new ThemeSamples();
 
         return [
             BootstrapPage::class => $this->handlerContext->page(
-                new BootstrapPage($this->handlerContext->appConfig(), $this->handlerContext->documents()),
+                new BootstrapPage($this->handlerContext->appConfig(), $this->handlerContext->documents(), $staffDealership),
             ),
             HealthApi::class => $this->handlerContext->api(new HealthApi(new DatabaseStatus($this->handlerContext->database()))),
             ThemeGuidePage::class => $this->handlerContext->page(new ThemeGuidePage($this->handlerContext->documents(), $themeSamples)),

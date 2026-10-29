@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Sales\Service;
 
 use AIC\Controller\Application\PageDocuments;
+use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\EnvelopeCodec;
+use AIC\Module\Attribute\Tagged;
 use App\Sales\Form\SaleVoidForm;
 use App\Sales\Form\SaleVoids;
 use App\Sales\Repository\SaleRecordRepository;
 use App\Staff\Form\StaffSeals;
+use App\Staff\Service\DealershipNames;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffPages;
 use App\Staff\Service\StaffPanels;
 
@@ -24,11 +28,17 @@ final readonly class SaleRecordServices
      * @param PageDocuments        $pageDocuments        The theme's document around a page.
      * @param SaleRecordRepository $saleRecordRepository One sale at a time, changing its vehicle's status through
      *                                                   inventory.
+     * @param EntityStore          $entityStore          The entity store, through which the name is read.
+     * @param list<object>         $dealershipNames      The `DealershipNames` plugins (`#[Tagged]`), which name the
+     *                                                   dealership on the sale's page.
      */
     public function __construct(
         private EnvelopeCodec $envelopeCodec,
         private PageDocuments $pageDocuments,
         private SaleRecordRepository $saleRecordRepository,
+        private EntityStore $entityStore,
+        #[Tagged(DealershipNames::class)]
+        private array $dealershipNames,
     ) {
     }
 
@@ -51,7 +61,15 @@ final readonly class SaleRecordServices
     {
         $staffPanels = $this->staffPanels();
 
-        return new SaleCards(new SaleRecords($this->saleRecordRepository, $staffPanels), $staffPanels);
+        return new SaleCards(new SaleRecords($this->saleRecordRepository, $staffPanels), $staffPanels, $this->staffDealership());
+    }
+
+    /**
+     * @return StaffDealership The dealership's name, from the first `DealershipNames` plugin.
+     */
+    private function staffDealership(): StaffDealership
+    {
+        return new StaffDealership($this->entityStore, $this->dealershipNames);
     }
 
     /**

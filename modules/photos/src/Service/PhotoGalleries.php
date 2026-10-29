@@ -103,7 +103,7 @@ final readonly class PhotoGalleries
             $actions[] = new KeyedComponent('delete-' . $vehiclePhoto->position, $deleteForm);
         }
 
-        $src = $vehiclePhoto->source($vehiclePath);
+        $src = $vehiclePhoto->source();
 
         return new GalleryPhoto($this->photoForms->photoId($vehiclePhoto), $src, $alt, $vehiclePhoto->position === 1, $actions);
     }

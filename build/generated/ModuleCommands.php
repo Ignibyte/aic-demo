@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Controller\Contracts\Command;
 use AIC\Module\Application\ConsoleContext;
+use LogicException;
 use RuntimeException;
 
 use function array_merge;
@@ -26,6 +27,7 @@ final readonly class ModuleCommands
 
     /**
      * @throws RuntimeException When a called constructor or service fails.
+     * @throws LogicException   When a called constructor or service fails.
      *
      * @return array<string, Command> The modules' commands by name.
      */
@@ -34,9 +36,11 @@ final readonly class ModuleCommands
         return array_merge(
             (new StaffCommands($this->consoleContext))->byName(),
             (new CustomersCommands($this->consoleContext))->byName(),
+            (new PhotosCommands($this->consoleContext))->byName(),
             (new InventoryCommands($this->consoleContext))->byName(),
             (new SalesCommands($this->consoleContext))->byName(),
             (new InboxCommands($this->consoleContext))->byName(),
+            (new ReportsCommands($this->consoleContext))->byName(),
             (new SiteCommands($this->consoleContext))->byName(),
         );
     }

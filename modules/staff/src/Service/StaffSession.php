@@ -14,7 +14,8 @@ use UnexpectedValueException;
  * The signed-in member of staff, kept in the session at sign-in beside the Authenticator's user id, so the header's
  * block (which takes no services) and `/app` show them without the database. Signing out clears the whole session.
  * `StaffStanding` refreshes it on each request from the users table (#22), so a name or role an admin changed reaches
- * the member's next page, and a role check never reads a role they no longer have.
+ * the member's next page, and a role check never reads a role they no longer have. It keeps the stamp of the password
+ * they signed in with too (#23), which `StaffStanding` holds to the table's.
  */
 final readonly class StaffSession
 {
@@ -32,6 +33,11 @@ final readonly class StaffSession
      * The session key that keeps their role's stored value.
      */
     private const string ROLE = 'staff.role';
+
+    /**
+     * The session key that keeps the stamp of the password they signed in with.
+     */
+    private const string STAMP = 'staff.stamp';
 
     /**
      * @param RequestSession $requestSession Reads the session off the request.
@@ -55,6 +61,20 @@ final readonly class StaffSession
         $session->set(self::EMAIL, $staffMember->email);
         $session->set(self::NAME, $staffMember->name);
         $session->set(self::ROLE, $staffMember->role->value);
+        $session->set(self::STAMP, $staffMember->stamp);
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest A request, with its session.
+     *
+     * @throws LogicException When the request carries no session.
+     *
+     * @return string The stamp of the password the session signed in with; empty for a session from before it was
+     *                kept, or none signed in.
+     */
+    public function stamp(ServerRequestInterface $serverRequest): string
+    {
+        return $this->requestSession->read($serverRequest)->get(self::STAMP) ?? '';
     }
 
     /**

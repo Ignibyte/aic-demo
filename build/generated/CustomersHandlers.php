@@ -16,6 +16,7 @@ use App\Customers\Controller\CustomerPage;
 use App\Customers\Controller\CustomerUpdatePost;
 use App\Customers\Service\CustomerPurchases;
 use App\Customers\Service\CustomerServices;
+use App\Staff\Service\DealershipNames;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -45,6 +46,7 @@ final readonly class CustomersHandlers
             $this->handlerContext->envelopeCodec(),
             $this->handlerContext->documents(),
             $this->handlerContext->tagged(CustomerPurchases::class),
+            $this->handlerContext->tagged(DealershipNames::class),
         );
         $customerSaves = $customerServices->customerSaves();
         $customerDeletes = $customerServices->customerDeletes();

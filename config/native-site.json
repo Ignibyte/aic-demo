@@ -2297,6 +2297,36 @@
             "captures": true
         },
         {
+            "name": "health, the worker keeps the gate user's own link, the gate user's inbox forgotten first",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true,
+            "console": "inbox:forget gate"
+        },
+        {
+            "name": "inbox, the gate user's own link captured",
+            "method": "GET",
+            "path": "/app/inbox",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/inbox/"
+        },
+        {
+            "name": "inbox, the gate user's own link opened",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
             "name": "health, once the worker has run the newcomer's notifications",
             "method": "GET",
             "path": "/health",
@@ -2486,6 +2516,410 @@
             "form": "",
             "header": "",
             "status": 400,
+            "captures": false
+        },
+        {
+            "name": "journey, sign-in page, the files moved first",
+            "method": "GET",
+            "path": "/sign-in?next=%2Fapp",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "photos:move-files"
+        },
+        {
+            "name": "journey, sign-in",
+            "method": "POST",
+            "path": "/sign-in",
+            "form": "email=gate&password={password}&next=%2Fapp&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the vehicle form",
+            "method": "GET",
+            "path": "/app/inventory/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car added",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE30SR999003&year=2025&make=Gate&model=Journey&trim=Day&body_style=Hatchback&mileage=1200&exterior_colour=Teal&list_price=24500&cost=21000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE30SR999003",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, a JPEG photo",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE30SR999003/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.jpg",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, a PNG photo",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE30SR999003/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.png",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, a WebP photo",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE30SR999003/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.webp",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's page, with its photos",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE30SR999003",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the JPEG from the public files",
+            "method": "GET",
+            "path": "/files/photos/1b3b83116755d62cfa8e87fa2c8a70dd7007c2f7c47a331d159bf369f03cccd6.jpg",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the JPEG from the public files, a byte range",
+            "method": "GET",
+            "path": "/files/photos/1b3b83116755d62cfa8e87fa2c8a70dd7007c2f7c47a331d159bf369f03cccd6.jpg",
+            "form": "",
+            "header": "Range: bytes=0-99",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "journey, the PNG from the public files",
+            "method": "GET",
+            "path": "/files/photos/f26818359f89da7fabeba487ca65f3be16631b92d1287fdf2ed4661bd81d6394.png",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the WebP from the public files",
+            "method": "GET",
+            "path": "/files/photos/a9aa415f3d73a9df00111240b7beb03bc4e258b986614cb31fa1a9fa7db36d86.webp",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, a key no photo has",
+            "method": "GET",
+            "path": "/files/photos/0000000000000000000000000000000000000000000000000000000000000000.jpg",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "journey, the public list by the car's make",
+            "method": "GET",
+            "path": "/cars?make=Gate&year=&min_price=&max_price=&sort=",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's public page",
+            "method": "GET",
+            "path": "/cars/2025-gate-journey-1cf5c6",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's photo by its place",
+            "method": "GET",
+            "path": "/cars/2025-gate-journey-1cf5c6/photos/1",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the inquiry",
+            "method": "POST",
+            "path": "/cars/2025-gate-journey-1cf5c6/inquiry",
+            "form": "name=Ada%20Abbott&email=ada.abbott%40example.test&phone=&message=Is%20the%20Journey%20still%20here%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, health, once the worker has sent the lead's notices",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "journey, the leads, the car's lead captured",
+            "method": "GET",
+            "path": "/app/leads",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/leads/"
+        },
+        {
+            "name": "journey, the lead",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the hold form, from the car",
+            "method": "GET",
+            "path": "/app/holds/new?vehicle=0LTGATE30SR999003",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the hold for the customer",
+            "method": "POST",
+            "path": "/app/holds",
+            "form": "vehicle=0LTGATE30SR999003&customer=ada.abbott%40example.test&note=Coming%20Saturday%20to%20drive%20it&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the public list, the car held",
+            "method": "GET",
+            "path": "/cars?make=Gate&year=&min_price=&max_price=&sort=",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's public page, held",
+            "method": "GET",
+            "path": "/cars/2025-gate-journey-1cf5c6",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "journey, the sale form, from the car",
+            "method": "GET",
+            "path": "/app/sales/new?vehicle=0LTGATE30SR999003",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the sale to the customer it is held for",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=0LTGATE30SR999003&customer=ada.abbott%40example.test&salesperson=gate&price=24500&sold_on=2026-10-20&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
+            "name": "journey, the sale",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the public list, the car sold",
+            "method": "GET",
+            "path": "/cars?make=Gate&year=&min_price=&max_price=&sort=",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's public page, sold",
+            "method": "GET",
+            "path": "/cars/2025-gate-journey-1cf5c6",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "journey, the dashboard",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the reports over the sale's month",
+            "method": "GET",
+            "path": "/app/reports?from=2026-10-01&to=2026-10-31",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the salespeople's export",
+            "method": "POST",
+            "path": "/app/reports/exports",
+            "form": "report=salespeople&from=2026-10-01&to=2026-10-31&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the export being prepared",
+            "method": "GET",
+            "path": "{location}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, health, once the worker has written the export, the exports moved first",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true,
+            "console": "reports:move-exports"
+        },
+        {
+            "name": "journey, the export ready, the gate user's inbox forgotten first",
+            "method": "GET",
+            "path": "{location}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "inbox:forget gate",
+            "capture": "/app/reports/exports/"
+        },
+        {
+            "name": "journey, the export's CSV",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's page, its sale captured",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE30SR999003",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/sales/"
+        },
+        {
+            "name": "journey, the sale's void page",
+            "method": "GET",
+            "path": "{note}/void",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the sale voided",
+            "method": "POST",
+            "path": "{note}/void",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the car's delete page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE30SR999003/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "journey, the car deleted, its photos with it",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE30SR999003/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "journey, the JPEG gone from the public files",
+            "method": "GET",
+            "path": "/files/photos/1b3b83116755d62cfa8e87fa2c8a70dd7007c2f7c47a331d159bf369f03cccd6.jpg",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "journey, sign-out",
+            "method": "POST",
+            "path": "/sign-out",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
             "captures": false
         }
     ]

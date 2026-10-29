@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Block\Contracts\Block;
+use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 
 use function array_merge;
@@ -24,6 +25,8 @@ final readonly class ModuleBlocks
     }
 
     /**
+     * @throws ContainerException When a called constructor or service fails.
+     *
      * @return list<Block> The modules' blocks, in build order.
      */
     public function all(): array
@@ -31,7 +34,7 @@ final readonly class ModuleBlocks
         return array_merge(
             (new StaffBlocks())->all(),
             (new InboxBlocks($this->handlerContext))->all(),
-            (new SiteBlocks())->all(),
+            (new SiteBlocks($this->handlerContext))->all(),
         );
     }
 }

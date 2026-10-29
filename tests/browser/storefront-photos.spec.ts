@@ -32,29 +32,31 @@ test("a car's photos show on its public page and as its card's main photo, and t
     await visitor.goto(`/cars/${slug}`);
     const main = visitor.locator('#car-photo-1');
     await expect(main).toHaveAttribute('alt', '2023 Probe Hatch, photo 1 of 2');
-    await expect(main).toHaveAttribute('src', new RegExp(`^/cars/${slug}/photos/1\\?v=[0-9a-f]{16}$`));
+    await expect(main).toHaveAttribute('src', /^\/files\/photos\/[0-9a-f]{64}\.jpg$/);
     await expect(visitor.locator('#car-photo-2')).toHaveAttribute('alt', '2023 Probe Hatch, photo 2 of 2');
     await expect.poll(() => main.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(visitor.locator('#car-photos-empty')).toHaveCount(0);
+    const mainSource = await main.getAttribute('src');
 
     await visitor.goto('/cars?make=Probe');
     const card = visitor.locator(`#car-${slug} img`);
-    await expect(card).toHaveAttribute('src', new RegExp(`^/cars/${slug}/photos/1\\?v=[0-9a-f]{16}$`));
+    await expect(card).toHaveAttribute('src', /^\/files\/photos\/[0-9a-f]{64}\.jpg$/);
     await expect(card).toHaveAttribute('alt', '2023 Probe Hatch, main photo');
     await expect.poll(() => card.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
 
-    // The feed names both photos, and the first answers the JPEG's bytes.
+    // The feed names both photos where AIC's public files serve them, and the first answers the JPEG's bytes.
     const item = (await (await context.request.get(`/api/vehicles/${slug}`)).json()) as { photos: string[] };
     expect(item.photos).toHaveLength(2);
-    expect(item.photos[0]).toMatch(new RegExp(`^/cars/${slug}/photos/1\\?v=`));
+    expect(item.photos[0]).toBe(mainSource);
+    expect(item.photos[1]).toMatch(/^\/files\/photos\/[0-9a-f]{64}\.png$/);
     const photo = await context.request.get(item.photos[0]);
     expect(photo.status()).toBe(200);
     expect(photo.headers()['content-type']).toBe('image/jpeg');
     expect(Buffer.compare(await photo.body(), readFileSync(FIXTURES.jpeg))).toBe(0);
 
-    // Once the car is sold, its page and its photos answer 404.
+    // Once the car is sold, its page and its photo's own path answer 404; its public file stays where it was.
     sql(`UPDATE vehicles SET status = 'sold' WHERE vin = ${literal(VIN)}`);
-    expect((await context.request.get(item.photos[0])).status()).toBe(404);
+    expect((await context.request.get(`/cars/${slug}/photos/1`)).status()).toBe(404);
     expect((await context.request.get(`/cars/${slug}`)).status()).toBe(404);
     await context.close();
 });

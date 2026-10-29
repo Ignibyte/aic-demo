@@ -7,9 +7,11 @@ namespace App\Staff\Controller;
 use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
 use App\Staff\Form\SignInForm;
+use App\Staff\Service\StaffDealership;
 use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 use function array_key_exists;
 use function is_string;
@@ -20,17 +22,20 @@ use function is_string;
 final readonly class SignInPage implements Page
 {
     /**
-     * @param SignInForm $signInForm The sign-in page.
+     * @param SignInForm      $signInForm      The sign-in page.
+     * @param StaffDealership $staffDealership The dealership's name, for the panel's line.
      */
     public function __construct(
         private SignInForm $signInForm,
+        private StaffDealership $staffDealership,
     ) {
     }
 
     /**
      * @param ServerRequestInterface $serverRequest The request, with its session and perhaps `?next=`.
      *
-     * @throws LogicException When the page does not fit the theme, or the request carries no session.
+     * @throws LogicException   When the page does not fit the theme, or the request carries no session.
+     * @throws RuntimeException When the dealership's name cannot be read.
      *
      * @return PageResponse The page.
      */
@@ -42,6 +47,6 @@ final readonly class SignInPage implements Page
             ? $query['next']
             : '';
 
-        return $this->signInForm->page($serverRequest, '', $next, '', 200);
+        return $this->signInForm->page($serverRequest, '', $next, '', 200, $this->staffDealership->name());
     }
 }

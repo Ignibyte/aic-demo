@@ -6,7 +6,7 @@ namespace App\Reports\Entity;
 
 /**
  * One CSV export (#21), as its member and its job read it: which report over which range, and whether its file is
- * written.
+ * written to AIC's private files.
  */
 final readonly class ReportExport
 {
@@ -37,6 +37,14 @@ final readonly class ReportExport
     public function path(): string
     {
         return self::PATH . $this->id;
+    }
+
+    /**
+     * @return string Its file's key in AIC's private files.
+     */
+    public function key(): string
+    {
+        return (new ExportFile($this->id))->key();
     }
 
     /**

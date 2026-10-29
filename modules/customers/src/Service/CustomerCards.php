@@ -8,6 +8,7 @@ use AIC\Controller\Contracts\PageResponse;
 use AIC\Database\Contracts\QueryException;
 use App\Customers\Entity\Customer;
 use App\Customers\Entity\Purchase;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPanels;
 use App\Theme\Components\DetailCard\ButtonLink;
@@ -27,6 +28,7 @@ final readonly class CustomerCards
      * @param CustomerRecords $customerRecords The route's customer and the 404 page.
      * @param StaffPanels     $staffPanels     The customer pages' frame.
      * @param BoughtVehicles  $boughtVehicles  What the customer bought.
+     * @param StaffDealership $staffDealership The dealership's name, for the page's line.
      * @param StaffNotices    $staffNotices    The last save's notice.
      * @param CustomerTable   $customerTable   The vehicles bought.
      */
@@ -34,6 +36,7 @@ final readonly class CustomerCards
         private CustomerRecords $customerRecords,
         private StaffPanels $staffPanels,
         private BoughtVehicles $boughtVehicles,
+        private StaffDealership $staffDealership,
         private StaffNotices $staffNotices = new StaffNotices(),
         private CustomerTable $customerTable = new CustomerTable(),
     ) {
@@ -62,7 +65,9 @@ final readonly class CustomerCards
         $body['purchases'] = $this->customerTable->purchases($purchases);
         $name = $customer->customerDetails->name;
 
-        return $this->staffPanels->page($name, 'Customer record', 'What Ridgeway Motors keeps on this customer.', $body, 200);
+        $line = 'What ' . $this->staffDealership->name() . ' keeps on this customer.';
+
+        return $this->staffPanels->page($name, 'Customer record', $line, $body, 200);
     }
 
     /**

@@ -487,6 +487,12 @@
             "name": "migrate:status"
         },
         {
+            "class": "App\\Photos\\Command\\PhotosMoveFiles",
+            "kind": "Command",
+            "module": "photos",
+            "name": "photos:move-files"
+        },
+        {
             "class": "AIC\\Queue\\Application\\QueueFailedCommand",
             "kind": "Command",
             "module": "framework",
@@ -503,6 +509,12 @@
             "kind": "Command",
             "module": "framework",
             "name": "queue:work"
+        },
+        {
+            "class": "App\\Reports\\Command\\ReportsMoveExports",
+            "kind": "Command",
+            "module": "reports",
+            "name": "reports:move-exports"
         },
         {
             "class": "App\\Sales\\Command\\SalesSeed",
@@ -634,7 +646,9 @@
                 "App\\Staff\\Repository\\AccountRepository",
                 "App\\Staff\\Repository\\StaffRepository",
                 "App\\Staff\\Entity\\StaffAccount",
-                "App\\Staff\\Entity\\AccountWrite"
+                "App\\Staff\\Entity\\AccountWrite",
+                "App\\Staff\\Service\\DealershipNames",
+                "App\\Staff\\Service\\StaffDealership"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -862,7 +876,12 @@
             ],
             "name": "settings",
             "namespace": "App\\Settings\\",
-            "plugins": [],
+            "plugins": [
+                {
+                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
+                    "type": "App\\Staff\\Service\\DealershipNames"
+                }
+            ],
             "prefixes": [],
             "requires": [
                 "staff"

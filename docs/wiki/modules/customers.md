@@ -152,7 +152,7 @@ none
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
+| [staff](staff.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\DealershipNames`, `App\Staff\Service\StaffDealership`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 
 ## Used by
 

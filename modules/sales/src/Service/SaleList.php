@@ -10,6 +10,7 @@ use AIC\Database\Contracts\QueryException;
 use App\Sales\Entity\Sale;
 use App\Sales\Repository\SaleChoiceRepository;
 use App\Sales\Repository\SaleRepository;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffNotices;
 use App\Theme\Components\Panel\Panel;
 use LogicException;
@@ -32,6 +33,7 @@ final readonly class SaleList
     /**
      * @param SaleRepository       $saleRepository       The sales.
      * @param SaleChoiceRepository $saleChoiceRepository The staff the salesperson filter offers.
+     * @param StaffDealership      $staffDealership      The dealership's name, for the panel's line.
      * @param SaleQueries          $saleQueries          Reads what the list is asked for.
      * @param SaleFilters          $saleFilters          The filters and the totals.
      * @param SaleTable            $saleTable            The table and the pages.
@@ -40,6 +42,7 @@ final readonly class SaleList
     public function __construct(
         private SaleRepository $saleRepository,
         private SaleChoiceRepository $saleChoiceRepository,
+        private StaffDealership $staffDealership,
         private SaleQueries $saleQueries = new SaleQueries(),
         private SaleFilters $saleFilters = new SaleFilters(),
         private SaleTable $saleTable = new SaleTable(),
@@ -79,7 +82,9 @@ final readonly class SaleList
             $body[] = new KeyedComponent('pages', $this->saleTable->pagination($saleQuery, $page, $pages));
         }
 
-        return new Panel('sales', 'Sales', 'What Ridgeway Motors sold, by month and salesperson, with the totals', true, $body);
+        $line = 'What ' . $this->staffDealership->name() . ' sold, by month and salesperson, with the totals';
+
+        return new Panel('sales', 'Sales', $line, true, $body);
     }
 
     /**

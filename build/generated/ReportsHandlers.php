@@ -8,11 +8,11 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Queue\Application\PostgresQueue;
+use AIC\Storage\Application\PrivateFiles;
 use App\Reports\Controller\ReportExportPost;
 use App\Reports\Controller\ReportExportStream;
 use App\Reports\Controller\ReportsPage;
 use App\Reports\Controller\SalesReportApi;
-use App\Reports\Repository\RangeRepository;
 use App\Reports\Service\ReportServices;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -38,9 +38,9 @@ final readonly class ReportsHandlers
     public function byId(): array
     {
         $entityStore = new EntityStore($this->handlerContext->database());
-        $rangeRepository = new RangeRepository($entityStore);
         $postgresQueue = new PostgresQueue($this->handlerContext->database());
-        $reportServices = new ReportServices($rangeRepository, $entityStore, $postgresQueue, $this->handlerContext->documents());
+        $privateFiles = new PrivateFiles($this->handlerContext->root());
+        $reportServices = new ReportServices($entityStore, $postgresQueue, $this->handlerContext->documents(), $privateFiles);
         $reportAccess = $reportServices->reportAccess();
 
         return [

@@ -46,7 +46,9 @@ none
 
 ## Plugins
 
-none
+| Type | Class |
+| --- | --- |
+| `App\Staff\Service\DealershipNames` | `App\Settings\Repository\DealershipNameRepository` |
 
 ## Bindings
 
@@ -120,6 +122,7 @@ none
 
 | Class | File |
 | --- | --- |
+| `App\Settings\Repository\DealershipNameRepository` | [modules/settings/src/Repository/DealershipNameRepository.php](../../../modules/settings/src/Repository/DealershipNameRepository.php) |
 | `App\Settings\Repository\LinkRepository` | [modules/settings/src/Repository/LinkRepository.php](../../../modules/settings/src/Repository/LinkRepository.php) |
 | `App\Settings\Repository\ProfileRepository` | [modules/settings/src/Repository/ProfileRepository.php](../../../modules/settings/src/Repository/ProfileRepository.php) |
 
@@ -162,7 +165,7 @@ none
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Entity\AccountWrite`, `App\Staff\Entity\Role`, `App\Staff\Entity\StaffAccount`, `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Repository\AccountRepository`, `App\Staff\Repository\StaffRepository`, `App\Staff\Service\Roles`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
+| [staff](staff.md) | `App\Staff\Entity\AccountWrite`, `App\Staff\Entity\Role`, `App\Staff\Entity\StaffAccount`, `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Repository\AccountRepository`, `App\Staff\Repository\StaffRepository`, `App\Staff\Service\DealershipNames`, `App\Staff\Service\Roles`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
 
 ## Used by
 

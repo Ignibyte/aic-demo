@@ -64,13 +64,15 @@ The edit and delete forms carry AIC's signed envelope sealing the vehicle's path
 
 ## Photos
 
-A vehicle's photos (#16) are the `photos` module's: its table, its files under `var/photos/` and its gallery. Inventory requires it and keeps the routes, since a refused upload answers the whole vehicle page, which only inventory builds; `photos` knows a vehicle by its numeric id alone, which `VehicleRecords::vehicleId()` finds by the route's VIN. `VehiclePhotoForms`, in `Form/`, holds the three routes' flows:
+A vehicle's photos (#16) are the `photos` module's: its table, its files in AIC's public files (#23) and its gallery. Inventory requires it and keeps the routes, since a refused upload answers the whole vehicle page, which only inventory builds; `photos` knows a vehicle by its numeric id alone, which `VehicleRecords::vehicleId()` finds by the route's VIN. `VehiclePhotoForms`, in `Form/`, holds the three routes' flows:
 
 - an upload from a sales manager or an admin goes to `VehiclePhotos::add()`; its refusal (no file, a file AIC's `UploadCheck` refuses by its content or its size, a thirteenth photo) answers `VehicleCards::page()` with the reason and 422, and Tessera puts it in place; a kept photo answers 303 to the vehicle with "Added a photo of the {title}.";
 - a delete names the photo by its position, and its form seals that photo's id (`VehiclePhoto::sealed()`), so a form from a page that is out of date answers 400 instead of deleting the photo now at that position;
-- the Stream answers `VehiclePhotos::download()`: AIC's `FileDownload` with the request, which sends the ETag, `Last-Modified` and `Cache-Control: private, no-cache` and answers ranges (206, 416) and conditions (304, 412).
+- the Stream answers `VehiclePhotos::download()`: AIC's `FileDownload` of the photo's file in the public files, with the request, which sends the ETag, `Last-Modified` and `Cache-Control: private, no-cache` and answers ranges (206, 416) and conditions (304, 412). The gallery itself shows each photo from its `/files/` URL.
 
-A salesperson's upload or delete answers 403 (AIC #197) and changes nothing; their page shows the photos with no form. The vehicle's page shows the gallery under its card, keyed `photos`. Deleting a vehicle deletes its photo rows by their foreign key, and `VehicleDeletes` then removes their files (`VehiclePhotos::forget()`), with the id it read before the delete.
+`VehicleServices` builds `VehiclePhotoForms` with the photos' service from the public files, so the photo routes' generated part is one short method.
+
+A salesperson's upload or delete answers 403 (AIC #197) and changes nothing; their page shows the photos with no form. The vehicle's page shows the gallery under its card, keyed `photos`. Deleting a vehicle deletes its photo rows by their foreign key, and `VehicleDeletes` then hands `VehiclePhotos::forget()` the photos it read before the delete, which removes each file no other photo holds.
 
 ## Sales
 

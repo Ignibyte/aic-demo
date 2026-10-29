@@ -9,6 +9,7 @@ use AIC\Component\Domain\Link;
 use AIC\Database\Contracts\QueryException;
 use App\Customers\Entity\Customer;
 use App\Customers\Repository\CustomerRepository;
+use App\Staff\Service\StaffDealership;
 use App\Staff\Service\StaffNotices;
 use App\Theme\Components\FilterBar\FilterBar;
 use App\Theme\Components\FormField\FormField;
@@ -31,12 +32,14 @@ final readonly class CustomerList
 
     /**
      * @param CustomerRepository $customerRepository The customers.
+     * @param StaffDealership    $staffDealership    The dealership's name, for the panel's line.
      * @param CustomerQueries    $customerQueries    Reads what the list is asked for.
      * @param CustomerTable      $customerTable      The table and the pages.
      * @param StaffNotices       $staffNotices       The last delete's notice.
      */
     public function __construct(
         private CustomerRepository $customerRepository,
+        private StaffDealership $staffDealership,
         private CustomerQueries $customerQueries = new CustomerQueries(),
         private CustomerTable $customerTable = new CustomerTable(),
         private StaffNotices $staffNotices = new StaffNotices(),
@@ -75,7 +78,7 @@ final readonly class CustomerList
             $body[] = new KeyedComponent('pages', $this->customerTable->pagination($customerQuery, $page, $pages));
         }
 
-        return new Panel('customers', 'Customers', 'Search and page the people Ridgeway Motors serves', true, $body);
+        return new Panel('customers', 'Customers', 'Search and page the people ' . $this->staffDealership->name() . ' serves', true, $body);
     }
 
     /**

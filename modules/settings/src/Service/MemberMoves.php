@@ -17,9 +17,9 @@ use Throwable;
 /**
  * A member's access changed (#22), an admin's alone: `POST …/active` deactivates them (`active=0`), as of the
  * database's today, or reactivates them (`active=1`); deactivating the last active admin is refused with 422 and the
- * reason. `POST …/link` mails them a new password link, voiding their older ones; an admin who sends one to themselves
- * is signed in already, so they get no mail and go straight to its page. Each goes back to the member's page
- * (303) with a notice; a member who is not there answers 404.
+ * reason. `POST …/link` sends them a new password link, voiding their older ones, kept in their inbox and mailed when
+ * their login is an address; an admin who sends one to themselves gets it the same way (#23). Each goes back to the
+ * member's page (303) with a notice; a member who is not there answers 404.
  */
 final readonly class MemberMoves
 {
@@ -81,8 +81,7 @@ final readonly class MemberMoves
      *
      * @throws Throwable When the member cannot be read, or the link cannot be issued or sent.
      *
-     * @return PageResponse 303 to the member, or for an admin who sent one to themselves to the link's page; 404; 403 for
-     *                      anyone but an admin.
+     * @return PageResponse 303 to the member; 404; 403 for anyone but an admin.
      */
     public function link(ServerRequestInterface $serverRequest): PageResponse
     {
@@ -90,11 +89,6 @@ final readonly class MemberMoves
 
         if (!$staffAccount instanceof StaffAccount) {
             return $this->settingsAccess->refusal($serverRequest);
-        }
-
-        // An admin who sends one to themselves is signed in already: no mail, straight to the page it lands on.
-        if ($this->settingsAccess->self($serverRequest, $staffAccount)) {
-            return new PageRedirect($this->linkMails->issue($staffAccount));
         }
 
         $this->linkMails->send($staffAccount, false);

@@ -14,7 +14,8 @@ use InvalidArgumentException;
 use function count;
 
 /**
- * A vehicle's photo rows through the entity store: read in the order they were added, counted, added and deleted.
+ * A vehicle's photo rows through the entity store: read in the order they were added, counted, added and deleted; and,
+ * across vehicles, the rows that hold one file's bytes and the vehicles with any photo.
  */
 final readonly class VehiclePhotoRepository
 {
@@ -68,21 +69,66 @@ final readonly class VehiclePhotoRepository
     }
 
     /**
+     * @param string $sha256 A photo's SHA-256, in hex.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return int How many photos, of any vehicle, hold those bytes and so their file.
+     */
+    public function holding(string $sha256): int
+    {
+        return $this->entityStore->query($this->vehiclePhotoTable->type())
+            ->where('sha256', $sha256)
+            ->totals()
+            ->count();
+    }
+
+    /**
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return list<int> The id of every vehicle with a photo, smallest first.
+     */
+    public function vehicleIds(): array
+    {
+        $rows = $this->entityStore->query($this->vehiclePhotoTable->type())
+            ->orderBy('vehicle_id')
+            ->rows();
+        $vehicleIds = [];
+        $last = 0;
+
+        foreach ($rows as $row) {
+            $vehicleId = self::vehicleId($row);
+
+            if ($vehicleId === $last) {
+                continue;
+            }
+
+            $vehicleIds[] = $vehicleId;
+            $last = $vehicleId;
+        }
+
+        return $vehicleIds;
+    }
+
+    /**
      * @param int    $vehicleId A vehicle's id.
      * @param string $mediaType The photo's media type.
      * @param int    $bytes     Its size.
+     * @param string $sha256    The SHA-256 of its bytes, in hex.
      *
      * @throws QueryException           When the insert fails, such as for a vehicle deleted since it was read.
      * @throws InvalidArgumentException When a value does not fit its field.
      *
-     * @return int The new photo's id; its hash is empty until `hashed()` records it, once its file is in place.
+     * @return int The new photo's id.
      */
-    public function add(int $vehicleId, string $mediaType, int $bytes): int
+    public function add(int $vehicleId, string $mediaType, int $bytes, string $sha256): int
     {
         return $this->entityStore->insert($this->vehiclePhotoTable->type(), [
             'bytes' => $bytes,
             'media_type' => $mediaType,
-            'sha256' => '',
+            'sha256' => $sha256,
             'vehicle_id' => $vehicleId,
         ]);
     }
@@ -90,7 +136,7 @@ final readonly class VehiclePhotoRepository
     /**
      * @param int    $vehicleId A vehicle's id.
      * @param int    $photoId   One of its photos' id.
-     * @param string $sha256    The SHA-256 of the photo's file, in hex.
+     * @param string $sha256    The SHA-256 of the photo's file, in hex, for a row from before the hash was kept at insert.
      *
      * @throws QueryException           When the statement fails.
      * @throws InvalidArgumentException When the value does not fit its field.
@@ -136,5 +182,17 @@ final readonly class VehiclePhotoRepository
     private function photo(Row $row, int $position): VehiclePhoto
     {
         return new VehiclePhoto($row->int('id'), $position, $row->string('media_type'), $row->string('sha256'));
+    }
+
+    /**
+     * @param Row $row A `vehicle_photos` row.
+     *
+     * @throws QueryException When the column is missing or not an integer.
+     *
+     * @return int Its vehicle's id.
+     */
+    private static function vehicleId(Row $row): int
+    {
+        return $row->int('vehicle_id');
     }
 }

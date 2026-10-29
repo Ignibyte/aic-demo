@@ -2,9 +2,10 @@
 number: 23
 title: "The whole journey, on the compiled site"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T19:45:00Z
+phase: "docs"
 ---
 
 Runs 16 to 22 each tested their own part. This run tests them together, as a customer and the
