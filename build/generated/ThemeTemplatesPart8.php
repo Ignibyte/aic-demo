@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\StatusBadge\StatusBadge;
-use App\Theme\Components\StoreFooter\StoreFooter;
-use App\Theme\Components\StoreHeader\StoreHeader;
-use App\Theme\Components\StoreHeading\StoreHeading;
+use App\Theme\Components\PhotoGallery\PhotoGallery;
+use App\Theme\Components\SelectField\SelectField;
+use App\Theme\Components\SignedInMenu\SignedInMenu;
+use App\Theme\Components\SiteFooter\SiteFooter;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof StatusBadge => $this->renderStatusBadge($component, $renderPass),
-            $component instanceof StoreFooter => $this->renderStoreFooter($component, $renderPass),
-            $component instanceof StoreHeader => $this->renderStoreHeader($component, $renderPass),
-            $component instanceof StoreHeading => $this->renderStoreHeading($component, $renderPass),
+            $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
+            $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
+            $component instanceof SignedInMenu => $this->renderSignedInMenu($component, $renderPass),
+            $component instanceof SiteFooter => $this->renderSiteFooter($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param StatusBadge $statusBadge The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/StatusBadge/status-badge.phtml.
-     */
-    private function renderStatusBadge(StatusBadge $statusBadge, RenderPass $renderPass): string
-    {
-        $renderPass->open($statusBadge);
-        require __DIR__ . '/templates/themes/lotline/components/StatusBadge/status-badge.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param StoreFooter $storeFooter The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/StoreFooter/store-footer.phtml.
-     */
-    private function renderStoreFooter(StoreFooter $storeFooter, RenderPass $renderPass): string
-    {
-        $renderPass->open($storeFooter);
-        require __DIR__ . '/templates/themes/lotline/components/StoreFooter/store-footer.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param StoreHeader $storeHeader The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/StoreHeader/store-header.phtml.
-     */
-    private function renderStoreHeader(StoreHeader $storeHeader, RenderPass $renderPass): string
-    {
-        $renderPass->open($storeHeader);
-        require __DIR__ . '/templates/themes/lotline/components/StoreHeader/store-header.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param StoreHeading $storeHeading The component; its template reads it.
+     * @param PhotoGallery $photoGallery The component; its template reads it.
      * @param RenderPass   $renderPass   The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/StoreHeading/store-heading.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml.
      */
-    private function renderStoreHeading(StoreHeading $storeHeading, RenderPass $renderPass): string
+    private function renderPhotoGallery(PhotoGallery $photoGallery, RenderPass $renderPass): string
     {
-        $renderPass->open($storeHeading);
-        require __DIR__ . '/templates/themes/lotline/components/StoreHeading/store-heading.phtml';
+        $renderPass->open($photoGallery);
+        require __DIR__ . '/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param SelectField $selectField The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SelectField/select-field.phtml.
+     */
+    private function renderSelectField(SelectField $selectField, RenderPass $renderPass): string
+    {
+        $renderPass->open($selectField);
+        require __DIR__ . '/templates/themes/lotline/components/SelectField/select-field.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param SignedInMenu $signedInMenu The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml.
+     */
+    private function renderSignedInMenu(SignedInMenu $signedInMenu, RenderPass $renderPass): string
+    {
+        $renderPass->open($signedInMenu);
+        require __DIR__ . '/templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param SiteFooter $siteFooter The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SiteFooter/site-footer.phtml.
+     */
+    private function renderSiteFooter(SiteFooter $siteFooter, RenderPass $renderPass): string
+    {
+        $renderPass->open($siteFooter);
+        require __DIR__ . '/templates/themes/lotline/components/SiteFooter/site-footer.phtml';
 
         return $renderPass->close();
     }

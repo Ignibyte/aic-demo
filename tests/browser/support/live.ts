@@ -102,9 +102,10 @@ export interface SentRequest {
     finished: boolean;
 }
 
-// Records every request the page sends from now on, in order, with its answer once the server has sent all of it. The
-// answer is taken through a route, since Tessera cancels a refresh's body once it has read it and the browser may then
-// report the request as failed; a request whose answer never ends shows as one not finished.
+// Records every request the page sends from now on but the bell's stream, in order, with its answer once the server
+// has sent all of it. The answer is taken through a route, since Tessera cancels a refresh's body once it has read it
+// and the browser may then report the request as failed; a request whose answer never ends shows as one not finished.
+// The bell's stream goes on to the network unrecorded: it stays open, and a route would hold its events back.
 export async function recordPolls(page: Page): Promise<SentRequest[]> {
     const requests: SentRequest[] = [];
 
@@ -112,6 +113,13 @@ export async function recordPolls(page: Page): Promise<SentRequest[]> {
         const request = route.request();
         const url = new URL(request.url());
         const headers = await request.allHeaders();
+
+        if (headers['tessera-request'] === 'stream') {
+            await route.fallback();
+
+            return;
+        }
+
         const [targets, ...rest] = (headers['tessera-targets'] ?? '').split(' ');
         const sent: SentRequest = {
             resourceType: request.resourceType(),

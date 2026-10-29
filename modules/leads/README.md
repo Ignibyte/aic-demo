@@ -22,7 +22,7 @@ A question needs a name, an email and the question; its phone is optional. A tes
 
 ## Notifications
 
-Recording a lead queues one `lead-notices` job with the lead's id; the request sends no mail. `SendLeadNotices` reads the lead (one that is gone, with its car, is done with nothing sent) and `LeadNotices` sends through AIC's `Notifier`, which queues one `notify` job per channel: the salesperson's notification (their user id, the visitor's details, `/app/leads/{id}`) to `database` (`aic_notifications`) and `mail`, and the visitor's confirmation to `mail` alone. One `bin/aic queue:work` runs them all, since the worker takes jobs until none is due. In DDEV the mail lands in Mailpit; on this box only the web container reaches Mailpit's SMTP, so run the worker with `ddev exec bin/aic queue:work`.
+Recording a lead queues one `lead-notices` job with the lead's id; the request sends no mail. `SendLeadNotices` reads the lead (one that is gone, with its car, is done with nothing sent) and `LeadNotices` sends through AIC's `Notifier`, which queues one `notify` job per channel: the salesperson's notification (their user id, the visitor's details, and the lead's page `/app/leads/{id}` as its link, which the inbox's opening goes on to, #19) to `database` (`aic_notifications`) and `mail`, and the visitor's confirmation to `mail` alone. One `bin/aic queue:work` runs them all, since the worker takes jobs until none is due. In DDEV the mail lands in Mailpit; on this box only the web container reaches Mailpit's SMTP, so run the worker with `ddev exec bin/aic queue:work`.
 
 ## Staff pages
 

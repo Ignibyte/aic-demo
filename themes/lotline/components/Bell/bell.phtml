@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\Bell\Bell $bell */ ?>
+<details class="dropdown dropdown-end"<?php if ($bell->stream !== ''): ?> data-stream="<?= $bell->stream ?>"<?php endif; ?>>
+<summary class="btn btn-ghost btn-sm gap-1" id="bell" aria-label="Notifications"><?= $bell->icon ?><?= $bell->count ?></summary>
+<div class="dropdown-content z-10 mt-2 w-80 rounded-box bg-base-100 p-2 shadow-2xl"><?= $bell->items ?><a class="btn btn-ghost btn-sm btn-block mt-1" id="bell-all" href="<?= $bell->all ?>">All notifications</a></div>
+</details>

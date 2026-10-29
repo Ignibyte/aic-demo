@@ -1,0 +1,2 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/BellBadge/bell-badge.phtml by composer run build; edit that file, never this one. */ ?>
+<span<?= $renderPass->marks() ?> class="badge badge-sm badge-primary<?php if ($bellBadge->count === 0): ?> hidden<?php endif; ?>" id="bell-count" aria-label="<?= $renderPass->text($bellBadge->label) ?>"><?= $renderPass->text((string) ($bellBadge->count)) ?></span>

@@ -40,7 +40,7 @@
         {
             "name": "pinned Tessera script",
             "method": "GET",
-            "path": "/assets/tessera-0.3.0/tessera.csp.iife.js",
+            "path": "/assets/tessera-0.3.1/tessera.csp.iife.js",
             "form": "",
             "header": "",
             "status": 200,
@@ -49,7 +49,7 @@
         {
             "name": "pinned Tessera source map",
             "method": "GET",
-            "path": "/assets/tessera-0.3.0/tessera.csp.iife.js.map",
+            "path": "/assets/tessera-0.3.1/tessera.csp.iife.js.map",
             "form": "",
             "header": "",
             "status": 200,
@@ -1630,6 +1630,125 @@
             "form": "",
             "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live, @dashboard-sales",
             "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inbox, signed in",
+            "method": "GET",
+            "path": "/app/inbox",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inbox, a later page",
+            "method": "GET",
+            "path": "/app/inbox?page=2",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inbox, a malformed page reads as the first",
+            "method": "GET",
+            "path": "/app/inbox?page=x",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inbox, a notification that is not the member's",
+            "method": "GET",
+            "path": "/app/inbox/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "inbox, mark all read without a form token",
+            "method": "POST",
+            "path": "/app/inbox/read-all",
+            "form": "",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "inbox, mark all read",
+            "method": "POST",
+            "path": "/app/inbox/read-all",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inbox, with the mark-all-read notice",
+            "method": "GET",
+            "path": "/app/inbox",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inbox, the bell's stream read for one event",
+            "method": "GET",
+            "path": "/app/inbox/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 1
+        },
+        {
+            "name": "inbox, the bell's stream resumed from a Last-Event-ID",
+            "method": "GET",
+            "path": "/app/inbox/events",
+            "form": "",
+            "header": "Last-Event-ID: 999999999",
+            "status": 200,
+            "captures": false,
+            "events": 1
+        },
+        {
+            "name": "inbox, sign-out",
+            "method": "POST",
+            "path": "/sign-out",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inbox, signed out",
+            "method": "GET",
+            "path": "/app/inbox",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inbox, the bell's stream signed out",
+            "method": "GET",
+            "path": "/app/inbox/events",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "inbox, a notification signed out",
+            "method": "GET",
+            "path": "/app/inbox/1",
+            "form": "",
+            "header": "",
+            "status": 303,
             "captures": false
         }
     ]

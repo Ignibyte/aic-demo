@@ -141,9 +141,10 @@ export function pathOf(url: string): string {
     return parsed.pathname + parsed.search;
 }
 
-// Records every request the page makes but its assets and the dashboard's refreshes, in order, with its answer. The
+// Records every request the page makes but its assets, the dashboard's refreshes and the bell's stream, in order, with its answer. The
 // answer is taken through a route, with no redirect followed, so what the server sent is what is recorded. A refresh,
-// which the dashboard's poll sends every five seconds while it is open, goes on to the network unrecorded.
+// which the dashboard's poll sends every five seconds while it is open, and the bell's stream, which stays open, go on
+// to the network unrecorded.
 export async function recordRequests(page: Page): Promise<NavRequest[]> {
     const requests: NavRequest[] = [];
 
@@ -151,7 +152,7 @@ export async function recordRequests(page: Page): Promise<NavRequest[]> {
         const request = route.request();
         const headers = await request.allHeaders();
 
-        if (headers['tessera-request'] === 'refresh') {
+        if (headers['tessera-request'] === 'refresh' || headers['tessera-request'] === 'stream') {
             await route.fallback();
 
             return;
