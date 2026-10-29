@@ -10,6 +10,7 @@ use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\KeyedComponent;
 use App\Staff\Service\StaffSession;
 use App\Theme\Components\Icon\Heroicons;
+use App\Theme\Components\Icon\Icon;
 use App\Theme\Components\Navigation\Navigation;
 use App\Theme\Components\NavLink\NavLink;
 use LogicException;
@@ -69,20 +70,50 @@ final readonly class NavigationBlock implements Block
             : '/';
         $links = [new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home))];
 
-        if ($signedIn) {
-            $navLink = new NavLink('/app/inventory', 'Inventory', $heroicons->truck(), self::isCurrent('/app/inventory', $path));
-            $links[] = new KeyedComponent('inventory', $navLink);
-            $customersLink = new NavLink('/app/customers', 'Customers', $heroicons->users(), self::isCurrent('/app/customers', $path));
-            $links[] = new KeyedComponent('customers', $customersLink);
-            $salesLink = new NavLink('/app/sales', 'Sales', $heroicons->banknotes(), self::isCurrent('/app/sales', $path));
-            $links[] = new KeyedComponent('sales', $salesLink);
-            $leadsLink = new NavLink('/app/leads', 'Leads', $heroicons->inbox(), self::isCurrent('/app/leads', $path));
-            $links[] = new KeyedComponent('leads', $leadsLink);
+        // Appended one by one: elephc types an array spread as a list of mixed, which it refuses to assign (no AIC ticket
+        // carries that yet).
+        foreach ($signedIn ? self::staffLinks($heroicons, $path) : [] as $staffLink) {
+            $links[] = $staffLink;
         }
 
         $links[] = new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path)));
 
         return new Navigation(self::NAME, $links);
+    }
+
+    /**
+     * @param Heroicons $heroicons The icons.
+     * @param string    $path      The page's path.
+     *
+     * @throws LogicException When a link's key is malformed.
+     *
+     * @return list<KeyedComponent> The staff areas' links, each current on its pages.
+     */
+    private static function staffLinks(Heroicons $heroicons, string $path): array
+    {
+        return [
+            self::link('inventory', '/app/inventory', 'Inventory', $heroicons->truck(), $path),
+            self::link('customers', '/app/customers', 'Customers', $heroicons->users(), $path),
+            self::link('sales', '/app/sales', 'Sales', $heroicons->banknotes(), $path),
+            self::link('leads', '/app/leads', 'Leads', $heroicons->inbox(), $path),
+            self::link('holds', '/app/holds', 'Holds', $heroicons->clock(), $path),
+        ];
+    }
+
+    /**
+     * @param string $key   The link's key.
+     * @param string $href  Its path.
+     * @param string $label Its text.
+     * @param Icon   $icon  Its icon.
+     * @param string $path  The page's path.
+     *
+     * @throws LogicException When the key is malformed.
+     *
+     * @return KeyedComponent The link, current on its pages.
+     */
+    private static function link(string $key, string $href, string $label, Icon $icon, string $path): KeyedComponent
+    {
+        return new KeyedComponent($key, new NavLink($href, $label, $icon, self::isCurrent($href, $path)));
     }
 
     /**

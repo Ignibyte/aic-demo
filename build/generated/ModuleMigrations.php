@@ -24,9 +24,11 @@ final readonly class ModuleMigrations
             (new CustomersMigrations())->all(),
             (new PhotosMigrations())->all(),
             (new InventoryMigrations())->all(),
+            (new HoldsMigrations())->all(),
             (new SalesMigrations())->all(),
             (new DashboardMigrations())->all(),
             (new LeadsMigrations())->all(),
+            (new ReportsMigrations())->all(),
         );
     }
 }

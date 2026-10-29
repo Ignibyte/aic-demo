@@ -8,6 +8,7 @@ use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityQuery;
 use AIC\Entity\Application\EntityStore;
+use App\Holds\Repository\HoldRepository;
 use App\Inventory\Repository\VehicleStatusRepository;
 use App\Sales\Entity\Sale;
 use App\Sales\Entity\SaleDetails;
@@ -90,7 +91,8 @@ final readonly class SaleRecordRepository
      *
      * @throws Throwable When a statement fails; the transaction is rolled back first.
      *
-     * @return int|null The new sale's id; null when its vehicle is gone, already sold or has a sale, and nothing changed.
+     * @return int|null The new sale's id; null when its vehicle is gone, already sold, has a sale or is held for another
+     *                  customer, and nothing changed.
      */
     public function record(SaleDetails $saleDetails): ?int
     {
@@ -126,11 +128,15 @@ final readonly class SaleRecordRepository
     /**
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return SaleWriteRepository The writes over the store, the vehicles' statuses and the `sales` entity type.
+     * @return SaleWriteRepository The writes over the store, the vehicles' statuses, their holds and the `sales` entity
+     *                             type. The holds' repository is built here over the same store, so the sales plugins
+     *                             that build this repository with no arguments of their own need none more.
      */
     private function saleWriteRepository(): SaleWriteRepository
     {
-        return new SaleWriteRepository($this->entityStore, $this->vehicleStatusRepository, $this->saleTable->type());
+        $holdRepository = new HoldRepository($this->entityStore, $this->vehicleStatusRepository);
+
+        return new SaleWriteRepository($this->entityStore, $this->vehicleStatusRepository, $holdRepository, $this->saleTable->type());
     }
 
     /**

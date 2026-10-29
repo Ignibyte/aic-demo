@@ -8,6 +8,7 @@ use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityStore;
 use AIC\Entity\Domain\EntityType;
+use App\Holds\Repository\HoldRepository;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Repository\VehicleStatusRepository;
 use App\Sales\Entity\Sale;
@@ -18,25 +19,28 @@ use InvalidArgumentException;
 /**
  * A sale's two writes as they run inside `EntityStore::transaction()` (#14): recording a sale and voiding one, each
  * holding what it wrote in a `SaleWrite`. `SaleRecordRepository` builds one per transaction and its static closure
- * calls one method on it, the shape the native compiler takes for a closure (framework/docs/native.md).
+ * calls one method on it, the shape the native compiler takes for a closure (framework/docs/native.md). A vehicle on
+ * hold (#20) sells only to the hold's customer, asked under the vehicle's lock, and that sale ends the hold.
  */
 final readonly class SaleWriteRepository
 {
     /**
      * @param EntityStore             $entityStore             The entity store.
      * @param VehicleStatusRepository $vehicleStatusRepository Locks and changes the vehicle's status, inventory's.
+     * @param HoldRepository          $holdRepository          The vehicle's hold, holds'.
      * @param EntityType              $entityType              The `sales` entity type.
      */
     public function __construct(
         private EntityStore $entityStore,
         private VehicleStatusRepository $vehicleStatusRepository,
+        private HoldRepository $holdRepository,
         private EntityType $entityType,
     ) {
     }
 
     /**
-     * Locks the vehicle, gives up when it is gone or sold, inserts the sale unless its vehicle has one, and marks the
-     * vehicle sold, holding the new sale's id.
+     * Locks the vehicle, gives up when it is gone or sold or held for another customer, inserts the sale unless its
+     * vehicle has one, marks the vehicle sold and ends its hold, holding the new sale's id.
      *
      * @param SaleDetails $saleDetails A checked sale.
      * @param SaleWrite   $saleWrite   Holds the new sale's id.
@@ -47,6 +51,10 @@ final readonly class SaleWriteRepository
     public function record(SaleDetails $saleDetails, SaleWrite $saleWrite): void
     {
         if (!$this->vehicleStatusRepository->lockSellable($saleDetails->vehicleId)) {
+            return;
+        }
+
+        if ($this->holdRepository->heldForAnother($saleDetails->vehicleId, $saleDetails->customerId)) {
             return;
         }
 
@@ -63,6 +71,7 @@ final readonly class SaleWriteRepository
         }
 
         $this->vehicleStatusRepository->mark($saleDetails->vehicleId, VehicleStatus::Sold);
+        $this->holdRepository->endForSale($saleDetails->vehicleId);
         $saleWrite->hold($id);
     }
 

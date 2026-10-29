@@ -155,6 +155,27 @@
             "path": "/app/inventory"
         },
         {
+            "handler": "App\\Holds\\Controller\\HoldNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "holds",
+            "path": "/app/holds/new"
+        },
+        {
+            "handler": "App\\Holds\\Controller\\HoldCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "holds",
+            "path": "/app/holds"
+        },
+        {
+            "handler": "App\\Holds\\Controller\\HoldListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "holds",
+            "path": "/app/holds"
+        },
+        {
             "handler": "App\\Sales\\Controller\\SaleListPage",
             "kind": "Page",
             "method": "GET",
@@ -369,6 +390,18 @@
             "name": "migrate:status"
         },
         {
+            "class": "AIC\\Queue\\Application\\QueueFailedCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "queue:failed"
+        },
+        {
+            "class": "AIC\\Queue\\Application\\QueueRetryCommand",
+            "kind": "Command",
+            "module": "framework",
+            "name": "queue:retry"
+        },
+        {
             "class": "AIC\\Queue\\Application\\QueueWorkCommand",
             "kind": "Command",
             "module": "framework",
@@ -401,6 +434,18 @@
     ],
     "jobs": [
         {
+            "class": "App\\Reports\\Job\\NotifyAgedStock",
+            "kind": "Job",
+            "module": "reports",
+            "name": "aged-stock"
+        },
+        {
+            "class": "App\\Reports\\Job\\SendDailyDigest",
+            "kind": "Job",
+            "module": "reports",
+            "name": "daily-digest"
+        },
+        {
             "class": "App\\Leads\\Job\\SendLeadNotices",
             "kind": "Job",
             "module": "leads",
@@ -411,9 +456,34 @@
             "kind": "Job",
             "module": "framework",
             "name": "notify"
+        },
+        {
+            "class": "App\\Holds\\Job\\ReleaseHolds",
+            "kind": "Job",
+            "module": "holds",
+            "name": "release-holds"
         }
     ],
-    "schedules": [],
+    "schedules": [
+        {
+            "cadence": "*/15 * * * *",
+            "job": "release-holds",
+            "module": "holds",
+            "name": "release-holds"
+        },
+        {
+            "cadence": "0 7 * * *",
+            "job": "aged-stock",
+            "module": "reports",
+            "name": "aged-stock"
+        },
+        {
+            "cadence": "0 21 * * *",
+            "job": "daily-digest",
+            "module": "reports",
+            "name": "daily-digest"
+        }
+    ],
     "modules": [
         {
             "bindings": [
@@ -547,6 +617,30 @@
             "bindings": [],
             "blocks": [],
             "exports": [
+                "App\\Holds\\Repository\\HoldRepository"
+            ],
+            "factories": [
+                "App\\Holds\\Service\\HoldServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Holds\\Migration\\CreateHoldsTable",
+                "App\\Holds\\Migration\\CreateHoldsView"
+            ],
+            "name": "holds",
+            "namespace": "App\\Holds\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "customers"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
                 "App\\Sales\\Repository\\SaleRepository",
                 "App\\Sales\\Entity\\Sale"
             ],
@@ -574,7 +668,8 @@
             "requires": [
                 "inventory",
                 "customers",
-                "staff"
+                "staff",
+                "holds"
             ]
         },
         {
@@ -639,6 +734,28 @@
                 "staff",
                 "inventory",
                 "customers"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [
+                "App\\Reports\\Service\\ReportSettings"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Reports\\Migration\\CreateReportViews"
+            ],
+            "name": "reports",
+            "namespace": "App\\Reports\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "sales",
+                "leads"
             ]
         },
         {

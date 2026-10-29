@@ -74,7 +74,8 @@ final readonly class SaleSaves
      * @throws Throwable When the sale cannot be checked or recorded (the transaction rolled back), the request has no
      *                   session, or a key does not fit the theme.
      *
-     * @return PageResponse 303 to the new sale, or the form again as 422, also when the vehicle was sold meanwhile.
+     * @return PageResponse 303 to the new sale, or the form again as 422, also when the vehicle was sold or held
+     *                      meanwhile: the entry is checked again then, so the form says which.
      */
     public function create(ServerRequestInterface $serverRequest): PageResponse
     {
@@ -89,7 +90,12 @@ final readonly class SaleSaves
         $id = $this->saleRecordRepository->record($saleDetails);
 
         if ($id === null) {
-            return $this->saleForm->page($serverRequest, $saleEntry, ['vehicle' => SaleChecks::ALREADY_SOLD], 422);
+            $errors = $this->saleChecks->check($saleEntry, $this->saleChoiceRepository->currentDay())->errors;
+            $errors = $errors === []
+                ? ['vehicle' => SaleChecks::ALREADY_SOLD]
+                : $errors;
+
+            return $this->saleForm->page($serverRequest, $saleEntry, $errors, 422);
         }
 
         $this->staffNotices->keep($serverRequest, 'Recorded the sale.');
