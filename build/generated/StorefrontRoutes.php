@@ -6,9 +6,11 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
+use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarListPage;
 use App\Storefront\Controller\CarPage;
 use App\Storefront\Controller\CarPhotoStream;
+use App\Storefront\Controller\CarTestDrivePost;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
 
@@ -29,6 +31,8 @@ final readonly class StorefrontRoutes
     {
         return $routeCollector
             ->get('/cars/{slug}', CarPage::class)
+            ->post('/cars/{slug}/inquiry', CarInquiryPost::class)
+            ->post('/cars/{slug}/test-drive', CarTestDrivePost::class)
             ->get('/cars/{slug}/photos/{position:int}', CarPhotoStream::class)
             ->get('/api/vehicles/{slug}', VehicleFeedItemApi::class)
             ->get('/api/vehicles', VehicleFeedApi::class)

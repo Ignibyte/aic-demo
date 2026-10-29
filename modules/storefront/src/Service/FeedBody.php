@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Storefront\Service;
 
+use App\Storefront\Entity\FeedVehicle;
 use JsonSerializable;
 use Override;
 

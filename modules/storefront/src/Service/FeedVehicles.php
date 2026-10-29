@@ -9,6 +9,7 @@ use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Service\StaffRequests;
+use App\Storefront\Entity\FeedVehicle;
 use InvalidArgumentException;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;

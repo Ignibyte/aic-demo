@@ -76,6 +76,8 @@ final readonly class NavigationBlock implements Block
             $links[] = new KeyedComponent('customers', $customersLink);
             $salesLink = new NavLink('/app/sales', 'Sales', $heroicons->banknotes(), self::isCurrent('/app/sales', $path));
             $links[] = new KeyedComponent('sales', $salesLink);
+            $leadsLink = new NavLink('/app/leads', 'Leads', $heroicons->inbox(), self::isCurrent('/app/leads', $path));
+            $links[] = new KeyedComponent('leads', $leadsLink);
         }
 
         $links[] = new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path)));
