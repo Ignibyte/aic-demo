@@ -137,6 +137,177 @@
             "captures": false
         },
         {
+            "name": "storefront list",
+            "method": "GET",
+            "path": "/cars",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, filtered",
+            "method": "GET",
+            "path": "/cars?make=Toyota&min_price=10000&max_price=30000&sort=price",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, a year, high to low",
+            "method": "GET",
+            "path": "/cars?year=2021&sort=-price",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, second page",
+            "method": "GET",
+            "path": "/cars?page=2",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, malformed query",
+            "method": "GET",
+            "path": "/cars?make%5B%5D=x&year=1900&min_price=cheap&sort=cost&page=0",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/cars?make=Mazda&sort=-price",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline-store\r\nTessera-Targets: @car-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, a Tessera fragment at page 2",
+            "method": "GET",
+            "path": "/cars?sort=price&page=2",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline-store\r\nTessera-Targets: @car-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car",
+            "method": "GET",
+            "path": "/cars/2023-volkswagen-tiguan-9f381a",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car, unknown slug",
+            "method": "GET",
+            "path": "/cars/2023-volkswagen-tiguan-000000",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car, another make's slug",
+            "method": "GET",
+            "path": "/cars/2023-ford-tiguan-9f381a",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car, malformed slug",
+            "method": "GET",
+            "path": "/cars/nope",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo, none",
+            "method": "GET",
+            "path": "/cars/2023-volkswagen-tiguan-9f381a/photos/1",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo, unknown car",
+            "method": "GET",
+            "path": "/cars/nope/photos/1",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed",
+            "method": "GET",
+            "path": "/api/vehicles",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed, a make",
+            "method": "GET",
+            "path": "/api/vehicles?make=toyota",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed, an unknown make",
+            "method": "GET",
+            "path": "/api/vehicles?make=Nope",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed, a list of makes",
+            "method": "GET",
+            "path": "/api/vehicles?make%5B%5D=Toyota",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed item",
+            "method": "GET",
+            "path": "/api/vehicles/2023-volkswagen-tiguan-9f381a",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed item, unknown slug",
+            "method": "GET",
+            "path": "/api/vehicles/nope",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "app, anonymous",
             "method": "GET",
             "path": "/app",
@@ -230,6 +401,15 @@
             "name": "inventory, signed in",
             "method": "GET",
             "path": "/app/inventory",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, signed in",
+            "method": "GET",
+            "path": "/cars",
             "form": "",
             "header": "",
             "status": 200,
@@ -380,6 +560,24 @@
             "captures": false
         },
         {
+            "name": "storefront car, sold",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed item, sold",
+            "method": "GET",
+            "path": "/api/vehicles/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "vehicle delete page, sold",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001/delete",
@@ -497,6 +695,78 @@
             "captures": false
         },
         {
+            "name": "storefront car, with photos",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/photos/1",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo, byte range",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/photos/1",
+            "form": "",
+            "header": "Range: bytes=0-99",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo, WebP",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/photos/3",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car photo, past the last",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/photos/4",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront list, the gate's make",
+            "method": "GET",
+            "path": "/cars?make=Gate",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed, the gate's make",
+            "method": "GET",
+            "path": "/api/vehicles?make=gate",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed item, with photos",
+            "method": "GET",
+            "path": "/api/vehicles/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
             "name": "vehicle photo",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001/photos/1",
@@ -608,6 +878,15 @@
             "name": "vehicle page, deleted",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car, deleted",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
             "form": "",
             "header": "",
             "status": 404,

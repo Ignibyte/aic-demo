@@ -10,7 +10,8 @@ declare(strict_types=1);
  * deleted and served there through the photos module, which it requires (#16). It exports the plugin type a
  * vehicle's page asks about its sale (#7), and what the sales seed builds
  * vehicles with; and the vehicles' entity type and the database's today, a
- * view, which sales and the dashboard read (#14). The list's route comes last,
+ * view, which sales and the dashboard read (#14); and the vehicles for sale, without
+ * their VINs or costs, which the storefront shows the public (#17). The list's route comes last,
  * so the generated handler parts do not each open with the record services
  * (gate:14). The build reads it; nothing reads it at run time.
  */
@@ -29,6 +30,8 @@ use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
 use App\Inventory\Controller\VehicleUpdatePost;
+use App\Inventory\Entity\ListedVehicle;
+use App\Inventory\Entity\ListingQuery;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehiclePrice;
 use App\Inventory\Entity\VehicleSale;
@@ -36,6 +39,7 @@ use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Migration\CreateTodayView;
 use App\Inventory\Migration\CreateVehiclesTable;
+use App\Inventory\Repository\ListedVehicleRepository;
 use App\Inventory\Repository\TodayRepository;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Repository\VehicleStatusRepository;
@@ -72,4 +76,7 @@ return (new ModuleManifest('inventory'))
     ->export(VehicleStatusRepository::class)
     ->export(SeedVehicles::class)
     ->export(VehicleTable::class)
-    ->export(TodayRepository::class);
+    ->export(TodayRepository::class)
+    ->export(ListedVehicleRepository::class)
+    ->export(ListedVehicle::class)
+    ->export(ListingQuery::class);

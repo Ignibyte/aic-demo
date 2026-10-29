@@ -1,0 +1,6 @@
+<?php /** @var \App\Theme\Components\CarGrid\CarGrid $carGrid */ ?>
+<section class="flex flex-col gap-4" aria-labelledby="<?= $carGrid->id ?>-summary">
+<p class="text-sm opacity-70" id="<?= $carGrid->id ?>-summary"><?= $carGrid->summary ?></p>
+<?php if (empty($carGrid->tiles)): ?><p id="<?= $carGrid->id ?>-empty"><?= $carGrid->empty ?></p><?php endif; ?>
+<ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="<?= $carGrid->id ?>"><?php foreach ($carGrid->tiles as $carTile): ?><li class="card overflow-hidden bg-base-200 shadow-xs"><a class="flex h-full flex-col" id="<?= $carTile->id ?>" href="<?= $carTile->href ?>"><?php if ($carTile->photoSrc !== ''): ?><img class="aspect-[4/3] w-full object-cover" src="<?= $carTile->photoSrc ?>" alt="<?= $carTile->photoAlt ?>"><?php else: ?><span class="flex aspect-[4/3] w-full items-center justify-center bg-base-300 text-sm opacity-70">No photo yet</span><?php endif; ?><span class="card-body gap-1"><span class="card-title"><?= $carTile->title ?></span><span class="text-sm opacity-70"><?= $carTile->mileage ?></span><span class="text-lg font-semibold"><?= $carTile->price ?></span></span></a></li><?php endforeach ?></ul>
+</section>

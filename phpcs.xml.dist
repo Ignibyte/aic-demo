@@ -31,6 +31,7 @@
                 <element key="modules/sales/src" value="App\Sales"/>
                 <element key="modules/site/src" value="App\Site"/>
                 <element key="modules/staff/src" value="App\Staff"/>
+                <element key="modules/storefront/src" value="App\Storefront"/>
                 <element key="themes/lotline/src/Components" value="App\Theme\Components"/>
                 <element key="themes/lotline/src/Layouts" value="App\Theme\Layouts"/>
                 <element key="build/generated" value="App\Generated"/>
