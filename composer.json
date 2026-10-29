@@ -54,6 +54,7 @@
             "App\\Dashboard\\": "modules/dashboard/src/",
             "App\\Generated\\": "build/generated/",
             "App\\Inventory\\": "modules/inventory/src/",
+            "App\\Leads\\": "modules/leads/src/",
             "App\\Photos\\": "modules/photos/src/",
             "App\\Sales\\": "modules/sales/src/",
             "App\\Site\\": "modules/site/src/",

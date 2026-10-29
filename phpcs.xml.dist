@@ -27,6 +27,7 @@
                 <element key="modules/customers/src" value="App\Customers"/>
                 <element key="modules/dashboard/src" value="App\Dashboard"/>
                 <element key="modules/inventory/src" value="App\Inventory"/>
+                <element key="modules/leads/src" value="App\Leads"/>
                 <element key="modules/photos/src" value="App\Photos"/>
                 <element key="modules/sales/src" value="App\Sales"/>
                 <element key="modules/site/src" value="App\Site"/>

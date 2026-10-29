@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Storefront\Service;
+namespace App\Storefront\Entity;
 
 use JsonSerializable;
 use Override;

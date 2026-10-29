@@ -204,6 +204,34 @@
             "path": "/app"
         },
         {
+            "handler": "App\\Leads\\Controller\\LeadPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "leads",
+            "path": "/app/leads/{id:int}"
+        },
+        {
+            "handler": "App\\Leads\\Controller\\LeadAssignPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "leads",
+            "path": "/app/leads/{id:int}/assign"
+        },
+        {
+            "handler": "App\\Leads\\Controller\\LeadClosePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "leads",
+            "path": "/app/leads/{id:int}/close"
+        },
+        {
+            "handler": "App\\Leads\\Controller\\LeadListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "leads",
+            "path": "/app/leads"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -237,6 +265,20 @@
             "method": "GET",
             "module": "storefront",
             "path": "/cars/{slug}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarInquiryPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/inquiry"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarTestDrivePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/test-drive"
         },
         {
             "handler": "App\\Storefront\\Controller\\CarPhotoStream",
@@ -330,6 +372,12 @@
         }
     ],
     "jobs": [
+        {
+            "class": "App\\Leads\\Job\\SendLeadNotices",
+            "kind": "Job",
+            "module": "leads",
+            "name": "lead-notices"
+        },
         {
             "class": "AIC\\Notification\\Application\\DeliverNotification",
             "kind": "Job",
@@ -523,6 +571,31 @@
         },
         {
             "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Leads\\Service\\LeadDesk",
+                "App\\Leads\\Entity\\LeadKind",
+                "App\\Leads\\Entity\\LeadReply"
+            ],
+            "factories": [
+                "App\\Leads\\Service\\LeadServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Leads\\Migration\\CreateLeadsTable"
+            ],
+            "name": "leads",
+            "namespace": "App\\Leads\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "customers"
+            ]
+        },
+        {
+            "bindings": [],
             "blocks": [
                 "App\\Site\\Block\\NavigationBlock",
                 "App\\Site\\Block\\SiteFooterBlock"
@@ -543,7 +616,9 @@
             "bindings": [],
             "blocks": [],
             "exports": [],
-            "factories": [],
+            "factories": [
+                "App\\Storefront\\Service\\StoreServices"
+            ],
             "middleware": [],
             "migrations": [],
             "name": "storefront",
@@ -553,7 +628,8 @@
             "requires": [
                 "inventory",
                 "photos",
-                "staff"
+                "staff",
+                "leads"
             ]
         }
     ],
@@ -724,6 +800,11 @@
                 "component": "App\\Theme\\Components\\StoreHeading\\StoreHeading",
                 "generated": "build/generated/templates/themes/lotline/components/StoreHeading/store-heading.phtml",
                 "source": "themes/lotline/components/StoreHeading/store-heading.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\SubmitButton\\SubmitButton",
+                "generated": "build/generated/templates/themes/lotline/components/SubmitButton/submit-button.phtml",
+                "source": "themes/lotline/components/SubmitButton/submit-button.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\TableResults\\TableResults",

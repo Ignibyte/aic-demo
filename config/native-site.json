@@ -767,6 +767,242 @@
             "captures": false
         },
         {
+            "name": "storefront car, with its lead forms",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car inquiry, refused",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/inquiry",
+            "form": "name=&email=nope&phone=12&message=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "car inquiry, no token",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/inquiry",
+            "form": "name=Gate%20Lead&email=gate.lead%40example.test&phone=&message=Is%20it%20still%20for%20sale%3F",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "car inquiry, honeypot filled",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/inquiry",
+            "form": "name=Gate%20Lead&email=gate.lead%40example.test&phone=&message=Is%20it%20still%20for%20sale%3F&aic_website=spam&aic_csrf={csrf}",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "car inquiry",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/inquiry",
+            "form": "name=Gate%20Lead&email=gate.lead%40example.test&phone=&message=Is%20it%20still%20for%20sale%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car inquiry, unknown car",
+            "method": "POST",
+            "path": "/cars/nope/inquiry",
+            "form": "name=Gate%20Lead&email=gate.lead%40example.test&phone=&message=Is%20it%20still%20for%20sale%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "leads",
+            "method": "GET",
+            "path": "/app/leads",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/leads/"
+        },
+        {
+            "name": "lead page",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead reassign, not a salesperson",
+            "method": "POST",
+            "path": "{note}/assign",
+            "form": "salesperson=gate&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "lead reassign, no token",
+            "method": "POST",
+            "path": "{note}/assign",
+            "form": "salesperson=marcus.hale%40ridgeway-motors.test",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "lead reassign",
+            "method": "POST",
+            "path": "{note}/assign",
+            "form": "salesperson=marcus.hale%40ridgeway-motors.test&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "lead page, reassigned",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead close",
+            "method": "POST",
+            "path": "{note}/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "lead close, closed already",
+            "method": "POST",
+            "path": "{note}/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "lead reassign, closed",
+            "method": "POST",
+            "path": "{note}/assign",
+            "form": "salesperson=marcus.hale%40ridgeway-motors.test&aic_csrf={csrf}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "lead page, closed",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car test drive, a Sunday evening",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/test-drive",
+            "form": "name=Ada%20Abbott&email=ada.abbott%40example.test&phone=&message=&drive_on=2099-01-04&drive_at=20%3A00&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "car test drive, a customer",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/test-drive",
+            "form": "name=Ada%20Abbott&email=Ada.Abbott%40Example.TEST&phone=%28503%29%20555-0142&message=&drive_on=2099-01-05&drive_at=10%3A30&aic_csrf={csrf}",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car test drive, unknown car",
+            "method": "POST",
+            "path": "/cars/2023-volkswagen-tiguan-000000/test-drive",
+            "form": "name=Ada%20Abbott&email=Ada.Abbott%40Example.TEST&phone=%28503%29%20555-0142&message=&drive_on=2099-01-05&drive_at=10%3A30&aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "leads, filtered",
+            "method": "GET",
+            "path": "/app/leads?kind=test_drive",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/leads/"
+        },
+        {
+            "name": "lead page, a customer's test drive",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead close, the test drive",
+            "method": "POST",
+            "path": "{note}/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "leads, after a close",
+            "method": "GET",
+            "path": "/app/leads",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "leads, unknown filter",
+            "method": "GET",
+            "path": "/app/leads?kind=bogus&salesperson=nobody",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead page, unknown",
+            "method": "GET",
+            "path": "/app/leads/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "lead close, unknown",
+            "method": "POST",
+            "path": "/app/leads/999999999/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "vehicle photo",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001/photos/1",

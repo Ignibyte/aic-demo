@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\SubmitButton\SubmitButton $submitButton */ ?>
+<button class="btn btn-primary mt-4" type="submit" id="<?= $submitButton->id ?>"<?php if ($submitButton->target !== ''): ?> data-target="<?= $submitButton->target ?>"<?php endif; ?>><?= $submitButton->label ?></button>
