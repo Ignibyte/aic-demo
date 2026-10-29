@@ -9,6 +9,7 @@ use AIC\Auth\Application\PgcryptoPasswordHasher;
 use AIC\Auth\Application\RequireAuthenticationMiddleware;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use App\Staff\Middleware\StaffStanding;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\AccessRules;
 use InvalidArgumentException;
@@ -35,16 +36,15 @@ final readonly class StaffMiddleware
      */
     public function afterSession(): array
     {
-        $staffRepository = new StaffRepository(new EntityStore($this->handlerContext->database()));
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $staffRepository = new StaffRepository($entityStore);
         $pgcryptoPasswordHasher = new PgcryptoPasswordHasher($this->handlerContext->database());
+        $authenticator = new Authenticator($staffRepository, $pgcryptoPasswordHasher);
         $routeAuthConfig = (new AccessRules($this->handlerContext->protectedPrefixes()))->routeAuthConfig();
 
         return [
-            new RequireAuthenticationMiddleware(
-                new Authenticator($staffRepository, $pgcryptoPasswordHasher),
-                $routeAuthConfig,
-                $this->handlerContext->responseBuilder(),
-            ),
+            new StaffStanding($authenticator, $staffRepository),
+            new RequireAuthenticationMiddleware($authenticator, $routeAuthConfig, $this->handlerContext->responseBuilder()),
         ];
     }
 }

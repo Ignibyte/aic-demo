@@ -10,6 +10,8 @@ use AIC\Notification\Contracts\Notification;
 use App\Leads\Entity\Lead;
 use App\Leads\Entity\LeadKind;
 use App\Leads\Entity\Seller;
+use App\Settings\Service\DealershipProfiles;
+use InvalidArgumentException;
 use JsonException;
 
 use function implode;
@@ -17,23 +19,27 @@ use function implode;
 /**
  * Tells people about a lead (#18), through AIC's Notifier, which queues one `notify` job per channel: the salesperson
  * it is assigned to gets a notification kept in the database and mailed, and the visitor a confirmation by mail. An
- * unassigned lead tells the visitor alone.
+ * unassigned lead tells the visitor alone. The visitor's mail is signed with the dealership's name from the settings'
+ * profile (#22).
  */
 final readonly class LeadNotices
 {
     /**
-     * @param Notifier $notifier Queues each delivery.
+     * @param Notifier           $notifier           Queues each delivery.
+     * @param DealershipProfiles $dealershipProfiles The dealership's name, which signs the visitor's mail.
      */
     public function __construct(
         private Notifier $notifier,
+        private DealershipProfiles $dealershipProfiles,
     ) {
     }
 
     /**
      * @param Lead $lead The lead, as stored.
      *
-     * @throws JsonException  When a delivery's payload cannot be encoded.
-     * @throws QueryException When a delivery cannot be queued.
+     * @throws JsonException            When a delivery's payload cannot be encoded.
+     * @throws QueryException           When a delivery cannot be queued, or the profile cannot be read.
+     * @throws InvalidArgumentException When the profile's entity type is malformed.
      */
     public function send(Lead $lead): void
     {
@@ -43,7 +49,7 @@ final readonly class LeadNotices
             $this->notifier->send($this->forSeller($lead, $seller), ['database', 'mail']);
         }
 
-        $this->notifier->send($this->forVisitor($lead), ['mail']);
+        $this->notifier->send($this->forVisitor($lead, $this->dealershipProfiles->profile()->name), ['mail']);
     }
 
     /**
@@ -77,24 +83,25 @@ final readonly class LeadNotices
     }
 
     /**
-     * @param Lead $lead The lead.
+     * @param Lead   $lead       The lead.
+     * @param string $dealership The dealership's name, which signs it.
      *
      * @return Notification The visitor's confirmation of what they sent; it has no user, since visitors never sign in.
      */
-    private function forVisitor(Lead $lead): Notification
+    private function forVisitor(Lead $lead, string $dealership): Notification
     {
         $leadDetails = $lead->leadDetails;
         $title = $lead->leadCar->title;
 
         if ($leadDetails->leadKind === LeadKind::Inquiry) {
             $body = 'Hello ' . $leadDetails->name . ",\n\nThanks for asking about the " . $title . '. One of our salespeople has your'
-                . " question and will reply to this address soon.\n\nRidgeway Motors";
+                . " question and will reply to this address soon.\n\n" . $dealership;
 
             return new Notification('', $leadDetails->email, 'Your question about the ' . $title, $body);
         }
 
         $body = 'Hello ' . $leadDetails->name . ",\n\nThanks for asking to drive the " . $title . ' on ' . $leadDetails->driveOn
-            . ' at ' . $leadDetails->driveAt . '. One of our salespeople will call you to confirm it.' . "\n\nRidgeway Motors";
+            . ' at ' . $leadDetails->driveAt . '. One of our salespeople will call you to confirm it.' . "\n\n" . $dealership;
 
         return new Notification('', $leadDetails->email, 'Your test drive of the ' . $title, $body);
     }

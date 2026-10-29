@@ -14,8 +14,8 @@ use App\Staff\Entity\StaffTable;
 use InvalidArgumentException;
 
 /**
- * The salespeople leads go to (#18): the users whose role is `salesperson`, read through staff's exported entity type.
- * Staff keeps nothing else about them, so these are the active ones.
+ * The salespeople leads go to (#18): the users whose role is `salesperson`, read through staff's exported entity type,
+ * less those an admin deactivated (#22), who take no new lead and are no choice for a reassignment.
  */
 final readonly class SellerRepository
 {
@@ -101,10 +101,10 @@ final readonly class SellerRepository
     /**
      * @throws InvalidArgumentException When the users' type is malformed.
      *
-     * @return EntityQuery The users whose role is `salesperson`.
+     * @return EntityQuery The users whose role is `salesperson` and who are not deactivated (#22).
      */
     private function salespeople(): EntityQuery
     {
-        return $this->entityStore->query($this->staffTable->type())->where('role', Role::Salesperson->value);
+        return $this->entityStore->query($this->staffTable->type())->where('role', Role::Salesperson->value)->where('deactivated_on', null);
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Leads\Form;
 
+use App\Settings\Entity\OpeningHours;
+
 use function checkdate;
 use function intdiv;
 use function preg_match;
@@ -11,35 +13,23 @@ use function strcmp;
 use function substr;
 
 /**
- * Ridgeway Motors' opening hours, as a test drive is held to them (#18): open Monday to Saturday, 09:00 to 18:00, and a
- * drive starts by 17:00, on a day after today. Days and times compare as text with `strcmp()`, since elephc refuses `<`
- * and `>` between two strings (old Lotline's ticket 28; no AIC ticket carries it yet, as sales' `SaleChecks` notes); the
- * weekday is worked out in integers (Zeller's congruence), so no time zone enters it.
+ * The dealership's opening hours, as a test drive is held to them (#18): on a day after today that the dealership is
+ * open, starting from the opening to an hour before the closing. Since #22 the hours are the settings' profile
+ * (`OpeningHours`), Monday to Saturday, 09:00 to 18:00 until an admin saves others, and the error texts are built from
+ * them. Days and times compare as text with `strcmp()`, since elephc refuses `<` and `>` between two strings (old
+ * Lotline's ticket 28; no AIC ticket carries it yet, as sales' `SaleChecks` notes); the weekday is worked out in
+ * integers (Zeller's congruence), so no time zone enters it.
  */
 final readonly class LeadHours
 {
     /**
-     * The earliest start, when the doors open.
-     */
-    public const string FIRST = '09:00';
-
-    /**
-     * The latest start, an hour before the doors close.
-     */
-    public const string LAST = '17:00';
-
-    /**
-     * Why a time is refused.
-     */
-    public const string TIME_REFUSED = 'Choose a time from 09:00 to 17:00. We are open 09:00 to 18:00, Monday to Saturday.';
-
-    /**
-     * @param string $day   The posted day.
-     * @param string $today The database's today, `YYYY-MM-DD`.
+     * @param string       $day          The posted day.
+     * @param string       $today        The database's today, `YYYY-MM-DD`.
+     * @param OpeningHours $openingHours When the dealership is open.
      *
      * @return string Why the day is refused; empty when it is fine.
      */
-    public function dayError(string $day, string $today): string
+    public function dayError(string $day, string $today, OpeningHours $openingHours): string
     {
         if (preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $day) !== 1) {
             return 'Choose a day, written YYYY-MM-DD.';
@@ -57,23 +47,30 @@ final readonly class LeadHours
             return 'Choose a day from tomorrow on.';
         }
 
-        return $this->weekday($year, $month, $date) === 1
-            ? 'We are closed on Sundays. Choose a day from Monday to Saturday.'
-            : '';
+        // Zeller's 0 is Saturday and 1 Sunday; the ISO weekday counts from Monday as 1.
+        $isoDay = ($this->weekday($year, $month, $date) + 5) % 7 + 1;
+
+        return $openingHours->opensOn($isoDay)
+            ? ''
+            : 'We are closed on ' . $openingHours->dayName($isoDay) . 's. Choose ' . $openingHours->choice() . '.';
     }
 
     /**
-     * @param string $time The posted time.
+     * @param string       $time         The posted time.
+     * @param OpeningHours $openingHours When the dealership is open.
      *
      * @return string Why the time is refused; empty when it is fine.
      */
-    public function timeError(string $time): string
+    public function timeError(string $time, OpeningHours $openingHours): string
     {
         $written = preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', $time) === 1;
+        $first = $openingHours->opensAt;
+        $last = $openingHours->lastStart();
 
-        return $written && strcmp($time, self::FIRST) >= 0 && strcmp($time, self::LAST) <= 0
+        return $written && strcmp($time, $first) >= 0 && strcmp($time, $last) <= 0
             ? ''
-            : self::TIME_REFUSED;
+            : 'Choose a time from ' . $first . ' to ' . $last . '. We are open ' . $first . ' to ' . $openingHours->closesAt . ', '
+                . $openingHours->days() . '.';
     }
 
     /**

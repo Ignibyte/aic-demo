@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 use function array_merge;
 
@@ -25,7 +25,7 @@ final readonly class ModuleHandlers
     }
 
     /**
-     * @throws ContainerException When a called constructor or service fails.
+     * @throws RuntimeException When a called constructor or service fails.
      *
      * @return array<string, RequestHandlerInterface> The modules' handlers by id.
      */

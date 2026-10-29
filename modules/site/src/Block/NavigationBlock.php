@@ -8,6 +8,7 @@ use AIC\Block\Contracts\Block;
 use AIC\Block\Contracts\Placement;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\KeyedComponent;
+use App\Staff\Entity\Role;
 use App\Staff\Entity\StaffMember;
 use App\Staff\Service\StaffSession;
 use App\Theme\Components\Icon\Heroicons;
@@ -25,7 +26,9 @@ use function str_starts_with;
  * Lotline's sidebar, in `sidebar` on every page: the site's name, then a link to each area with its icon, the current
  * one marked from the page's request. Areas join the list as their pages land; the staff areas show only to signed-in
  * staff, for whom Dashboard goes to the dashboard at `/app` (#8), current there alone since every staff page sits under
- * it; signed out it goes to `/`. Reports shows to the managers alone, an admin or a sales manager, who read them (#21).
+ * it; signed out it goes to `/`. Reports shows to the managers alone, an admin or a sales manager, who read them (#21);
+ * Settings to an admin alone, who changes them (#22). The role is the users table's, which staff's `StaffStanding` keeps
+ * in the session, so a member whose role changed sees their links change on their next page.
  */
 final readonly class NavigationBlock implements Block
 {
@@ -89,7 +92,8 @@ final readonly class NavigationBlock implements Block
      *
      * @throws LogicException When a link's key is malformed.
      *
-     * @return list<KeyedComponent> The staff areas' links, each current on its pages; Reports for a manager alone.
+     * @return list<KeyedComponent> The staff areas' links, each current on its pages; Reports for a manager alone,
+     *                              Settings for an admin alone.
      */
     private static function staffLinks(Heroicons $heroicons, string $path, StaffMember $staffMember): array
     {
@@ -103,6 +107,10 @@ final readonly class NavigationBlock implements Block
 
         if ($staffMember->role->manages()) {
             $links[] = self::link('reports', '/app/reports', 'Reports', $heroicons->chartBar(), $path);
+        }
+
+        if ($staffMember->role === Role::Admin) {
+            $links[] = self::link('settings', '/app/settings', 'Settings', $heroicons->cog(), $path);
         }
 
         return $links;

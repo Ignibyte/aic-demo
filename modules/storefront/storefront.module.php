@@ -12,7 +12,9 @@ declare(strict_types=1);
  * carries two lead forms, a question and a test drive (#18), which post below
  * it and which leads' exported LeadDesk builds and records; the module's
  * factory builds the car's page for all three. Its pages use the
- * theme's store layout, whose regions no staff block fills. The list's route
+ * theme's store layout, whose regions no staff block fills; its header and
+ * footer show the dealership's profile, which it requires settings for (#22).
+ * The list's route
  * comes last, after the routes below it. The build reads it; nothing reads it
  * at run time.
  */
@@ -33,6 +35,7 @@ return (new ModuleManifest('storefront'))
     ->requires('photos')
     ->requires('staff')
     ->requires('leads')
+    ->requires('settings')
     ->route(RouteMethod::Get, '/cars/{slug}', CarPage::class)
     ->route(RouteMethod::Post, '/cars/{slug}/inquiry', CarInquiryPost::class)
     ->route(RouteMethod::Post, '/cars/{slug}/test-drive', CarTestDrivePost::class)

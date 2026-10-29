@@ -15,11 +15,16 @@ use App\Staff\Entity\StaffTable;
 use App\Staff\Service\Roles;
 use InvalidArgumentException;
 use Override;
+use RuntimeException;
 use UnexpectedValueException;
+
+use function preg_match;
 
 /**
  * The users table, as the Authenticator reads it: a member of staff signs in with their email, and the session keeps
- * their id. The two writers save on the same email, which the table holds unique.
+ * their id. The two writers save on the same email, which the table holds unique. A deactivated member, or one added by
+ * an admin who has not set a password yet, has no credentials (#22), so the Authenticator checks the decoy hash and
+ * answers as for a wrong password. Exported for the settings' password links, which set a member's hash here.
  */
 final readonly class StaffRepository implements UserProvider
 {
@@ -41,14 +46,19 @@ final readonly class StaffRepository implements UserProvider
      * @throws QueryException           When the query fails.
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return UserCredentials|null Their id and hash; null when no one signs in with it.
+     * @return UserCredentials|null Their id and hash; null when no one signs in with it, they are deactivated, or they
+     *                              have no password yet.
      */
     #[Override]
     public function credentials(string $login): ?UserCredentials
     {
         $row = $this->byEmail($login);
 
-        if (!$row instanceof Row) {
+        if (
+            !$row instanceof Row
+            || $row->stringOrNull('deactivated_on') !== null
+            || $row->string('password_hash') === ''
+        ) {
             return null;
         }
 
@@ -69,6 +79,31 @@ final readonly class StaffRepository implements UserProvider
         $row = $this->byEmail($email);
 
         if (!$row instanceof Row) {
+            return null;
+        }
+
+        return new StaffMember($row->string('email'), $row->string('name'), $this->roles->stored($row->string('role')));
+    }
+
+    /**
+     * @param string $userId The id AIC's Authenticator keeps in a signed-in session.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws UnexpectedValueException When their stored role is no role.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return StaffMember|null The member with that id while they may sign in; null when no member has it or they
+     *                          are deactivated.
+     */
+    public function standing(string $userId): ?StaffMember
+    {
+        if (preg_match('/^[1-9]\\d{0,17}$/', $userId) !== 1) {
+            return null;
+        }
+
+        $row = $this->entityStore->query($this->staffTable->type())->where('id', (int) $userId)->first();
+
+        if (!$row instanceof Row || $row->stringOrNull('deactivated_on') !== null) {
             return null;
         }
 
@@ -111,6 +146,31 @@ final readonly class StaffRepository implements UserProvider
     {
         $values = ['email' => $email, 'name' => $name, 'role' => $role->value, 'password_hash' => $passwordHash];
         $this->entityStore->upsert($this->staffTable->type(), $values, 'email');
+    }
+
+    /**
+     * @param int    $id           The member's id.
+     * @param string $passwordHash The hash of the password they chose.
+     *
+     * @throws RuntimeException         When the statement fails, or no member has the id.
+     * @throws InvalidArgumentException When a value does not fit its field.
+     */
+    public function setPasswordHash(int $id, string $passwordHash): void
+    {
+        $this->entityStore->update($this->staffTable->type(), $id, ['password_hash' => $passwordHash]);
+    }
+
+    /**
+     * Deletes the member; the database refuses it while a record names them.
+     *
+     * @param int $id The member's id.
+     *
+     * @throws RuntimeException         When the statement fails, a record naming them included, or no member has the id.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     */
+    public function remove(int $id): void
+    {
+        $this->entityStore->delete($this->staffTable->type(), $id);
     }
 
     /**

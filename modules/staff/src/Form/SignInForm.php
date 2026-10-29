@@ -12,6 +12,7 @@ use AIC\Component\Domain\HiddenInput;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Controller\Domain\PageDocument;
 use AIC\Form\Application\FormTokens;
+use App\Staff\Service\StaffNotices;
 use App\Staff\Service\StaffPages;
 use App\Theme\Components\FormField\FormField;
 use App\Theme\Components\Panel\Panel;
@@ -20,17 +21,20 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * The sign-in page: the email and password, where to go after, and the error when the last attempt failed. The email
- * is a text field, since the gate's user signs in as `gate`.
+ * is a text field, since the gate's user signs in as `gate`. A line kept for it shows above the form once, as the
+ * settings' set-password page keeps "Your password is set." (#22).
  */
 final readonly class SignInForm
 {
     /**
-     * @param StaffPages $staffPages The staff pages' document.
-     * @param FormTokens $formTokens Issues the visitor's CSRF token.
+     * @param StaffPages   $staffPages   The staff pages' document.
+     * @param FormTokens   $formTokens   Issues the visitor's CSRF token.
+     * @param StaffNotices $staffNotices The line kept for the page.
      */
     public function __construct(
         private StaffPages $staffPages,
         private FormTokens $formTokens = new FormTokens(),
+        private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
 
@@ -52,9 +56,14 @@ final readonly class SignInForm
         string $error,
         int $status,
     ): PageDocument {
-        $panel = new Panel('sign-in', 'Staff sign in', 'Ridgeway Motors staff only.', false, [
-            new KeyedComponent('form', $this->form($serverRequest, $email, $next, $error)),
-        ]);
+        $body = [];
+
+        foreach ($this->staffNotices->take($serverRequest, 'sign-in-notice') as $key => $notice) {
+            $body[] = new KeyedComponent($key, $notice);
+        }
+
+        $body[] = new KeyedComponent('form', $this->form($serverRequest, $email, $next, $error));
+        $panel = new Panel('sign-in', 'Staff sign in', 'Ridgeway Motors staff only.', false, $body);
 
         return $this->staffPages->page('Sign in', [new KeyedComponent('sign-in', $panel)], $status);
     }

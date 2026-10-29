@@ -2017,6 +2017,379 @@
             "captures": false
         },
         {
+            "name": "settings, signed in",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings, a Tessera fragment of the content",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings profile, no token",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate%20Motors&address=1%20Gate%20Road&phone=%28503%29%20555-0100&opens_at=08%3A00&closes_at=17%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&aged_stock_days=45",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "settings profile, an altered envelope",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate%20Motors&address=1%20Gate%20Road&phone=%28503%29%20555-0100&opens_at=08%3A00&closes_at=17%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&aged_stock_days=45&aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "settings profile, every field refused",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=&address=&phone=12&opens_at=25%3A00&closes_at=x&aged_stock_days=0&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "settings profile, saved",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate%20Motors&address=1%20Gate%20Road&phone=%28503%29%20555-0100&opens_at=08%3A00&closes_at=17%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&aged_stock_days=45&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings profile, saved again on the same envelope, stale",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate%20Motors&address=1%20Gate%20Road&phone=%28503%29%20555-0100&opens_at=08%3A00&closes_at=17%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&aged_stock_days=45&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "storefront list, the profile saved",
+            "method": "GET",
+            "path": "/cars",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings, the profile saved",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings profile, back to the defaults",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Ridgeway%20Motors&address=&phone=&opens_at=09%3A00&closes_at=18%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&day_6=1&aged_stock_days=60&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member add, no token",
+            "method": "POST",
+            "path": "/app/settings/staff",
+            "form": "name=Gate%20Newcomer&email=gate-newcomer%40lotline.test&role=sales_manager",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "settings member add, every field refused",
+            "method": "POST",
+            "path": "/app/settings/staff",
+            "form": "name=&email=nope&role=boss&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "settings member add",
+            "method": "POST",
+            "path": "/app/settings/staff",
+            "form": "name=Gate%20Newcomer&email=gate-newcomer%40lotline.test&role=sales_manager&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
+            "name": "settings member add, the email taken",
+            "method": "POST",
+            "path": "/app/settings/staff",
+            "form": "name=Gate%20Newcomer&email=gate-newcomer%40lotline.test&role=sales_manager&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "settings member page",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings member page, unknown",
+            "method": "GET",
+            "path": "/app/settings/staff/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "settings member save, no token",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Newcomer&role=salesperson",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "settings member save, an altered envelope",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Newcomer&role=sales_manager&aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "settings member save, every field refused",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=&role=boss&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "settings member save",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Newcomer%20Two&role=sales_manager&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member save, saved again on the same envelope, stale",
+            "method": "POST",
+            "path": "{note}",
+            "form": "name=Gate%20Newcomer%20Three&role=sales_manager&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "settings member deactivate, no token",
+            "method": "POST",
+            "path": "{note}/active",
+            "form": "active=0",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "settings member deactivate",
+            "method": "POST",
+            "path": "{note}/active",
+            "form": "active=0&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member page, deactivated",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings member reactivate",
+            "method": "POST",
+            "path": "{note}/active",
+            "form": "active=1&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member link, no token",
+            "method": "POST",
+            "path": "{note}/link",
+            "form": "",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "settings member link",
+            "method": "POST",
+            "path": "{note}/link",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member link, unknown",
+            "method": "POST",
+            "path": "/app/settings/staff/999999999/link",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "settings, the gate user's own page captured",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/settings/staff/"
+        },
+        {
+            "name": "settings, the gate user's own page",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "settings, the gate user's own password link, straight to its page",
+            "method": "POST",
+            "path": "{note}/link",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": true
+        },
+        {
+            "name": "health, once the worker has run the newcomer's notifications",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "password page, the gate user's inbox forgotten",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "inbox:forget gate"
+        },
+        {
+            "name": "password set, no token",
+            "method": "POST",
+            "path": "{note}",
+            "form": "password=x&confirm=x",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "password set, too short",
+            "method": "POST",
+            "path": "{note}",
+            "form": "password=short&confirm=short&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "password set",
+            "method": "POST",
+            "path": "{note}",
+            "form": "password={password}&confirm={password}&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "password page, the link used",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "password set, the link used",
+            "method": "POST",
+            "path": "{note}",
+            "form": "password={password}&confirm={password}&aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "password page, an altered link",
+            "method": "GET",
+            "path": "/password/altered.link",
+            "form": "",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "password set, an altered link",
+            "method": "POST",
+            "path": "/password/altered.link",
+            "form": "password={password}&confirm={password}&aic_csrf={csrf}",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "settings, the newcomer removed",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "user:remove gate-newcomer@lotline.test"
+        },
+        {
             "name": "inbox, sign-out",
             "method": "POST",
             "path": "/sign-out",
@@ -2077,6 +2450,42 @@
             "form": "",
             "header": "",
             "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings, signed out",
+            "method": "GET",
+            "path": "/app/settings",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings member page, signed out",
+            "method": "GET",
+            "path": "/app/settings/staff/1",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "settings profile, signed out",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "password page, signed out, an altered link",
+            "method": "GET",
+            "path": "/password/altered.link",
+            "form": "",
+            "header": "",
+            "status": 400,
             "captures": false
         }
     ]

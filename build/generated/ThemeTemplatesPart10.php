@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\StatusBadge\StatusBadge;
 use App\Theme\Components\StoreFooter\StoreFooter;
 use App\Theme\Components\StoreHeader\StoreHeader;
 use App\Theme\Components\StoreHeading\StoreHeading;
-use App\Theme\Components\SubmitButton\SubmitButton;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof StatusBadge => $this->renderStatusBadge($component, $renderPass),
             $component instanceof StoreFooter => $this->renderStoreFooter($component, $renderPass),
             $component instanceof StoreHeader => $this->renderStoreHeader($component, $renderPass),
             $component instanceof StoreHeading => $this->renderStoreHeading($component, $renderPass),
-            $component instanceof SubmitButton => $this->renderSubmitButton($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param StatusBadge $statusBadge The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/StatusBadge/status-badge.phtml.
+     */
+    private function renderStatusBadge(StatusBadge $statusBadge, RenderPass $renderPass): string
+    {
+        $renderPass->open($statusBadge);
+        require __DIR__ . '/templates/themes/lotline/components/StatusBadge/status-badge.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     {
         $renderPass->open($storeHeading);
         require __DIR__ . '/templates/themes/lotline/components/StoreHeading/store-heading.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SubmitButton $submitButton The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SubmitButton/submit-button.phtml.
-     */
-    private function renderSubmitButton(SubmitButton $submitButton, RenderPass $renderPass): string
-    {
-        $renderPass->open($submitButton);
-        require __DIR__ . '/templates/themes/lotline/components/SubmitButton/submit-button.phtml';
 
         return $renderPass->close();
     }

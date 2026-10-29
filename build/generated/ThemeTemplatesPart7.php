@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\Navigation\Navigation;
+use App\Theme\Components\NavLink\NavLink;
 use App\Theme\Components\Notice\Notice;
 use App\Theme\Components\Pagination\Pagination;
-use App\Theme\Components\Panel\Panel;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
             $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
             $component instanceof Notice => $this->renderNotice($component, $renderPass),
             $component instanceof Pagination => $this->renderPagination($component, $renderPass),
-            $component instanceof Panel => $this->renderPanel($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param NavLink    $navLink    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/NavLink/nav-link.phtml.
+     */
+    private function renderNavLink(NavLink $navLink, RenderPass $renderPass): string
+    {
+        $renderPass->open($navLink);
+        require __DIR__ . '/templates/themes/lotline/components/NavLink/nav-link.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     {
         $renderPass->open($pagination);
         require __DIR__ . '/templates/themes/lotline/components/Pagination/pagination.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param Panel      $panel      The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/Panel/panel.phtml.
-     */
-    private function renderPanel(Panel $panel, RenderPass $renderPass): string
-    {
-        $renderPass->open($panel);
-        require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
 
         return $renderPass->close();
     }

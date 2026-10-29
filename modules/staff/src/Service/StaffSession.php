@@ -13,6 +13,8 @@ use UnexpectedValueException;
 /**
  * The signed-in member of staff, kept in the session at sign-in beside the Authenticator's user id, so the header's
  * block (which takes no services) and `/app` show them without the database. Signing out clears the whole session.
+ * `StaffStanding` refreshes it on each request from the users table (#22), so a name or role an admin changed reaches
+ * the member's next page, and a role check never reads a role they no longer have.
  */
 final readonly class StaffSession
 {
@@ -53,6 +55,28 @@ final readonly class StaffSession
         $session->set(self::EMAIL, $staffMember->email);
         $session->set(self::NAME, $staffMember->name);
         $session->set(self::ROLE, $staffMember->role->value);
+    }
+
+    /**
+     * Keeps the member as the users table has them now, writing the session only when something differs.
+     *
+     * @param ServerRequestInterface $serverRequest A signed-in request, with its session.
+     * @param StaffMember            $staffMember   The member as the users table has them.
+     *
+     * @throws LogicException When the request carries no session.
+     */
+    public function refresh(ServerRequestInterface $serverRequest, StaffMember $staffMember): void
+    {
+        $session = $this->requestSession->read($serverRequest);
+        $kept = ($session->get(self::EMAIL) ?? '') === $staffMember->email
+            && ($session->get(self::NAME) ?? '') === $staffMember->name
+            && ($session->get(self::ROLE) ?? '') === $staffMember->role->value;
+
+        if ($kept) {
+            return;
+        }
+
+        $this->remember($serverRequest, $staffMember);
     }
 
     /**

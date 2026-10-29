@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\FormActions\FormActions;
 use App\Theme\Components\FormField\FormField;
 use App\Theme\Components\FormGrid\FormGrid;
 use App\Theme\Components\FormValue\FormValue;
-use App\Theme\Components\Icon\Icon;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
             $component instanceof FormField => $this->renderFormField($component, $renderPass),
             $component instanceof FormGrid => $this->renderFormGrid($component, $renderPass),
             $component instanceof FormValue => $this->renderFormValue($component, $renderPass),
-            $component instanceof Icon => $this->renderIcon($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param FormActions $formActions The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FormActions/form-actions.phtml.
+     */
+    private function renderFormActions(FormActions $formActions, RenderPass $renderPass): string
+    {
+        $renderPass->open($formActions);
+        require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     {
         $renderPass->open($formValue);
         require __DIR__ . '/templates/themes/lotline/components/FormValue/form-value.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param Icon       $icon       The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/Icon/icon.phtml.
-     */
-    private function renderIcon(Icon $icon, RenderPass $renderPass): string
-    {
-        $renderPass->open($icon);
-        require __DIR__ . '/templates/themes/lotline/components/Icon/icon.phtml';
 
         return $renderPass->close();
     }

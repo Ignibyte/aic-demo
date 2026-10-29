@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Schema\Contracts\Migration;
+use App\Staff\Migration\AddUserDeactivation;
 use App\Staff\Migration\CreateUsersTable;
 
 /**
@@ -20,6 +21,7 @@ final readonly class StaffMigrations
     {
         return [
             new CreateUsersTable(),
+            new AddUserDeactivation(),
         ];
     }
 }

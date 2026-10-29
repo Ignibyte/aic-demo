@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
-use App\Storefront\Controller\CarListPage;
 use App\Storefront\Controller\CarPhotoStream;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
 use App\Storefront\Service\CarFinder;
-use App\Storefront\Service\CarListing;
-use App\Storefront\Service\CarTiles;
 use App\Storefront\Service\FeedVehicles;
-use App\Storefront\Service\StorePages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -35,8 +30,6 @@ final readonly class StorefrontHandlersPart2
     }
 
     /**
-     * @throws ContainerException When a called constructor or service fails.
-     *
      * @return array<string, RequestHandlerInterface> The module's handlers by id.
      */
     public function byId(): array
@@ -46,12 +39,8 @@ final readonly class StorefrontHandlersPart2
         $vehiclePhotos = new VehiclePhotos($entityStore);
         $carFinder = new CarFinder($listedVehicleRepository, $vehiclePhotos);
         $feedVehicles = new FeedVehicles($listedVehicleRepository, $vehiclePhotos);
-        $carListing = new CarListing($listedVehicleRepository, new CarTiles($vehiclePhotos));
 
         return [
-            CarListPage::class => $this->handlerContext->page(
-                new CarListPage(new StorePages($this->handlerContext->documents()), $carListing),
-            ),
             CarPhotoStream::class => $this->handlerContext->stream(new CarPhotoStream($carFinder)),
             VehicleFeedApi::class => $this->handlerContext->api(new VehicleFeedApi($feedVehicles)),
             VehicleFeedItemApi::class => $this->handlerContext->api(new VehicleFeedItemApi($carFinder, $feedVehicles)),

@@ -9,6 +9,7 @@ use AIC\Entity\Application\EntityStore;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Leads\Service\LeadDesk;
 use App\Photos\Service\VehiclePhotos;
+use App\Settings\Service\DealershipProfiles;
 
 /**
  * The storefront module's factory (#18): the car's page, which `CarPage` and both lead posts share. Built here, it
@@ -18,14 +19,16 @@ use App\Photos\Service\VehiclePhotos;
 final readonly class StoreServices
 {
     /**
-     * @param EntityStore   $entityStore   The tables.
-     * @param PageDocuments $pageDocuments The theme's documents.
-     * @param LeadDesk      $leadDesk      The lead forms, and a sent one recorded.
+     * @param EntityStore        $entityStore        The tables.
+     * @param PageDocuments      $pageDocuments      The theme's documents.
+     * @param LeadDesk           $leadDesk           The lead forms, and a sent one recorded.
+     * @param DealershipProfiles $dealershipProfiles The dealership's profile, which the public header and footer show.
      */
     public function __construct(
         private EntityStore $entityStore,
         private PageDocuments $pageDocuments,
         private LeadDesk $leadDesk,
+        private DealershipProfiles $dealershipProfiles,
     ) {
     }
 
@@ -37,6 +40,8 @@ final readonly class StoreServices
         $vehiclePhotos = new VehiclePhotos($this->entityStore);
         $carFinder = new CarFinder(new ListedVehicleRepository($this->entityStore), $vehiclePhotos);
 
-        return new CarPages(new StorePages($this->pageDocuments), $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk);
+        $storePages = new StorePages($this->pageDocuments, $this->dealershipProfiles);
+
+        return new CarPages($storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk);
     }
 }

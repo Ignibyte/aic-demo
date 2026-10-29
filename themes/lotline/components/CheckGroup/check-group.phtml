@@ -1,0 +1,5 @@
+<?php /** @var \App\Theme\Components\CheckGroup\CheckGroup $checkGroup */ ?>
+<fieldset class="fieldset" id="<?= $checkGroup->id ?>"<?php if ($checkGroup->error !== ''): ?> aria-describedby="<?= $checkGroup->id ?>-error"<?php endif; ?>><legend class="fieldset-legend"><?= $checkGroup->legend ?></legend>
+<div class="flex flex-wrap gap-x-4 gap-y-2"><?php foreach ($checkGroup->options as $checkOption): ?><label class="label gap-2" for="<?= $checkOption->id ?>"><input class="checkbox checkbox-sm" type="checkbox" id="<?= $checkOption->id ?>" name="<?= $checkOption->name ?>" value="1"<?php if ($checkOption->checked): ?> checked<?php endif; ?>><?= $checkOption->label ?></label><?php endforeach ?></div>
+<?php if ($checkGroup->error !== ''): ?><p class="label whitespace-normal text-error-content" id="<?= $checkGroup->id ?>-error"><?= $checkGroup->error ?></p><?php endif; ?>
+</fieldset>

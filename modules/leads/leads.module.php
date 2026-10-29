@@ -11,8 +11,9 @@ declare(strict_types=1);
  * exports LeadDesk, which storefront's car pages hand their lead forms to, with
  * the kind and the reply its methods take and give. It requires staff for who
  * is signed in and the users, inventory for the vehicles and the database's
- * today, and customers to link a lead by email. The build reads it; nothing
- * reads it at run time.
+ * today, customers to link a lead by email, and settings for the dealership's
+ * opening hours and name (#22). The build reads it; nothing reads it at run
+ * time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -32,6 +33,7 @@ return (new ModuleManifest('leads'))
     ->requires('staff')
     ->requires('inventory')
     ->requires('customers')
+    ->requires('settings')
     ->route(RouteMethod::Get, '/app/leads/{id:int}', LeadPage::class)
     ->route(RouteMethod::Post, '/app/leads/{id:int}/assign', LeadAssignPost::class)
     ->route(RouteMethod::Post, '/app/leads/{id:int}/close', LeadClosePost::class)

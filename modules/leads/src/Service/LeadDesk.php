@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Leads\Service;
 
 use AIC\Component\Domain\KeyedComponent;
+use AIC\Database\Contracts\QueryException;
 use AIC\Queue\Application\PostgresQueue;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Repository\TodayRepository;
@@ -14,6 +15,7 @@ use App\Leads\Form\LeadChecks;
 use App\Leads\Form\LeadEntries;
 use App\Leads\Form\LeadForms;
 use App\Leads\Repository\LeadRepository;
+use App\Settings\Service\DealershipProfiles;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -31,17 +33,19 @@ final readonly class LeadDesk
     public const string JOB = 'lead-notices';
 
     /**
-     * @param PostgresQueue   $postgresQueue   Queues its job.
-     * @param TodayRepository $todayRepository The database's today, which a test drive must come after.
-     * @param LeadRepository  $leadRepository  Records the lead.
-     * @param LeadForms       $leadForms       The panels.
-     * @param LeadChecks      $leadChecks      Checks what was posted.
-     * @param LeadEntries     $leadEntries     Reads it.
+     * @param PostgresQueue      $postgresQueue      Queues its job.
+     * @param TodayRepository    $todayRepository    The database's today, which a test drive must come after.
+     * @param LeadRepository     $leadRepository     Records the lead.
+     * @param DealershipProfiles $dealershipProfiles The opening hours a test drive is held to (#22).
+     * @param LeadForms          $leadForms          The panels.
+     * @param LeadChecks         $leadChecks         Checks what was posted.
+     * @param LeadEntries        $leadEntries        Reads it.
      */
     public function __construct(
         private PostgresQueue $postgresQueue,
         private TodayRepository $todayRepository,
         private LeadRepository $leadRepository,
+        private DealershipProfiles $dealershipProfiles,
         private LeadForms $leadForms = new LeadForms(),
         private LeadChecks $leadChecks = new LeadChecks(),
         private LeadEntries $leadEntries = new LeadEntries(),
@@ -53,12 +57,13 @@ final readonly class LeadDesk
      * @param string                 $path          The car's public page.
      *
      * @throws LogicException When the request carries no session, or a key or an anchor is malformed.
+     * @throws QueryException When the dealership's profile cannot be read.
      *
      * @return list<KeyedComponent> Both lead panels, blank.
      */
     public function panels(ServerRequestInterface $serverRequest, string $path): array
     {
-        return $this->leadForms->blank($serverRequest, $path);
+        return $this->leadForms->blank($serverRequest, $path, $this->dealershipProfiles->profile()->openingHours);
     }
 
     /**
@@ -78,11 +83,12 @@ final readonly class LeadDesk
         ListedVehicle $listedVehicle,
         string $path,
     ): LeadReply {
+        $openingHours = $this->dealershipProfiles->profile()->openingHours;
         $leadEntry = $this->leadEntries->posted($serverRequest);
-        $errors = $this->leadChecks->errors($leadKind, $leadEntry, $this->todayRepository->today());
+        $errors = $this->leadChecks->errors($leadKind, $leadEntry, $this->todayRepository->today(), $openingHours);
 
         if ($errors !== []) {
-            return new LeadReply($this->leadForms->answered($serverRequest, $path, $leadKind, $leadEntry, $errors), 422);
+            return new LeadReply($this->leadForms->answered($serverRequest, $path, $leadKind, $leadEntry, $errors, $openingHours), 422);
         }
 
         $leadDetails = $this->leadChecks->details($leadKind, $leadEntry);
@@ -91,6 +97,6 @@ final readonly class LeadDesk
         $this->postgresQueue->dispatch(self::JOB, ['lead' => (string) $id], 0);
         $sent = $this->leadEntries->sent($leadDetails);
 
-        return new LeadReply($this->leadForms->answered($serverRequest, $path, $leadKind, $sent, []), 200);
+        return new LeadReply($this->leadForms->answered($serverRequest, $path, $leadKind, $sent, [], $openingHours), 200);
     }
 }

@@ -8,8 +8,11 @@ use AIC\Auth\Application\PgcryptoPasswordHasher;
 use AIC\Controller\Contracts\Command;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\ConsoleContext;
+use AIC\Notification\Application\Inbox;
 use App\Staff\Command\StaffSeed;
 use App\Staff\Command\UserAdd;
+use App\Staff\Command\UserRemove;
+use App\Staff\Repository\AccountRepository;
 use App\Staff\Repository\StaffRepository;
 use App\Staff\Service\StaffSettings;
 use RuntimeException;
@@ -42,6 +45,11 @@ final readonly class StaffCommands
         return [
             'staff:seed' => new StaffSeed($staffRepository, $pgcryptoPasswordHasher, (new StaffSettings())->staffSeedConfig()),
             'user:add' => new UserAdd($staffRepository, $pgcryptoPasswordHasher),
+            'user:remove' => new UserRemove(
+                new AccountRepository($entityStore),
+                $staffRepository,
+                new Inbox($this->consoleContext->database()),
+            ),
         ];
     }
 }

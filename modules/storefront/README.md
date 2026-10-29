@@ -1,6 +1,6 @@
 # Storefront
 
-Ridgeway Motors' public side, for customers (#17): the cars for sale at `/cars`, each car's page and photos below it, and the same cars as JSON at `/api/vehicles` for listing partners. Nobody signs in to it, and nothing under it is protected. The module requires `inventory`, whose exported `ListedVehicleRepository` gives the cars for sale; `photos`, whose exported `VehiclePhotos` gives their photos; and `staff`, for its `StaffRequests`, which reads a query parameter or a route attribute.
+Ridgeway Motors' public side, for customers (#17): the cars for sale at `/cars`, each car's page and photos below it, and the same cars as JSON at `/api/vehicles` for listing partners. Nobody signs in to it, and nothing under it is protected. The module requires `inventory`, whose exported `ListedVehicleRepository` gives the cars for sale; `photos`, whose exported `VehiclePhotos` gives their photos; `staff`, for its `StaffRequests`, which reads a query parameter or a route attribute; and `settings`, for the dealership's profile (#22).
 
 ## What the public sees
 
@@ -12,7 +12,7 @@ A car's page is `/cars/{slug}`, the slug `{year}-{make}-{model}-{key}`: lower ca
 
 ## The layout
 
-Every page goes through `StorePages`, which builds the theme's `store` layout and passes `ThemeLayoutName::Store` to `PageDocuments::page()`: the theme's `StoreHeader` (the dealership's name, linked to `/cars`) in `masthead`, the page's parts in `content` and the `StoreFooter` in `colophon`, in one column, with no drawer. The staff blocks place themselves in `sidebar` (the navigation), `header` (the account menu or the sign-in link) and `footer` (the site footer), which the `store` layout does not have, and AIC skips a block for a region its layout does not place, so none of them shows on a public page, whoever is signed in. Only `StorePages` builds the public header, so no staff page shows it. The layout's Tessera identity is `lotline-store`: a visit between a staff page and a public one loads a whole document.
+Every page goes through `StorePages`, which builds the theme's `store` layout and passes `ThemeLayoutName::Store` to `PageDocuments::page()`: the theme's `StoreHeader` (the dealership's name, linked to `/cars`) in `masthead`, the page's parts in `content` and the `StoreFooter` (the name, then the dealership's address, phone and hours, those given) in `colophon`, in one column, with no drawer. The name, address, phone and hours are the dealership's profile, which `settings`' exported `DealershipProfiles` reads on each page (#22), so an admin's save shows on the next page; until the first save they are the defaults, Ridgeway Motors open Monday to Saturday, 09:00 to 18:00. The staff blocks place themselves in `sidebar` (the navigation), `header` (the account menu or the sign-in link) and `footer` (the site footer), which the `store` layout does not have, and AIC skips a block for a region its layout does not place, so none of them shows on a public page, whoever is signed in. Only `StorePages` builds the public header, so no staff page shows it. The layout's Tessera identity is `lotline-store`: a visit between a staff page and a public one loads a whole document.
 
 `StorePages::missing()` is the 404 for a car that is sold, on hold or unknown, in the same layout, with a link back to the list.
 
