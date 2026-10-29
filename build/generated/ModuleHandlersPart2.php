@@ -34,6 +34,7 @@ final readonly class ModuleHandlersPart2
         return array_merge(
             (new InboxHandlersPart2($this->handlerContext))->byId(),
             (new LeadsHandlers($this->handlerContext))->byId(),
+            (new ReportsHandlers($this->handlerContext))->byId(),
             (new SiteHandlers($this->handlerContext))->byId(),
             (new StorefrontHandlers($this->handlerContext))->byId(),
             (new StorefrontHandlersPart2($this->handlerContext))->byId(),

@@ -6,7 +6,6 @@ namespace App\Leads\Service;
 
 use App\Leads\Entity\Lead;
 use App\Leads\Entity\Seller;
-use App\Staff\Entity\Role;
 use App\Staff\Entity\StaffMember;
 use App\Staff\Service\StaffSession;
 use LogicException;
@@ -44,7 +43,7 @@ final readonly class LeadAccess
             return false;
         }
 
-        if ($staffMember->role === Role::Admin || $staffMember->role === Role::SalesManager) {
+        if ($staffMember->role->manages()) {
             return true;
         }
 

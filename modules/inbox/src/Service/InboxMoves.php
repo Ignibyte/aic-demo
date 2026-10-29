@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Inbox\Service;
 
 use AIC\Controller\Contracts\PageResponse;
+use AIC\Controller\Domain\PageFullVisit;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Database\Contracts\QueryException;
 use AIC\Notification\Application\Inbox;
@@ -19,7 +20,9 @@ use function preg_match;
 
 /**
  * Opening a notification and marking them all read (#19), each for the signed-in member alone: a notification that is
- * not theirs is not found, whatever its id, and nothing of another member's changes.
+ * not theirs is not found, whatever its id, and nothing of another member's changes. An opening goes on as a full
+ * visit (#21): what a notification links may be a file to save, such as a report's CSV export, which a Tessera visit
+ * cannot use, so the browser loads it itself.
  */
 final readonly class InboxMoves
 {
@@ -47,7 +50,8 @@ final readonly class InboxMoves
      *                                  does not fit the theme.
      * @throws UnexpectedValueException When the kept role is no role.
      *
-     * @return PageResponse 303 to what it is about, once it is marked read; 404 when it is not the member's.
+     * @return PageResponse A full visit to what it is about (303 for a plain request), once it is marked read; 404 when
+     *                      it is not the member's.
      */
     public function open(ServerRequestInterface $serverRequest): PageResponse
     {
@@ -64,7 +68,7 @@ final readonly class InboxMoves
             return $this->staffPanels->warning($title, $message, 'inbox-missing', 'Back to the inbox', BellParts::INBOX, 404);
         }
 
-        return new PageRedirect(self::sitePath($inboxItem->link) ? $inboxItem->link : BellParts::INBOX);
+        return new PageFullVisit(self::sitePath($inboxItem->link) ? $inboxItem->link : BellParts::INBOX);
     }
 
     /**

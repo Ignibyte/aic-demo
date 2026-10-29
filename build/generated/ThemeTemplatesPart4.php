@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\DetailCard\DetailCard;
+use App\Theme\Components\DownloadLink\DownloadLink;
 use App\Theme\Components\FilterBar\FilterBar;
 use App\Theme\Components\FormActions\FormActions;
-use App\Theme\Components\FormField\FormField;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
+            $component instanceof DownloadLink => $this->renderDownloadLink($component, $renderPass),
             $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
             $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
-            $component instanceof FormField => $this->renderFormField($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -60,6 +60,22 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($detailCard);
         require __DIR__ . '/templates/themes/lotline/components/DetailCard/detail-card.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param DownloadLink $downloadLink The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/DownloadLink/download-link.phtml.
+     */
+    private function renderDownloadLink(DownloadLink $downloadLink, RenderPass $renderPass): string
+    {
+        $renderPass->open($downloadLink);
+        require __DIR__ . '/templates/themes/lotline/components/DownloadLink/download-link.phtml';
 
         return $renderPass->close();
     }
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($formActions);
         require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param FormField  $formField  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/FormField/form-field.phtml.
-     */
-    private function renderFormField(FormField $formField, RenderPass $renderPass): string
-    {
-        $renderPass->open($formField);
-        require __DIR__ . '/templates/themes/lotline/components/FormField/form-field.phtml';
 
         return $renderPass->close();
     }

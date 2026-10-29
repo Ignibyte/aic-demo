@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Schema\Contracts\Migration;
+use App\Reports\Migration\CreateReportExportsTable;
+use App\Reports\Migration\CreateReportExportsView;
+use App\Reports\Migration\CreateReportRangeViews;
 use App\Reports\Migration\CreateReportViews;
 
 /**
@@ -20,6 +23,9 @@ final readonly class ReportsMigrations
     {
         return [
             new CreateReportViews(),
+            new CreateReportRangeViews(),
+            new CreateReportExportsTable(),
+            new CreateReportExportsView(),
         ];
     }
 }

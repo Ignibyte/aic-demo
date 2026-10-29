@@ -7,13 +7,16 @@ declare(strict_types=1);
  * which AIC keeps in `aic_notifications` and reads through its `Inbox`
  * (AIC #202). A bell in the top bar of every staff page, kept live by a
  * Server-Sent Events stream; `/app/inbox`, every notification paged; opening
- * one, which marks it read; and marking them all read. It owns no table. The
- * build reads it; nothing reads it at run time.
+ * one, which marks it read; and marking them all read. The inbox:forget
+ * command empties a member's inbox (#21), which gate:23 runs for its own user
+ * before each pass. It owns no table. The build reads it; nothing reads it at
+ * run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
 use AIC\Module\Contracts\RouteMethod;
 use App\Inbox\Block\BellBlock;
+use App\Inbox\Command\InboxForget;
 use App\Inbox\Controller\BellEvents;
 use App\Inbox\Controller\InboxPage;
 use App\Inbox\Controller\InboxReadAllPost;
@@ -27,4 +30,5 @@ return (new ModuleManifest('inbox'))
     ->route(RouteMethod::Get, '/app/inbox/{id:int}', NotificationPage::class)
     ->route(RouteMethod::Post, '/app/inbox/read-all', InboxReadAllPost::class)
     ->factory(InboxServices::class)
-    ->block(BellBlock::class);
+    ->block(BellBlock::class)
+    ->command('inbox:forget', InboxForget::class);

@@ -122,7 +122,7 @@ none
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Service\StaffSession` |
+| [staff](staff.md) | `App\Staff\Entity\StaffMember`, `App\Staff\Service\StaffSession` |
 
 ## Used by
 

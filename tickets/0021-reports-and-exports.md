@@ -2,9 +2,10 @@
 number: 21
 title: "Reports and exports"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T14:26:32Z
+phase: "docs"
 ---
 
 Old Lotline's Reports page was a placeholder. This run makes it real at `/app/reports`, for

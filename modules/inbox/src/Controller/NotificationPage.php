@@ -15,7 +15,8 @@ use UnexpectedValueException;
 
 /**
  * GET /app/inbox/{id:int}: opens one of the signed-in member's notifications (#19): marks it read and answers 303 to
- * what it is about, or to the inbox when it links nothing; 404 for a notification that is not theirs.
+ * what it is about, or to the inbox when it links nothing, as a full visit for Tessera, since the link may be a file to
+ * save (#21); 404 for a notification that is not theirs.
  */
 final readonly class NotificationPage implements Page
 {
