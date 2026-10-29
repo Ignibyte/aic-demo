@@ -27,6 +27,7 @@ final readonly class ModuleMigrations
             (new HoldsMigrations())->all(),
             (new SalesMigrations())->all(),
             (new DashboardMigrations())->all(),
+            (new SettingsMigrations())->all(),
             (new LeadsMigrations())->all(),
             (new ReportsMigrations())->all(),
         );

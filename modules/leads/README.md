@@ -1,6 +1,6 @@
 # Leads
 
-What a visitor asks about a car on its public page, and how the salesperson hears of it (#18). A lead is a question ("Ask about this car") or a test drive request ("Book a test drive"). The module requires `staff` (who is signed in, the users and their roles, the staff page frame), `inventory` (the vehicles' entity type, `ListedVehicle` and the database's today) and `customers` (the customers' entity type, to link a lead by email). `storefront` requires it: the forms sit on a car's page, which only storefront can find by its slug, so storefront hosts the two posts and hands them to this module's exported `LeadDesk`.
+What a visitor asks about a car on its public page, and how the salesperson hears of it (#18). A lead is a question ("Ask about this car") or a test drive request ("Book a test drive"). The module requires `staff` (who is signed in, the users and their roles, the staff page frame), `settings` (the dealership's opening hours and name, #22), `inventory` (the vehicles' entity type, `ListedVehicle` and the database's today) and `customers` (the customers' entity type, to link a lead by email). `storefront` requires it: the forms sit on a car's page, which only storefront can find by its slug, so storefront hosts the two posts and hands them to this module's exported `LeadDesk`.
 
 ## Data
 
@@ -10,7 +10,7 @@ What a visitor asks about a car on its public page, and how the salesperson hear
 
 ## Assignment
 
-The salespeople are the users whose role is `salesperson`; staff keeps nothing else about them, so these are the active ones. `LeadRepository::record()` runs one `EntityStore::transaction()`: it locks the salespeople's rows ordered by id (`forUpdate`), reads the newest lead's salesperson, takes the next one by id (the first when there is none or past the last), and inserts the lead. A second lead at the same moment waits for the lock and sees the first, so leads go to each in turn. With no salesperson the lead is unassigned. Since the turn follows the newest lead, removing leads brings it back: gate:23's two passes, each deleting its car and the car's leads, assign alike.
+The salespeople are the users whose role is `salesperson`, less those an admin deactivated (#22), who take no new lead and are no choice for a reassignment; a visitor's mail is signed with the dealership's name from the profile. `LeadRepository::record()` runs one `EntityStore::transaction()`: it locks the salespeople's rows ordered by id (`forUpdate`), reads the newest lead's salesperson, takes the next one by id (the first when there is none or past the last), and inserts the lead. A second lead at the same moment waits for the lock and sees the first, so leads go to each in turn. With no salesperson the lead is unassigned. Since the turn follows the newest lead, removing leads brings it back: gate:23's two passes, each deleting its car and the car's leads, assign alike.
 
 A lead whose email is a customer's (both lower case) is linked to that customer.
 
@@ -18,7 +18,7 @@ A lead whose email is a customer's (both lower case) is linked to that customer.
 
 `LeadDesk::panels()` gives a car's page its two panels, the theme's `Panel` keyed `inquiry` and `test-drive` and anchored `car-inquiry` and `car-test-drive`, each holding AIC's `Form` (with the form guard's token and honeypot, so a visitor who never signed in gets a session for the token). Each form ends with the theme's `SubmitButton`, whose `data-target` names its own panel's anchor: Tessera reads a submit's target from the button first, so it swaps that panel alone. `LeadDesk::send()` checks the post (`LeadChecks`, with `LeadHours` for a test drive), and answers both panels with 422 and the errors beside their fields, or records the lead, queues its job and answers 200 with a thank-you (the theme's `Notice`) where the form was. Tessera's write id makes a double click record one lead.
 
-A question needs a name, an email and the question; its phone is optional. A test drive needs a phone, a day after the database's today that is not a Sunday, and a time from 09:00 to 17:00: Ridgeway Motors opens Monday to Saturday, 09:00 to 18:00, and a drive starts at least an hour before closing. Days and times compare as text with `strcmp()`, and the weekday is worked out in integers, so no time zone enters it.
+A question needs a name, an email and the question; its phone is optional. A test drive needs a phone, a day after the database's today that the dealership is open, and a time from its opening to an hour before its closing. The hours are the dealership's profile, which `settings`' exported `DealershipProfiles` gives (#22): open Monday to Saturday, 09:00 to 18:00, until an admin saves others, so a drive starts from 09:00 to 17:00. `LeadHours` builds its errors and the form's line from the hours (`OpeningHours`' days in words, its last start an hour before closing), so they read as before with the defaults. Days and times compare as text with `strcmp()`, and the weekday is worked out in integers, so no time zone enters it.
 
 ## Notifications
 

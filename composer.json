@@ -60,6 +60,7 @@
             "App\\Photos\\": "modules/photos/src/",
             "App\\Reports\\": "modules/reports/src/",
             "App\\Sales\\": "modules/sales/src/",
+            "App\\Settings\\": "modules/settings/src/",
             "App\\Site\\": "modules/site/src/",
             "App\\Staff\\": "modules/staff/src/",
             "App\\Storefront\\": "modules/storefront/src/",

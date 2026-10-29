@@ -253,6 +253,69 @@
             "path": "/app/inbox/read-all"
         },
         {
+            "handler": "App\\Settings\\Controller\\SettingsPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "settings",
+            "path": "/app/settings"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\ProfilePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/app/settings/profile"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\MemberAddPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/app/settings/staff"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\MemberPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "settings",
+            "path": "/app/settings/staff/{id:int}"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\MemberPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/app/settings/staff/{id:int}"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\MemberActivePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/app/settings/staff/{id:int}/active"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\MemberLinkPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/app/settings/staff/{id:int}/link"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\PasswordPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "settings",
+            "path": "/password/{link}"
+        },
+        {
+            "handler": "App\\Settings\\Controller\\PasswordPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "settings",
+            "path": "/password/{link}"
+        },
+        {
             "handler": "App\\Leads\\Controller\\LeadPage",
             "kind": "Page",
             "method": "GET",
@@ -464,6 +527,12 @@
             "kind": "Command",
             "module": "staff",
             "name": "user:add"
+        },
+        {
+            "class": "App\\Staff\\Command\\UserRemove",
+            "kind": "Command",
+            "module": "staff",
+            "name": "user:remove"
         }
     ],
     "jobs": [
@@ -560,7 +629,12 @@
                 "App\\Staff\\Service\\StaffRequests",
                 "App\\Staff\\Entity\\StaffTable",
                 "App\\Staff\\Entity\\StaffMember",
-                "App\\Staff\\Entity\\Role"
+                "App\\Staff\\Entity\\Role",
+                "App\\Staff\\Service\\Roles",
+                "App\\Staff\\Repository\\AccountRepository",
+                "App\\Staff\\Repository\\StaffRepository",
+                "App\\Staff\\Entity\\StaffAccount",
+                "App\\Staff\\Entity\\AccountWrite"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -568,12 +642,17 @@
             ],
             "middleware": [
                 {
+                    "class": "App\\Staff\\Middleware\\StaffStanding",
+                    "position": "AfterSession"
+                },
+                {
                     "class": "AIC\\Auth\\Application\\RequireAuthenticationMiddleware",
                     "position": "AfterSession"
                 }
             ],
             "migrations": [
-                "App\\Staff\\Migration\\CreateUsersTable"
+                "App\\Staff\\Migration\\CreateUsersTable",
+                "App\\Staff\\Migration\\AddUserDeactivation"
             ],
             "name": "staff",
             "namespace": "App\\Staff\\",
@@ -767,6 +846,32 @@
             "bindings": [],
             "blocks": [],
             "exports": [
+                "App\\Settings\\Service\\DealershipProfiles",
+                "App\\Settings\\Entity\\DealershipProfile",
+                "App\\Settings\\Entity\\OpeningHours"
+            ],
+            "factories": [
+                "App\\Settings\\Service\\SettingsServices",
+                "App\\Settings\\Service\\MemberServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Settings\\Migration\\CreateDealershipProfileTable",
+                "App\\Settings\\Migration\\CreatePasswordLinksTable",
+                "App\\Settings\\Migration\\CreatePasswordLinkStatesView"
+            ],
+            "name": "settings",
+            "namespace": "App\\Settings\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
                 "App\\Leads\\Service\\LeadDesk",
                 "App\\Leads\\Entity\\LeadKind",
                 "App\\Leads\\Entity\\LeadReply"
@@ -785,7 +890,8 @@
             "requires": [
                 "staff",
                 "inventory",
-                "customers"
+                "customers",
+                "settings"
             ]
         },
         {
@@ -793,7 +899,6 @@
             "blocks": [],
             "exports": [],
             "factories": [
-                "App\\Reports\\Service\\ReportSettings",
                 "App\\Reports\\Service\\ReportServices",
                 "App\\Reports\\Service\\ExportServices"
             ],
@@ -813,7 +918,8 @@
                 "inventory",
                 "sales",
                 "leads",
-                "customers"
+                "customers",
+                "settings"
             ]
         },
         {
@@ -851,7 +957,8 @@
                 "inventory",
                 "photos",
                 "staff",
-                "leads"
+                "leads",
+                "settings"
             ]
         }
     ],
@@ -907,6 +1014,11 @@
                 "component": "App\\Theme\\Components\\CarProfile\\CarProfile",
                 "generated": "build/generated/templates/themes/lotline/components/CarProfile/car-profile.phtml",
                 "source": "themes/lotline/components/CarProfile/car-profile.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CheckGroup\\CheckGroup",
+                "generated": "build/generated/templates/themes/lotline/components/CheckGroup/check-group.phtml",
+                "source": "themes/lotline/components/CheckGroup/check-group.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\ColumnChart\\ColumnChart",

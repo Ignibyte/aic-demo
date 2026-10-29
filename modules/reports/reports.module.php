@@ -5,9 +5,10 @@ declare(strict_types=1);
 /*
  * The reports module's manifest. Two reports nobody asks for (#20), each a job
  * its schedule queues on a UTC cadence: each morning at 07:00 the aged-stock
- * job lists the vehicles on the lot longer than config/reports.php's threshold
- * to each sales manager; each night at 21:00 the daily-digest job mails the
- * managers the day's sales, leads and new stock. And the managers' reports
+ * job lists the vehicles on the lot longer than the dealership's threshold to
+ * each sales manager; each night at 21:00 the daily-digest job mails the
+ * managers the day's sales, leads and new stock. Both read the dealership's
+ * profile (#22), the threshold and the name, which it requires settings for. And the managers' reports
  * page (#21), /app/reports: sales by month, salespeople, inventory by make and
  * leads by kind over a range, each exported as CSV by the report-export job to
  * a download only its member gets, which the prune-exports schedule removes
@@ -33,7 +34,6 @@ use App\Reports\Migration\CreateReportRangeViews;
 use App\Reports\Migration\CreateReportViews;
 use App\Reports\Service\ExportServices;
 use App\Reports\Service\ReportServices;
-use App\Reports\Service\ReportSettings;
 
 return (new ModuleManifest('reports'))
     ->requires('staff')
@@ -41,11 +41,11 @@ return (new ModuleManifest('reports'))
     ->requires('sales')
     ->requires('leads')
     ->requires('customers')
+    ->requires('settings')
     ->route(RouteMethod::Get, '/app/reports', ReportsPage::class)
     ->route(RouteMethod::Post, '/app/reports/exports', ReportExportPost::class)
     ->route(RouteMethod::Get, '/app/reports/exports/{id:int}', ReportExportStream::class)
     ->route(RouteMethod::Get, '/api/reports/sales', SalesReportApi::class)
-    ->factory(ReportSettings::class)
     ->factory(ReportServices::class)
     ->factory(ExportServices::class)
     ->job('aged-stock', NotifyAgedStock::class)

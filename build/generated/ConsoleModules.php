@@ -60,8 +60,6 @@ final readonly class ConsoleModules implements CommandWiring, ConsoleWiring, Job
     /**
      * @param ConsoleContext $consoleContext The console's roots.
      *
-     * @throws RuntimeException When a called constructor or service fails.
-     *
      * @return array<string, Job> The modules' jobs by name.
      */
     #[Override]

@@ -16,7 +16,7 @@ The cadences are UTC, as AIC's are; the database's time zone here is UTC too, so
 
 `CreateReportRangeViews` (#21) makes the reports page's five: `report_calendar` (every good day, with its month), `report_ranges` (the presets), and `report_sales`, `report_stock` and `report_leads`, one row per sale, vehicle and lead, each day as text `YYYY-MM-DD`. `CreateReportExportsTable` makes `report_exports` (the member, cascading with them; the report; the range; `queued` or `ready`; when it was asked for), and `CreateReportExportsView` the `report_export_states` view over it. `ExportTables` holds the exports' types.
 
-The threshold is typed config: `config/reports.php` returns a `ReportConfig` (`agedStockDays: 60`), which the module's factory `ReportSettings` hands to the aged-stock job. A vehicle is aged when its days on the lot are more than it, so one on the lot exactly 60 days is not.
+The threshold is the dealership's profile since #22: the aged-stock job reads it through `settings`' exported `DealershipProfiles` each morning, 60 days until an admin saves another at `/app/settings`. `config/reports.php`, its `ReportConfig` and the `ReportSettings` factory, which held it from #20, are gone. A vehicle is aged when its days on the lot are more than it, so one on the lot exactly 60 days is not. The digest names the dealership from the profile too, and neither notification goes to a member an admin deactivated.
 
 ## Delivery
 

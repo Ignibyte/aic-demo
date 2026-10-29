@@ -9,6 +9,7 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\SubmitButton\SubmitButton;
 use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableRow\TableRow;
 use App\Theme\Components\TopBar\TopBar;
@@ -40,11 +41,28 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof SubmitButton => $this->renderSubmitButton($component, $renderPass),
             $component instanceof TableResults => $this->renderTableResults($component, $renderPass),
             $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
             $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param SubmitButton $submitButton The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SubmitButton/submit-button.phtml.
+     */
+    private function renderSubmitButton(SubmitButton $submitButton, RenderPass $renderPass): string
+    {
+        $renderPass->open($submitButton);
+        require __DIR__ . '/templates/themes/lotline/components/SubmitButton/submit-button.phtml';
+
+        return $renderPass->close();
     }
 
     /**

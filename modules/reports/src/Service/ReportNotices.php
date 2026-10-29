@@ -10,6 +10,8 @@ use AIC\Notification\Contracts\Notification;
 use App\Reports\Entity\AgedVehicle;
 use App\Reports\Entity\DayFigures;
 use App\Reports\Entity\Recipient;
+use App\Settings\Service\DealershipProfiles;
+use InvalidArgumentException;
 use JsonException;
 
 use function count;
@@ -19,7 +21,8 @@ use function number_format;
 /**
  * The reports' notifications (#20), through AIC's Notifier, one `notify` job per channel, so each delivery retries and
  * fails on its own: the aged-stock list, kept in the database and mailed to each sales manager; and the day's digest,
- * mailed alone to each manager. No mail goes to a login that is not an address.
+ * mailed alone to each manager, named for the dealership from the settings' profile (#22). No mail goes to a login that
+ * is not an address.
  */
 final readonly class ReportNotices
 {
@@ -29,10 +32,12 @@ final readonly class ReportNotices
     public const string AGED_LINK = '/app/inventory?sort=added';
 
     /**
-     * @param Notifier $notifier Queues each delivery.
+     * @param Notifier           $notifier           Queues each delivery.
+     * @param DealershipProfiles $dealershipProfiles The dealership's name, which the digest carries.
      */
     public function __construct(
         private Notifier $notifier,
+        private DealershipProfiles $dealershipProfiles,
     ) {
     }
 
@@ -74,15 +79,17 @@ final readonly class ReportNotices
      * @param DayFigures      $dayFigures The day's figures.
      * @param list<Recipient> $recipients The managers.
      *
-     * @throws JsonException  When a delivery's payload cannot be encoded.
-     * @throws QueryException When a delivery cannot be queued.
+     * @throws JsonException            When a delivery's payload cannot be encoded.
+     * @throws QueryException           When a delivery cannot be queued, or the profile cannot be read.
+     * @throws InvalidArgumentException When the profile's entity type is malformed.
      */
     public function digest(DayFigures $dayFigures, array $recipients): void
     {
-        $subject = 'Ridgeway Motors on ' . $dayFigures->today . ': ' . $this->count($dayFigures->sales, 'sale', 'sales') . ', '
+        $dealership = $this->dealershipProfiles->profile()->name;
+        $subject = $dealership . ' on ' . $dayFigures->today . ': ' . $this->count($dayFigures->sales, 'sale', 'sales') . ', '
             . $this->count($dayFigures->leads, 'lead', 'leads') . ', ' . $dayFigures->newStock . ' new on the lot';
         $body = implode("\n", [
-            'The day at Ridgeway Motors, ' . $dayFigures->today . ' (UTC):',
+            'The day at ' . $dealership . ', ' . $dayFigures->today . ' (UTC):',
             '',
             'Sales: ' . $dayFigures->sales . ', ' . $this->money($dayFigures->revenue) . ' in all',
             'Leads: ' . $dayFigures->leads . ' (' . $this->count($dayFigures->inquiries, 'question', 'questions') . ', '

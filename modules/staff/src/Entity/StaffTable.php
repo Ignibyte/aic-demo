@@ -18,7 +18,8 @@ final readonly class StaffTable
     /**
      * @throws InvalidArgumentException When a field is malformed.
      *
-     * @return EntityType The `users` table: a member's email, which it holds unique, name, role and password hash.
+     * @return EntityType The `users` table: a member's email, which it holds unique, name, role, password hash and the
+     *                    day they were deactivated, null while they are active (#22).
      */
     public function type(): EntityType
     {
@@ -27,7 +28,18 @@ final readonly class StaffTable
             new Field('name', FieldType::Text),
             new Field('role', FieldType::Text),
             new Field('password_hash', FieldType::Text),
+            new Field('deactivated_on', FieldType::Date, true),
             new Field('created_at', FieldType::CreatedAt),
         ]);
+    }
+
+    /**
+     * @throws InvalidArgumentException When the view's name is malformed.
+     *
+     * @return EntityType The `staff_today` view: the database's today, one row (#22).
+     */
+    public function today(): EntityType
+    {
+        return new EntityType('staff_today', 'today', [], true);
     }
 }

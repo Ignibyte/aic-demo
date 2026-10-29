@@ -10,6 +10,7 @@ use AIC\Component\Domain\Form;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Form\Application\FormTokens;
 use App\Leads\Entity\LeadKind;
+use App\Settings\Entity\OpeningHours;
 use App\Theme\Components\Notice\Notice;
 use App\Theme\Components\Notice\NoticeTone;
 use App\Theme\Components\Panel\Panel;
@@ -21,7 +22,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * A car's two lead panels (#18): "Ask about this car" and "Book a test drive", each the theme's Panel keyed and
  * anchored (`car-inquiry`, `car-test-drive`), holding AIC's Form (its token and honeypot with it) whose Send button
  * targets that anchor, so Tessera swaps the panel alone. After a send the panel holds a thank-you instead; after a
- * refusal, the form again with what was typed and each error beside its field.
+ * refusal, the form again with what was typed and each error beside its field. The test drive's line gives the days
+ * and the start times the dealership's opening hours allow (#22).
  */
 final readonly class LeadForms
 {
@@ -38,19 +40,20 @@ final readonly class LeadForms
     /**
      * @param ServerRequestInterface $serverRequest The request for the car's page, with its session.
      * @param string                 $path          The car's public page, which the forms post below.
+     * @param OpeningHours           $openingHours  When the dealership is open.
      *
      * @throws LogicException When the request carries no session, or a key or an anchor is malformed.
      *
      * @return list<KeyedComponent> Both panels, blank.
      */
-    public function blank(ServerRequestInterface $serverRequest, string $path): array
+    public function blank(ServerRequestInterface $serverRequest, string $path, OpeningHours $openingHours): array
     {
         $token = $this->formTokens->issue($serverRequest)->value();
         $leadEntry = new LeadEntry('', '', '', '', '', '');
 
         return [
-            $this->formPanel(LeadKind::Inquiry, $path, $token, $leadEntry, []),
-            $this->formPanel(LeadKind::TestDrive, $path, $token, $leadEntry, []),
+            $this->formPanel(LeadKind::Inquiry, $path, $token, $leadEntry, [], $openingHours),
+            $this->formPanel(LeadKind::TestDrive, $path, $token, $leadEntry, [], $openingHours),
         ];
     }
 
@@ -60,6 +63,7 @@ final readonly class LeadForms
      * @param LeadKind               $leadKind      Which form was sent.
      * @param LeadEntry              $leadEntry     What was typed, or what was stored when it passed.
      * @param array<string, string>  $errors        Why each refused field is refused; empty when the lead was recorded.
+     * @param OpeningHours           $openingHours  When the dealership is open.
      *
      * @throws LogicException When the request carries no session, or a key or an anchor is malformed.
      *
@@ -71,11 +75,12 @@ final readonly class LeadForms
         LeadKind $leadKind,
         LeadEntry $leadEntry,
         array $errors,
+        OpeningHours $openingHours,
     ): array {
         $token = $this->formTokens->issue($serverRequest)->value();
         $other = $leadKind->other();
-        $keyedComponent = $this->sentPanel($leadKind, $path, $token, $leadEntry, $errors);
-        $blank = $this->formPanel($other, $path, $token, new LeadEntry('', '', '', '', '', ''), []);
+        $keyedComponent = $this->sentPanel($leadKind, $path, $token, $leadEntry, $errors, $openingHours);
+        $blank = $this->formPanel($other, $path, $token, new LeadEntry('', '', '', '', '', ''), [], $openingHours);
 
         return $leadKind === LeadKind::Inquiry
             ? [$keyedComponent, $blank]
@@ -83,11 +88,12 @@ final readonly class LeadForms
     }
 
     /**
-     * @param LeadKind              $leadKind  The form that was sent.
-     * @param string                $path      The car's public page.
-     * @param string                $token     The visitor's CSRF token.
-     * @param LeadEntry             $leadEntry What was typed, or what was stored.
-     * @param array<string, string> $errors    Why each refused field is refused; empty when the lead was recorded.
+     * @param LeadKind              $leadKind     The form that was sent.
+     * @param string                $path         The car's public page.
+     * @param string                $token        The visitor's CSRF token.
+     * @param LeadEntry             $leadEntry    What was typed, or what was stored.
+     * @param array<string, string> $errors       Why each refused field is refused; empty when the lead was recorded.
+     * @param OpeningHours          $openingHours When the dealership is open.
      *
      * @throws LogicException When a key or an anchor is malformed.
      *
@@ -99,20 +105,22 @@ final readonly class LeadForms
         string $token,
         LeadEntry $leadEntry,
         array $errors,
+        OpeningHours $openingHours,
     ): KeyedComponent {
         if ($errors !== []) {
-            return $this->formPanel($leadKind, $path, $token, $leadEntry, $errors);
+            return $this->formPanel($leadKind, $path, $token, $leadEntry, $errors, $openingHours);
         }
 
-        return $this->panel($leadKind, [new KeyedComponent('thanks', $this->thanks($leadKind, $leadEntry))]);
+        return $this->panel($leadKind, [new KeyedComponent('thanks', $this->thanks($leadKind, $leadEntry))], $openingHours);
     }
 
     /**
-     * @param LeadKind              $leadKind  Which form.
-     * @param string                $path      The car's public page.
-     * @param string                $token     The visitor's CSRF token.
-     * @param LeadEntry             $leadEntry The values to show.
-     * @param array<string, string> $errors    Why each refused field is refused, by name.
+     * @param LeadKind              $leadKind     Which form.
+     * @param string                $path         The car's public page.
+     * @param string                $token        The visitor's CSRF token.
+     * @param LeadEntry             $leadEntry    The values to show.
+     * @param array<string, string> $errors       Why each refused field is refused, by name.
+     * @param OpeningHours          $openingHours When the dealership is open.
      *
      * @throws LogicException When a key or an anchor is malformed.
      *
@@ -124,6 +132,7 @@ final readonly class LeadForms
         string $token,
         LeadEntry $leadEntry,
         array $errors,
+        OpeningHours $openingHours,
     ): KeyedComponent {
         $slug = $leadKind->slug();
         $body = $errors === []
@@ -139,7 +148,7 @@ final readonly class LeadForms
         ];
         $body[] = new KeyedComponent('form', new Form($slug . '-form', $path . '/' . $slug, $fields, $token));
 
-        return $this->panel($leadKind, $body);
+        return $this->panel($leadKind, $body, $openingHours);
     }
 
     /**
@@ -159,19 +168,21 @@ final readonly class LeadForms
     }
 
     /**
-     * @param LeadKind             $leadKind Which panel.
-     * @param list<KeyedComponent> $body     What it holds.
+     * @param LeadKind             $leadKind     Which panel.
+     * @param list<KeyedComponent> $body         What it holds.
+     * @param OpeningHours         $openingHours When the dealership is open, which the test drive's line gives.
      *
      * @throws LogicException When a key or an anchor is malformed.
      *
      * @return KeyedComponent The panel, keyed by its slug and anchored `car-inquiry` or `car-test-drive`.
      */
-    private function panel(LeadKind $leadKind, array $body): KeyedComponent
+    private function panel(LeadKind $leadKind, array $body, OpeningHours $openingHours): KeyedComponent
     {
         $anchor = 'car-' . $leadKind->slug();
+        $hours = $openingHours->days() . ', from ' . $openingHours->opensAt . ' to ' . $openingHours->lastStart() . '. We call to confirm.';
         $panel = $leadKind === LeadKind::Inquiry
             ? new Panel($anchor, 'Ask about this car', 'A salesperson reads every question and replies by email.', false, $body)
-            : new Panel($anchor, 'Book a test drive', 'Monday to Saturday, from 09:00 to 17:00. We call to confirm.', false, $body);
+            : new Panel($anchor, 'Book a test drive', $hours, false, $body);
 
         return new KeyedComponent($leadKind->slug(), $panel, '', $anchor);
     }

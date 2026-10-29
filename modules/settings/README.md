@@ -1,0 +1,43 @@
+# Settings
+
+The admins' settings at `/app/settings` (#22): the dealership's profile, the staff, and the password links a member is mailed. The module requires `staff` alone. The `users` table and its rules stay there: deactivation, the last admin, the password write and the check of every signed-in session. This module reaches them through staff's exported `AccountRepository`. `storefront`, `leads` and `reports` require this module for the profile.
+
+## Who may
+
+An admin alone. `SettingsAccess::guard()` answers every settings route, a GET or a POST, with 403 ("Not allowed", in the staff frame) for a sales manager or a salesperson, before anything is read or written. The role it reads is the session's, which staff's `StaffStanding` refreshes from the users table on each request, so a member an admin demoted loses the settings on their next page. `site`'s sidebar shows the Settings link to an admin alone.
+
+## The profile
+
+`dealership_profile` holds one row, its `slot` always `main`: the name, address, phone, opening and closing time (`HH:MM`), the open days as ISO weekday digits (`123456` is Monday to Saturday) and the aged-stock threshold in days. Until the first save the table is empty and `ProfileRepository::profile()` gives the defaults the app had in code and config before: Ridgeway Motors, no address or phone, open Monday to Saturday 09:00 to 18:00, aged after 60 days. So no page changes until an admin saves.
+
+`DealershipProfiles` (exported) reads it for the other modules, on each call, so a save reaches the next page and the next job. `DealershipProfile` and `OpeningHours` (exported) carry it. `OpeningHours` says whether a weekday is open, gives the last start of a test drive an hour before closing, and words the days (`Monday to Saturday` for a run of three or more, else `Monday, Wednesday and Friday`). Readers:
+
+- `storefront`: the public header's name, and the footer's address, phone and hours.
+- `leads`: the test-drive form's line and its checks, and the name that signs a visitor's mail.
+- `reports`: the aged-stock threshold and the name in the daily digest.
+
+`POST /app/settings/profile` checks each field (`ProfileChecks`): a name of at most 100 characters, an address of at most 200, a phone as customers' are or none, two times `HH:MM` with the closing at least an hour after the opening, at least one open day, and 1 to 365 days. A refusal answers the page as 422 with each error beside its field. A save is one transaction in `ProfileRepository::save()`. It inserts the defaults if the row is missing, so there is a row to lock, then reads the row `FOR UPDATE` and compares it with the values the form showed. It upserts on `slot` only when they match, then answers 303 to the page with "Saved the dealership's profile."
+
+## The staff
+
+The page's table lists every member, the signed-in admin first, then by name, each row keyed by its place (an id would differ between gate:23's passes). Each row shows their email, their role and "Active" or "Deactivated on YYYY-MM-DD", and their name links to `/app/settings/staff/{id}`. The add form takes a name, an email (trimmed, lower case, one no member signs in with) and a role. The member is stored with an empty password hash, which staff's sign-in treats as no credentials, and mailed a link. Then the page goes to theirs.
+
+A member's page holds the form for their name and role, their access, Deactivate (or Reactivate) and Send a password link. Its save goes through `AccountRepository::change()`, one transaction that reads the active admins `FOR UPDATE` in id order, then the member, and compares the member with what the form showed. Taking the locks in that one order, two admins demoting each other at once serialize and cannot leave none; the last one is refused with 422, "Lotline needs an active admin. Make another member an admin first." `POST …/active` deactivates as of the database's today (`active=0`) or reactivates (`active=1`), under the same lock and rule. A deactivated member cannot sign in, and their open session is signed out on its next request.
+
+## Stale saves
+
+The profile form and a member's edit form seal, in AIC's envelope (`SettingsSeals`), the path they post to and each value they showed. A post whose envelope is altered, missing or another form's answers 400. A save whose sealed values differ from the stored row writes nothing and answers 409. Through Tessera it lands in place, and an alert lists each field that changed: what the form showed, what is stored now. The form keeps what was typed and seals the stored values, so saving again saves knowingly. No version column is needed.
+
+## Password links
+
+`LinkMails::send()` issues a link, a `password_links` row (the member, `used`, `created_at`), after marking the member's unused links used, so only the newest works. The row's id, sealed with a purpose of its own, is the token in `/password/{token}`. AIC's `Notifier` keeps the notification in the member's inbox and mails it when their login is an address. The mail names the dealership and carries the absolute link, which starts with `config/settings.php`'s site URL (`LOTLINE_SITE_URL`, by default DDEV's address) and never with a request's Host, which a forged header could point elsewhere. A reset leaves the old password working until the link sets a new one. An admin who sends a link to themselves gets no notification: they are signed in, so the post goes straight to the link's page.
+
+`GET /password/{token}` (open to whoever holds it) shows the set-password form. An altered token answers 400. A link used, voided or past its 24 hours answers 404: the `password_link_states` view tells, by the database's `now()`. Both refusals show in the app's look with a link to sign in. `POST /password/{token}` takes a password of 12 to 72 bytes, typed twice. `LinkRepository::use()` marks the link used while it is unused and sets the hash, in one transaction, so a link sets one password however many posts race. It then answers 303 to `/sign-in`, which shows "Your password is set. Sign in with it." The page reads no destination from its request.
+
+## Wiring
+
+The handlers take their desks from two factories, so each generated handler stays within PHPCS's 20-line method and PHPMD's coupling limit. `SettingsServices` builds the frame and refusals (`SettingsAccess`), the settings page, the profile's post and a member's page. `MemberServices` builds the member desks (`MemberSaves`, `MemberEdits`, `MemberMoves`) and the password page (`PasswordDesk`) from the framework's services, through `SettingsServices` and `LinkServices` (the links and their mails).
+
+## Checks
+
+`config/native-site.json` walks the page, its fragment, and the profile refused, saved, saved stale (409) and saved back to the defaults. It adds `gate-newcomer@lotline.test`, refuses, saves, saves stale, deactivates, reactivates and sends it a link. It sends the gate user a link of its own, captures the page that post goes to, sets the gate's own password again there, then tries the used and an altered link. The worker runs on a `/health` step and the gate user's inbox is forgotten before the next page with a bell. At the end it removes the newcomer with `"console": "user:remove gate-newcomer@lotline.test"`, so every pass ends where it began. The looks are `tests/browser/settings-*.spec.ts`; they read Mailpit, run the worker with `ddev exec` and put back the profile and any admin they set aside.

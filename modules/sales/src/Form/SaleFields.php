@@ -48,7 +48,7 @@ final readonly class SaleFields
         $vin = strtoupper(trim($saleEntry->value('vehicle')));
         $vehicles = $this->saleChoiceRepository->vehicles($vin);
         $customers = $this->saleChoiceRepository->customers();
-        $staff = $this->saleChoiceRepository->staff();
+        $staff = $this->saleChoiceRepository->sellers();
         $customer = trim($saleEntry->value('customer'));
         $salesperson = trim($saleEntry->value('salesperson'));
 

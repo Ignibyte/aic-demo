@@ -6,6 +6,7 @@ namespace App\Leads\Form;
 
 use App\Leads\Entity\LeadDetails;
 use App\Leads\Entity\LeadKind;
+use App\Settings\Entity\OpeningHours;
 
 use function array_filter;
 use function preg_match;
@@ -34,18 +35,19 @@ final readonly class LeadChecks
     }
 
     /**
-     * @param LeadKind  $leadKind  Which form was sent.
-     * @param LeadEntry $leadEntry What was typed.
-     * @param string    $today     The database's today, `YYYY-MM-DD`.
+     * @param LeadKind     $leadKind     Which form was sent.
+     * @param LeadEntry    $leadEntry    What was typed.
+     * @param string       $today        The database's today, `YYYY-MM-DD`.
+     * @param OpeningHours $openingHours When the dealership is open, which a test drive is held to (#22).
      *
      * @return array<string, string> Why each refused field is refused, by its name; empty when every field passes.
      */
-    public function errors(LeadKind $leadKind, LeadEntry $leadEntry, string $today): array
+    public function errors(LeadKind $leadKind, LeadEntry $leadEntry, string $today, OpeningHours $openingHours): array
     {
         $testDrive = $leadKind === LeadKind::TestDrive;
         $errors = [
-            'drive_at' => $testDrive ? $this->leadHours->timeError(trim($leadEntry->driveAt)) : '',
-            'drive_on' => $testDrive ? $this->leadHours->dayError(trim($leadEntry->driveOn), $today) : '',
+            'drive_at' => $testDrive ? $this->leadHours->timeError(trim($leadEntry->driveAt), $openingHours) : '',
+            'drive_on' => $testDrive ? $this->leadHours->dayError(trim($leadEntry->driveOn), $today, $openingHours) : '',
             'email' => $this->emailError($this->email($leadEntry)),
             'message' => $this->messageError(trim($leadEntry->message), !$testDrive),
             'name' => $this->nameError(trim($leadEntry->name)),

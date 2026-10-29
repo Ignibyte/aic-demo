@@ -89,7 +89,7 @@ final readonly class ReportRepository
      * @throws QueryException           When the query fails.
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return list<Recipient> The members of staff who have one of them, by id.
+     * @return list<Recipient> The members of staff who have one of them, by id; a deactivated member is left out (#22).
      */
     public function members(array $roles): array
     {
@@ -101,7 +101,9 @@ final readonly class ReportRepository
 
         $recipients = [];
 
-        foreach ($this->entityStore->query($this->staffTable->type())->whereIn('role', $values)->orderBy('id')->rows() as $row) {
+        $entityQuery = $this->entityStore->query($this->staffTable->type())->whereIn('role', $values)->where('deactivated_on', null);
+
+        foreach ($entityQuery->orderBy('id')->rows() as $row) {
             $recipients[] = $this->recipient($row);
         }
 

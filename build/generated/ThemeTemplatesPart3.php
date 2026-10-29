@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\CarProfile\CarProfile;
+use App\Theme\Components\CheckGroup\CheckGroup;
 use App\Theme\Components\ColumnChart\ColumnChart;
 use App\Theme\Components\ConfirmCard\ConfirmCard;
-use App\Theme\Components\DataTable\DataTable;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
+            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
             $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
             $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
-            $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -60,6 +60,22 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         $renderPass->open($carProfile);
         require __DIR__ . '/templates/themes/lotline/components/CarProfile/car-profile.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param CheckGroup $checkGroup The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
+     */
+    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
+    {
+        $renderPass->open($checkGroup);
+        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
 
         return $renderPass->close();
     }
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         $renderPass->open($confirmCard);
         require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DataTable  $dataTable  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DataTable/data-table.phtml.
-     */
-    private function renderDataTable(DataTable $dataTable, RenderPass $renderPass): string
-    {
-        $renderPass->open($dataTable);
-        require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
 
         return $renderPass->close();
     }

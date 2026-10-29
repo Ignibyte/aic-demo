@@ -33,6 +33,7 @@
                 <element key="modules/photos/src" value="App\Photos"/>
                 <element key="modules/reports/src" value="App\Reports"/>
                 <element key="modules/sales/src" value="App\Sales"/>
+                <element key="modules/settings/src" value="App\Settings"/>
                 <element key="modules/site/src" value="App\Site"/>
                 <element key="modules/staff/src" value="App\Staff"/>
                 <element key="modules/storefront/src" value="App\Storefront"/>

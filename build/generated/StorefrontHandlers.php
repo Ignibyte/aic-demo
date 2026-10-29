@@ -12,6 +12,8 @@ use App\Inventory\Repository\TodayRepository;
 use App\Leads\Repository\LeadRepository;
 use App\Leads\Repository\SellerRepository;
 use App\Leads\Service\LeadDesk;
+use App\Settings\Repository\ProfileRepository;
+use App\Settings\Service\DealershipProfiles;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarPage;
 use App\Storefront\Controller\CarTestDrivePost;
@@ -44,8 +46,10 @@ final readonly class StorefrontHandlers
         $todayRepository = new TodayRepository($entityStore);
         $sellerRepository = new SellerRepository($entityStore);
         $leadRepository = new LeadRepository($entityStore, $sellerRepository);
-        $leadDesk = new LeadDesk($postgresQueue, $todayRepository, $leadRepository);
-        $storeServices = new StoreServices($entityStore, $this->handlerContext->documents(), $leadDesk);
+        $profileRepository = new ProfileRepository($entityStore);
+        $dealershipProfiles = new DealershipProfiles($profileRepository);
+        $leadDesk = new LeadDesk($postgresQueue, $todayRepository, $leadRepository, $dealershipProfiles);
+        $storeServices = new StoreServices($entityStore, $this->handlerContext->documents(), $leadDesk, $dealershipProfiles);
         $carPages = $storeServices->carPages();
 
         return [

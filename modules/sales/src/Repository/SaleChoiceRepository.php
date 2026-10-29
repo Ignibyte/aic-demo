@@ -91,17 +91,24 @@ final readonly class SaleChoiceRepository
      * @throws QueryException           When the query fails.
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return list<Choice> The staff by name, by login.
+     * @return list<Choice> Every member of staff by name, by login, deactivated ones too: the list's filter, which
+     *                      past sales by any of them still go through.
      */
     public function staff(): array
     {
-        $choices = [];
+        return $this->staffChoices($this->byName($this->staffTable->type()));
+    }
 
-        foreach ($this->byName($this->staffTable->type())->rows() as $row) {
-            $choices[] = $this->staffChoice($row);
-        }
-
-        return $choices;
+    /**
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return list<Choice> The staff a new sale may name, by name, by login: those an admin deactivated are left out
+     *                      (#22).
+     */
+    public function sellers(): array
+    {
+        return $this->staffChoices($this->byName($this->staffTable->type())->where('deactivated_on', null));
     }
 
     /**
@@ -145,11 +152,15 @@ final readonly class SaleChoiceRepository
      * @throws QueryException           When the query fails.
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return int Their id; 0 when no member of staff has it.
+     * @return int Their id; 0 when no member of staff has it, or the one who does was deactivated (#22).
      */
     public function memberId(string $login): int
     {
-        return $this->idByEmail($this->staffTable->type(), $login);
+        $row = $this->entityStore->query($this->staffTable->type())->where('email', $login)->where('deactivated_on', null)->first();
+
+        return $row instanceof Row
+            ? $row->int('id')
+            : 0;
     }
 
     /**
@@ -161,6 +172,24 @@ final readonly class SaleChoiceRepository
     public function currentDay(): string
     {
         return $this->todayRepository->today();
+    }
+
+    /**
+     * @param EntityQuery $entityQuery A query over the staff, in order.
+     *
+     * @throws QueryException When the query fails.
+     *
+     * @return list<Choice> The staff it finds, as choices.
+     */
+    private function staffChoices(EntityQuery $entityQuery): array
+    {
+        $choices = [];
+
+        foreach ($entityQuery->rows() as $row) {
+            $choices[] = $this->staffChoice($row);
+        }
+
+        return $choices;
     }
 
     /**

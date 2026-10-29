@@ -9,9 +9,9 @@ use AIC\Controller\Contracts\JobInput;
 use AIC\Controller\Contracts\JobResponse;
 use AIC\Controller\Domain\JobDone;
 use AIC\Database\Contracts\QueryException;
-use App\Reports\Entity\ReportConfig;
 use App\Reports\Repository\ReportRepository;
 use App\Reports\Service\ReportNotices;
+use App\Settings\Service\DealershipProfiles;
 use App\Staff\Entity\Role;
 use InvalidArgumentException;
 use JsonException;
@@ -19,20 +19,20 @@ use Override;
 
 /**
  * The `aged-stock` job (#20), which the `aged-stock` schedule queues each morning at 07:00 UTC: lists the vehicles not
- * sold on the lot longer than config/reports.php's threshold in one notification to each sales manager. With none, it
- * sends nothing.
+ * sold on the lot longer than the dealership's aged-stock threshold, the settings' profile (#22; 60 days until an admin
+ * saves another), in one notification to each active sales manager. With none, it sends nothing.
  */
 final readonly class NotifyAgedStock implements Job
 {
     /**
-     * @param ReportRepository $reportRepository The aged vehicles and the sales managers.
-     * @param ReportNotices    $reportNotices    Sends the notification.
-     * @param ReportConfig     $reportConfig     The threshold.
+     * @param ReportRepository   $reportRepository   The aged vehicles and the sales managers.
+     * @param ReportNotices      $reportNotices      Sends the notification.
+     * @param DealershipProfiles $dealershipProfiles The threshold.
      */
     public function __construct(
         private ReportRepository $reportRepository,
         private ReportNotices $reportNotices,
-        private ReportConfig $reportConfig,
+        private DealershipProfiles $dealershipProfiles,
     ) {
     }
 
@@ -49,7 +49,7 @@ final readonly class NotifyAgedStock implements Job
     #[Override]
     public function run(JobInput $jobInput): JobResponse
     {
-        $days = $this->reportConfig->agedStockDays;
+        $days = $this->dealershipProfiles->profile()->agedStockDays;
         $vehicles = $this->reportRepository->agedStock($days);
 
         if ($vehicles !== []) {
