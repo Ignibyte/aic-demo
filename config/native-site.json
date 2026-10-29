@@ -335,6 +335,16 @@
             "captures": false
         },
         {
+            "name": "sign-in page, the gate user's inbox forgotten",
+            "method": "GET",
+            "path": "/sign-in?next=%2Fapp",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "inbox:forget gate"
+        },
+        {
             "name": "sign-in",
             "method": "POST",
             "path": "/sign-in",
@@ -1824,6 +1834,189 @@
             "events": 1
         },
         {
+            "name": "reports, signed in",
+            "method": "GET",
+            "path": "/app/reports",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "reports, a range",
+            "method": "GET",
+            "path": "/app/reports?from=2026-01-01&to=2026-03-31",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "reports, a year of ranges",
+            "method": "GET",
+            "path": "/app/reports?from=2025-11-01&to=2026-10-31",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "reports, a malformed range",
+            "method": "GET",
+            "path": "/app/reports?from=2026-02-30&to=nope",
+            "form": "",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "reports, a last day before the first",
+            "method": "GET",
+            "path": "/app/reports?from=2026-10-31&to=2026-10-01",
+            "form": "",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "reports, a Tessera fragment of the content",
+            "method": "GET",
+            "path": "/app/reports?from=2026-09-01&to=2026-09-30",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "report export, no token",
+            "method": "POST",
+            "path": "/app/reports/exports",
+            "form": "report=sales&from=2026-09-01&to=2026-09-30",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "report export, an unknown report",
+            "method": "POST",
+            "path": "/app/reports/exports",
+            "form": "report=nope&from=2026-09-01&to=2026-09-30&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "report export, a refused range",
+            "method": "POST",
+            "path": "/app/reports/exports",
+            "form": "report=sales&from=2026-09-31&to=2026-09-30&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "report export",
+            "method": "POST",
+            "path": "/app/reports/exports",
+            "form": "report=sales&from=2026-09-01&to=2026-09-30&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "reports, the export being prepared",
+            "method": "GET",
+            "path": "{location}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "health, once the worker has run the export",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "reports, the export ready, the gate user's inbox forgotten first",
+            "method": "GET",
+            "path": "{location}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "console": "inbox:forget gate",
+            "capture": "/app/reports/exports/"
+        },
+        {
+            "name": "report export download",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "report export download, a byte range",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "Range: bytes=0-9",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "report export download, unchanged",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "If-None-Match: *",
+            "status": 304,
+            "captures": false
+        },
+        {
+            "name": "report export download, unknown",
+            "method": "GET",
+            "path": "/app/reports/exports/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "sales report API",
+            "method": "GET",
+            "path": "/api/reports/sales?from=2026-09-01&to=2026-09-30",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sales report API, this month",
+            "method": "GET",
+            "path": "/api/reports/sales",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sales report API, a malformed range",
+            "method": "GET",
+            "path": "/api/reports/sales?from=nope&to=2026-09-30",
+            "form": "",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
             "name": "inbox, sign-out",
             "method": "POST",
             "path": "/sign-out",
@@ -1854,6 +2047,33 @@
             "name": "inbox, a notification signed out",
             "method": "GET",
             "path": "/app/inbox/1",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "sales report API, signed out",
+            "method": "GET",
+            "path": "/api/reports/sales",
+            "form": "",
+            "header": "",
+            "status": 401,
+            "captures": false
+        },
+        {
+            "name": "reports, signed out",
+            "method": "GET",
+            "path": "/app/reports",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "report export download, signed out",
+            "method": "GET",
+            "path": "/app/reports/exports/1",
             "form": "",
             "header": "",
             "status": 303,

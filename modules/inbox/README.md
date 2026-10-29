@@ -27,12 +27,16 @@ The menu shows five: a prepend puts the newest at the top, and the list's CSS hi
 | Route | Controller | What it answers |
 |---|---|---|
 | `GET /app/inbox` | `InboxPage` | The member's notifications, twenty a page newest first (`?page=`; a malformed one reads as the first, and one past the end as the last), each linking to its opening, with "Mark all read" while any is unread. |
-| `GET /app/inbox/{id}` | `NotificationPage` | Marks it read and answers 303 to its link when that is a path on this site, else to the inbox; 404 when it is not the member's. |
+| `GET /app/inbox/{id}` | `NotificationPage` | Marks it read and answers 303 to its link when that is a path on this site, else to the inbox; 404 when it is not the member's. For Tessera the 303 is AIC's `PageFullVisit` (#21), so the browser loads the link itself: it may be a file to save, such as a report's CSV export, which a visit cannot swap in. |
 | `POST /app/inbox/read-all` | `InboxReadAllPost` | Marks every one of the member's read and answers 303 to the inbox with "Marked every notification read."; 403 without the form token. |
 | `GET /app/inbox/events` | `BellEvents` | The bell's stream, above. |
 
 Signed out, each answers 303 to sign in, as every page under `/app` does.
 
+## Forgetting
+
+`bin/aic inbox:forget {login}` (`InboxForget`, #21) deletes every kept notification of the member who signs in with that login, read or not, through AIC's `Inbox::forget()` (AIC #210), and prints how many. It exits 1 when no member signs in so, and 2 with its usage for anything but one argument.
+
 ## Checks
 
-gate:23's steps open the inbox, a later page and a malformed one, a notification that is not the member's (404), "Mark all read" without a token (403) and with one, the stream read for one event (`"events": 1`, AIC #202) fresh and resumed from a `Last-Event-ID`, and then the inbox, the stream and a notification signed out (303; that step is what reaches the opening's route for gate:23, which counts only a step below 400). The gate user has no notifications, so both sites answer alike. The browser looks are `tests/browser/inbox-*.spec.ts`; the live look sends a real lead and runs the worker with `ddev exec bin/aic queue:work`, as the leads looks do.
+gate:23's steps open the inbox, a later page and a malformed one, a notification that is not the member's (404), "Mark all read" without a token (403) and with one, the stream read for one event (`"events": 1`, AIC #202) fresh and resumed from a `Last-Event-ID`, and then the inbox, the stream and a notification signed out (303; that step is what reaches the opening's route for gate:23, which counts only a step below 400). The gate user has no notifications, so both sites answer alike: a step before the first sign-in runs `"console": "inbox:forget gate"` (AIC #210), so each pass starts with that inbox empty, and the reports' export steps forget the notification their export leaves before the next page shows the bell. The browser looks are `tests/browser/inbox-*.spec.ts`; the live look sends a real lead and runs the worker with `ddev exec bin/aic queue:work`, as the leads looks do.

@@ -24,6 +24,7 @@ final readonly class ReportsSchedules
         return [
             new Schedule('aged-stock', 'aged-stock', [], new Cadence('0 7 * * *')),
             new Schedule('daily-digest', 'daily-digest', [], new Cadence('0 21 * * *')),
+            new Schedule('prune-exports', 'prune-exports', [], new Cadence('15 4 * * *')),
         ];
     }
 }

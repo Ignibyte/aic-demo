@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\RangeLinks\RangeLinks $rangeLinks */ ?>
+<nav class="join mb-4" aria-label="<?= $rangeLinks->label ?>" id="<?= $rangeLinks->id ?>" data-enhance="on"><?php foreach ($rangeLinks->links as $rangeLink): ?><a class="join-item btn btn-sm<?php if ($rangeLink->chosen): ?> btn-primary<?php endif; ?>" data-target="<?= $rangeLinks->target ?>" href="<?= $rangeLink->href ?>" aria-current="<?= $rangeLink->chosen ? 'true' : 'false' ?>"><?= $rangeLink->label ?></a><?php endforeach ?></nav>

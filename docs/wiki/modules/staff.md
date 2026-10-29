@@ -160,7 +160,7 @@ none
 | [inventory](inventory.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 | [leads](leads.md) | `App\Staff\Entity\Role`, `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
 | [photos](photos.md) | `App\Staff\Entity\Role`, `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffSession` |
-| [reports](reports.md) | `App\Staff\Entity\Role`, `App\Staff\Entity\StaffTable` |
+| [reports](reports.md) | `App\Staff\Entity\Role`, `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
 | [sales](sales.md) | `App\Staff\Entity\StaffTable`, `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
-| [site](site.md) | `App\Staff\Service\StaffSession` |
+| [site](site.md) | `App\Staff\Entity\StaffMember`, `App\Staff\Service\StaffSession` |
 | [storefront](storefront.md) | `App\Staff\Service\StaffRequests` |

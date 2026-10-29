@@ -8,6 +8,7 @@ use AIC\Block\Contracts\Block;
 use AIC\Block\Contracts\Placement;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\KeyedComponent;
+use App\Staff\Entity\StaffMember;
 use App\Staff\Service\StaffSession;
 use App\Theme\Components\Icon\Heroicons;
 use App\Theme\Components\Icon\Icon;
@@ -24,7 +25,7 @@ use function str_starts_with;
  * Lotline's sidebar, in `sidebar` on every page: the site's name, then a link to each area with its icon, the current
  * one marked from the page's request. Areas join the list as their pages land; the staff areas show only to signed-in
  * staff, for whom Dashboard goes to the dashboard at `/app` (#8), current there alone since every staff page sits under
- * it; signed out it goes to `/`.
+ * it; signed out it goes to `/`. Reports shows to the managers alone, an admin or a sales manager, who read them (#21).
  */
 final readonly class NavigationBlock implements Block
 {
@@ -64,15 +65,15 @@ final readonly class NavigationBlock implements Block
     {
         $path = $serverRequest->getUri()->getPath();
         $heroicons = new Heroicons();
-        $signedIn = $this->staffSession->member($serverRequest) !== null;
-        $home = $signedIn
+        $staffMember = $this->staffSession->member($serverRequest);
+        $home = $staffMember instanceof StaffMember
             ? '/app'
             : '/';
         $links = [new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home))];
 
         // Appended one by one: elephc types an array spread as a list of mixed, which it refuses to assign (no AIC ticket
         // carries that yet).
-        foreach ($signedIn ? self::staffLinks($heroicons, $path) : [] as $staffLink) {
+        foreach ($staffMember instanceof StaffMember ? self::staffLinks($heroicons, $path, $staffMember) : [] as $staffLink) {
             $links[] = $staffLink;
         }
 
@@ -82,22 +83,29 @@ final readonly class NavigationBlock implements Block
     }
 
     /**
-     * @param Heroicons $heroicons The icons.
-     * @param string    $path      The page's path.
+     * @param Heroicons   $heroicons   The icons.
+     * @param string      $path        The page's path.
+     * @param StaffMember $staffMember Who is signed in.
      *
      * @throws LogicException When a link's key is malformed.
      *
-     * @return list<KeyedComponent> The staff areas' links, each current on its pages.
+     * @return list<KeyedComponent> The staff areas' links, each current on its pages; Reports for a manager alone.
      */
-    private static function staffLinks(Heroicons $heroicons, string $path): array
+    private static function staffLinks(Heroicons $heroicons, string $path, StaffMember $staffMember): array
     {
-        return [
+        $links = [
             self::link('inventory', '/app/inventory', 'Inventory', $heroicons->truck(), $path),
             self::link('customers', '/app/customers', 'Customers', $heroicons->users(), $path),
             self::link('sales', '/app/sales', 'Sales', $heroicons->banknotes(), $path),
             self::link('leads', '/app/leads', 'Leads', $heroicons->inbox(), $path),
             self::link('holds', '/app/holds', 'Holds', $heroicons->clock(), $path),
         ];
+
+        if ($staffMember->role->manages()) {
+            $links[] = self::link('reports', '/app/reports', 'Reports', $heroicons->chartBar(), $path);
+        }
+
+        return $links;
     }
 
     /**

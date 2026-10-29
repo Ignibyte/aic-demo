@@ -39,7 +39,11 @@ test('signed in, the sidebar links to the inventory, and filtering gives the row
     await expect(page.locator('#filter-min-price')).toHaveValue('10000');
     await expect(page.locator('#filter-max-price')).toHaveValue('45000');
 
+    // Clear is a Tessera visit: the search waits for its answer, or it types into the old form and sends its filters.
     await page.locator('#inventory-filters').getByRole('link', { name: 'Clear' }).click();
+    await expect(page).toHaveURL(/\/app\/inventory$/);
+    await expect(page.locator('#filter-make')).toHaveValue('');
+    await expect(page.locator('#vehicles-table-summary')).toHaveText(summary(plain));
     await page.locator('#filter-q').fill('cr');
     await page.locator('#inventory-filters').getByRole('button', { name: 'Filter' }).click();
 

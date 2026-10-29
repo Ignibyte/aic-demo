@@ -10,8 +10,11 @@ use AIC\Module\Application\ConsoleContext;
 use AIC\Notification\Application\Notifier;
 use AIC\Queue\Application\PostgresQueue;
 use App\Reports\Job\NotifyAgedStock;
+use App\Reports\Job\PruneReportExports;
 use App\Reports\Job\SendDailyDigest;
+use App\Reports\Job\WriteReportExport;
 use App\Reports\Repository\ReportRepository;
+use App\Reports\Service\ExportServices;
 use App\Reports\Service\ReportNotices;
 use App\Reports\Service\ReportSettings;
 use RuntimeException;
@@ -42,10 +45,14 @@ final readonly class ReportsJobs
         $postgresQueue = new PostgresQueue($this->consoleContext->database());
         $notifier = new Notifier($postgresQueue);
         $reportNotices = new ReportNotices($notifier);
+        $exportServices = new ExportServices($entityStore, $postgresQueue, $notifier);
+        $exportWork = $exportServices->exportWork();
 
         return [
             'aged-stock' => new NotifyAgedStock($reportRepository, $reportNotices, (new ReportSettings())->reportConfig()),
             'daily-digest' => new SendDailyDigest($reportRepository, $reportNotices),
+            'prune-exports' => new PruneReportExports($exportWork),
+            'report-export' => new WriteReportExport($exportWork),
         ];
     }
 }

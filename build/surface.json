@@ -281,6 +281,34 @@
             "path": "/app/leads"
         },
         {
+            "handler": "App\\Reports\\Controller\\ReportsPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "reports",
+            "path": "/app/reports"
+        },
+        {
+            "handler": "App\\Reports\\Controller\\ReportExportPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "reports",
+            "path": "/app/reports/exports"
+        },
+        {
+            "handler": "App\\Reports\\Controller\\ReportExportStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "reports",
+            "path": "/app/reports/exports/{id:int}"
+        },
+        {
+            "handler": "App\\Reports\\Controller\\SalesReportApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "reports",
+            "path": "/api/reports/sales"
+        },
+        {
             "handler": "App\\Site\\Controller\\HealthApi",
             "kind": "Api",
             "method": "GET",
@@ -372,6 +400,12 @@
             "name": "db:ping"
         },
         {
+            "class": "App\\Inbox\\Command\\InboxForget",
+            "kind": "Command",
+            "module": "inbox",
+            "name": "inbox:forget"
+        },
+        {
             "class": "App\\Inventory\\Command\\InventorySeed",
             "kind": "Command",
             "module": "inventory",
@@ -458,10 +492,22 @@
             "name": "notify"
         },
         {
+            "class": "App\\Reports\\Job\\PruneReportExports",
+            "kind": "Job",
+            "module": "reports",
+            "name": "prune-exports"
+        },
+        {
             "class": "App\\Holds\\Job\\ReleaseHolds",
             "kind": "Job",
             "module": "holds",
             "name": "release-holds"
+        },
+        {
+            "class": "App\\Reports\\Job\\WriteReportExport",
+            "kind": "Job",
+            "module": "reports",
+            "name": "report-export"
         }
     ],
     "schedules": [
@@ -482,6 +528,12 @@
             "job": "daily-digest",
             "module": "reports",
             "name": "daily-digest"
+        },
+        {
+            "cadence": "15 4 * * *",
+            "job": "prune-exports",
+            "module": "reports",
+            "name": "prune-exports"
         }
     ],
     "modules": [
@@ -741,11 +793,16 @@
             "blocks": [],
             "exports": [],
             "factories": [
-                "App\\Reports\\Service\\ReportSettings"
+                "App\\Reports\\Service\\ReportSettings",
+                "App\\Reports\\Service\\ReportServices",
+                "App\\Reports\\Service\\ExportServices"
             ],
             "middleware": [],
             "migrations": [
-                "App\\Reports\\Migration\\CreateReportViews"
+                "App\\Reports\\Migration\\CreateReportViews",
+                "App\\Reports\\Migration\\CreateReportRangeViews",
+                "App\\Reports\\Migration\\CreateReportExportsTable",
+                "App\\Reports\\Migration\\CreateReportExportsView"
             ],
             "name": "reports",
             "namespace": "App\\Reports\\",
@@ -755,7 +812,8 @@
                 "staff",
                 "inventory",
                 "sales",
-                "leads"
+                "leads",
+                "customers"
             ]
         },
         {
@@ -871,6 +929,11 @@
                 "source": "themes/lotline/components/DetailCard/detail-card.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\DownloadLink\\DownloadLink",
+                "generated": "build/generated/templates/themes/lotline/components/DownloadLink/download-link.phtml",
+                "source": "themes/lotline/components/DownloadLink/download-link.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\FilterBar\\FilterBar",
                 "generated": "build/generated/templates/themes/lotline/components/FilterBar/filter-bar.phtml",
                 "source": "themes/lotline/components/FilterBar/filter-bar.phtml"
@@ -949,6 +1012,11 @@
                 "component": "App\\Theme\\Components\\PhotoGallery\\PhotoGallery",
                 "generated": "build/generated/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml",
                 "source": "themes/lotline/components/PhotoGallery/photo-gallery.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\RangeLinks\\RangeLinks",
+                "generated": "build/generated/templates/themes/lotline/components/RangeLinks/range-links.phtml",
+                "source": "themes/lotline/components/RangeLinks/range-links.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\SelectField\\SelectField",
