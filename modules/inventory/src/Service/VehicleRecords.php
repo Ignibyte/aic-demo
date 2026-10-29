@@ -18,8 +18,9 @@ use function is_string;
 use function preg_match;
 
 /**
- * The vehicle a `/app/inventory/{vin}` route names, its VIN checked as a VIN before any query; and the pages for a
- * vehicle that is not there (404) and for a form refused for its envelope (400).
+ * The vehicle a `/app/inventory/{vin}` route names, its VIN checked as a VIN before any query, and its id; and the
+ * pages for a vehicle that is not there (404), for a form refused for its envelope (400), and for a refused change to
+ * one of its photos.
  */
 final readonly class VehicleRecords
 {
@@ -44,13 +45,29 @@ final readonly class VehicleRecords
      */
     public function find(ServerRequestInterface $serverRequest): ?Vehicle
     {
-        $vin = $this->vin($serverRequest);
+        $vin = $this->routeVin($serverRequest);
 
-        if (preg_match('/^[A-HJ-NPR-Z0-9]{17}$/', $vin) !== 1) {
-            return null;
-        }
+        return $vin === ''
+            ? null
+            : $this->vehicleRecordRepository->find($vin);
+    }
 
-        return $this->vehicleRecordRepository->find($vin);
+    /**
+     * @param ServerRequestInterface $serverRequest A request to a vehicle's route.
+     *
+     * @throws QueryException           When the vehicle cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
+     *
+     * @return int The id of the vehicle its `vin` names, which its photos refer to; 0 when that is no VIN or no vehicle
+     *             has it.
+     */
+    public function vehicleId(ServerRequestInterface $serverRequest): int
+    {
+        $vin = $this->routeVin($serverRequest);
+
+        return $vin === ''
+            ? 0
+            : $this->vehicleRecordRepository->vehicleId($vin);
     }
 
     /**
@@ -76,6 +93,36 @@ final readonly class VehicleRecords
         $message = 'This form was issued for another vehicle, or it changed on the way, so nothing was saved. Open the vehicle again.';
 
         return $this->staffPanels->warning('Form refused', $message, 'vehicle-refused', 'Back to the list', Vehicle::PAGES, 400);
+    }
+
+    /**
+     * @param Vehicle $vehicle The vehicle a post was for.
+     * @param string  $title   The page's title.
+     * @param string  $message Why nothing was changed.
+     * @param int     $status  403, 400 or 404.
+     *
+     * @throws InvalidArgumentException When the status does not fit the theme.
+     *
+     * @return PageDocument The page: the message as a warning, its id `vehicle-photo-{status}`, and a link back to the
+     *                      vehicle; for a refused change to one of its photos (#16).
+     */
+    public function photoWarning(Vehicle $vehicle, string $title, string $message, int $status): PageDocument
+    {
+        return $this->staffPanels->warning($title, $message, 'vehicle-photo-' . $status, 'Back to the vehicle', $vehicle->path(), $status);
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest A request to a vehicle's route.
+     *
+     * @return string Its `vin` attribute when it is written in the VIN alphabet; empty otherwise.
+     */
+    private function routeVin(ServerRequestInterface $serverRequest): string
+    {
+        $vin = $this->vin($serverRequest);
+
+        return preg_match('/^[A-HJ-NPR-Z0-9]{17}$/', $vin) === 1
+            ? $vin
+            : '';
     }
 
     /**

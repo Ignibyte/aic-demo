@@ -8,11 +8,11 @@ use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\Vehicle;
-use App\Inventory\Entity\VehicleSale;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Repository\VehicleRecordRepository;
 use App\Inventory\Service\SoldVehicles;
 use App\Inventory\Service\VehicleRecords;
+use App\Photos\Service\VehiclePhotos;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
 use LogicException;
@@ -20,8 +20,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
 
 /**
- * Deleting a vehicle: the page that asks first, and the delete itself, which keeps a sold vehicle (422), leaves a
- * notice for the list and goes there (303).
+ * Deleting a vehicle: the page that asks first, and the delete itself, which keeps a sold vehicle (422), removes the
+ * deleted vehicle's photo files (#16), leaves a notice for the list and goes there (303).
  */
 final readonly class VehicleDeletes
 {
@@ -31,6 +31,7 @@ final readonly class VehicleDeletes
      * @param VehicleDeleteForm       $vehicleDeleteForm       The delete page.
      * @param StaffSeals              $staffSeals              Checks the form's envelope.
      * @param SoldVehicles            $soldVehicles            Whether a vehicle has a recorded sale.
+     * @param VehiclePhotos           $vehiclePhotos           Forgets a deleted vehicle's photo files.
      * @param StaffNotices            $staffNotices            Leaves the delete's notice for the list.
      */
     public function __construct(
@@ -39,6 +40,7 @@ final readonly class VehicleDeletes
         private VehicleDeleteForm $vehicleDeleteForm,
         private StaffSeals $staffSeals,
         private SoldVehicles $soldVehicles,
+        private VehiclePhotos $vehiclePhotos,
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
     }
@@ -85,7 +87,11 @@ final readonly class VehicleDeletes
             return $this->vehicleRecords->refused();
         }
 
+        // Read before the delete: the photos' rows go with the vehicle, by their foreign key, and their files after.
+        $vehicleId = $this->vehicleRecords->vehicleId($serverRequest);
+
         if ($vehicle->status !== VehicleStatus::Sold && $this->deleted($vehicle)) {
+            $this->vehiclePhotos->forget($vehicleId);
             $this->staffNotices->keep($serverRequest, 'Deleted the ' . $vehicle->title() . ', VIN ' . $vehicle->vin . '.');
 
             return new PageRedirect(Vehicle::PAGES);
@@ -112,7 +118,7 @@ final readonly class VehicleDeletes
             $deleted = $this->vehicleRecordRepository->delete($vehicle->vin);
         } catch (QueryException $queryException) {
             // A sale recorded after an edit's check can leave the vehicle unsold while its sale holds the row.
-            if (!$this->soldVehicles->sale($vehicle->vin) instanceof VehicleSale) {
+            if ($this->soldVehicles->sale($vehicle->vin) === null) {
                 throw $queryException;
             }
 

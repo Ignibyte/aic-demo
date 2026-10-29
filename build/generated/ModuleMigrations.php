@@ -22,6 +22,7 @@ final readonly class ModuleMigrations
         return array_merge(
             (new StaffMigrations())->all(),
             (new CustomersMigrations())->all(),
+            (new PhotosMigrations())->all(),
             (new InventoryMigrations())->all(),
             (new SalesMigrations())->all(),
             (new DashboardMigrations())->all(),

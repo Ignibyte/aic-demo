@@ -9,6 +9,10 @@ declare(strict_types=1);
  * The Tessera pin (#70): the release and the SHA-256 of each file the build
  * copies into build/assets/tessera-VERSION/, from the release's SHA256SUMS.
  * Upgrading is a new version and new sums here, then `composer run build`.
+ *
+ * The body cap (AIC #196): 12 MiB, above one vehicle photo's 8,000,000 bytes
+ * (#16), so an oversized photo reaches UploadCheck and is refused in place
+ * with its reason. A body over the cap answers 413 before the session.
  */
 
 use AIC\Config\Domain\AppConfig;
@@ -21,4 +25,5 @@ return new AppConfig(
         'tessera.csp.iife.js' => '9566544fa6ae89466b61d74098e43961627b3463f2bb75e90454711266651180',
         'tessera.csp.iife.js.map' => 'd83e7c9ac70cf1b67ede63a20e5f63ded37402a16dfeee8c47ba3cf40e0a041f',
     ]),
+    maxBodyBytes: 12_582_912,
 );

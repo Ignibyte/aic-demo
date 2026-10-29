@@ -8,6 +8,7 @@ The manifest binds `UserProvider` to `StaffRepository` and `PasswordHasher` to `
 - `StaffNotices`: the one line a save or a delete keeps in the session (`staff.notice`) for the page it redirects to, which takes it before anything else (a 404 for a record gone meanwhile included, so no notice waits for a later page), shows it as a success `Notice` and clears it;
 - `StaffSeals` (in `Form/`): AIC's signed envelope sealing a record's path in its edit and delete forms, and the check that a post's envelope is whole and seals the path it was posted to.
 - `StaffRequests`: a query parameter and a route attribute read as plain text through a native `string` return (a list, or a value that is no string, reads as empty), for `customers` and `sales`; elephc does not narrow an untyped value by `is_string()`.
+- `StaffMember` and `Role` (in `Entity/`): who `StaffSession::member()` gives and their role, by which `photos` lets a sales manager or an admin change a vehicle's photos and a salesperson only see them (#16).
 
 ## Data
 

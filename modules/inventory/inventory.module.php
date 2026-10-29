@@ -6,7 +6,8 @@ declare(strict_types=1);
  * The inventory module's manifest (#4, #5): the vehicles on Ridgeway Motors'
  * lot. The vehicles table, its seed, the list, and each vehicle's page, form
  * and delete, found by its VIN, all under /app, which the staff module's
- * protected prefix keeps to signed-in staff. It exports the plugin type a
+ * protected prefix keeps to signed-in staff; and a vehicle's photos, added,
+ * deleted and served there through the photos module, which it requires (#16). It exports the plugin type a
  * vehicle's page asks about its sale (#7), and what the sales seed builds
  * vehicles with; and the vehicles' entity type and the database's today, a
  * view, which sales and the dashboard read (#14). The list's route comes last,
@@ -24,6 +25,9 @@ use App\Inventory\Controller\VehicleDeletePost;
 use App\Inventory\Controller\VehicleEditPage;
 use App\Inventory\Controller\VehicleNewPage;
 use App\Inventory\Controller\VehiclePage;
+use App\Inventory\Controller\VehiclePhotoDeletePost;
+use App\Inventory\Controller\VehiclePhotoPost;
+use App\Inventory\Controller\VehiclePhotoStream;
 use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehiclePrice;
@@ -42,6 +46,7 @@ use App\Inventory\Service\Vins;
 
 return (new ModuleManifest('inventory'))
     ->requires('staff')
+    ->requires('photos')
     ->route(RouteMethod::Get, '/app/inventory/new', VehicleNewPage::class)
     ->route(RouteMethod::Post, '/app/inventory', VehicleCreatePost::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}', VehiclePage::class)
@@ -49,6 +54,9 @@ return (new ModuleManifest('inventory'))
     ->route(RouteMethod::Post, '/app/inventory/{vin}', VehicleUpdatePost::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}/delete', VehicleDeletePage::class)
     ->route(RouteMethod::Post, '/app/inventory/{vin}/delete', VehicleDeletePost::class)
+    ->route(RouteMethod::Post, '/app/inventory/{vin}/photos', VehiclePhotoPost::class)
+    ->route(RouteMethod::Get, '/app/inventory/{vin}/photos/{position:int}', VehiclePhotoStream::class)
+    ->route(RouteMethod::Post, '/app/inventory/{vin}/photos/{position:int}/delete', VehiclePhotoDeletePost::class)
     ->route(RouteMethod::Get, '/app/inventory', InventoryListPage::class)
     ->factory(VehicleServices::class)
     ->command('inventory:seed', InventorySeed::class)

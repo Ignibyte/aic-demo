@@ -407,6 +407,177 @@
             "captures": false
         },
         {
+            "name": "vehicle photo, none yet",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, no file",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, renamed text file",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/not-a-photo.jpg",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, too large",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/too-large.jpg",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, body over the cap",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/over-the-cap.jpg",
+            "header": "",
+            "status": 413,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, no token",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:photo=@tests/browser/fixtures/photos/car.jpg",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, JPEG",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.jpg",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, PNG",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.png",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, WebP",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos",
+            "form": "multipart:aic_csrf={csrf}&photo=@tests/browser/fixtures/photos/car.webp",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle page, with photos",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, byte range",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1",
+            "form": "",
+            "header": "Range: bytes=0-99",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, range at its size",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1",
+            "form": "",
+            "header": "Range: bytes=8328-",
+            "status": 416,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, unchanged",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1",
+            "form": "",
+            "header": "If-None-Match: *",
+            "status": 304,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, WebP served",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/3",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo, past the last",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/4",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo delete, altered envelope",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1/delete",
+            "form": "aic_csrf={csrf}&aic_envelope=x",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo delete",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/1/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle photo delete, no photo there",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE19SR999001/photos/9/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "vehicle delete page",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001/delete",

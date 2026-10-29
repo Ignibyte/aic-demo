@@ -7,9 +7,14 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Inventory\Controller\InventoryListPage;
-use App\Inventory\Repository\VehicleRepository;
-use App\Inventory\Service\InventoryList;
+use App\Inventory\Controller\VehiclePhotoDeletePost;
+use App\Inventory\Controller\VehiclePhotoPost;
+use App\Inventory\Controller\VehiclePhotoStream;
+use App\Inventory\Form\VehiclePhotoForms;
+use App\Inventory\Service\VehicleSales;
+use App\Inventory\Service\VehicleServices;
+use App\Photos\Service\VehiclePhotos;
+use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -34,12 +39,19 @@ final readonly class InventoryHandlersPart2
      */
     public function byId(): array
     {
-        $vehicleRepository = new VehicleRepository(new EntityStore($this->handlerContext->database()));
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $vehiclePhotos = new VehiclePhotos($entityStore);
+        $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
+        $staffPages = new StaffPages($this->handlerContext->documents());
+        $vehicleServices = new VehicleServices($entityStore, $staffPages, $staffSeals, $this->handlerContext->tagged(VehicleSales::class));
+        $vehicleRecords = $vehicleServices->vehicleRecords();
+        $vehicleCards = $vehicleServices->vehicleCards();
+        $vehiclePhotoForms = new VehiclePhotoForms($vehiclePhotos, $staffSeals, $vehicleRecords, $vehicleCards);
 
         return [
-            InventoryListPage::class => $this->handlerContext->page(
-                new InventoryListPage(new StaffPages($this->handlerContext->documents()), new InventoryList($vehicleRepository)),
-            ),
+            VehiclePhotoDeletePost::class => $this->handlerContext->page(new VehiclePhotoDeletePost($vehiclePhotoForms)),
+            VehiclePhotoPost::class => $this->handlerContext->page(new VehiclePhotoPost($vehiclePhotoForms)),
+            VehiclePhotoStream::class => $this->handlerContext->stream(new VehiclePhotoStream($vehiclePhotoForms)),
         ];
     }
 }
