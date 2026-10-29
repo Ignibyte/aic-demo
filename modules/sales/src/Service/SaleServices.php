@@ -6,7 +6,9 @@ namespace App\Sales\Service;
 
 use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
+use App\Holds\Repository\HoldRepository;
 use App\Inventory\Repository\TodayRepository;
+use App\Inventory\Repository\VehicleStatusRepository;
 use App\Sales\Form\SaleChecks;
 use App\Sales\Form\SaleFields;
 use App\Sales\Form\SaleForm;
@@ -44,7 +46,10 @@ final readonly class SaleServices
         $saleChoiceRepository = new SaleChoiceRepository($this->entityStore, new TodayRepository($this->entityStore));
         $saleForm = new SaleForm($this->staffPanels(), new SaleFields($saleChoiceRepository));
 
-        return new SaleSaves($saleChoiceRepository, $this->saleRecordRepository, new SaleChecks($saleChoiceRepository), $saleForm);
+        $holdRepository = new HoldRepository($this->entityStore, new VehicleStatusRepository($this->entityStore));
+        $saleChecks = new SaleChecks($saleChoiceRepository, $holdRepository);
+
+        return new SaleSaves($saleChoiceRepository, $this->saleRecordRepository, $saleChecks, $saleForm);
     }
 
     /**

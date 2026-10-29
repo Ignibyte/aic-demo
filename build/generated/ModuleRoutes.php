@@ -25,6 +25,7 @@ final readonly class ModuleRoutes
         $routeCollector = (new StaffRoutes())->add($routeCollector);
         $routeCollector = (new CustomersRoutes())->add($routeCollector);
         $routeCollector = (new InventoryRoutes())->add($routeCollector);
+        $routeCollector = (new HoldsRoutes())->add($routeCollector);
         $routeCollector = (new SalesRoutes())->add($routeCollector);
         $routeCollector = (new DashboardRoutes())->add($routeCollector);
         $routeCollector = (new InboxRoutes())->add($routeCollector);

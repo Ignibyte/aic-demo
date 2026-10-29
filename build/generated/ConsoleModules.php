@@ -14,6 +14,7 @@ use AIC\Module\Application\JobWiring;
 use AIC\Module\Application\PluginWiring;
 use AIC\Schedule\Domain\Schedule;
 use AIC\Schema\Contracts\Migration;
+use InvalidArgumentException;
 use Override;
 use RuntimeException;
 
@@ -33,6 +34,8 @@ final readonly class ConsoleModules implements CommandWiring, ConsoleWiring, Job
     }
 
     /**
+     * @throws InvalidArgumentException When a called constructor or service fails.
+     *
      * @return list<Schedule> The modules' schedules.
      */
     #[Override]
@@ -56,6 +59,8 @@ final readonly class ConsoleModules implements CommandWiring, ConsoleWiring, Job
 
     /**
      * @param ConsoleContext $consoleContext The console's roots.
+     *
+     * @throws RuntimeException When a called constructor or service fails.
      *
      * @return array<string, Job> The modules' jobs by name.
      */

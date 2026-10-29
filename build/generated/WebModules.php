@@ -42,6 +42,8 @@ final readonly class WebModules implements BlockWiring, HandlerWiring, Middlewar
     }
 
     /**
+     * @throws InvalidArgumentException When a called constructor or service fails.
+     *
      * @return list<Schedule> The modules' schedules.
      */
     #[Override]

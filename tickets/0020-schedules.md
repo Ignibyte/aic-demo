@@ -2,9 +2,10 @@
 number: 20
 title: "Schedules: aged stock, holds that expire, a nightly digest"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T11:01:56Z
+phase: "docs"
 ---
 
 This run adds work nobody asks for: the app's first schedules.

@@ -1399,6 +1399,105 @@
             "captures": false
         },
         {
+            "name": "storefront car, the sale vehicle in stock",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-bd6a07",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "holds",
+            "method": "GET",
+            "path": "/app/holds",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "hold form",
+            "method": "GET",
+            "path": "/app/holds/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "hold form, from the vehicle",
+            "method": "GET",
+            "path": "/app/holds/new?vehicle=0LTGATE2XSR999002",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "hold create, every field refused",
+            "method": "POST",
+            "path": "/app/holds",
+            "form": "vehicle=nope&customer=nope&note=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "hold create, no token",
+            "method": "POST",
+            "path": "/app/holds",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ada.abbott%40example.test&note=Coming%20Saturday",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "hold create",
+            "method": "POST",
+            "path": "/app/holds",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ada.abbott%40example.test&note=Coming%20Saturday%20with%20her%20trade-in&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "hold create, vehicle on hold already",
+            "method": "POST",
+            "path": "/app/holds",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ben.duarte%40example.test&note=Wants%20it%20too&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "storefront car, held",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-bd6a07",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "sale form, a held vehicle",
+            "method": "GET",
+            "path": "/app/sales/new?vehicle=0LTGATE2XSR999002",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "sale create, held for another customer",
+            "method": "POST",
+            "path": "/app/sales",
+            "form": "vehicle=0LTGATE2XSR999002&customer=ben.duarte%40example.test&salesperson=gate&price=19500&sold_on=2026-10-20&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
             "name": "sale create, every field refused",
             "method": "POST",
             "path": "/app/sales",
@@ -1438,6 +1537,15 @@
             "name": "sale page",
             "method": "GET",
             "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "holds, after the held vehicle sold to its customer",
+            "method": "GET",
+            "path": "/app/holds",
             "form": "",
             "header": "",
             "status": 200,

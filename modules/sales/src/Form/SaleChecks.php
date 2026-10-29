@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Sales\Form;
 
 use AIC\Database\Contracts\QueryException;
+use App\Holds\Repository\HoldRepository;
 use App\Sales\Entity\SaleDetails;
 use App\Sales\Entity\SaleVehicle;
 use App\Sales\Repository\SaleChoiceRepository;
@@ -18,9 +19,9 @@ use function substr;
 use function trim;
 
 /**
- * The sale form's checks, field by field: a vehicle on the lot that is not sold, a customer, a member of staff, a
- * price of whole dollars from 1 to 9,999,999, and a real day that is neither after today nor before the vehicle came;
- * and the sale a valid entry describes, by the ids of what it names.
+ * The sale form's checks, field by field: a vehicle on the lot that is not sold, nor held for another customer (#20), a
+ * customer, a member of staff, a price of whole dollars from 1 to 9,999,999, and a real day that is neither after today
+ * nor before the vehicle came; and the sale a valid entry describes, by the ids of what it names.
  */
 final readonly class SaleChecks
 {
@@ -30,10 +31,17 @@ final readonly class SaleChecks
     public const string ALREADY_SOLD = 'This vehicle is already sold.';
 
     /**
+     * Why a vehicle held for another customer is refused.
+     */
+    public const string HELD = 'This vehicle is on hold for another customer.';
+
+    /**
      * @param SaleChoiceRepository $saleChoiceRepository Finds what the entry names.
+     * @param HoldRepository       $holdRepository       Whether a vehicle is held for another customer, holds'.
      */
     public function __construct(
         private SaleChoiceRepository $saleChoiceRepository,
+        private HoldRepository $holdRepository,
     ) {
     }
 
@@ -61,7 +69,7 @@ final readonly class SaleChecks
             'price' => $this->priceError($price),
             'salesperson' => $this->choiceError($saleEntry->value('salesperson'), $salespersonId, 'salesperson'),
             'sold_on' => $this->dayError($soldOn, $today, $saleVehicle),
-            'vehicle' => $this->vehicleError($vin, $saleVehicle),
+            'vehicle' => $this->vehicleError($vin, $saleVehicle, $customerId),
         ]);
 
         if ($errors !== [] || !$saleVehicle instanceof SaleVehicle) {
@@ -96,10 +104,14 @@ final readonly class SaleChecks
     /**
      * @param string           $vin         The posted VIN, in capitals.
      * @param SaleVehicle|null $saleVehicle The vehicle with it; null when none has it.
+     * @param int              $customerId  The customer the sale names; 0 for none.
+     *
+     * @throws QueryException           When the vehicle's hold cannot be read.
+     * @throws InvalidArgumentException When its entity type is malformed.
      *
      * @return string Why it is refused; empty when it is fine.
      */
-    private function vehicleError(string $vin, ?SaleVehicle $saleVehicle): string
+    private function vehicleError(string $vin, ?SaleVehicle $saleVehicle, int $customerId): string
     {
         if ($vin === '') {
             return 'Choose the vehicle.';
@@ -109,8 +121,12 @@ final readonly class SaleChecks
             return 'Choose a vehicle on the lot.';
         }
 
-        return $saleVehicle->sold
-            ? self::ALREADY_SOLD
+        if ($saleVehicle->sold) {
+            return self::ALREADY_SOLD;
+        }
+
+        return $this->holdRepository->heldForAnother($saleVehicle->id, $customerId)
+            ? self::HELD
             : '';
     }
 

@@ -9,8 +9,10 @@ declare(strict_types=1);
  * all under /app, which the staff module's protected prefix keeps to
  * signed-in staff. It plugs into the vehicle's and the customer's pages, whose
  * modules it requires. It exports its repository and its `Sale`, through which
- * the dashboard reads the sales recorded last (#14). The build reads it;
- * nothing reads it at run time.
+ * the dashboard reads the sales recorded last (#14). It requires holds, which
+ * it asks whether a vehicle is held for another customer, and tells when a
+ * held vehicle is sold to its customer (#20). The build reads it; nothing
+ * reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -36,6 +38,7 @@ return (new ModuleManifest('sales'))
     ->requires('inventory')
     ->requires('customers')
     ->requires('staff')
+    ->requires('holds')
     ->route(RouteMethod::Get, '/app/sales', SaleListPage::class)
     ->route(RouteMethod::Get, '/app/sales/new', SaleNewPage::class)
     ->route(RouteMethod::Post, '/app/sales', SaleCreatePost::class)

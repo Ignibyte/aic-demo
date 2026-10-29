@@ -104,6 +104,19 @@ final readonly class Heroicons
     }
 
     /**
+     * @return Icon `clock`, for Holds.
+     */
+    public function clock(): Icon
+    {
+        return new Icon([
+            new IconPath(
+                'M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z',
+                true,
+            ),
+        ]);
+    }
+
+    /**
      * @return Icon `bell`, for the notification bell.
      */
     public function bell(): Icon

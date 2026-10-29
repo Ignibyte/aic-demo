@@ -12,10 +12,10 @@ use App\Inventory\Entity\VehicleTable;
 use InvalidArgumentException;
 
 /**
- * A vehicle's status by its id, for the module that sells vehicles (#7): whether one can be sold, its row locked for
- * the transaction that sells it, and its status changed when a sale is recorded or voided. Inventory owns the
- * `vehicles` table, so other modules change its rows only through here; each call runs on the caller's transaction,
- * through the entity store (#14).
+ * A vehicle's status by its id, for the modules that sell and hold vehicles (#7, #20): whether one can be sold, or its
+ * status, its row locked for the transaction that sells or holds it, and its status changed when a sale is recorded or
+ * voided or a hold placed or released. Inventory owns the `vehicles` table, so other modules change its rows only
+ * through here; each call runs on the caller's transaction, through the entity store (#14).
  */
 final readonly class VehicleStatusRepository
 {
@@ -42,9 +42,29 @@ final readonly class VehicleStatusRepository
      */
     public function lockSellable(int $vehicleId): bool
     {
+        $status = $this->lockedStatus($vehicleId);
+
+        return $status !== '' && $status !== VehicleStatus::Sold->value;
+    }
+
+    /**
+     * Call it inside a transaction: the row stays locked until it ends. Holds (#20) lock a vehicle through here before
+     * any of its holds, as a sale does, so every write takes the locks in the same order.
+     *
+     * @param int $vehicleId A vehicle's id.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return string Its stored status, its row now locked; empty when it is gone.
+     */
+    public function lockedStatus(int $vehicleId): string
+    {
         $row = $this->entityStore->query($this->vehicleTable->type())->where('id', $vehicleId)->forUpdate()->first();
 
-        return $row instanceof Row && $row->string('status') !== VehicleStatus::Sold->value;
+        return $row instanceof Row
+            ? $row->string('status')
+            : '';
     }
 
     /**
