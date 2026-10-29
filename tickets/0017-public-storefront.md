@@ -2,9 +2,10 @@
 number: 17
 title: "The public storefront and a vehicle feed"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T02:44:56Z
+phase: "docs"
 ---
 
 Until now every page is for staff. This run adds the dealership's public side, for customers, at

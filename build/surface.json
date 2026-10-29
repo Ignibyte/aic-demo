@@ -230,6 +230,41 @@
             "method": "POST",
             "module": "site",
             "path": "/theme"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarPhotoStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}/photos/{position:int}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\VehicleFeedItemApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/api/vehicles/{slug}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\VehicleFeedApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/api/vehicles"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars"
         }
     ],
     "commands": [
@@ -410,7 +445,10 @@
                 "App\\Inventory\\Repository\\VehicleStatusRepository",
                 "App\\Inventory\\Service\\SeedVehicles",
                 "App\\Inventory\\Entity\\VehicleTable",
-                "App\\Inventory\\Repository\\TodayRepository"
+                "App\\Inventory\\Repository\\TodayRepository",
+                "App\\Inventory\\Repository\\ListedVehicleRepository",
+                "App\\Inventory\\Entity\\ListedVehicle",
+                "App\\Inventory\\Entity\\ListingQuery"
             ],
             "factories": [
                 "App\\Inventory\\Service\\VehicleServices"
@@ -500,6 +538,23 @@
             "requires": [
                 "staff"
             ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "storefront",
+            "namespace": "App\\Storefront\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "inventory",
+                "photos",
+                "staff"
+            ]
         }
     ],
     "theme": {
@@ -519,6 +574,16 @@
                 "component": "App\\Theme\\Components\\BootstrapIntro\\BootstrapIntro",
                 "generated": "build/generated/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml",
                 "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CarGrid\\CarGrid",
+                "generated": "build/generated/templates/themes/lotline/components/CarGrid/car-grid.phtml",
+                "source": "themes/lotline/components/CarGrid/car-grid.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CarProfile\\CarProfile",
+                "generated": "build/generated/templates/themes/lotline/components/CarProfile/car-profile.phtml",
+                "source": "themes/lotline/components/CarProfile/car-profile.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\ColumnChart\\ColumnChart",
@@ -646,6 +711,21 @@
                 "source": "themes/lotline/components/StatusBadge/status-badge.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\StoreFooter\\StoreFooter",
+                "generated": "build/generated/templates/themes/lotline/components/StoreFooter/store-footer.phtml",
+                "source": "themes/lotline/components/StoreFooter/store-footer.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\StoreHeader\\StoreHeader",
+                "generated": "build/generated/templates/themes/lotline/components/StoreHeader/store-header.phtml",
+                "source": "themes/lotline/components/StoreHeader/store-header.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\StoreHeading\\StoreHeading",
+                "generated": "build/generated/templates/themes/lotline/components/StoreHeading/store-heading.phtml",
+                "source": "themes/lotline/components/StoreHeading/store-heading.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\TableResults\\TableResults",
                 "generated": "build/generated/templates/themes/lotline/components/TableResults/table-results.phtml",
                 "source": "themes/lotline/components/TableResults/table-results.phtml"
@@ -662,7 +742,20 @@
             }
         ],
         "html": "themes/lotline/layouts/html.phtml",
-        "layouts": [],
+        "layouts": [
+            {
+                "html": "themes/lotline/layouts/html--store.phtml",
+                "identity": "lotline-store",
+                "name": "store",
+                "page": "themes/lotline/layouts/page--store.phtml",
+                "pageData": "App\\Theme\\Layouts\\StorePage",
+                "regions": [
+                    "masthead",
+                    "content",
+                    "colophon"
+                ]
+            }
+        ],
         "name": "lotline",
         "page": "themes/lotline/layouts/page.phtml",
         "pageData": "App\\Theme\\Layouts\\Page",

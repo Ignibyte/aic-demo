@@ -25,6 +25,7 @@ final readonly class ThemeHtmlTemplate
     public function render(ThemeLayout $themeLayout, RenderPass $renderPass): string
     {
         return match ($themeLayout->page->layout) {
+            'store' => $this->renderHtmlStore($themeLayout, $renderPass),
             default => $this->renderHtml($themeLayout, $renderPass),
         };
     }
@@ -41,6 +42,22 @@ final readonly class ThemeHtmlTemplate
     {
         $renderPass->open($themeLayout);
         require __DIR__ . '/templates/themes/lotline/layouts/html.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param ThemeLayout $themeLayout The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/layouts/html--store.phtml.
+     */
+    private function renderHtmlStore(ThemeLayout $themeLayout, RenderPass $renderPass): string
+    {
+        $renderPass->open($themeLayout);
+        require __DIR__ . '/templates/themes/lotline/layouts/html--store.phtml';
 
         return $renderPass->close();
     }

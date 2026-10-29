@@ -58,6 +58,7 @@
             "App\\Sales\\": "modules/sales/src/",
             "App\\Site\\": "modules/site/src/",
             "App\\Staff\\": "modules/staff/src/",
+            "App\\Storefront\\": "modules/storefront/src/",
             "App\\Theme\\Components\\": "themes/lotline/src/Components/",
             "App\\Theme\\Layouts\\": "themes/lotline/src/Layouts/"
         }

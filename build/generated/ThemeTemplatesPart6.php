@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\Pagination\Pagination;
+use App\Theme\Components\Panel\Panel;
 use App\Theme\Components\PanelGrid\PanelGrid;
 use App\Theme\Components\PhotoGallery\PhotoGallery;
-use App\Theme\Components\SelectField\SelectField;
-use App\Theme\Components\SignedInMenu\SignedInMenu;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof Pagination => $this->renderPagination($component, $renderPass),
+            $component instanceof Panel => $this->renderPanel($component, $renderPass),
             $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
             $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
-            $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
-            $component instanceof SignedInMenu => $this->renderSignedInMenu($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param Pagination $pagination The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/Pagination/pagination.phtml.
+     */
+    private function renderPagination(Pagination $pagination, RenderPass $renderPass): string
+    {
+        $renderPass->open($pagination);
+        require __DIR__ . '/templates/themes/lotline/components/Pagination/pagination.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param Panel      $panel      The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/Panel/panel.phtml.
+     */
+    private function renderPanel(Panel $panel, RenderPass $renderPass): string
+    {
+        $renderPass->open($panel);
+        require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         $renderPass->open($photoGallery);
         require __DIR__ . '/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SelectField $selectField The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SelectField/select-field.phtml.
-     */
-    private function renderSelectField(SelectField $selectField, RenderPass $renderPass): string
-    {
-        $renderPass->open($selectField);
-        require __DIR__ . '/templates/themes/lotline/components/SelectField/select-field.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SignedInMenu $signedInMenu The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml.
-     */
-    private function renderSignedInMenu(SignedInMenu $signedInMenu, RenderPass $renderPass): string
-    {
-        $renderPass->open($signedInMenu);
-        require __DIR__ . '/templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml';
 
         return $renderPass->close();
     }

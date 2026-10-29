@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\TableRow\TableRow;
-use App\Theme\Components\TopBar\TopBar;
+use App\Theme\Components\StatusBadge\StatusBadge;
+use App\Theme\Components\StoreFooter\StoreFooter;
+use App\Theme\Components\StoreHeader\StoreHeader;
+use App\Theme\Components\StoreHeading\StoreHeading;
 use Override;
 
 /**
@@ -23,7 +24,7 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The templates after these.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new ThemeTemplatesPart9(),
     ) {
     }
 
@@ -39,40 +40,74 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
-            $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
+            $component instanceof StatusBadge => $this->renderStatusBadge($component, $renderPass),
+            $component instanceof StoreFooter => $this->renderStoreFooter($component, $renderPass),
+            $component instanceof StoreHeader => $this->renderStoreHeader($component, $renderPass),
+            $component instanceof StoreHeading => $this->renderStoreHeading($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param TableRow   $tableRow   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param StatusBadge $statusBadge The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TableRow/table-row.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/StatusBadge/status-badge.phtml.
      */
-    private function renderTableRow(TableRow $tableRow, RenderPass $renderPass): string
+    private function renderStatusBadge(StatusBadge $statusBadge, RenderPass $renderPass): string
     {
-        $renderPass->open($tableRow);
-        require __DIR__ . '/templates/themes/lotline/components/TableRow/table-row.phtml';
+        $renderPass->open($statusBadge);
+        require __DIR__ . '/templates/themes/lotline/components/StatusBadge/status-badge.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param TopBar     $topBar     The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param StoreFooter $storeFooter The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TopBar/top-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/StoreFooter/store-footer.phtml.
      */
-    private function renderTopBar(TopBar $topBar, RenderPass $renderPass): string
+    private function renderStoreFooter(StoreFooter $storeFooter, RenderPass $renderPass): string
     {
-        $renderPass->open($topBar);
-        require __DIR__ . '/templates/themes/lotline/components/TopBar/top-bar.phtml';
+        $renderPass->open($storeFooter);
+        require __DIR__ . '/templates/themes/lotline/components/StoreFooter/store-footer.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param StoreHeader $storeHeader The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/StoreHeader/store-header.phtml.
+     */
+    private function renderStoreHeader(StoreHeader $storeHeader, RenderPass $renderPass): string
+    {
+        $renderPass->open($storeHeader);
+        require __DIR__ . '/templates/themes/lotline/components/StoreHeader/store-header.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param StoreHeading $storeHeading The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/StoreHeading/store-heading.phtml.
+     */
+    private function renderStoreHeading(StoreHeading $storeHeading, RenderPass $renderPass): string
+    {
+        $renderPass->open($storeHeading);
+        require __DIR__ . '/templates/themes/lotline/components/StoreHeading/store-heading.phtml';
 
         return $renderPass->close();
     }

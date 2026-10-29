@@ -9,6 +9,7 @@ use AIC\Component\Contracts\Regions;
 use AIC\Component\Domain\ThemePage;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Layouts\Page;
+use App\Theme\Layouts\StorePage;
 use InvalidArgumentException;
 
 /**
@@ -29,6 +30,7 @@ final readonly class ThemePageTemplate
     public function render(ThemePage $themePage, RenderPass $renderPass): string
     {
         return match ($themePage->layout) {
+            'store' => $this->pageStore($themePage->regions, $renderPass),
             default => $this->page($themePage->regions, $renderPass),
         };
     }
@@ -67,6 +69,43 @@ final readonly class ThemePageTemplate
     {
         $renderPass->open($page);
         require __DIR__ . '/templates/themes/lotline/layouts/page.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param Regions    $regions    The page's regions.
+     * @param RenderPass $renderPass The same pass used by targeted fragments.
+     *
+     * @throws InvalidArgumentException When a region cannot be constructed.
+     * @throws UnknownComponent         When a child has no registered template.
+     *
+     * @return string themes/lotline/layouts/page--store.phtml's markup.
+     */
+    private function pageStore(Regions $regions, RenderPass $renderPass): string
+    {
+        return $this->renderPageStore(
+            new StorePage(
+                $regions->region('masthead'),
+                $regions->region('content'),
+                $regions->region('colophon'),
+            ),
+            $renderPass,
+        );
+    }
+
+    /**
+     * @param StorePage  $storePage  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/layouts/page--store.phtml.
+     */
+    private function renderPageStore(StorePage $storePage, RenderPass $renderPass): string
+    {
+        $renderPass->open($storePage);
+        require __DIR__ . '/templates/themes/lotline/layouts/page--store.phtml';
 
         return $renderPass->close();
     }

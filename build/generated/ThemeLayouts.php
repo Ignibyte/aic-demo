@@ -27,6 +27,10 @@ final readonly class ThemeLayouts implements PageLayouts
             'identity' => 'lotline',
             'regions' => ['sidebar', 'header', 'content', 'footer'],
         ],
+        'store' => [
+            'identity' => 'lotline-store',
+            'regions' => ['masthead', 'content', 'colophon'],
+        ],
     ];
 
     /** @param PublicAssets $publicAssets The same compiled catalog used for public delivery. */
@@ -65,6 +69,7 @@ final readonly class ThemeLayouts implements PageLayouts
     private function name(?LayoutName $layoutName): string
     {
         return match ($layoutName) {
+            ThemeLayoutName::Store => 'store',
             default => '',
         };
     }
