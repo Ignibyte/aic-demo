@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\Pagination\Pagination;
-use App\Theme\Components\Panel\Panel;
-use App\Theme\Components\PanelGrid\PanelGrid;
-use App\Theme\Components\PhotoGallery\PhotoGallery;
+use App\Theme\Components\IconLegend\IconLegend;
+use App\Theme\Components\LiveParts\LiveParts;
+use App\Theme\Components\Navigation\Navigation;
+use App\Theme\Components\NavLink\NavLink;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof Pagination => $this->renderPagination($component, $renderPass),
-            $component instanceof Panel => $this->renderPanel($component, $renderPass),
-            $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
-            $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
+            $component instanceof IconLegend => $this->renderIconLegend($component, $renderPass),
+            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
+            $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
+            $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param Pagination $pagination The component; its template reads it.
+     * @param IconLegend $iconLegend The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Pagination/pagination.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/IconLegend/icon-legend.phtml.
      */
-    private function renderPagination(Pagination $pagination, RenderPass $renderPass): string
+    private function renderIconLegend(IconLegend $iconLegend, RenderPass $renderPass): string
     {
-        $renderPass->open($pagination);
-        require __DIR__ . '/templates/themes/lotline/components/Pagination/pagination.phtml';
+        $renderPass->open($iconLegend);
+        require __DIR__ . '/templates/themes/lotline/components/IconLegend/icon-legend.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param Panel      $panel      The component; its template reads it.
+     * @param LiveParts  $liveParts  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Panel/panel.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
      */
-    private function renderPanel(Panel $panel, RenderPass $renderPass): string
+    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
     {
-        $renderPass->open($panel);
-        require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
+        $renderPass->open($liveParts);
+        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param PanelGrid  $panelGrid  The component; its template reads it.
+     * @param NavLink    $navLink    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/PanelGrid/panel-grid.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/NavLink/nav-link.phtml.
      */
-    private function renderPanelGrid(PanelGrid $panelGrid, RenderPass $renderPass): string
+    private function renderNavLink(NavLink $navLink, RenderPass $renderPass): string
     {
-        $renderPass->open($panelGrid);
-        require __DIR__ . '/templates/themes/lotline/components/PanelGrid/panel-grid.phtml';
+        $renderPass->open($navLink);
+        require __DIR__ . '/templates/themes/lotline/components/NavLink/nav-link.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param PhotoGallery $photoGallery The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
+     * @param Navigation $navigation The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/Navigation/navigation.phtml.
      */
-    private function renderPhotoGallery(PhotoGallery $photoGallery, RenderPass $renderPass): string
+    private function renderNavigation(Navigation $navigation, RenderPass $renderPass): string
     {
-        $renderPass->open($photoGallery);
-        require __DIR__ . '/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml';
+        $renderPass->open($navigation);
+        require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
 
         return $renderPass->close();
     }

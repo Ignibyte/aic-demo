@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\BellItems\BellItems $bellItems */ ?>
+<ul class="menu w-full p-0 [&>li:nth-child(n+6)]:hidden [&>#bell-empty:not(:only-child)]:hidden" id="bell-items"><?php foreach ($bellItems->items as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?><li class="menu-disabled" id="bell-empty"><span><?= $bellItems->empty ?></span></li></ul>

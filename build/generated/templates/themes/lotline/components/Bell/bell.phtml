@@ -1,0 +1,5 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/Bell/bell.phtml by composer run build; edit that file, never this one. */ ?>
+<details<?= $renderPass->marks() ?> class="dropdown dropdown-end"<?php if ($bell->stream !== ''): ?> data-stream="<?= $renderPass->text($bell->stream) ?>"<?php endif; ?>>
+<summary class="btn btn-ghost btn-sm gap-1" id="bell" aria-label="Notifications"><?= $renderPass->child($bell->icon, 'Bell.1') ?><?= $renderPass->child($bell->count, 'Bell.2:' . $bell->count->key()) ?></summary>
+<div class="dropdown-content z-10 mt-2 w-80 rounded-box bg-base-100 p-2 shadow-2xl"><?= $renderPass->child($bell->items, 'Bell.3:' . $bell->items->key()) ?><a class="btn btn-ghost btn-sm btn-block mt-1" id="bell-all" href="<?= $renderPass->text($bell->all) ?>">All notifications</a></div>
+</details>

@@ -162,7 +162,7 @@ export interface Answer {
     location: string;
 }
 
-// Records the page's answers but its assets and images. It only listens: `recordRequests()` sends each request again
+// Records the page's answers but its assets, its images and the bell's stream. It only listens: `recordRequests()` sends each request again
 // through `route.fetch()`, which sends a multipart upload's file empty, so the photo looks cannot use it.
 export function recordAnswers(page: Page): Answer[] {
     const answers: Answer[] = [];
@@ -170,7 +170,9 @@ export function recordAnswers(page: Page): Answer[] {
         const request = response.request();
         const url = new URL(request.url());
 
-        if (url.pathname.startsWith('/assets/') || request.resourceType() === 'image') {
+        const stream = request.headers()['tessera-request'] === 'stream';
+
+        if (url.pathname.startsWith('/assets/') || request.resourceType() === 'image' || stream) {
             return;
         }
 

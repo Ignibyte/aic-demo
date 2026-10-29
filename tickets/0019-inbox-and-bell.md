@@ -2,9 +2,10 @@
 number: 19
 title: "The staff inbox and a live bell"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T09:47:58Z
+phase: "docs"
 ---
 
 Staff now get notifications (run 18). This run shows them.

@@ -13,13 +13,16 @@ test.afterEach(() => removeLiveLooks());
 test('a sale recorded in one page appears on the dashboard open in another within seconds, by poll', async ({ page }) => {
     const errors = collectErrors(page);
 
-    // The tiles and the feed sit in one element that Tessera polls from the dashboard itself; there is no stream.
+    // The tiles and the feed sit in one element that Tessera polls from the dashboard itself; that part has no stream.
+    // The page's only stream is the bell's (#19), which the recorder lets go by.
     await signIn(page);
     await ready(page);
     await expect(page.locator('[data-poll__5s]')).toHaveAttribute('data-poll__5s', '/app');
     await expect(page.locator('[data-poll__5s] #dashboard-tiles')).toHaveCount(1);
     await expect(page.locator('[data-poll__5s] #sales-feed')).toHaveCount(1);
-    await expect(page.locator('[data-stream]')).toHaveCount(0);
+    await expect(page.locator('[data-poll__5s] [data-stream], [data-poll__5s][data-stream]')).toHaveCount(0);
+    await expect(page.locator('[data-stream]')).toHaveCount(1);
+    await expect(page.locator('[data-stream]')).toHaveAttribute('data-stream', /^\/app\/inbox\/events\?after=\d+$/);
     await expectFeed(page);
     await markPage(page);
     const requests = await recordPolls(page);

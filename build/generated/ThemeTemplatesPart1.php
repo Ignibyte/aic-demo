@@ -11,9 +11,9 @@ use AIC\Component\Domain\ThemeLayout;
 use AIC\Component\Domain\ThemePage;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\BarChart\BarChart;
-use App\Theme\Components\BootstrapIntro\BootstrapIntro;
-use App\Theme\Components\CarGrid\CarGrid;
-use App\Theme\Components\CarProfile\CarProfile;
+use App\Theme\Components\Bell\Bell;
+use App\Theme\Components\BellBadge\BellBadge;
+use App\Theme\Components\BellCount\BellCount;
 use Override;
 
 /**
@@ -45,9 +45,9 @@ final readonly class ThemeTemplatesPart1 implements ComponentTemplates
             $component instanceof ThemeLayout => (new ThemeHtmlTemplate())->render($component, $renderPass),
             $component instanceof ThemePage => (new ThemePageTemplate())->render($component, $renderPass),
             $component instanceof BarChart => $this->renderBarChart($component, $renderPass),
-            $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
-            $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
-            $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
+            $component instanceof Bell => $this->renderBell($component, $renderPass),
+            $component instanceof BellBadge => $this->renderBellBadge($component, $renderPass),
+            $component instanceof BellCount => $this->renderBellCount($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -69,49 +69,49 @@ final readonly class ThemeTemplatesPart1 implements ComponentTemplates
     }
 
     /**
-     * @param BootstrapIntro $bootstrapIntro The component; its template reads it.
-     * @param RenderPass     $renderPass     The pass its template writes through.
+     * @param Bell       $bell       The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/Bell/bell.phtml.
      */
-    private function renderBootstrapIntro(BootstrapIntro $bootstrapIntro, RenderPass $renderPass): string
+    private function renderBell(Bell $bell, RenderPass $renderPass): string
     {
-        $renderPass->open($bootstrapIntro);
-        require __DIR__ . '/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml';
+        $renderPass->open($bell);
+        require __DIR__ . '/templates/themes/lotline/components/Bell/bell.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param CarGrid    $carGrid    The component; its template reads it.
+     * @param BellBadge  $bellBadge  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/CarGrid/car-grid.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/BellBadge/bell-badge.phtml.
      */
-    private function renderCarGrid(CarGrid $carGrid, RenderPass $renderPass): string
+    private function renderBellBadge(BellBadge $bellBadge, RenderPass $renderPass): string
     {
-        $renderPass->open($carGrid);
-        require __DIR__ . '/templates/themes/lotline/components/CarGrid/car-grid.phtml';
+        $renderPass->open($bellBadge);
+        require __DIR__ . '/templates/themes/lotline/components/BellBadge/bell-badge.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param CarProfile $carProfile The component; its template reads it.
+     * @param BellCount  $bellCount  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/CarProfile/car-profile.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/BellCount/bell-count.phtml.
      */
-    private function renderCarProfile(CarProfile $carProfile, RenderPass $renderPass): string
+    private function renderBellCount(BellCount $bellCount, RenderPass $renderPass): string
     {
-        $renderPass->open($carProfile);
-        require __DIR__ . '/templates/themes/lotline/components/CarProfile/car-profile.phtml';
+        $renderPass->open($bellCount);
+        require __DIR__ . '/templates/themes/lotline/components/BellCount/bell-count.phtml';
 
         return $renderPass->close();
     }

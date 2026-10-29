@@ -204,6 +204,34 @@
             "path": "/app"
         },
         {
+            "handler": "App\\Inbox\\Controller\\InboxPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\BellEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox/events"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\NotificationPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox/{id:int}"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\InboxReadAllPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inbox",
+            "path": "/app/inbox/read-all"
+        },
+        {
             "handler": "App\\Leads\\Controller\\LeadPage",
             "kind": "Page",
             "method": "GET",
@@ -571,6 +599,25 @@
         },
         {
             "bindings": [],
+            "blocks": [
+                "App\\Inbox\\Block\\BellBlock"
+            ],
+            "exports": [],
+            "factories": [
+                "App\\Inbox\\Service\\InboxServices"
+            ],
+            "middleware": [],
+            "migrations": [],
+            "name": "inbox",
+            "namespace": "App\\Inbox\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
             "blocks": [],
             "exports": [
                 "App\\Leads\\Service\\LeadDesk",
@@ -645,6 +692,31 @@
                 "component": "App\\Theme\\Components\\BarChart\\BarChart",
                 "generated": "build/generated/templates/themes/lotline/components/BarChart/bar-chart.phtml",
                 "source": "themes/lotline/components/BarChart/bar-chart.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\Bell\\Bell",
+                "generated": "build/generated/templates/themes/lotline/components/Bell/bell.phtml",
+                "source": "themes/lotline/components/Bell/bell.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\BellBadge\\BellBadge",
+                "generated": "build/generated/templates/themes/lotline/components/BellBadge/bell-badge.phtml",
+                "source": "themes/lotline/components/BellBadge/bell-badge.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\BellCount\\BellCount",
+                "generated": "build/generated/templates/themes/lotline/components/BellCount/bell-count.phtml",
+                "source": "themes/lotline/components/BellCount/bell-count.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\BellItem\\BellItem",
+                "generated": "build/generated/templates/themes/lotline/components/BellItem/bell-item.phtml",
+                "source": "themes/lotline/components/BellItem/bell-item.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\BellItems\\BellItems",
+                "generated": "build/generated/templates/themes/lotline/components/BellItems/bell-items.phtml",
+                "source": "themes/lotline/components/BellItems/bell-items.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\BootstrapIntro\\BootstrapIntro",

@@ -1,0 +1,2 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/BellItem/bell-item.phtml by composer run build; edit that file, never this one. */ ?>
+<li<?= $renderPass->marks() ?> id="<?= $renderPass->text($bellItem->id) ?>"><a class="flex flex-col items-start gap-0<?php if (!$bellItem->read): ?> font-semibold<?php endif; ?>" href="<?= $renderPass->text($bellItem->href) ?>"><span><?= $renderPass->text($bellItem->subject) ?></span><span class="text-xs font-normal text-base-content/60"><?= $renderPass->text($bellItem->sent) ?></span></a></li>

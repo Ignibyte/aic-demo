@@ -73,7 +73,7 @@ final readonly class LeadNotices
         $lines[] = '';
         $lines[] = 'Open the lead: ' . $lead->path();
 
-        return new Notification((string) $seller->id, $seller->email, $subject, implode("\n", $lines));
+        return new Notification((string) $seller->id, $seller->email, $subject, implode("\n", $lines), $lead->path());
     }
 
     /**

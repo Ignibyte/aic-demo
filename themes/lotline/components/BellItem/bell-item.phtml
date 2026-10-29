@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\BellItem\BellItem $bellItem */ ?>
+<li id="<?= $bellItem->id ?>"><a class="flex flex-col items-start gap-0<?php if (!$bellItem->read): ?> font-semibold<?php endif; ?>" href="<?= $bellItem->href ?>"><span><?= $bellItem->subject ?></span><span class="text-xs font-normal text-base-content/60"><?= $bellItem->sent ?></span></a></li>

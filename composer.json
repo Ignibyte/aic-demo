@@ -53,6 +53,7 @@
             "App\\Customers\\": "modules/customers/src/",
             "App\\Dashboard\\": "modules/dashboard/src/",
             "App\\Generated\\": "build/generated/",
+            "App\\Inbox\\": "modules/inbox/src/",
             "App\\Inventory\\": "modules/inventory/src/",
             "App\\Leads\\": "modules/leads/src/",
             "App\\Photos\\": "modules/photos/src/",
