@@ -127,6 +127,27 @@
             "path": "/app/inventory/{vin}/delete"
         },
         {
+            "handler": "App\\Inventory\\Controller\\VehiclePhotoPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/photos"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehiclePhotoStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/photos/{position:int}"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehiclePhotoDeletePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/photos/{position:int}/delete"
+        },
+        {
             "handler": "App\\Inventory\\Controller\\InventoryListPage",
             "kind": "Page",
             "method": "GET",
@@ -304,7 +325,9 @@
                 "App\\Staff\\Service\\StaffNotices",
                 "App\\Staff\\Form\\StaffSeals",
                 "App\\Staff\\Service\\StaffRequests",
-                "App\\Staff\\Entity\\StaffTable"
+                "App\\Staff\\Entity\\StaffTable",
+                "App\\Staff\\Entity\\StaffMember",
+                "App\\Staff\\Entity\\Role"
             ],
             "factories": [
                 "App\\Staff\\Service\\AccessRules",
@@ -356,6 +379,27 @@
             "bindings": [],
             "blocks": [],
             "exports": [
+                "App\\Photos\\Service\\VehiclePhotos",
+                "App\\Photos\\Service\\PhotoGalleries",
+                "App\\Photos\\Entity\\VehiclePhoto"
+            ],
+            "factories": [],
+            "middleware": [],
+            "migrations": [
+                "App\\Photos\\Migration\\CreateVehiclePhotosTable"
+            ],
+            "name": "photos",
+            "namespace": "App\\Photos\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
                 "App\\Inventory\\Service\\VehicleSales",
                 "App\\Inventory\\Entity\\VehicleSale",
                 "App\\Inventory\\Entity\\Vehicle",
@@ -381,7 +425,8 @@
             "plugins": [],
             "prefixes": [],
             "requires": [
-                "staff"
+                "staff",
+                "photos"
             ]
         },
         {
@@ -569,6 +614,11 @@
                 "component": "App\\Theme\\Components\\PanelGrid\\PanelGrid",
                 "generated": "build/generated/templates/themes/lotline/components/PanelGrid/panel-grid.phtml",
                 "source": "themes/lotline/components/PanelGrid/panel-grid.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\PhotoGallery\\PhotoGallery",
+                "generated": "build/generated/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml",
+                "source": "themes/lotline/components/PhotoGallery/photo-gallery.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\SelectField\\SelectField",

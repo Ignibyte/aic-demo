@@ -9,6 +9,7 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\TableRow\TableRow;
 use App\Theme\Components\TopBar\TopBar;
 use Override;
 
@@ -38,9 +39,26 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
             $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param TableRow   $tableRow   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/TableRow/table-row.phtml.
+     */
+    private function renderTableRow(TableRow $tableRow, RenderPass $renderPass): string
+    {
+        $renderPass->open($tableRow);
+        require __DIR__ . '/templates/themes/lotline/components/TableRow/table-row.phtml';
+
+        return $renderPass->close();
     }
 
     /**

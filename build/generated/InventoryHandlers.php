@@ -16,6 +16,8 @@ use App\Inventory\Controller\VehiclePage;
 use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
+use App\Staff\Form\StaffSeals;
+use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -40,12 +42,9 @@ final readonly class InventoryHandlers
     public function byId(): array
     {
         $entityStore = new EntityStore($this->handlerContext->database());
-        $vehicleServices = new VehicleServices(
-            $entityStore,
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->documents(),
-            $this->handlerContext->tagged(VehicleSales::class),
-        );
+        $staffPages = new StaffPages($this->handlerContext->documents());
+        $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
+        $vehicleServices = new VehicleServices($entityStore, $staffPages, $staffSeals, $this->handlerContext->tagged(VehicleSales::class));
         $vehicleSaves = $vehicleServices->vehicleSaves();
         $vehicleDeletes = $vehicleServices->vehicleDeletes();
 

@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\PanelGrid\PanelGrid;
+use App\Theme\Components\PhotoGallery\PhotoGallery;
 use App\Theme\Components\SelectField\SelectField;
 use App\Theme\Components\SignedInMenu\SignedInMenu;
-use App\Theme\Components\SiteFooter\SiteFooter;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
+            $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
             $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
             $component instanceof SignedInMenu => $this->renderSignedInMenu($component, $renderPass),
-            $component instanceof SiteFooter => $this->renderSiteFooter($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -60,6 +60,22 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         $renderPass->open($panelGrid);
         require __DIR__ . '/templates/themes/lotline/components/PanelGrid/panel-grid.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param PhotoGallery $photoGallery The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml.
+     */
+    private function renderPhotoGallery(PhotoGallery $photoGallery, RenderPass $renderPass): string
+    {
+        $renderPass->open($photoGallery);
+        require __DIR__ . '/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml';
 
         return $renderPass->close();
     }
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         $renderPass->open($signedInMenu);
         require __DIR__ . '/templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SiteFooter $siteFooter The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SiteFooter/site-footer.phtml.
-     */
-    private function renderSiteFooter(SiteFooter $siteFooter, RenderPass $renderPass): string
-    {
-        $renderPass->open($siteFooter);
-        require __DIR__ . '/templates/themes/lotline/components/SiteFooter/site-footer.phtml';
 
         return $renderPass->close();
     }

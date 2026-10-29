@@ -2,9 +2,10 @@
 number: 16
 title: "Vehicle photos: uploads, and files served back"
 type: feature
-status: open
+status: in-review
 created: 2026-10-28T12:00:00Z
-updated: 2026-10-28T12:00:00Z
+updated: 2026-10-29T01:50:53Z
+phase: "docs"
 ---
 
 This run gives a vehicle photos. It is the first time the app takes a file from a browser.

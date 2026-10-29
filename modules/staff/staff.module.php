@@ -12,7 +12,9 @@ declare(strict_types=1);
  * pages and the navigation other modules add, and a record page's panel, its
  * one-time notice and the envelope sealing its path (#6), which inventory and
  * customers share, and the `users` entity type, which sales references and
- * reads (#14). The build reads it; nothing reads it at run time.
+ * reads (#14); and the member and their role, by which photos decides who may
+ * change a vehicle's photos (#16). The build reads it; nothing reads it at run
+ * time.
  */
 
 use AIC\Auth\Application\PgcryptoPasswordHasher;
@@ -28,6 +30,8 @@ use App\Staff\Command\UserAdd;
 use App\Staff\Controller\SignInPage;
 use App\Staff\Controller\SignInPost;
 use App\Staff\Controller\SignOutPost;
+use App\Staff\Entity\Role;
+use App\Staff\Entity\StaffMember;
 use App\Staff\Entity\StaffTable;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Migration\CreateUsersTable;
@@ -60,4 +64,6 @@ return (new ModuleManifest('staff'))
     ->export(StaffNotices::class)
     ->export(StaffSeals::class)
     ->export(StaffRequests::class)
-    ->export(StaffTable::class);
+    ->export(StaffTable::class)
+    ->export(StaffMember::class)
+    ->export(Role::class);

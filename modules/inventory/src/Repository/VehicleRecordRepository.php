@@ -16,8 +16,8 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
- * One vehicle at a time, by its VIN, through the entity store (#14): read, checked for a taken VIN, made, changed and
- * deleted; and the database's own today, which the vehicle form's checks and its first date read.
+ * One vehicle at a time, by its VIN, through the entity store (#14): read, its id found, checked for a taken VIN, made,
+ * changed and deleted; and the database's own today, which the vehicle form's checks and its first date read.
  */
 final readonly class VehicleRecordRepository
 {
@@ -55,6 +55,23 @@ final readonly class VehicleRecordRepository
         return $row instanceof Row
             ? $this->vehicleRows->vehicle($row)
             : null;
+    }
+
+    /**
+     * @param string $vin A VIN.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return int The id of the vehicle with it, which its photos refer to; 0 when none has it.
+     */
+    public function vehicleId(string $vin): int
+    {
+        $row = $this->entityStore->query($this->vehicleTable->type())->where('vin', $vin)->limit(1)->first();
+
+        return $row instanceof Row
+            ? $row->int('id')
+            : 0;
     }
 
     /**

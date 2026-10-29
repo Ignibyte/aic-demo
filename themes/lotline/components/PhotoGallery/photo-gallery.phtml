@@ -1,0 +1,7 @@
+<?php /** @var \App\Theme\Components\PhotoGallery\PhotoGallery $photoGallery */ ?>
+<section class="flex max-w-3xl flex-col gap-4" id="<?= $photoGallery->id ?>" aria-labelledby="<?= $photoGallery->id ?>-heading">
+<h3 class="text-lg font-semibold" id="<?= $photoGallery->id ?>-heading"><?= $photoGallery->title ?></h3>
+<?php if (empty($photoGallery->photos)): ?><p class="text-sm opacity-70" id="<?= $photoGallery->id ?>-empty"><?= $photoGallery->empty ?></p><?php endif; ?>
+<ul class="grid grid-cols-2 gap-4 sm:grid-cols-3"><?php foreach ($photoGallery->photos as $galleryPhoto): ?><li class="flex flex-col gap-2<?php if ($galleryPhoto->main): ?> col-span-2 row-span-2<?php endif; ?>"><img class="aspect-[4/3] w-full rounded-box bg-base-300 object-cover" id="<?= $galleryPhoto->id ?>" src="<?= $galleryPhoto->src ?>" alt="<?= $galleryPhoto->alt ?>"><?php if ($galleryPhoto->main): ?><p class="text-sm opacity-70">Main photo</p><?php endif; ?><?php foreach ($galleryPhoto->actions as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></li><?php endforeach ?></ul>
+<?php foreach ($photoGallery->controls as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?>
+</section>

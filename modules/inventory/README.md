@@ -1,6 +1,6 @@
 # Inventory
 
-The vehicles on Ridgeway Motors' lot, for signed-in staff: listed at `/app/inventory`, and each one's record viewed, added, edited and deleted below it (#5). The module requires `staff`: every page sits under its protected `/app` prefix, so a signed-out visitor goes to `/sign-in?next=…` and comes back, and every page uses its exported `StaffPages` document.
+The vehicles on Ridgeway Motors' lot, for signed-in staff: listed at `/app/inventory`, and each one's record viewed, added, edited and deleted below it (#5), with its photos (#16). The module requires `staff` and `photos`: every page sits under its protected `/app` prefix, so a signed-out visitor goes to `/sign-in?next=…` and comes back, and every page uses its exported `StaffPages` document.
 
 ## Data
 
@@ -42,6 +42,9 @@ Each vehicle's pages are found by its VIN, not its numeric `id`: gate:23 replays
 | `POST /app/inventory/{vin}` | `VehicleUpdatePost` | 303 to the vehicle's page (its new path when the VIN changed), 422, or 400 for the envelope. |
 | `GET /app/inventory/{vin}/delete` | `VehicleDeletePage` | The `ConfirmCard`: Delete, or Keep it back to the vehicle. A sold vehicle gets a warning `Notice` and no form. |
 | `POST /app/inventory/{vin}/delete` | `VehicleDeletePost` | 303 to the list; 422 for a sold vehicle; 400 for the envelope. |
+| `POST /app/inventory/{vin}/photos` | `VehiclePhotoPost` | 303 to the vehicle with a notice; the vehicle's page as 422 with the reason; 403 for a salesperson. |
+| `GET /app/inventory/{vin}/photos/{position}` | `VehiclePhotoStream` | The photo at that position, from 1, inline; 404 for none. |
+| `POST /app/inventory/{vin}/photos/{position}/delete` | `VehiclePhotoDeletePost` | 303 to the vehicle with a notice; 400 for the envelope; 403 for a salesperson; 404 for no photo there. |
 
 Every vehicle page is one wide `vehicle` panel in the staff pages' document, framed by `staff`'s `StaffPanels`, which `VehicleServices` builds with that id stem; the 404, 400 and sold pages are its warning page.
 
@@ -56,6 +59,16 @@ The form (`VehicleForm`, its grid from `VehicleFields`) is AIC's `Form` atom aro
 A refusal answers 422 with the error alert above the fields, each message beside its field, and every value as typed. The create's insert skips a VIN taken since the check (`EntityStore::insertIfAbsent()`), and an update that meets one on the unique key finds it taken; both answer that refusal too; the delete's condition keeps a sold row whatever the page said. A save or a delete leaves one line in the session (`StaffNotices`, the `staff` module's, which customers share) for the page it redirects to, which shows it as a success `Notice` and clears it.
 
 The edit and delete forms carry AIC's signed envelope sealing the vehicle's path (`StaffSeals`, over `EnvelopeCodec`, from `staff` too). A post whose envelope is missing, altered or sealed for another vehicle's path answers 400 and changes nothing, so a form issued for one vehicle cannot change or delete another. The CSRF token and honeypot are the `Form` atom's.
+
+## Photos
+
+A vehicle's photos (#16) are the `photos` module's: its table, its files under `var/photos/` and its gallery. Inventory requires it and keeps the routes, since a refused upload answers the whole vehicle page, which only inventory builds; `photos` knows a vehicle by its numeric id alone, which `VehicleRecords::vehicleId()` finds by the route's VIN. `VehiclePhotoForms`, in `Form/`, holds the three routes' flows:
+
+- an upload from a sales manager or an admin goes to `VehiclePhotos::add()`; its refusal (no file, a file AIC's `UploadCheck` refuses by its content or its size, a thirteenth photo) answers `VehicleCards::page()` with the reason and 422, and Tessera puts it in place; a kept photo answers 303 to the vehicle with "Added a photo of the {title}.";
+- a delete names the photo by its position, and its form seals that photo's id (`VehiclePhoto::sealed()`), so a form from a page that is out of date answers 400 instead of deleting the photo now at that position;
+- the Stream answers `VehiclePhotos::download()`: AIC's `FileDownload` with the request, which sends the ETag, `Last-Modified` and `Cache-Control: private, no-cache` and answers ranges (206, 416) and conditions (304, 412).
+
+A salesperson's upload or delete answers 403 (AIC #197) and changes nothing; their page shows the photos with no form. The vehicle's page shows the gallery under its card, keyed `photos`. Deleting a vehicle deletes its photo rows by their foreign key, and `VehicleDeletes` then removes their files (`VehiclePhotos::forget()`), with the id it read before the delete.
 
 ## Sales
 
