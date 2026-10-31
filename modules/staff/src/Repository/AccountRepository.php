@@ -283,7 +283,7 @@ final readonly class AccountRepository
             ->orderBy('id')
             ->forUpdate();
 
-        return count($entityQuery->rows());
+        return count($entityQuery->rows()->all());
     }
 
     /**

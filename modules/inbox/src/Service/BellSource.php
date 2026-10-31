@@ -13,7 +13,6 @@ use InvalidArgumentException;
 use Override;
 
 use function array_slice;
-use function count;
 use function usleep;
 
 /**
@@ -139,12 +138,9 @@ final class BellSource implements EventSource
      */
     private function look(): void
     {
-        $newer = $this->inbox->newerThan($this->userId, $this->after);
-        $shown = count($newer) > BellParts::SHOWN
-            ? array_slice($newer, count($newer) - BellParts::SHOWN)
-            : $newer;
+        $newer = $this->inbox->newerThan($this->userId, $this->after, BellParts::SHOWN);
 
-        foreach ($shown as $inboxItem) {
+        foreach ($newer as $inboxItem) {
             $id = (string) $inboxItem->id;
             $event = $this->tesseraEvents->patchElements(BellParts::ITEMS, $this->bellParts->item($inboxItem), 'prepend', $id, false);
             $this->due[] = $event;
