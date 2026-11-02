@@ -24,7 +24,7 @@ Build the first real rendered page in this fresh Lotline app through the install
 
 ## Boundaries
 
-Work in /srv/stacks/aic-demo on feat/lotline-bootstrap-128. Existing operator controls, exact gate stubs, source packages and secrets are read-only. Use no suppression, baseline, threshold reduction, trust-store edit, permission bypass or synthetic review return. Do not change config/workflow.php or Codex controls. Read the installed skills and code index before proposing the exact source manifest. Report a required framework change to the primary before touching vendor or stable. No permanent test suite.
+Work in this repository on feat/lotline-bootstrap-128. Existing operator controls, exact gate stubs, source packages and secrets are read-only. Use no suppression, baseline, threshold reduction, trust-store edit, permission bypass or synthetic review return. Do not change config/workflow.php or Codex controls. Read the installed skills and code index before proposing the exact source manifest. Report a required framework change to the primary before touching vendor or stable. No permanent test suite.
 
 The current resident thread uses workspace-write with on-request approval and disabled shell network. Dependency/tool caches were populated by operator bootstrap. Do not request full access or write outside the app. Report a genuine environment hold through the workflow rather than bypassing it. The primary is available to resolve operator holds.
 

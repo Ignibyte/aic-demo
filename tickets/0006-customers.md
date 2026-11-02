@@ -8,7 +8,7 @@ updated: 2026-10-27T07:43:17Z
 phase: "docs"
 ---
 
-Staff keep Ridgeway Motors' customers. Old Lotline's ticket 7 (`/srv/stacks/lotline`, read only) is
+Staff keep Ridgeway Motors' customers. Old Lotline's ticket 7 (the private old Lotline repository) is
 the reference for behaviour, not for code.
 
 What to build, as a new `customers` module that requires `staff`, every route under the sign-in

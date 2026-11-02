@@ -9,7 +9,7 @@ phase: "docs"
 ---
 
 The inventory list's filters, sorting and pages update only the table through Tessera, the page's
-URL kept in step, instead of loading a new document. Old Lotline's ticket 10 (`/srv/stacks/lotline`,
+URL kept in step, instead of loading a new document. Old Lotline's ticket 10 (the private old Lotline repository,
 read only) is the reference for behaviour. AIC's server half and Tessera's pinned release are
 already in place; this is the first Lotline page that uses them for more than navigation.
 

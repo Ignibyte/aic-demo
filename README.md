@@ -1,16 +1,83 @@
 # Lotline
 
-Lotline is a fresh dealership operations application built on AIC for fictional Ridgeway Motors data.
+Lotline is the demo site for [AIC](https://github.com/Ignibyte/aic-nextgen), a PHP 8.5 framework
+built for coding agents to write apps in and built to compile to a native binary with elephc. It
+is a dealership's back office for the invented Ridgeway Motors: staff sign in, keep the vehicles
+on the lot, the customers and the sales, and land on a live dashboard. A coding agent wrote it
+through AIC's workflow, one ticket at a time (`tickets/`).
+
+## Try it
+
+You need git, Docker and [DDEV](https://ddev.com) 1.24.10 or later. Lotline requires AIC from a
+checkout beside it, so make a folder for both:
+
+```bash
+mkdir aic && cd aic
+git clone https://github.com/Ignibyte/aic-nextgen.git aic-nextgen-stable
+git -C aic-nextgen-stable checkout 516c93cf45c561e51593a1fc51e24a7856d9c28a
+git clone https://github.com/Ignibyte/aic-demo.git lotline
+cd lotline
+printf 'web_environment:\n  - AIC_APP_SECRET=%s\n' "$(openssl rand -hex 32)" > .ddev/config.local.yaml
+ddev start
+ddev composer install
+ddev exec bin/aic migrate
+```
+
+Then make the staff and fill the lot with invented data. Pick your own passwords:
+
+```bash
+ddev exec env LOTLINE_ADMIN_EMAIL=admin@example.test LOTLINE_ADMIN_NAME='Ada Admin' \
+  LOTLINE_ADMIN_PASSWORD='choose-a-password' LOTLINE_STAFF_PASSWORD='choose-another' bin/aic staff:seed
+ddev exec bin/aic inventory:seed
+ddev exec bin/aic customers:seed
+ddev exec bin/aic sales:seed
+```
+
+Open the URL `ddev start` printed, sign in at `/sign-in` with the admin's email and password, and
+look around. `/theme` is the style guide, open without signing in. This runs Lotline under PHP
+(nginx and php-fpm in DDEV), the runtime to use in production.
+
+### Under FrankenPHP
+
+`deploy/frankenphp/` holds a Caddyfile and a PHP 8.5 container. From `lotline/`:
+
+```bash
+docker build --build-context aic=../aic-nextgen-stable -f deploy/frankenphp/Dockerfile -t lotline .
+docker run -d --name lotline -p 8080:8080 -e SERVER_NAME=:8080 \
+  -e AIC_APP_SECRET="$(openssl rand -hex 32)" \
+  -e PGHOST=... -e PGPORT=5432 -e PGDATABASE=... -e PGUSER=... -e PGPASSWORD=... lotline
+docker exec lotline bin/aic migrate
+```
+
+Run the seeds the same way, with `docker exec lotline` in place of `ddev exec`. AIC's
+[deploy page](https://github.com/Ignibyte/aic-nextgen/blob/main/framework/docs/deploy.md) covers
+the rest: the schedule, the queue worker and a domain with automatic HTTPS.
+
+### Compiled (experimental)
+
+The same code compiles into one native HTTP server with
+[AIC's elephc fork](https://github.com/Ignibyte/aic_compiler): build it as its `FORK.md` says, so
+`elephc` is on your `PATH`. This needs PHP 8.5 and Composer on the host too:
+
+```bash
+composer install
+composer run native:serve        # builds the compiled site and serves it on http://127.0.0.1:8090
+```
+
+It finds DDEV's Postgres by itself. The gates hold the compiled site to PHP's answers on every
+page, but the compiler is young: try it, compare, and keep PHP for anything real.
+
+## How it is built
 
 This foundation provides the application runtime, database health check, installed development workflow and Lotline's theme. Staff sign in (the `staff` module, below), keep the vehicles on the lot (the `inventory` module), keep the customers (the `customers` module) and record the sales (the `sales` module), and land on the dashboard (the `dashboard` module).
 
-AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `acb71248393bd44efc2af8db1be5dd3c50a989b3` (AIC #191), with Tessera 0.2.0 pinned in `config/app.php`: protocol 1, where a component is marked by `data-t-c` on its one root element and a link, form or poll may name a component by its anchor, `@NAME`. Module code and the browser tests target the inventory results and the dashboard's live part by their anchors (`@inventory-results`, `@dashboard-live`) and spell no component path. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
+AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `516c93cf45c561e51593a1fc51e24a7856d9c28a` (AIC #222), with Tessera 0.3.1 pinned in `config/app.php`: protocol 2, where a component is marked by `data-t-c` on its one root element and a link, form or poll may name a component by its anchor, `@NAME`. Module code and the browser tests target the inventory results and the dashboard's live part by their anchors (`@inventory-results`, `@dashboard-live`) and spell no component path. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
 
 `config/app.php` names the theme, `themes/lotline/`. Its templates sit on top: `layouts/` (the daisyUI drawer, `html.phtml` and `page.phtml`) and `components/<Name>/` (each component's `.phtml`). The PHP behind them sits in `src/`: `src/Layouts/Page.php`, whose regions are `sidebar`, `header`, `content` and `footer`, and `src/Components/<Name>/`, each component's class and its value classes. `assets/` holds the stylesheet. Modules hold no component, template or asset. The look is old Lotline's: Tailwind 4 and daisyUI 5 with its two themes, dark the default. `themes/lotline/frontend/` holds the Tailwind source and its npm build, which scans the theme's templates and classes and writes `themes/lotline/assets/lotline.css`; after changing a template's classes, run `npm ci && npm run build` there, then `composer run build`, and commit the stylesheet.
 
 `/theme` is the style guide: every part of the theme with sample Ridgeway Motors data. That covers the stat tiles, the column and bar charts, a list with a filter bar, sortable heads, status badges and pages (answered in place by Tessera), a record card, a confirm card, a form whose errors come from a real 422, notices, the account menu and the icons. A feature takes its parts from there. Theme components are typed data; their builders (`Heroicons`, `BarCharts`, `ColumnCharts`) compute icon paths and chart geometry, and templates only print.
 
-Start the interpreted reference and Postgres with `ddev start`. Use `composer run build`, `composer run gate` and `composer run native:serve` from this directory. The build writes everything under `build/`: the generated wiring and escaped templates in `build/generated/`, `build/surface.json`, `build/assets.json`, and `build/assets/`, which AIC serves at `/assets/`. `public/` holds only `index.php`. The compiled site is the application runtime; interpreted PHP is its comparison reference.
+Start the interpreted reference and Postgres with `ddev start`. Use `composer run build`, `composer run gate` and `composer run native:serve` from this directory. The build writes everything under `build/`: the generated wiring and escaped templates in `build/generated/`, `build/surface.json`, `build/assets.json`, and `build/assets/`, which AIC serves at `/assets/`. `public/` holds only `index.php`. The compiled site and interpreted PHP serve the same app, and the gates compare the two; PHP is the production runtime for now.
 
 The installed [workflow instructions](AGENTS.md) govern feature work. Read the framework's [architecture guide](vendor/aic/framework/docs/README.md) and [Codex installation guide](vendor/aic/workflow/README.md). Operator review of the exact native hook definitions and `bin/aic workflow:codex-check` are required before agent launch.
 
@@ -33,3 +100,7 @@ The vehicle, customer and sale forms submit through Tessera, which AIC and the p
 The whole site moves through Tessera's enhanced navigation, again with no app script: every link on the site is a Tessera visit, answered with the layout's regions, so the sidebar stays and the header, the content and the sidebar's current link follow the page; the URL is pushed, the focus goes to the new page's heading, and back and forward fetch each page again and put its scroll back. Each page has its own title, `Customers · Lotline` and so on, in the whole document and in every fragment, so the browser's tab follows too. Sign-out loads a whole document, since it ends the session, and so does the homepage's health link, which answers JSON and says so with `data-enhance="off"`. Every direct visit, and every page with JavaScript off, is still a whole document. Browser tests in `tests/browser/` (`navigation-walk`, `navigation-history`, `navigation-no-script`) walk every page.
 
 Provide `AIC_APP_SECRET` outside version control. Development database credentials come from DDEV or PG environment variables. Product data and seed passwords are never committed.
+
+## License
+
+MIT (`LICENSE`). Ridgeway Motors, its staff, customers and vehicles are invented.
