@@ -30,3 +30,7 @@ With JavaScript off the calculator is hidden and a server-rendered table of exam
 Every new behaviour gets a kept browser test in `tests/browser/` (also run with JavaScript off where the feature has a no-script path), and every new GET route a step in `config/native-site.json`, so gate:23 holds it on the compiled site. A defect in AIC or Tessera goes to the operator as an AIC or Tessera ticket, not a workaround here.
 
 ## Comments
+
+### 2026-11-02T19:30:00Z
+
+Chad chose (a): one theme helper script, `themes/lotline/assets/helpers.js`, registering a `money` helper through `start({ helpers })` (the IIFE started manually with `tessera-start` set to `manual`). It is Lotline's only JavaScript and holds no app logic beyond formatting.
