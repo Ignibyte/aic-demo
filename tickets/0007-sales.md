@@ -8,7 +8,7 @@ updated: 2026-10-27T08:44:54Z
 phase: "docs"
 ---
 
-Staff record a sale. Old Lotline's ticket 8 (`/srv/stacks/lotline`, read only) is the reference for
+Staff record a sale. Old Lotline's ticket 8 (the private old Lotline repository) is the reference for
 behaviour, not for code.
 
 What to build, as a new `sales` module that requires `inventory`, `customers` and `staff`, every

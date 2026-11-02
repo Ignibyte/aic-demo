@@ -10,7 +10,7 @@ phase: "docs"
 
 Every page moves through Tessera's enhanced navigation: the layout stays, the content region (and
 whatever else changed) is swapped from the server's HTML, history, focus and scroll behave, and a
-full document still answers every direct visit. Old Lotline's ticket 12 (`/srv/stacks/lotline`,
+full document still answers every direct visit. Old Lotline's ticket 12 (the private old Lotline repository,
 read only) is the reference for behaviour.
 
 - Every link and form in the app is enhanced; a link that must load a whole document (sign-out, a

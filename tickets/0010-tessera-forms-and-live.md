@@ -8,7 +8,7 @@ updated: 2026-10-27T10:45:29Z
 phase: "docs"
 ---
 
-Old Lotline's ticket 11 (`/srv/stacks/lotline`, read only) is the reference for behaviour.
+Old Lotline's ticket 11 (the private old Lotline repository) is the reference for behaviour.
 
 - The vehicle, customer and sale forms submit through Tessera: errors render in place (422), a
   success follows the server's redirect, nothing is ever resubmitted (each write carries Tessera's

@@ -9,7 +9,7 @@ phase: "docs"
 ---
 
 Staff see the vehicles on Ridgeway Motors' lot. This is the first half of inventory; creating,
-editing and deleting a vehicle is the next ticket. Old Lotline's ticket 5 (`/srv/stacks/lotline`,
+editing and deleting a vehicle is the next ticket. Old Lotline's ticket 5 (the private old Lotline repository,
 read only) is the reference for behaviour, not for code.
 
 What to build, as a new `inventory` module that requires `staff`:

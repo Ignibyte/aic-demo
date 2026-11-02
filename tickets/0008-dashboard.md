@@ -8,7 +8,7 @@ updated: 2026-10-27T09:07:22Z
 phase: "docs"
 ---
 
-`/app` becomes the dashboard. Old Lotline's ticket 9 (`/srv/stacks/lotline`, read only) is the
+`/app` becomes the dashboard. Old Lotline's ticket 9 (the private old Lotline repository) is the
 reference for behaviour, not for code.
 
 What to build, in a new `dashboard` module that requires `inventory`, `sales` and `staff`:

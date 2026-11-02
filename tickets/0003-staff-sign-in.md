@@ -9,7 +9,7 @@ phase: "docs"
 ---
 
 Ridgeway Motors' staff sign in to Lotline. Everything under `/app` is for signed-in staff only.
-This is the first product feature; old Lotline's ticket 4 (`/srv/stacks/lotline`, read only) is
+This is the first product feature; old Lotline's ticket 4 (the private old Lotline repository) is
 the reference for behaviour, not for code.
 
 What to build, as a new `staff` module on AIC's Auth (`AIC\Auth`: `Authenticator`, the

@@ -24,7 +24,8 @@ return new WorkflowSettings(
     // Seconds one gate run may take before it is stopped.
     gateTimeout: 3_600,
     // Files outside the project whose change makes every gate verdict stale, such as a compiler binary.
-    toolchain: ['/srv/stacks/elephc/target/release/elephc'],
+    // Here, AIC's elephc fork checked out beside this app as ../elephc; a missing file is keyed as missing.
+    toolchain: ['../elephc/target/release/elephc'],
     // How hard the guard holds a run to its phase's paths: Hard refuses, Soft warns once, Off stands down.
     enforcement: Enforcement::Hard,
     // How hard the guard refuses a write outside the ticket directory while no run is open.

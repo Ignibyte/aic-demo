@@ -9,7 +9,7 @@ phase: "docs"
 ---
 
 Staff open a vehicle from the list, add one, change one and remove one. Old Lotline's ticket 6
-(`/srv/stacks/lotline`, read only) is the reference for behaviour, not for code.
+(the private old Lotline repository) is the reference for behaviour, not for code.
 
 What to build, in the `inventory` module, every route under the sign-in check:
 
