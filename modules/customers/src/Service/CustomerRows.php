@@ -18,9 +18,8 @@ use function substr;
 final readonly class CustomerRows
 {
     /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
-     * no type to it, as `VehicleRows` found at gate:23. No AIC ticket carries this yet. The day it was added is the date
-     * that leads `created_at`'s text, which Postgres writes `YYYY-MM-DD hh:mm:ss…` in the session's time zone.
+     * The day it was added is the date that leads `created_at`'s text, which Postgres writes `YYYY-MM-DD hh:mm:ss…` in
+     * the session's time zone.
      *
      * @param Row $row A row of the `customers` entity type.
      *

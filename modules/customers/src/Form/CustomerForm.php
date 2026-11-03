@@ -67,11 +67,10 @@ final readonly class CustomerForm
             : [new Alert(AlertSeverity::Error, 'Fix the fields marked below.', 'customer-error')];
         $formGrid = $this->customerFields->grid($customerEntry, $errors);
         $formActions = new FormActions('Save', 'customer-save', $action);
-        // Each branch spreads the alerts alone, as `VehicleForm` does: elephc's build of the site answered 500 when a
-        // second list was spread after them (gate:23). No AIC ticket carries this yet.
-        $fields = $editing
-            ? [...$alerts, $this->staffSeals->field($path), $formGrid, $formActions]
-            : [...$alerts, $formGrid, $formActions];
+        $seal = $editing
+            ? [$this->staffSeals->field($path)]
+            : [];
+        $fields = [...$alerts, ...$seal, $formGrid, $formActions];
         $form = new Form('customer-form', $action, $fields, $this->formTokens->issue($serverRequest)->value());
         $description = 'A name and an email are needed, and no two customers share an email.';
 

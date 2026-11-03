@@ -6,8 +6,8 @@ namespace App\Reports\Entity;
 
 /**
  * The reports in the order the page shows them (#21), and the one a stored or posted value names, found by a loop over
- * the cases rather than `ReportKind::tryFrom()`, as staff's `Roles` reads a role: elephc is not known to compile an
- * enum's `tryFrom()`, and no AIC ticket carries it yet.
+ * the cases rather than `ReportKind::tryFrom()`, as staff's `Roles` reads a role: gate:10 (PHPMD's `StaticAccess`)
+ * refuses a static call on the app's own classes.
  */
 final readonly class ReportKinds
 {

@@ -26,10 +26,6 @@ final readonly class VehicleRows
     }
 
     /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
-     * no type to it, and `->string()` there would be resolved against every class with that method, as the staff
-     * repository found at gate:23. No AIC ticket carries this yet.
-     *
      * @param Row $row A row of the `vehicles` entity type.
      *
      * @throws QueryException           When a column is missing or of another type.

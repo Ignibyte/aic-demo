@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Photos\Repository;
 
 use AIC\Database\Contracts\QueryException;
-use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityStore;
 use App\Photos\Entity\VehiclePhoto;
 use App\Photos\Entity\VehiclePhotoTable;
@@ -47,7 +46,7 @@ final readonly class VehiclePhotoRepository
         $photos = [];
 
         foreach ($rows as $row) {
-            $photos[] = $this->photo($row, count($photos) + 1);
+            $photos[] = new VehiclePhoto($row->int('id'), count($photos) + 1, $row->string('media_type'), $row->string('sha256'));
         }
 
         return $photos;
@@ -85,9 +84,9 @@ final readonly class VehiclePhotoRepository
         $photos = [];
 
         foreach ($rows as $row) {
-            $vehicleId = self::vehicleId($row);
+            $vehicleId = $row->int('vehicle_id');
             $own = $photos[$vehicleId] ?? [];
-            $own[] = $this->photo($row, count($own) + 1);
+            $own[] = new VehiclePhoto($row->int('id'), count($own) + 1, $row->string('media_type'), $row->string('sha256'));
             $photos[$vehicleId] = $own;
         }
 
@@ -141,7 +140,7 @@ final readonly class VehiclePhotoRepository
         $last = 0;
 
         foreach ($rows as $row) {
-            $vehicleId = self::vehicleId($row);
+            $vehicleId = $row->int('vehicle_id');
 
             if ($vehicleId === $last) {
                 continue;
@@ -208,33 +207,5 @@ final readonly class VehiclePhotoRepository
             ->where('id', $photoId)
             ->changes()
             ->delete() === 1;
-    }
-
-    /**
-     * Reads a row through a parameter typed `Row`, as `VehicleRows` does: elephc does not narrow a loop's element from
-     * `rows()` to a `Row`, and its build of the site refused `string()` called on it. No AIC ticket carries this yet.
-     *
-     * @param Row $row      A `vehicle_photos` row.
-     * @param int $position Its place among its vehicle's photos, from 1.
-     *
-     * @throws QueryException When a column is missing or not of its type.
-     *
-     * @return VehiclePhoto The photo it records.
-     */
-    private function photo(Row $row, int $position): VehiclePhoto
-    {
-        return new VehiclePhoto($row->int('id'), $position, $row->string('media_type'), $row->string('sha256'));
-    }
-
-    /**
-     * @param Row $row A `vehicle_photos` row.
-     *
-     * @throws QueryException When the column is missing or not an integer.
-     *
-     * @return int Its vehicle's id.
-     */
-    private static function vehicleId(Row $row): int
-    {
-        return $row->int('vehicle_id');
     }
 }

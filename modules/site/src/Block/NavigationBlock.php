@@ -74,8 +74,8 @@ final readonly class NavigationBlock implements Block
             : '/';
         $links = [new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home))];
 
-        // Appended one by one: elephc types an array spread as a list of mixed, which it refuses to assign (no AIC ticket
-        // carries that yet).
+        // Appended one by one: elephc refuses a local typed `array<C>` reassigned inside an `if` from a function declared
+        // only `array` (AIC #248).
         foreach ($staffMember instanceof StaffMember ? self::staffLinks($heroicons, $path, $staffMember) : [] as $staffLink) {
             $links[] = $staffLink;
         }

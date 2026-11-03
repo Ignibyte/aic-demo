@@ -96,7 +96,7 @@ final readonly class SettingsSeals
             return null;
         }
 
-        if ($this->text($values, self::PATH) !== $path) {
+        if (($values[self::PATH] ?? '') !== $path) {
             return null;
         }
 
@@ -109,7 +109,7 @@ final readonly class SettingsSeals
                 continue;
             }
 
-            $shown[$field] = $this->text($values, $name);
+            $shown[$field] = $values[$name];
         }
 
         return $shown;
@@ -144,25 +144,11 @@ final readonly class SettingsSeals
             return 0;
         }
 
-        $id = $this->text($values, self::LINK);
+        $id = $values[self::LINK] ?? '';
 
-        return $this->text($values, self::PURPOSE) === self::PASSWORD_LINK && preg_match('/^[1-9]\\d{0,17}$/', $id) === 1
+        return ($values[self::PURPOSE] ?? '') === self::PASSWORD_LINK && preg_match('/^[1-9]\\d{0,17}$/', $id) === 1
             ? (int) $id
             : 0;
-    }
-
-    /**
-     * Reads one value through a native `string` return, so the compiled site knows its type before it compares or
-     * matches it (elephc types an element read straight from an array as mixed; no AIC ticket carries it yet).
-     *
-     * @param array<string, string> $values An envelope's values.
-     * @param string                $name   One of their names.
-     *
-     * @return string Its value; empty when it has none.
-     */
-    private function text(array $values, string $name): string
-    {
-        return $values[$name] ?? '';
     }
 
     /**

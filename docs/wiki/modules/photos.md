@@ -101,7 +101,6 @@ none
 
 - [AIC\Component](../../../vendor/aic/framework/docs/systems.md#4-components)
 - [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
-- [AIC\Database](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)

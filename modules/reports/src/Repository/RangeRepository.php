@@ -99,9 +99,6 @@ final readonly class RangeRepository
     }
 
     /**
-     * Reads the row through a native `Row` parameter: elephc types a row straight off a `rows()` loop too loosely to pass
-     * its columns on (no AIC ticket carries this yet), as `ReportRepository` notes.
-     *
      * @param Row $row A row of `report_ranges`.
      *
      * @throws QueryException When a column is missing.

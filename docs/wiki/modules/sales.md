@@ -133,7 +133,6 @@ none
 | Class | File |
 | --- | --- |
 | `App\Sales\Service\CustomerPurchaseLookup` | [modules/sales/src/Service/CustomerPurchaseLookup.php](../../../modules/sales/src/Service/CustomerPurchaseLookup.php) |
-| `App\Sales\Service\MonthLengths` | [modules/sales/src/Service/MonthLengths.php](../../../modules/sales/src/Service/MonthLengths.php) |
 | `App\Sales\Service\SaleCards` | [modules/sales/src/Service/SaleCards.php](../../../modules/sales/src/Service/SaleCards.php) |
 | `App\Sales\Service\SaleFilters` | [modules/sales/src/Service/SaleFilters.php](../../../modules/sales/src/Service/SaleFilters.php) |
 | `App\Sales\Service\SaleList` | [modules/sales/src/Service/SaleList.php](../../../modules/sales/src/Service/SaleList.php) |

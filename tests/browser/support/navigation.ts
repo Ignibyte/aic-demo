@@ -142,14 +142,15 @@ export function pathOf(url: string): string {
     return parsed.pathname + parsed.search;
 }
 
-// Records every request the page makes but its assets, the dashboard's refreshes and the bell's stream, in order, with its answer. The
+// Records every request the page makes but its assets, the profiler toolbar's own requests (the development site runs
+// the profiler, #25), the dashboard's refreshes and the bell's stream, in order, with its answer. The
 // answer is taken through a route, with no redirect followed, so what the server sent is what is recorded. A refresh,
 // which the dashboard's poll sends every five seconds while it is open, and the bell's stream, which stays open, go on
 // to the network unrecorded.
 export async function recordRequests(page: Page): Promise<NavRequest[]> {
     const requests: NavRequest[] = [];
 
-    await page.route((url) => !url.pathname.startsWith('/assets/'), async (route) => {
+    await page.route((url) => !url.pathname.startsWith('/assets/') && !url.pathname.startsWith('/_profiler/'), async (route) => {
         const request = route.request();
         const headers = await request.allHeaders();
 

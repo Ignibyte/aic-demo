@@ -141,28 +141,13 @@ final readonly class VehicleRecords
      */
     private function routeVin(ServerRequestInterface $serverRequest): string
     {
-        $vin = $this->vin($serverRequest);
+        $attributes = $serverRequest->getAttributes();
+        $vin = array_key_exists('vin', $attributes) && is_string($attributes['vin'])
+            ? $attributes['vin']
+            : '';
 
         return preg_match('/^[A-HJ-NPR-Z0-9]{17}$/', $vin) === 1
             ? $vin
-            : '';
-    }
-
-    /**
-     * Reads the attribute as `RequestSession` does, through a native `string` return: elephc does not narrow an
-     * untyped value by `is_string()` and refuses `preg_match()` on it, as gate:23 found. No AIC ticket carries this
-     * yet.
-     *
-     * @param ServerRequestInterface $serverRequest A request to a vehicle's route.
-     *
-     * @return string Its `vin` attribute; empty when it is not a string.
-     */
-    private function vin(ServerRequestInterface $serverRequest): string
-    {
-        $attributes = $serverRequest->getAttributes();
-
-        return array_key_exists('vin', $attributes) && is_string($attributes['vin'])
-            ? $attributes['vin']
             : '';
     }
 }

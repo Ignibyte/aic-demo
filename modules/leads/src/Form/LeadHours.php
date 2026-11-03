@@ -9,16 +9,14 @@ use App\Settings\Entity\OpeningHours;
 use function checkdate;
 use function intdiv;
 use function preg_match;
-use function strcmp;
 use function substr;
 
 /**
  * The dealership's opening hours, as a test drive is held to them (#18): on a day after today that the dealership is
  * open, starting from the opening to an hour before the closing. Since #22 the hours are the settings' profile
  * (`OpeningHours`), Monday to Saturday, 09:00 to 18:00 until an admin saves others, and the error texts are built from
- * them. Days and times compare as text with `strcmp()`, since elephc refuses `<` and `>` between two strings (old
- * Lotline's ticket 28; no AIC ticket carries it yet, as sales' `SaleChecks` notes); the weekday is worked out in
- * integers (Zeller's congruence), so no time zone enters it.
+ * them. Days and times compare as text, which sorts as they do; the weekday is worked out in integers (Zeller's
+ * congruence), so no time zone enters it.
  */
 final readonly class LeadHours
 {
@@ -43,7 +41,7 @@ final readonly class LeadHours
             return 'Choose a day that is on the calendar.';
         }
 
-        if (strcmp($day, $today) <= 0) {
+        if ($day <= $today) {
             return 'Choose a day from tomorrow on.';
         }
 
@@ -67,7 +65,7 @@ final readonly class LeadHours
         $first = $openingHours->opensAt;
         $last = $openingHours->lastStart();
 
-        return $written && strcmp($time, $first) >= 0 && strcmp($time, $last) <= 0
+        return $written && $time >= $first && $time <= $last
             ? ''
             : 'Choose a time from ' . $first . ' to ' . $last . '. We are open ' . $first . ' to ' . $openingHours->closesAt . ', '
                 . $openingHours->days() . '.';

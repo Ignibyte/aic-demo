@@ -161,13 +161,9 @@ final readonly class SeedVehicles
      */
     private function status(int $index): VehicleStatus
     {
-        // A match rather than a ternary: elephc types a ternary whose arms are enum cases as their backing string, and
-        // the native site's build refuses the string where a VehicleStatus is due (gate:23); no AIC ticket carries it yet.
-        return match (true) {
-            $index % 7 === 3 => VehicleStatus::OnHold,
-            $index % 6 === 5 => VehicleStatus::Sold,
-            default => VehicleStatus::InStock,
-        };
+        return $index % 7 === 3
+            ? VehicleStatus::OnHold
+            : ($index % 6 === 5 ? VehicleStatus::Sold : VehicleStatus::InStock);
     }
 
     /**

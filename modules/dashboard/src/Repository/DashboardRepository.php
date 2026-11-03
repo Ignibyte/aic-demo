@@ -92,7 +92,7 @@ final readonly class DashboardRepository
         ], true);
 
         foreach ($this->entityStore->query($entityType)->orderBy('first_day')->rows() as $row) {
-            $months[] = $this->month($row);
+            $months[] = new MonthSales($row->string('label'), $row->string('note'), $row->string('name'), $row->int('sales'));
         }
 
         return $months;
@@ -110,7 +110,7 @@ final readonly class DashboardRepository
         $entityType = new EntityType('dashboard_makes', 'make', $this->integers(['amount']), true);
 
         foreach ($this->entityStore->query($entityType)->orderByDescending('amount')->orderBy('make')->rows() as $row) {
-            $figures[] = $this->figure($row, 'make');
+            $figures[] = new Figure($row->string('make'), $row->int('amount'));
         }
 
         return $figures;
@@ -132,7 +132,7 @@ final readonly class DashboardRepository
         ], true);
 
         foreach ($this->entityStore->query($entityType)->orderByDescending('amount')->orderBy('name')->rows() as $row) {
-            $figures[] = $this->figure($row, 'name');
+            $figures[] = new Figure($row->string('name'), $row->int('amount'));
         }
 
         return $figures;
@@ -189,35 +189,5 @@ final readonly class DashboardRepository
         }
 
         return $fields;
-    }
-
-    /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
-     * no type to it, as `SaleRows` notes. No AIC ticket carries this yet.
-     *
-     * @param Row $row A row of `dashboard_months`.
-     *
-     * @throws QueryException When a column is missing or of another type.
-     *
-     * @return MonthSales The month.
-     */
-    private function month(Row $row): MonthSales
-    {
-        return new MonthSales($row->string('label'), $row->string('note'), $row->string('name'), $row->int('sales'));
-    }
-
-    /**
-     * Reads the row through a native `Row` parameter, as `month()` does.
-     *
-     * @param Row    $row   A row of `label` and `amount`.
-     * @param string $label The column that labels the bar.
-     *
-     * @throws QueryException When a column is missing or of another type.
-     *
-     * @return Figure The bar.
-     */
-    private function figure(Row $row, string $label): Figure
-    {
-        return new Figure($row->string($label), $row->int('amount'));
     }
 }

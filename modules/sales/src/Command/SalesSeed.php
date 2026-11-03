@@ -42,7 +42,7 @@ final readonly class SalesSeed implements Command
      * @param CommandInput $commandInput Its arguments, which must be none.
      *
      * @throws QueryException           When a vehicle or a sale cannot be stored.
-     * @throws InvalidArgumentException When the result's exit code is invalid.
+     * @throws InvalidArgumentException When the result's exit code is invalid, or a seeded vehicle's day is no day.
      *
      * @return CommandResponse How many were saved, the seeds to run first, or the usage.
      */
