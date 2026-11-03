@@ -83,6 +83,20 @@ final readonly class VehiclePhotos
     }
 
     /**
+     * @param list<int> $vehicleIds Vehicles' ids.
+     *
+     * @throws LogicException   When their entity type is malformed.
+     * @throws RuntimeException When the photos cannot be read.
+     *
+     * @return array<int, list<VehiclePhoto>> Each vehicle's photos by its id, the first added first, read at once (#25);
+     *                                        a vehicle with none has no entry.
+     */
+    public function photosOf(array $vehicleIds): array
+    {
+        return $this->vehiclePhotoRepository->photosOf($vehicleIds);
+    }
+
+    /**
      * @param int $vehicleId A vehicle's id.
      * @param int $position  A position among its photos, from 1.
      *

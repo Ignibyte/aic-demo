@@ -12,6 +12,7 @@ use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
 use App\Settings\Service\DealershipProfiles;
 use App\Storefront\Controller\CarListPage;
+use App\Storefront\Service\CarFinder;
 use App\Storefront\Service\CarListing;
 use App\Storefront\Service\CarTiles;
 use App\Storefront\Service\StorePages;
@@ -40,11 +41,14 @@ final readonly class StorefrontHandlersPart3
     {
         $entityStore = new EntityStore($this->handlerContext->database());
         $storePages = new StorePages($this->handlerContext->documents(), new DealershipProfiles($entityStore));
+        $listedVehicleRepository = new ListedVehicleRepository($entityStore);
         $vehiclePhotos = new VehiclePhotos($entityStore, new PublicFiles($this->handlerContext->root()));
-        $carListing = new CarListing(new ListedVehicleRepository($entityStore), new CarTiles($vehiclePhotos));
+        $carTiles = new CarTiles(new CarFinder($listedVehicleRepository, $vehiclePhotos));
 
         return [
-            CarListPage::class => $this->handlerContext->page(new CarListPage($storePages, $carListing)),
+            CarListPage::class => $this->handlerContext->page(
+                new CarListPage($storePages, new CarListing($listedVehicleRepository, $carTiles)),
+            ),
         ];
     }
 }

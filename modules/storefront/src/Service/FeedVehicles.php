@@ -7,7 +7,7 @@ namespace App\Storefront\Service;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Repository\ListedVehicleRepository;
-use App\Photos\Service\VehiclePhotos;
+use App\Photos\Entity\VehiclePhoto;
 use App\Staff\Service\StaffRequests;
 use App\Storefront\Entity\FeedVehicle;
 use InvalidArgumentException;
@@ -20,19 +20,19 @@ use function strtolower;
 /**
  * The feed for listing partners: the vehicles for sale, in the public list's first order, or those of the make
  * `?make=` names, matched without regard to case. A make not for sale, or a list of makes, gives no vehicle rather
- * than every one.
+ * than every one. The list's photos are read at once, not once a vehicle (#25).
  */
 final readonly class FeedVehicles
 {
     /**
      * @param ListedVehicleRepository $listedVehicleRepository The vehicles for sale.
-     * @param VehiclePhotos           $vehiclePhotos           Their photos.
+     * @param CarFinder               $carFinder               Their photos.
      * @param CarSlugs                $carSlugs                Each one's slug and page.
      * @param StaffRequests           $staffRequests           Reads the `make` parameter.
      */
     public function __construct(
         private ListedVehicleRepository $listedVehicleRepository,
-        private VehiclePhotos $vehiclePhotos,
+        private CarFinder $carFinder,
         private CarSlugs $carSlugs = new CarSlugs(),
         private StaffRequests $staffRequests = new StaffRequests(),
     ) {
@@ -57,10 +57,12 @@ final readonly class FeedVehicles
             return new FeedBody([]);
         }
 
+        $listedVehicles = $this->listedVehicleRepository->all($make);
+        $photos = $this->carFinder->photosOf($listedVehicles);
         $vehicles = [];
 
-        foreach ($this->listedVehicleRepository->all($make) as $listedVehicle) {
-            $vehicles[] = $this->vehicle($listedVehicle);
+        foreach ($listedVehicles as $listedVehicle) {
+            $vehicles[] = $this->entry($listedVehicle, $photos[$listedVehicle->id] ?? []);
         }
 
         return new FeedBody($vehicles);
@@ -76,10 +78,29 @@ final readonly class FeedVehicles
      */
     public function vehicle(ListedVehicle $listedVehicle): FeedVehicle
     {
+        return $this->entry($listedVehicle, $this->carFinder->photosOf([$listedVehicle])[$listedVehicle->id] ?? []);
+    }
+
+    /**
+     * @return FeedBody The answer for a vehicle not for sale.
+     */
+    public function missing(): FeedBody
+    {
+        return new FeedBody([], 'No vehicle for sale has that slug.');
+    }
+
+    /**
+     * @param ListedVehicle      $listedVehicle A car for sale.
+     * @param list<VehiclePhoto> $vehiclePhotos Its photos, the first added first.
+     *
+     * @return FeedVehicle It, as the feed gives it.
+     */
+    private function entry(ListedVehicle $listedVehicle, array $vehiclePhotos): FeedVehicle
+    {
         $path = $this->carSlugs->path($listedVehicle);
         $photos = [];
 
-        foreach ($this->vehiclePhotos->photos($listedVehicle->id) as $vehiclePhoto) {
+        foreach ($vehiclePhotos as $vehiclePhoto) {
             $photos[] = $vehiclePhoto->source();
         }
 
@@ -96,14 +117,6 @@ final readonly class FeedVehicles
             $listedVehicle->price . '.00',
             $photos,
         );
-    }
-
-    /**
-     * @return FeedBody The answer for a vehicle not for sale.
-     */
-    public function missing(): FeedBody
-    {
-        return new FeedBody([], 'No vehicle for sale has that slug.');
     }
 
     /**

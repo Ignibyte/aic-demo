@@ -13,7 +13,7 @@ An admin alone. `SettingsAccess::guard()` answers every settings route, a GET or
 `DealershipProfiles` (exported) reads it for the other modules, on each call, so a save reaches the next page and the next job. `DealershipProfile` and `OpeningHours` (exported) carry it. `OpeningHours` says whether a weekday is open, gives the last start of a test drive an hour before closing, and words the days (`Monday to Saturday` for a run of three or more, else `Monday, Wednesday and Friday`). Readers:
 
 - `storefront`: the public header's name, and the footer's address, phone and hours.
-- `staff`: the staff pages' name for the dealership, through `DealershipNameRepository`, the plugin of staff's `DealershipNames` type (#23), since staff cannot require settings.
+- `staff`: the staff pages' name for the dealership, through `DealershipNameRepository`, the plugin of staff's `DealershipNames` type (#23), since staff cannot require settings. The plugin keeps the name it read for the rest of the request (#25), since a page that names the dealership in its content and its footer read the profile twice; each request starts afresh, so a save reaches the next page.
 - `leads`: the test-drive form's line and its checks, and the name that signs a visitor's mail.
 - `reports`: the aged-stock threshold and the name in the daily digest.
 

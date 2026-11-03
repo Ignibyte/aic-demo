@@ -2922,5 +2922,143 @@
             "status": 303,
             "captures": false
         }
+    ],
+    "profiled": [
+        {
+            "name": "profiled sign-in page",
+            "method": "GET",
+            "path": "/sign-in?next=%2Fapp",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled sign-in",
+            "method": "POST",
+            "path": "/sign-in",
+            "form": "email=gate&password={password}&next=%2Fapp&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "profiled dashboard, a page load",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled dashboard, the poll of its live part by its anchor",
+            "method": "GET",
+            "path": "/app",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @dashboard-live",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled inbox, the bell's stream read for one event",
+            "method": "GET",
+            "path": "/app/inbox/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 1
+        },
+        {
+            "name": "profiled inventory",
+            "method": "GET",
+            "path": "/app/inventory",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled inventory, a filter of its results",
+            "method": "GET",
+            "path": "/app/inventory?q=&make=Toyota&status=&min_price=&max_price=&sort=",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled inventory, a sort of its results",
+            "method": "GET",
+            "path": "/app/inventory?make=Toyota&sort=price",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled inventory, a page change of its results",
+            "method": "GET",
+            "path": "/app/inventory?page=2",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle form",
+            "method": "GET",
+            "path": "/app/inventory/new",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle create, refused on its check digit",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE40SR999025&year=2025&make=Gate&model=Profile&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle create, saved",
+            "method": "POST",
+            "path": "/app/inventory",
+            "form": "vin=0LTGATE49SR999025&year=2025&make=Gate&model=Profile&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle delete page",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025/delete",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle delete",
+            "method": "POST",
+            "path": "/app/inventory/0LTGATE49SR999025/delete",
+            "form": "aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        }
     ]
 }

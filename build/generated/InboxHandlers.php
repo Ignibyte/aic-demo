@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Notification\Application\Inbox;
 use App\Inbox\Controller\BellEvents;
 use App\Inbox\Controller\InboxPage;
-use App\Inbox\Repository\MemberRepository;
+use App\Inbox\Controller\NotificationPage;
 use App\Inbox\Service\BellParts;
 use App\Inbox\Service\BellStreams;
 use App\Inbox\Service\InboxList;
+use App\Inbox\Service\InboxMoves;
 use App\Inbox\Service\InboxOwners;
 use App\Inbox\Service\InboxRows;
+use App\Inbox\Service\InboxServices;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -41,15 +42,17 @@ final readonly class InboxHandlers
     public function byId(): array
     {
         $inbox = new Inbox($this->handlerContext->database());
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $memberRepository = new MemberRepository($entityStore);
-        $inboxOwners = new InboxOwners($memberRepository);
+        $inboxOwners = new InboxOwners();
         $bellParts = new BellParts($inbox);
         $inboxList = new InboxList($inbox, $inboxOwners, new InboxRows($bellParts));
+        $staffPanels = (new InboxServices($this->handlerContext->documents()))->staffPanels();
 
         return [
             BellEvents::class => $this->handlerContext->stream(new BellEvents(new BellStreams($inboxOwners, $inbox, $bellParts))),
             InboxPage::class => $this->handlerContext->page(new InboxPage(new StaffPages($this->handlerContext->documents()), $inboxList)),
+            NotificationPage::class => $this->handlerContext->page(
+                new NotificationPage(new InboxMoves($staffPanels, $inbox, $inboxOwners)),
+            ),
         ];
     }
 }

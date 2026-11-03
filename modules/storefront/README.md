@@ -47,4 +47,4 @@ Below the car sit two lead forms (#18), "Ask about this car" and "Book a test dr
 | `price` | Its list price as a decimal string, `"28995.00"` |
 | `photos` | Each photo's path, the main one first |
 
-Paths are relative to the site, so both of gate:23's sites answer the same bytes. Each car's photos are read with one `VehiclePhotos::photos()` call: at most 12 on a page of the list, and one per car in the feed.
+Paths are relative to the site, so both of gate:23's sites answer the same bytes. The list's page and the feed read their cars' photos in one statement, `CarFinder::photosOf()` over photos' `VehiclePhotos::photosOf()` (#25: the profiler showed `/cars` reading them once a car, 12 statements a page).

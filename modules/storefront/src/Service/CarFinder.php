@@ -8,6 +8,7 @@ use AIC\Controller\Domain\FileDownload;
 use AIC\Database\Contracts\QueryException;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Repository\ListedVehicleRepository;
+use App\Photos\Entity\VehiclePhoto;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Service\StaffRequests;
 use InvalidArgumentException;
@@ -21,7 +22,7 @@ use function preg_match;
 /**
  * What a public request names by its route: the car for sale its `slug` names, and that car's photo at its `position`.
  * A car is found by the year and key its slug holds, and only when its own slug is the one asked for, so a slug with
- * the right key and another make answers nothing.
+ * the right key and another make answers nothing. It also reads the photos of the cars a list shows, at once (#25).
  */
 final readonly class CarFinder
 {
@@ -61,6 +62,29 @@ final readonly class CarFinder
         return $listedVehicle instanceof ListedVehicle && $this->carSlugs->slug($listedVehicle) === $slug
             ? $listedVehicle
             : null;
+    }
+
+    /**
+     * The photos of the cars a list shows, in one read (#25): the profiler showed `/cars` and the feed reading them once
+     * a car.
+     *
+     * @param list<ListedVehicle> $listedVehicles Cars for sale.
+     *
+     * @throws LogicException   When the photos' entity type is malformed.
+     * @throws RuntimeException When the photos cannot be read.
+     *
+     * @return array<int, list<VehiclePhoto>> Each car's photos by its id, the first added first; a car with none has
+     *                                        no entry.
+     */
+    public function photosOf(array $listedVehicles): array
+    {
+        $vehicleIds = [];
+
+        foreach ($listedVehicles as $listedVehicle) {
+            $vehicleIds[] = $listedVehicle->id;
+        }
+
+        return $this->vehiclePhotos->photosOf($vehicleIds);
     }
 
     /**

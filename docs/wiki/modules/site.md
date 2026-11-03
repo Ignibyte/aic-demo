@@ -96,6 +96,7 @@ none
 
 | Class | File |
 | --- | --- |
+| `App\Site\Service\FooterPart` | [modules/site/src/Service/FooterPart.php](../../../modules/site/src/Service/FooterPart.php) |
 | `App\Site\Service\HealthBody` | [modules/site/src/Service/HealthBody.php](../../../modules/site/src/Service/HealthBody.php) |
 | `App\Site\Service\ThemeSampleActions` | [modules/site/src/Service/ThemeSampleActions.php](../../../modules/site/src/Service/ThemeSampleActions.php) |
 | `App\Site\Service\ThemeSampleCharts` | [modules/site/src/Service/ThemeSampleCharts.php](../../../modules/site/src/Service/ThemeSampleCharts.php) |

@@ -2,9 +2,10 @@
 number: 25
 title: "Turn on AIC's profiler, and see every Tessera exchange"
 type: chore
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T00:37:02Z
+phase: "docs"
 ---
 
 Chad, 2026-11-02: a web profiler to see what each Tessera response really was. AIC builds it
