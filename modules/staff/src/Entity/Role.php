@@ -23,16 +23,11 @@ enum Role: string
      */
     public function label(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::Admin) {
-            return 'Admin';
-        }
-
-        if ($this === self::SalesManager) {
-            return 'Sales manager';
-        }
-
-        return 'Salesperson';
+        return match ($this) {
+            self::Admin => 'Admin',
+            self::SalesManager => 'Sales manager',
+            self::Salesperson => 'Salesperson',
+        };
     }
 
     /**
@@ -40,7 +35,9 @@ enum Role: string
      */
     public function manages(): bool
     {
-        // Comparisons rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        return $this === self::Admin || $this === self::SalesManager;
+        return match ($this) {
+            self::Admin, self::SalesManager => true,
+            self::Salesperson => false,
+        };
     }
 }

@@ -2,9 +2,10 @@
 number: 39
 title: "Drop the elephc workarounds whose carries have landed"
 type: chore
-status: open
+status: closed
 created: 2026-11-03T10:50:00Z
-updated: 2026-11-03T10:50:00Z
+updated: 2026-11-03T12:07:55Z
+phase: "docs"
 ---
 
 Two compiler carries that Lotline worked around are in AIC's elephc fork and the gate's

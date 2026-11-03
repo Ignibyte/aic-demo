@@ -23,15 +23,10 @@ enum VehicleStatus: string
      */
     public function label(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::InStock) {
-            return 'In stock';
-        }
-
-        if ($this === self::OnHold) {
-            return 'On hold';
-        }
-
-        return 'Sold';
+        return match ($this) {
+            self::InStock => 'In stock',
+            self::OnHold => 'On hold',
+            self::Sold => 'Sold',
+        };
     }
 }

@@ -25,12 +25,10 @@ enum LeadKind: string
      */
     public function label(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::Inquiry) {
-            return 'Question';
-        }
-
-        return 'Test drive';
+        return match ($this) {
+            self::Inquiry => 'Question',
+            self::TestDrive => 'Test drive',
+        };
     }
 
     /**

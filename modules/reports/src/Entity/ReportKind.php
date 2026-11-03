@@ -27,20 +27,12 @@ enum ReportKind: string
      */
     public function title(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::Sales) {
-            return 'Sales by month';
-        }
-
-        if ($this === self::Salespeople) {
-            return 'Revenue and units by salesperson';
-        }
-
-        if ($this === self::Inventory) {
-            return 'Inventory by make';
-        }
-
-        return 'Leads by kind';
+        return match ($this) {
+            self::Sales => 'Sales by month',
+            self::Salespeople => 'Revenue and units by salesperson',
+            self::Inventory => 'Inventory by make',
+            self::Leads => 'Leads by kind',
+        };
     }
 
     /**

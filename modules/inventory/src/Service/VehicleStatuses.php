@@ -74,16 +74,11 @@ final readonly class VehicleStatuses
      */
     public function tone(VehicleStatus $vehicleStatus): BadgeTone
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($vehicleStatus === VehicleStatus::InStock) {
-            return BadgeTone::Success;
-        }
-
-        if ($vehicleStatus === VehicleStatus::OnHold) {
-            return BadgeTone::Warning;
-        }
-
-        return BadgeTone::Neutral;
+        return match ($vehicleStatus) {
+            VehicleStatus::InStock => BadgeTone::Success,
+            VehicleStatus::OnHold => BadgeTone::Warning,
+            VehicleStatus::Sold => BadgeTone::Neutral,
+        };
     }
 
     /**
