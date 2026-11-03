@@ -47,7 +47,7 @@ test('a vehicle is edited in its row: the price saved with Enter, the status wit
     await price.press('Enter');
     const saved = await expectRowAction(requests, 'PUT', `${PATH}/row`, ANCHOR, 200);
     expectRowWrite(saved, { list_price: '18250', status: 'in_stock' });
-    await expect(row.locator('input, select')).toHaveCount(0);
+    await expect(row.locator('input:not([name="vins[]"]), select')).toHaveCount(0);
     await expect(row).toContainText('$18,250');
     expect(storedVehicle(VIN)).toEqual({ ...testVehicle(VIN), listPrice: 18250 });
 
@@ -66,7 +66,7 @@ test('a vehicle is edited in its row: the price saved with Enter, the status wit
     await page.keyboard.type('99999');
     await price.press('Escape');
     await expectRowAction(requests, 'GET', `${PATH}/row`, ANCHOR, 200);
-    await expect(row.locator('input, select')).toHaveCount(0);
+    await expect(row.locator('input:not([name="vins[]"]), select')).toHaveCount(0);
     await expect(row).toContainText('$18,250');
 
     // Cancel does the same.

@@ -92,7 +92,7 @@ test('what is typed while a save is out stays in the field when its answer lands
     // Enter sends what is there now, and its answer morphs the field: the row comes back shown with it.
     await price.press('Enter');
     await expectRowAction(requests, 'PUT', `${PATH}/row`, ANCHOR, 200);
-    await expect(row.locator('input, select')).toHaveCount(0);
+    await expect(row.locator('input:not([name="vins[]"]), select')).toHaveCount(0);
     await expect(row).toContainText('$15,200');
     expect(storedVehicle(VIN)?.listPrice).toBe(15200);
     expect(errors).toEqual([]);

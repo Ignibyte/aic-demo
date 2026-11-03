@@ -6,6 +6,7 @@ namespace App\Sales\Service;
 
 use App\Customers\Service\SeedCustomers;
 use App\Inventory\Entity\Vehicle;
+use App\Inventory\Entity\VehicleLot;
 use App\Inventory\Entity\VehiclePrice;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Service\SeedVehicles;
@@ -170,7 +171,7 @@ final readonly class SeedSales
 
         $price = $vehicle->price->list - 250 * ($place % 5);
 
-        return new SeedSale($vehicle->vin, $customer, $seller, $price, $this->later($vehicle->addedOn, $days));
+        return new SeedSale($vehicle->vin, $customer, $seller, $price, $this->later($vehicle->lot->addedOn, $days));
     }
 
     /**
@@ -197,7 +198,7 @@ final readonly class SeedSales
             self::PAINTS[$index % 6],
             new VehiclePrice($listPrice, intdiv($listPrice * 88, 10_000) * 100),
             VehicleStatus::Sold,
-            $this->arrival($index),
+            new VehicleLot($this->arrival($index)),
         );
     }
 

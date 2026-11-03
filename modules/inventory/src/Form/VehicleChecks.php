@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Inventory\Form;
 
 use AIC\Database\Contracts\QueryException;
+use App\Inventory\Entity\BulkAction;
+use App\Inventory\Entity\BulkEdit;
 use App\Inventory\Entity\Vehicle;
+use App\Inventory\Entity\VehicleLot;
 use App\Inventory\Entity\VehiclePrice;
-use App\Inventory\Entity\VehicleSale;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Repository\VehicleRecordRepository;
 use App\Inventory\Service\SoldVehicles;
@@ -17,6 +19,7 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 
 use function checkdate;
+use function implode;
 use function mb_strlen;
 use function number_format;
 use function preg_match;
@@ -28,7 +31,8 @@ use function trim;
  * The vehicle form's checks, one per field: the VIN's form, check digit and uniqueness, the model year's range, the
  * texts and their column lengths, whole numbers from 0, a list price no lower than the cost, a known status (sold, for a
  * vehicle with a recorded sale) and a real date. A valid entry becomes the `Vehicle` it describes. A list's row saves
- * through them too (#28).
+ * through them too (#28), and a bulk edit of the list checks each of its vehicles here (#29), a status through the
+ * same checks.
  */
 final readonly class VehicleChecks
 {
@@ -43,6 +47,26 @@ final readonly class VehicleChecks
     public const string SALE_RECORDED = 'This vehicle has a recorded sale. Void the sale to put it back on the lot.';
 
     /**
+     * Why a bulk edit may not set a vehicle sold (#29): a sale does that.
+     */
+    public const string SOLD_BY_SALE = 'A sale marks a vehicle sold: record the sale on its page.';
+
+    /**
+     * Why a bulk edit does not move a sold vehicle.
+     */
+    public const string SOLD_GONE = 'It is sold and has left the lot.';
+
+    /**
+     * Why a bulk edit does not delete a sold vehicle, or one with a recorded sale.
+     */
+    public const string SOLD_KEPT = 'It is sold, so it stays on the record.';
+
+    /**
+     * Why a bulk edit refuses a VIN no vehicle has.
+     */
+    public const string NOT_LISTED = 'It is no longer on the lot.';
+
+    /**
      * The first model year with a 17-character VIN.
      */
     private const int FIRST_YEAR = 1_981;
@@ -52,12 +76,14 @@ final readonly class VehicleChecks
      * @param SoldVehicles            $soldVehicles            Knows which vehicles have a recorded sale.
      * @param Vins                    $vins                    Works out check digits.
      * @param VehicleStatuses         $vehicleStatuses         The statuses.
+     * @param VehicleEntries          $vehicleEntries          Fills a stored vehicle's entry, which a bulk status runs on.
      */
     public function __construct(
         private VehicleRecordRepository $vehicleRecordRepository,
         private SoldVehicles $soldVehicles,
         private Vins $vins = new Vins(),
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
+        private VehicleEntries $vehicleEntries = new VehicleEntries(),
     ) {
     }
 
@@ -96,7 +122,8 @@ final readonly class VehicleChecks
      *
      * @throws UnexpectedValueException When its status is no status.
      *
-     * @return Vehicle The vehicle it describes: the VIN in capitals, the texts trimmed.
+     * @return Vehicle The vehicle it describes: the VIN in capitals, the texts trimmed, and the entry's location (#29),
+     *                 which only a stored vehicle's entry carries and no save writes.
      */
     public function vehicle(VehicleEntry $vehicleEntry): Vehicle
     {
@@ -113,8 +140,60 @@ final readonly class VehicleChecks
             trim($vehicleEntry->value('exterior_colour')),
             $vehiclePrice,
             $this->vehicleStatuses->stored($vehicleEntry->value('status')),
-            trim($vehicleEntry->value('added_on')),
+            new VehicleLot(trim($vehicleEntry->value('added_on')), $this->vehicleStatuses->location($vehicleEntry->value('location'))),
         );
+    }
+
+    /**
+     * @param BulkEdit $bulkEdit A bulk edit of the list that can be applied as posted (#29).
+     * @param Vehicle  $vehicle  One of its vehicles, read for update.
+     * @param string   $today    The database's today, `YYYY-MM-DD`.
+     *
+     * @throws QueryException           When the taken VINs or the vehicle's sale cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
+     *
+     * @return string Why the edit is refused for the vehicle; empty when it may take it. A status runs this form's own
+     *                checks over the stored vehicle with the status put in, and sold is a sale's to give; a sold vehicle
+     *                is not moved, and a sold one or one with a recorded sale is not deleted.
+     */
+    public function bulkError(BulkEdit $bulkEdit, Vehicle $vehicle, string $today): string
+    {
+        if ($bulkEdit->bulkAction === BulkAction::Status) {
+            return $this->bulkStatusError($bulkEdit->vehicleStatus, $vehicle, $today);
+        }
+
+        $kept = $vehicle->status === VehicleStatus::Sold
+            || ($bulkEdit->deletes() && $this->soldVehicles->sale($vehicle->vin) !== null);
+
+        if (!$kept) {
+            return '';
+        }
+
+        return $bulkEdit->deletes()
+            ? self::SOLD_KEPT
+            : self::SOLD_GONE;
+    }
+
+    /**
+     * @param ?VehicleStatus $vehicleStatus The status a bulk edit gives.
+     * @param Vehicle        $vehicle       One of its vehicles, as stored.
+     * @param string         $today         The database's today, `YYYY-MM-DD`.
+     *
+     * @throws QueryException           When the taken VINs or the vehicle's sale cannot be read.
+     * @throws InvalidArgumentException When an entity type it goes through is malformed.
+     *
+     * @return string Why the vehicle may not take the status; empty when it may.
+     */
+    private function bulkStatusError(?VehicleStatus $vehicleStatus, Vehicle $vehicle, string $today): string
+    {
+        if (!$vehicleStatus instanceof VehicleStatus || $vehicleStatus === VehicleStatus::Sold) {
+            return self::SOLD_BY_SALE;
+        }
+
+        $values = $this->vehicleEntries->filled($vehicle)->values;
+        $values['status'] = $vehicleStatus->value;
+
+        return implode(' ', $this->errors(new VehicleEntry($values), $vehicle->vin, $today));
     }
 
     /**
@@ -276,7 +355,7 @@ final readonly class VehicleChecks
             return '';
         }
 
-        return $this->soldVehicles->sale($currentVin) instanceof VehicleSale
+        return $this->soldVehicles->sale($currentVin) !== null
             ? self::SALE_RECORDED
             : '';
     }

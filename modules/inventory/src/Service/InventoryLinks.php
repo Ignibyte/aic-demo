@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use App\Inventory\Form\InventoryQuery;
+use App\Theme\Components\Pagination\PageLink;
+use App\Theme\Components\Pagination\Pagination;
 
 use function implode;
 use function rawurlencode;
 
 /**
  * The inventory list's links: its path with the query's search and filters, a sort and a page. A link carries only
- * the parameters that differ from their defaults, always in the same order.
+ * the parameters that differ from their defaults, always in the same order; and the list's page links, built from
+ * them, which `InventoryTable` places (moved here in #29, so the table's class keeps within PHPMD's coupling limit).
  */
 final readonly class InventoryLinks
 {
@@ -61,6 +64,26 @@ final readonly class InventoryLinks
         return $descending
             ? '-' . $sort
             : $sort;
+    }
+
+    /**
+     * @param InventoryQuery $inventoryQuery What the list was asked for.
+     * @param int            $page           The page shown.
+     * @param int            $pages          How many pages there are.
+     * @param string         $target         What a page link updates: the results' anchor (`@inventory-results`).
+     *
+     * @return Pagination A link per page, keeping the search, the filters and the sort.
+     */
+    public function pages(InventoryQuery $inventoryQuery, int $page, int $pages, string $target): Pagination
+    {
+        $links = [];
+
+        for ($number = 1; $number <= $pages; $number += 1) {
+            $href = $this->href($inventoryQuery, $inventoryQuery->sort, $inventoryQuery->descending, $number);
+            $links[] = new PageLink((string) $number, $href, $number === $page);
+        }
+
+        return new Pagination('vehicles-pages', $target, $links);
     }
 
     /**

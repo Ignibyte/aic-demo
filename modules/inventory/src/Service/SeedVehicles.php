@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use App\Inventory\Entity\Vehicle;
+use App\Inventory\Entity\VehicleLot;
 use App\Inventory\Entity\VehiclePrice;
 use App\Inventory\Entity\VehicleStatus;
 
@@ -137,7 +138,7 @@ final readonly class SeedVehicles
             self::COLOURS[($index * 3 + $make) % 10],
             new VehiclePrice($price, intdiv($price * 86, 10_000) * 100),
             $this->status($index),
-            $this->daysBefore($index * 2 + $index % 5),
+            new VehicleLot($this->daysBefore($index * 2 + $index % 5)),
         );
     }
 

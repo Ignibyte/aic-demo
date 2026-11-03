@@ -32,6 +32,7 @@ final readonly class ModuleHandlersPart2
     public function byId(): array
     {
         return array_merge(
+            (new SalesHandlersPart2($this->handlerContext))->byId(),
             (new SalesHandlersPart3($this->handlerContext))->byId(),
             (new DashboardHandlers($this->handlerContext))->byId(),
             (new InboxHandlers($this->handlerContext))->byId(),
@@ -42,7 +43,6 @@ final readonly class ModuleHandlersPart2
             (new LeadsHandlers($this->handlerContext))->byId(),
             (new ReportsHandlers($this->handlerContext))->byId(),
             (new SiteHandlers($this->handlerContext))->byId(),
-            (new StorefrontHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart3($this->handlerContext))->byId(),
         );
     }

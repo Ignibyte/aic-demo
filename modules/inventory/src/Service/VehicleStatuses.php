@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Inventory\Service;
 
+use App\Inventory\Entity\VehicleLocation;
 use App\Inventory\Entity\VehicleStatus;
 use App\Theme\Components\StatusBadge\BadgeTone;
 use App\Theme\Components\StatusBadge\StatusBadge;
@@ -11,7 +12,8 @@ use UnexpectedValueException;
 
 /**
  * The three statuses in order, a stored value read back as its status (anything else is refused rather than read as
- * some status), and each status's badge colour and badge.
+ * some status), and each status's badge colour and badge; and the lot's locations (#29) in order, a stored value read
+ * back as its location.
  */
 final readonly class VehicleStatuses
 {
@@ -39,6 +41,30 @@ final readonly class VehicleStatuses
         }
 
         throw new UnexpectedValueException('No vehicle status is stored as "' . $value . '".');
+    }
+
+    /**
+     * @return list<VehicleLocation> Every lot location, in the order the action bar offers them.
+     */
+    public function locations(): array
+    {
+        return [VehicleLocation::FrontRow, VehicleLocation::Showroom, VehicleLocation::BackLot, VehicleLocation::ServiceBay];
+    }
+
+    /**
+     * @param string $value A location as `vehicles.location` stores it, or as a bulk move names it.
+     *
+     * @return VehicleLocation|null The location; null for none, or for a value that is no location's.
+     */
+    public function location(string $value): ?VehicleLocation
+    {
+        foreach ($this->locations() as $vehicleLocation) {
+            if ($vehicleLocation->value === $value) {
+                return $vehicleLocation;
+            }
+        }
+
+        return null;
     }
 
     /**

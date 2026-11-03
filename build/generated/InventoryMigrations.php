@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Schema\Contracts\Migration;
+use App\Inventory\Migration\AddVehicleLocation;
 use App\Inventory\Migration\CreateTodayView;
 use App\Inventory\Migration\CreateVehiclesTable;
 
@@ -22,6 +23,7 @@ final readonly class InventoryMigrations
         return [
             new CreateVehiclesTable(),
             new CreateTodayView(),
+            new AddVehicleLocation(),
         ];
     }
 }

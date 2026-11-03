@@ -86,6 +86,19 @@ final readonly class VehicleRepository
 
     /**
      * @param InventoryQuery $inventoryQuery What the list was asked for.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return array<string, int> How many vehicles it keeps with each status, by the status's stored value (#29).
+     */
+    public function statuses(InventoryQuery $inventoryQuery): array
+    {
+        return $this->matching($inventoryQuery)->totals()->countBy('status');
+    }
+
+    /**
+     * @param InventoryQuery $inventoryQuery What the list was asked for.
      * @param int            $limit          How many vehicles a page holds, at least 1.
      * @param int            $offset         How many come before the page.
      *

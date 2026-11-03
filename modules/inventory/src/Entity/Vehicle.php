@@ -8,7 +8,7 @@ use function trim;
 
 /**
  * One vehicle on the lot, as the list and its page show it, the seed and the form save it; its page is found by its
- * VIN.
+ * VIN. Its day on the lot and its location there (#29) are one value, `VehicleLot`; only a bulk move writes the location.
  */
 final readonly class Vehicle
 {
@@ -28,7 +28,7 @@ final readonly class Vehicle
      * @param string        $exteriorColour Its paint.
      * @param VehiclePrice  $price          What it is offered at and what the lot paid.
      * @param VehicleStatus $status         Where it stands.
-     * @param string        $addedOn        The day it came onto the lot, `YYYY-MM-DD`.
+     * @param VehicleLot    $lot            The day it came onto the lot, and where on it it stands.
      */
     public function __construct(
         public string $vin,
@@ -41,7 +41,7 @@ final readonly class Vehicle
         public string $exteriorColour,
         public VehiclePrice $price,
         public VehicleStatus $status,
-        public string $addedOn,
+        public VehicleLot $lot,
     ) {
     }
 

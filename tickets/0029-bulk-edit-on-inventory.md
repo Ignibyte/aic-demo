@@ -2,9 +2,10 @@
 number: 29
 title: "Bulk edit on inventory"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T07:39:59Z
+phase: "docs"
 ---
 
 Staff tick vehicles in the inventory list (a box per row and one for the page) and act on them at

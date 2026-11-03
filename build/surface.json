@@ -197,6 +197,13 @@
             "path": "/app/inventory/{vin}/row"
         },
         {
+            "handler": "App\\Inventory\\Controller\\VehicleBulkPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/bulk"
+        },
+        {
             "handler": "App\\Holds\\Controller\\HoldNewPage",
             "kind": "Page",
             "method": "GET",
@@ -791,6 +798,7 @@
                 "App\\Inventory\\Entity\\Vehicle",
                 "App\\Inventory\\Entity\\VehiclePrice",
                 "App\\Inventory\\Entity\\VehicleStatus",
+                "App\\Inventory\\Entity\\VehicleLot",
                 "App\\Inventory\\Service\\Vins",
                 "App\\Inventory\\Repository\\VehicleRepository",
                 "App\\Inventory\\Repository\\VehicleStatusRepository",
@@ -807,7 +815,8 @@
             "middleware": [],
             "migrations": [
                 "App\\Inventory\\Migration\\CreateVehiclesTable",
-                "App\\Inventory\\Migration\\CreateTodayView"
+                "App\\Inventory\\Migration\\CreateTodayView",
+                "App\\Inventory\\Migration\\AddVehicleLocation"
             ],
             "name": "inventory",
             "namespace": "App\\Inventory\\",
@@ -1097,6 +1106,11 @@
                 "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\BulkBar\\BulkBar",
+                "generated": "build/generated/templates/themes/lotline/components/BulkBar/bulk-bar.phtml",
+                "source": "themes/lotline/components/BulkBar/bulk-bar.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\CarGrid\\CarGrid",
                 "generated": "build/generated/templates/themes/lotline/components/CarGrid/car-grid.phtml",
                 "source": "themes/lotline/components/CarGrid/car-grid.phtml"
@@ -1290,6 +1304,11 @@
                 "component": "App\\Theme\\Components\\TableRow\\TableRow",
                 "generated": "build/generated/templates/themes/lotline/components/TableRow/table-row.phtml",
                 "source": "themes/lotline/components/TableRow/table-row.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\TableTotals\\TableTotals",
+                "generated": "build/generated/templates/themes/lotline/components/TableTotals/table-totals.phtml",
+                "source": "themes/lotline/components/TableTotals/table-totals.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\TopBar\\TopBar",
