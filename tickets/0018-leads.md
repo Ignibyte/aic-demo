@@ -2,7 +2,7 @@
 number: 18
 title: "Leads: a customer asks about a car, and the salesperson hears of it"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T04:53:44Z
 phase: "docs"

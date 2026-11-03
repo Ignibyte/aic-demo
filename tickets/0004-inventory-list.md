@@ -2,7 +2,7 @@
 number: 4
 title: "Inventory: the vehicles on the lot, listed"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T00:00:00Z
 updated: 2026-10-27T05:44:17Z
 phase: "docs"

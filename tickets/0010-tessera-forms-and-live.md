@@ -2,7 +2,7 @@
 number: 10
 title: "Tessera: forms in place, and the dashboard live"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T11:00:00Z
 updated: 2026-10-27T10:45:29Z
 phase: "docs"

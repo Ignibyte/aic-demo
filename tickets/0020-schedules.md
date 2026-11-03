@@ -2,7 +2,7 @@
 number: 20
 title: "Schedules: aged stock, holds that expire, a nightly digest"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T11:01:56Z
 phase: "docs"

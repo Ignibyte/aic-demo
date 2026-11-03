@@ -2,7 +2,7 @@
 number: 16
 title: "Vehicle photos: uploads, and files served back"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T01:50:53Z
 phase: "docs"

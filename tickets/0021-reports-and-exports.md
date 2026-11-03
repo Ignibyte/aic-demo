@@ -2,7 +2,7 @@
 number: 21
 title: "Reports and exports"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T14:26:32Z
 phase: "docs"

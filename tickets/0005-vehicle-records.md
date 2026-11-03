@@ -2,7 +2,7 @@
 number: 5
 title: "Inventory: a vehicle's record, created, edited and deleted"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T01:00:00Z
 updated: 2026-10-27T06:32:08Z
 phase: "docs"

@@ -2,7 +2,7 @@
 number: 7
 title: "Sales: a vehicle sold to a customer"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T02:00:00Z
 updated: 2026-10-27T08:44:54Z
 phase: "docs"

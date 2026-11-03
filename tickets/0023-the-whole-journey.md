@@ -2,7 +2,7 @@
 number: 23
 title: "The whole journey, on the compiled site"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T19:45:00Z
 phase: "docs"

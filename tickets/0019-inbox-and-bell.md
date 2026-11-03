@@ -2,7 +2,7 @@
 number: 19
 title: "The staff inbox and a live bell"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T09:47:58Z
 phase: "docs"

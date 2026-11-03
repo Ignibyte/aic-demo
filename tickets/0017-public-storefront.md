@@ -2,7 +2,7 @@
 number: 17
 title: "The public storefront and a vehicle feed"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T12:00:00Z
 updated: 2026-10-29T02:44:56Z
 phase: "docs"

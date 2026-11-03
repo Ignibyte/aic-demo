@@ -2,7 +2,7 @@
 number: 15
 title: "Tessera protocol 2: read props by anchor; the live part back in its panel grid"
 type: chore
-status: in-review
+status: closed
 created: 2026-10-28T04:30:00Z
 updated: 2026-10-28T04:37:15Z
 phase: "docs"

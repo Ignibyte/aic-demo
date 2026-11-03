@@ -2,7 +2,7 @@
 number: 6
 title: "Customers: their records, created, edited and deleted"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T02:00:00Z
 updated: 2026-10-27T07:43:17Z
 phase: "docs"

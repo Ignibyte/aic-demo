@@ -2,7 +2,7 @@
 number: 9
 title: "Tessera: the inventory table refreshes in place"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T02:00:00Z
 updated: 2026-10-27T09:56:18Z
 phase: "docs"

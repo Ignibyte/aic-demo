@@ -2,7 +2,7 @@
 number: 12
 title: "Dashboard: refresh by Tessera's poll instead of a stream"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-28T09:00:00Z
 updated: 2026-10-27T13:33:01Z
 phase: "docs"

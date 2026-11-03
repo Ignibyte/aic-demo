@@ -2,7 +2,7 @@
 number: 13
 title: "Adopt AIC's protocol 1, page titles and anchors"
 type: chore
-status: in-review
+status: closed
 created: 2026-10-27T18:00:00Z
 updated: 2026-10-27T19:18:47Z
 phase: "docs"

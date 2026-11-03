@@ -2,7 +2,7 @@
 number: 14
 title: "Every table through the entity API; dashboard parts built from sources, idle polls 204"
 type: chore
-status: in-review
+status: closed
 created: 2026-10-27T18:00:00Z
 updated: 2026-10-27T23:31:02Z
 phase: "docs"

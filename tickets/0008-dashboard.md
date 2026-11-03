@@ -2,7 +2,7 @@
 number: 8
 title: "The dashboard: stat tiles and server-drawn charts"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T02:00:00Z
 updated: 2026-10-27T09:07:22Z
 phase: "docs"

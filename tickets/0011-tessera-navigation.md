@@ -2,7 +2,7 @@
 number: 11
 title: "Tessera: the whole site through enhanced navigation"
 type: feature
-status: in-review
+status: closed
 created: 2026-10-27T12:00:00Z
 updated: 2026-10-27T11:22:45Z
 phase: "docs"
