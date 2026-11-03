@@ -14,7 +14,8 @@ use InvalidArgumentException;
 
 /**
  * The leads' entity type (#18): `leads`, keyed by `id`, each referring to its vehicle, to its salesperson in `users`
- * (null while unassigned) and to the customer its email matched (null for none).
+ * (null while unassigned) and to the customer its email matched (null for none). Its stage (#30) is nullable only
+ * because AIC adds a column to a table with rows as nullable; every lead has one.
  */
 final readonly class LeadTable
 {
@@ -49,6 +50,7 @@ final readonly class LeadTable
             new Field('salesperson_id', FieldType::Reference, true, $this->staffTable->type()),
             new Field('customer_id', FieldType::Reference, true, $this->customerTable->type()),
             new Field('status', FieldType::Text),
+            new Field('stage', FieldType::Text, true),
             new Field('created_at', FieldType::CreatedAt),
         ]);
     }

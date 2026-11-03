@@ -83,7 +83,7 @@ final readonly class LeadCards
         $body = $this->staffNotices->take($serverRequest, 'lead-notice');
         $body['card'] = $this->leadFacts->card($lead);
 
-        if ($lead->open && $this->leadAccess->mayMove($serverRequest, $lead)) {
+        if ($lead->stage->open() && $this->leadAccess->mayMove($serverRequest, $lead)) {
             $body['assign'] = $this->leadActions->assign($serverRequest, $lead, $this->sellerRepository->all(), $error);
             $body['close'] = $this->leadActions->close($serverRequest, $lead);
         }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Schema\Contracts\Migration;
+use App\Leads\Migration\AddLeadStage;
+use App\Leads\Migration\CreateLeadMovesTable;
 use App\Leads\Migration\CreateLeadsTable;
 
 /**
@@ -20,6 +22,8 @@ final readonly class LeadsMigrations
     {
         return [
             new CreateLeadsTable(),
+            new AddLeadStage(),
+            new CreateLeadMovesTable(),
         ];
     }
 }

@@ -4,26 +4,53 @@ declare(strict_types=1);
 
 namespace App\Leads\Service;
 
+use AIC\Auth\Application\Authenticator;
+use AIC\Session\Application\RequestSession;
+use App\Leads\Entity\BoardViewer;
 use App\Leads\Entity\Lead;
-use App\Leads\Entity\Seller;
 use App\Staff\Entity\StaffMember;
 use App\Staff\Service\StaffSession;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
 
+use function ctype_digit;
+use function strlen;
+
 /**
- * Who may reassign or close a lead (#18): the salesperson it is assigned to, and a manager, an admin or a sales
- * manager. Everyone else on the staff reads it and nothing more.
+ * Who may reassign, close or move a lead (#18, #30): the salesperson it is assigned to, and a manager, an admin or a
+ * sales manager. Everyone else on the staff reads it and nothing more. The rule itself is `BoardViewer`'s, so the
+ * lead's page, the board, its stream and the stage routes ask the same one.
  */
 final readonly class LeadAccess
 {
     /**
-     * @param StaffSession $staffSession Who is signed in.
+     * @param StaffSession   $staffSession   Who is signed in.
+     * @param RequestSession $requestSession Their user id, as AIC's sign-in keeps it.
      */
     public function __construct(
         private StaffSession $staffSession = new StaffSession(),
+        private RequestSession $requestSession = new RequestSession(),
     ) {
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest A staff request, with its session.
+     *
+     * @throws LogicException           When the request carries no session.
+     * @throws UnexpectedValueException When the kept role is no role.
+     *
+     * @return BoardViewer Whoever is signed in; no one (an empty email) when no member is.
+     */
+    public function viewer(ServerRequestInterface $serverRequest): BoardViewer
+    {
+        $staffMember = $this->staffSession->member($serverRequest);
+        $userId = $this->requestSession->read($serverRequest)->get(Authenticator::USER) ?? '';
+        $known = $userId !== '' && strlen($userId) <= 18 && ctype_digit($userId);
+
+        return $staffMember instanceof StaffMember && $known
+            ? new BoardViewer((int) $userId, $staffMember->email, $staffMember->name, $staffMember->role->manages())
+            : new BoardViewer(0, '', '', false);
     }
 
     /**
@@ -33,22 +60,10 @@ final readonly class LeadAccess
      * @throws LogicException           When the request carries no session.
      * @throws UnexpectedValueException When the kept role is no role.
      *
-     * @return bool Whether whoever is signed in may reassign or close it.
+     * @return bool Whether whoever is signed in may reassign, close or move it.
      */
     public function mayMove(ServerRequestInterface $serverRequest, Lead $lead): bool
     {
-        $staffMember = $this->staffSession->member($serverRequest);
-
-        if (!$staffMember instanceof StaffMember) {
-            return false;
-        }
-
-        if ($staffMember->role->manages()) {
-            return true;
-        }
-
-        $seller = $lead->seller;
-
-        return $seller instanceof Seller && $seller->email === $staffMember->email;
+        return $this->viewer($serverRequest)->mayMove($lead);
     }
 }

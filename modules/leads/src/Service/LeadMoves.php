@@ -19,9 +19,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
 
 /**
- * A lead reassigned or closed (#18), by its salesperson or a manager: each answers 303 with a notice, the reassign to
- * the lead's page and the close to the list. A lead that is not there answers 404, someone else's 403 and a closed
- * one 409; a reassign to someone who is not a salesperson shows the page again as 422.
+ * A lead reassigned (#18), by its salesperson or a manager: it answers 303 to the lead's page with a notice. A lead
+ * that is not there answers 404, someone else's 403 and a closed one 409; a reassign to someone who is not a
+ * salesperson shows the page again as 422. A close is a move to Lost on the board (#30), so it is `StageMoves`'.
  */
 final readonly class LeadMoves
 {
@@ -35,7 +35,7 @@ final readonly class LeadMoves
      * @param SellerRepository $sellerRepository The salespeople a lead may go to.
      * @param LeadCards        $leadCards        Finds it, and its pages.
      * @param LeadAccess       $leadAccess       Who may move it.
-     * @param StaffNotices     $staffNotices     Leaves the move's notice.
+     * @param StaffNotices     $staffNotices     Leaves the reassign's notice.
      * @param PostedFields     $postedFields     Reads the chosen salesperson.
      */
     public function __construct(
@@ -81,30 +81,6 @@ final readonly class LeadMoves
     }
 
     /**
-     * @param ServerRequestInterface $serverRequest The posted close form, with its session.
-     *
-     * @throws QueryException           When the lead cannot be read or written.
-     * @throws EntityNotFoundException  When the lead went meanwhile.
-     * @throws LogicException           When the request carries no session, or a key, a type or a status does not fit.
-     * @throws UnexpectedValueException When the kept role is no role.
-     *
-     * @return PageResponse 303 to the list; 409, 403 or 404.
-     */
-    public function close(ServerRequestInterface $serverRequest): PageResponse
-    {
-        $lead = $this->held($serverRequest);
-
-        if ($lead instanceof PageDocument) {
-            return $lead;
-        }
-
-        $this->leadRepository->close($lead->id);
-        $this->staffNotices->keep($serverRequest, 'Closed the lead from ' . $lead->leadDetails->name . '.');
-
-        return new PageRedirect(Lead::PAGES);
-    }
-
-    /**
      * @param ServerRequestInterface $serverRequest The posted form, with its session.
      *
      * @throws QueryException           When the lead cannot be read.
@@ -125,7 +101,7 @@ final readonly class LeadMoves
             return $this->leadCards->refused($lead);
         }
 
-        return $lead->open
+        return $lead->stage->open()
             ? $lead
             : $this->leadCards->closed($lead);
     }

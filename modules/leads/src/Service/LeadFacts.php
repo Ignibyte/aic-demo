@@ -25,15 +25,17 @@ final readonly class LeadFacts
     /**
      * @param Lead $lead The lead.
      *
-     * @return DetailCard Its facts, its status, and links to its car and its customer.
+     * @return DetailCard Its facts, its stage on the board last (#30), its status, and links to its car and its customer.
      */
     public function card(Lead $lead): DetailCard
     {
-        $statusBadge = $lead->open
+        $statusBadge = $lead->stage->open()
             ? new StatusBadge('Open', BadgeTone::Success, 'lead-status')
             : new StatusBadge('Closed', BadgeTone::Neutral, 'lead-status');
 
-        return new DetailCard('lead-title', $lead->leadDetails->name, $statusBadge, $this->facts($lead), '', $this->actions($lead));
+        $facts = [...$this->facts($lead), new Fact('Stage', $lead->stage->label(), false)];
+
+        return new DetailCard('lead-title', $lead->leadDetails->name, $statusBadge, $facts, '', $this->actions($lead));
     }
 
     /**

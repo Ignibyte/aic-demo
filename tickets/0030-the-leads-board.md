@@ -2,9 +2,10 @@
 number: 30
 title: "The leads board"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T10:27:53Z
+phase: "docs"
 ---
 
 `/app/leads` gains a board view beside the list: columns New, Contacted, Appointment, Won, Lost,

@@ -386,6 +386,27 @@
             "path": "/app/leads/{id:int}/close"
         },
         {
+            "handler": "App\\Leads\\Controller\\LeadStagePatch",
+            "kind": "Page",
+            "method": "PATCH",
+            "module": "leads",
+            "path": "/app/leads/{id:int}/stage"
+        },
+        {
+            "handler": "App\\Leads\\Controller\\LeadStagePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "leads",
+            "path": "/app/leads/{id:int}/stage"
+        },
+        {
+            "handler": "App\\Leads\\Controller\\LeadBoardEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "leads",
+            "path": "/app/leads/events"
+        },
+        {
             "handler": "App\\Leads\\Controller\\LeadListPage",
             "kind": "Page",
             "method": "GET",
@@ -614,6 +635,12 @@
             "kind": "Job",
             "module": "leads",
             "name": "lead-notices"
+        },
+        {
+            "class": "App\\Leads\\Job\\SendLeadWon",
+            "kind": "Job",
+            "module": "leads",
+            "name": "lead-won"
         },
         {
             "class": "AIC\\Notification\\Application\\DeliverNotification",
@@ -976,7 +1003,9 @@
             ],
             "middleware": [],
             "migrations": [
-                "App\\Leads\\Migration\\CreateLeadsTable"
+                "App\\Leads\\Migration\\CreateLeadsTable",
+                "App\\Leads\\Migration\\AddLeadStage",
+                "App\\Leads\\Migration\\CreateLeadMovesTable"
             ],
             "name": "leads",
             "namespace": "App\\Leads\\",
@@ -1101,6 +1130,16 @@
                 "source": "themes/lotline/components/BellItems/bell-items.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\BoardColumn\\BoardColumn",
+                "generated": "build/generated/templates/themes/lotline/components/BoardColumn/board-column.phtml",
+                "source": "themes/lotline/components/BoardColumn/board-column.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\BoardStack\\BoardStack",
+                "generated": "build/generated/templates/themes/lotline/components/BoardStack/board-stack.phtml",
+                "source": "themes/lotline/components/BoardStack/board-stack.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\BootstrapIntro\\BootstrapIntro",
                 "generated": "build/generated/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml",
                 "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
@@ -1199,6 +1238,16 @@
                 "component": "App\\Theme\\Components\\IconLegend\\IconLegend",
                 "generated": "build/generated/templates/themes/lotline/components/IconLegend/icon-legend.phtml",
                 "source": "themes/lotline/components/IconLegend/icon-legend.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\LeadBoard\\LeadBoard",
+                "generated": "build/generated/templates/themes/lotline/components/LeadBoard/lead-board.phtml",
+                "source": "themes/lotline/components/LeadBoard/lead-board.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\LeadCard\\LeadCard",
+                "generated": "build/generated/templates/themes/lotline/components/LeadCard/lead-card.phtml",
+                "source": "themes/lotline/components/LeadCard/lead-card.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\LiveParts\\LiveParts",

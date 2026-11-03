@@ -10,6 +10,7 @@ use App\Leads\Entity\Lead;
 use App\Leads\Entity\LeadCar;
 use App\Leads\Entity\LeadDetails;
 use App\Leads\Entity\LeadKind;
+use App\Leads\Entity\LeadStage;
 use App\Leads\Entity\Seller;
 
 use function substr;
@@ -38,12 +39,33 @@ final readonly class LeadRows
             $row->int('id'),
             $this->details($row),
             substr($row->string('created_at'), 0, 10),
-            $row->string('status') === 'open',
+            $this->stage($row),
             new LeadCar($title, $row->string('v_vin'), $row->int('v_list_price')),
             $this->seller($row),
             $customerId,
             $customerId === 0 ? '' : $row->string('c_name'),
         );
+    }
+
+    /**
+     * @param Row $row A lead's row.
+     *
+     * @throws QueryException When a column is missing or of another type.
+     *
+     * @return LeadStage Its stage (#30); a lead with none reads from its status as `AddLeadStage` filled the stored
+     *                   ones: closed is Lost, open New.
+     */
+    public function stage(Row $row): LeadStage
+    {
+        $stage = LeadStage::New->stored($this->text($row, 'stage'));
+
+        if ($stage instanceof LeadStage) {
+            return $stage;
+        }
+
+        return $row->string('status') === 'closed'
+            ? LeadStage::Lost
+            : LeadStage::New;
     }
 
     /**

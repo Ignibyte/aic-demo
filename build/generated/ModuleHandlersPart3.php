@@ -32,6 +32,8 @@ final readonly class ModuleHandlersPart3
     public function byId(): array
     {
         return array_merge(
+            (new ReportsHandlers($this->handlerContext))->byId(),
+            (new SiteHandlers($this->handlerContext))->byId(),
             (new StorefrontHandlers($this->handlerContext))->byId(),
             (new StorefrontHandlersPart2($this->handlerContext))->byId(),
             (new StorefrontHandlersPart3($this->handlerContext))->byId(),
