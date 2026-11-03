@@ -1185,6 +1185,11 @@
                 "source": "themes/lotline/components/RangeLinks/range-links.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\SearchField\\SearchField",
+                "generated": "build/generated/templates/themes/lotline/components/SearchField/search-field.phtml",
+                "source": "themes/lotline/components/SearchField/search-field.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\SelectField\\SelectField",
                 "generated": "build/generated/templates/themes/lotline/components/SelectField/select-field.phtml",
                 "source": "themes/lotline/components/SelectField/select-field.phtml"

@@ -1,2 +1,2 @@
 <?php /** @var \App\Theme\Components\TableResults\TableResults $tableResults */ ?>
-<div class="flex flex-col gap-2"><?php foreach ($tableResults->parts as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></div>
+<div class="flex flex-col gap-2 transition-opacity aria-busy:opacity-60"><?php foreach ($tableResults->parts as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></div>

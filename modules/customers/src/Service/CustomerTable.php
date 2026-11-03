@@ -25,13 +25,24 @@ use function rawurlencode;
 
 /**
  * The customers' tables: the list's, a row per customer on the page, its name linked to the customer's page, with a
- * link per page that keeps the search (Tessera answers the pages in `content`); and a customer's vehicles bought, with
- * the badge that counts them.
+ * link per page that keeps the search (Tessera answers the pages with the list's results alone, `@customer-results`);
+ * and a customer's vehicles bought, with the badge that counts them.
  */
 final readonly class CustomerTable
 {
     /**
-     * The regions a page link updates.
+     * The list's results' anchor: the list's panel carries it on the results, its search and pages target
+     * `@customer-results`, and Tessera finds the results' path on the page, so no code here spells it.
+     */
+    public const string ANCHOR = 'customer-results';
+
+    /**
+     * What the list's table and pages update: its results, by their anchor.
+     */
+    private const string RESULTS = '@' . self::ANCHOR;
+
+    /**
+     * The region a customer's purchases table updates.
      */
     private const string TARGET = 'content';
 
@@ -58,7 +69,7 @@ final readonly class CustomerTable
             ? 'No customers yet. Add the first one.'
             : 'No customer matches. Try another search, or clear it.';
 
-        return new DataTable('customers-table', $this->summary($count, $page, $pages), $empty, self::TARGET, [
+        return new DataTable('customers-table', $this->summary($count, $page, $pages), $empty, self::RESULTS, [
             new TableColumn('Name', '', 'none', '', false),
             new TableColumn('Email', '', 'none', '', false),
             new TableColumn('Phone', '', 'none', '', false),
@@ -125,7 +136,7 @@ final readonly class CustomerTable
             $pageLinks[] = new PageLink((string) $number, $this->href($customerQuery, $number), $number === $page);
         }
 
-        return new Pagination('customers-pages', self::TARGET, $pageLinks);
+        return new Pagination('customers-pages', self::RESULTS, $pageLinks);
     }
 
     /**

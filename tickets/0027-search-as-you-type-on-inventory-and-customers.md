@@ -2,9 +2,10 @@
 number: 27
 title: "Search as you type on inventory and customers"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T03:52:12Z
+phase: "docs"
 ---
 
 The inventory and customer lists gain a search box that filters as staff type, with no button:
