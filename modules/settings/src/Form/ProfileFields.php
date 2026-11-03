@@ -40,7 +40,7 @@ final readonly class ProfileFields
 
     /**
      * @param SettingsSeals $settingsSeals Seals the values the form was issued for.
-     * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
+     * @param FormTokens    $formTokens    Issues the visitor's guard fields.
      */
     public function __construct(
         private SettingsSeals $settingsSeals,
@@ -96,7 +96,7 @@ final readonly class ProfileFields
         $fields[] = $this->days($profileEntry->value('open_days'), $errors['days'] ?? '');
         $fields[] = new SubmitButton('Save the profile', 'profile-save', '');
 
-        return new Form('profile-form', self::ACTION, $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('profile-form', self::ACTION, $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**

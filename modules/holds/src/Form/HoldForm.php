@@ -25,7 +25,7 @@ final readonly class HoldForm
     /**
      * @param StaffPanels $staffPanels The hold pages' frame.
      * @param HoldFields  $holdFields  The grid of fields.
-     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
+     * @param FormTokens  $formTokens  Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -56,8 +56,8 @@ final readonly class HoldForm
             : [new Alert(AlertSeverity::Error, 'Fix the fields marked below.', 'hold-error')];
         $formGrid = $this->holdFields->grid($holdEntry, $errors);
         $formActions = new FormActions('Put on hold', 'hold-save', Hold::PAGES);
-        $token = $this->formTokens->issue($serverRequest)->value();
-        $form = new Form('hold-form', Hold::PAGES, [...$alerts, $formGrid, $formActions], $token);
+        $guardFields = $this->formTokens->guard($serverRequest);
+        $form = new Form('hold-form', Hold::PAGES, [...$alerts, $formGrid, $formActions], $guardFields);
         $description = 'Keep a vehicle in stock for a customer for 48 hours. It leaves the public site and sells to no one else.';
 
         return $this->staffPanels->page('Put a vehicle on hold', 'Put a vehicle on hold', $description, ['form' => $form], $status);

@@ -38,7 +38,7 @@ final readonly class MemberFields
 
     /**
      * @param SettingsSeals $settingsSeals Seals the values the edit form was issued for.
-     * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
+     * @param FormTokens    $formTokens    Issues the visitor's guard fields.
      * @param Roles         $roles         The roles, in order.
      */
     public function __construct(
@@ -73,7 +73,7 @@ final readonly class MemberFields
         $fields[] = $formGrid;
         $fields[] = new SubmitButton('Add the member', 'member-add', '');
 
-        return new Form('member-add-form', self::ADD, $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('member-add-form', self::ADD, $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**
@@ -115,7 +115,7 @@ final readonly class MemberFields
         $fields[] = $formGrid;
         $fields[] = new SubmitButton('Save', 'member-save', '');
 
-        return new Form('member-form', $path, $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('member-form', $path, $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**

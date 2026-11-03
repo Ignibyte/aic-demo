@@ -29,7 +29,7 @@ final readonly class SignInForm
 {
     /**
      * @param StaffPages   $staffPages   The staff pages' document.
-     * @param FormTokens   $formTokens   Issues the visitor's CSRF token.
+     * @param FormTokens   $formTokens   Issues the visitor's guard fields.
      * @param StaffNotices $staffNotices The line kept for the page.
      */
     public function __construct(
@@ -94,6 +94,6 @@ final readonly class SignInForm
             new Button('Sign in', 'submit', 'sign-in-submit'),
         ];
 
-        return new Form('sign-in-form', '/sign-in', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('sign-in-form', '/sign-in', $fields, $this->formTokens->guard($serverRequest));
     }
 }

@@ -35,7 +35,7 @@ final readonly class InboxList
      * @param InboxRows    $inboxRows    The table and page links.
      * @param InboxQueries $inboxQueries Reads the page.
      * @param StaffNotices $staffNotices "Mark all read"'s notice.
-     * @param FormTokens   $formTokens   Issues the form's token.
+     * @param FormTokens   $formTokens   Issues the form's guard fields.
      */
     public function __construct(
         private Inbox $inbox,
@@ -69,7 +69,7 @@ final readonly class InboxList
             : $this->inbox->page($userId, ($page - 1) * self::PER_PAGE, self::PER_PAGE);
 
         if ($unread > 0) {
-            $body[] = new KeyedComponent('read-all', $this->inboxRows->readAllForm($this->formTokens->issue($serverRequest)->value()));
+            $body[] = new KeyedComponent('read-all', $this->inboxRows->readAllForm($this->formTokens->guard($serverRequest)));
         }
 
         $body[] = new KeyedComponent('table', $this->inboxRows->table($inboxItems, $total, $unread, $page, $pages));

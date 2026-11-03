@@ -33,7 +33,7 @@ final readonly class ReportPanels
      * @param StaffPages      $staffPages      The staff pages' document.
      * @param RangeFilters    $rangeFilters    The presets' links, the dates' form and a refused range's warning.
      * @param ReportKinds     $reportKinds     The reports, in order.
-     * @param FormTokens      $formTokens      The export forms' token.
+     * @param FormTokens      $formTokens      The export forms' guard fields.
      */
     public function __construct(
         private RangeRepository $rangeRepository,
@@ -91,10 +91,10 @@ final readonly class ReportPanels
         $body[] = new KeyedComponent('dates', $this->rangeFilters->filterBar($rangeCheck));
         $description = $reportRange->from . ' to ' . $reportRange->until;
         $panels = [new KeyedComponent('range', new Panel('report-range-panel', 'Range', $description, true, $body))];
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
 
         foreach ($this->reportKinds->all() as $reportKind) {
-            $panels[] = $this->reportCards->card($reportKind, $reportRange, $token);
+            $panels[] = $this->reportCards->card($reportKind, $reportRange, $guardFields);
         }
 
         return $panels;

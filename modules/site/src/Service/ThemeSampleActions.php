@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class ThemeSampleActions
 {
     /**
-     * @param FormTokens $formTokens Issues each form's token.
+     * @param FormTokens $formTokens Issues each form's guard fields.
      */
     public function __construct(
         private FormTokens $formTokens = new FormTokens(),
@@ -41,7 +41,7 @@ final readonly class ThemeSampleActions
         $form = new Form('delete-form', '/theme', [
             new HiddenInput('intent', 'delete'),
             new Button('Delete', 'submit', 'delete-customer'),
-        ], $this->formTokens->issue($serverRequest)->value());
+        ], $this->formTokens->guard($serverRequest));
 
         return new ConfirmCard(
             'Jordan Pike',
@@ -64,7 +64,7 @@ final readonly class ThemeSampleActions
         $form = new Form('sample-sign-out-form', '/theme', [
             new HiddenInput('intent', 'sign-out'),
             new Button('Sign out', 'submit', 'sample-sign-out'),
-        ], $this->formTokens->issue($serverRequest)->value());
+        ], $this->formTokens->guard($serverRequest));
 
         return new SignedInMenu('sample-account', 'Dana Reyes', 'Sales manager', 'dana.reyes@example.com', $form);
     }

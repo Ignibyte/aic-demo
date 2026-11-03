@@ -6,6 +6,7 @@ namespace App\Reports\Form;
 
 use AIC\Component\Domain\Button;
 use AIC\Component\Domain\Form;
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\HiddenInput;
 use App\Reports\Entity\ReportKind;
 use App\Reports\Entity\ReportRange;
@@ -24,11 +25,11 @@ final readonly class ExportForms
     /**
      * @param ReportKind  $reportKind  The report.
      * @param ReportRange $reportRange The range shown.
-     * @param string      $token       The form's token.
+     * @param GuardFields $guardFields The form's CSRF token and honeypot.
      *
      * @return Form The button, in its form.
      */
-    public function form(ReportKind $reportKind, ReportRange $reportRange, string $token): Form
+    public function form(ReportKind $reportKind, ReportRange $reportRange, GuardFields $guardFields): Form
     {
         $id = 'report-export-' . $reportKind->value;
 
@@ -37,6 +38,6 @@ final readonly class ExportForms
             new HiddenInput('from', $reportRange->from),
             new HiddenInput('to', $reportRange->until),
             new Button('Export CSV', 'submit', $id . '-button'),
-        ], $token);
+        ], $guardFields);
     }
 }

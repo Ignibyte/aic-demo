@@ -26,7 +26,7 @@ final readonly class VehicleForm
      * @param StaffPanels   $staffPanels   The vehicle pages' frame.
      * @param StaffSeals    $staffSeals    Seals the edited vehicle's path.
      * @param VehicleFields $vehicleFields The grid of fields.
-     * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
+     * @param FormTokens    $formTokens    Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -70,7 +70,7 @@ final readonly class VehicleForm
             ? [$this->staffSeals->field($path)]
             : [];
         $fields = [...$alerts, ...$seal, $grid, $formActions];
-        $form = new Form('vehicle-form', $path, $fields, $this->formTokens->issue($serverRequest)->value());
+        $form = new Form('vehicle-form', $path, $fields, $this->formTokens->guard($serverRequest));
         $description = "Prices are whole dollars. The cost stays off the vehicle's page.";
 
         return $this->staffPanels->page($title, $title, $description, ['form' => $form], $status);

@@ -27,7 +27,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class ThemeSampleForms
 {
     /**
-     * @param FormTokens $formTokens Issues each form's token.
+     * @param FormTokens $formTokens Issues each form's guard fields.
      */
     public function __construct(
         private FormTokens $formTokens = new FormTokens(),
@@ -52,7 +52,7 @@ final readonly class ThemeSampleForms
         $formActions = new FormActions('Save', 'vehicle-save', '/theme');
         $fields = [...$alerts, new HiddenInput('intent', 'save'), $formGrid, $formActions];
 
-        return new Form('vehicle-form', '/theme', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('vehicle-form', '/theme', $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**

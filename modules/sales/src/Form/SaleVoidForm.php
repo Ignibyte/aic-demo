@@ -28,7 +28,7 @@ final readonly class SaleVoidForm
     /**
      * @param StaffPanels $staffPanels The sale pages' frame.
      * @param StaffSeals  $staffSeals  Seals the sale's path.
-     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
+     * @param FormTokens  $formTokens  Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -51,7 +51,7 @@ final readonly class SaleVoidForm
         $form = new Form('sale-void-form', $path . '/void', [
             $this->staffSeals->field($path),
             new Button('Void the sale', 'submit', 'sale-void-confirm'),
-        ], $this->formTokens->issue($serverRequest)->value());
+        ], $this->formTokens->guard($serverRequest));
         $confirmCard = new ConfirmCard(
             'Void the sale of the ' . $sale->vehicle . '?',
             'Sold to ' . $sale->customer . ' on ' . $sale->soldOn . ' for $' . number_format($sale->price),
