@@ -14,7 +14,7 @@ checkout beside it, so make a folder for both:
 ```bash
 mkdir aic && cd aic
 git clone https://github.com/Ignibyte/aic-nextgen.git aic-nextgen-stable
-git -C aic-nextgen-stable checkout 668900d695c3d1e0b87897b99edf1cf9a241603d
+git -C aic-nextgen-stable checkout cb07056c1d18ca13ad50558c333dfb89dc0833cb
 git clone https://github.com/Ignibyte/aic-demo.git lotline
 cd lotline
 printf 'web_environment:\n  - AIC_APP_SECRET=%s\n' "$(openssl rand -hex 32)" > .ddev/config.local.yaml
@@ -83,7 +83,7 @@ page, but the compiler is young: try it, compare, and keep PHP for anything real
 
 This foundation provides the application runtime, database health check, installed development workflow and Lotline's theme. Staff sign in (the `staff` module, below), keep the vehicles on the lot (the `inventory` module), keep the customers (the `customers` module) and record the sales (the `sales` module), and land on the dashboard (the `dashboard` module).
 
-AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `668900d695c3d1e0b87897b99edf1cf9a241603d` (AIC #238), with Tessera 0.4.0 pinned in `config/app.php`: protocol 2, where a component is marked by `data-t-c` on its one root element and a link, form or poll may name a component by its anchor, `@NAME`. Module code and the browser tests target the inventory results and the dashboard's live part by their anchors (`@inventory-results`, `@dashboard-live`) and spell no component path. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
+AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `cb07056c1d18ca13ad50558c333dfb89dc0833cb` (AIC #243), with Tessera 0.4.1 pinned in `config/app.php`: protocol 2, where a component is marked by `data-t-c` on its one root element and a link, form or poll may name a component by its anchor, `@NAME`. Module code and the browser tests target the inventory results and the dashboard's live part by their anchors (`@inventory-results`, `@dashboard-live`) and spell no component path. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
 
 `config/app.php` names the theme, `themes/lotline/`. Its templates sit on top: `layouts/` (the daisyUI drawer, `html.phtml` and `page.phtml`) and `components/<Name>/` (each component's `.phtml`). The PHP behind them sits in `src/`: `src/Layouts/Page.php`, whose regions are `sidebar`, `header`, `content` and `footer`, and `src/Components/<Name>/`, each component's class and its value classes. `assets/` holds the stylesheet. Modules hold no component, template or asset. The look is old Lotline's: Tailwind 4 and daisyUI 5 with its two themes, dark the default. `themes/lotline/frontend/` holds the Tailwind source and its npm build, which scans the theme's templates and classes and writes `themes/lotline/assets/lotline.css`; after changing a template's classes, run `npm ci && npm run build` there, then `composer run build`, and commit the stylesheet.
 

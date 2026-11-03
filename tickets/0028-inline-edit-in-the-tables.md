@@ -2,9 +2,10 @@
 number: 28
 title: "Inline edit in the tables"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T05:40:40Z
+phase: "docs"
 ---
 
 Staff edit a vehicle's price and status, and a customer's phone, right in the list: a click on

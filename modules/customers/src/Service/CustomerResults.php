@@ -9,9 +9,10 @@ use AIC\Component\Contracts\ComponentSource;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Database\Contracts\QueryException;
 use App\Customers\Form\CustomerQuery;
+use App\Customers\Form\CustomerRowForm;
 use App\Customers\Repository\CustomerRepository;
 use App\Theme\Components\TableResults\TableResults;
-use InvalidArgumentException;
+use LogicException;
 use Override;
 
 use function intdiv;
@@ -20,7 +21,7 @@ use function intdiv;
  * The customers list's results as a source (#27, as inventory's are): it holds the repository and the query the list
  * was asked for, and reads only in `build()`, which the render pass calls when it renders the results. A Tessera visit
  * that names the results alone (`@customer-results`) builds them and nothing else's data. 15 customers a page, by
- * name; a page past the last shows the first.
+ * name; a page past the last shows the first. Each row is `CustomerRowForm`'s, the shape a row's own answer has (#28).
  */
 final readonly class CustomerResults implements ComponentSource
 {
@@ -33,17 +34,19 @@ final readonly class CustomerResults implements ComponentSource
      * @param CustomerRepository $customerRepository The customers.
      * @param CustomerTable      $customerTable      The table and the pages.
      * @param CustomerQuery      $customerQuery      What the list was asked for.
+     * @param CustomerRowForm    $customerRowForm    Each customer's row.
      */
     public function __construct(
         private CustomerRepository $customerRepository,
         private CustomerTable $customerTable,
         private CustomerQuery $customerQuery,
+        private CustomerRowForm $customerRowForm,
     ) {
     }
 
     /**
-     * @throws QueryException           When the customers cannot be read.
-     * @throws InvalidArgumentException When a key is malformed.
+     * @throws QueryException When the customers cannot be read.
+     * @throws LogicException When a key is malformed; or a customer's path cannot be sealed as its row's props.
      *
      * @return Component The page's table and, past one page, the pages.
      */
@@ -56,8 +59,13 @@ final readonly class CustomerResults implements ComponentSource
         $page = $this->customerQuery->page <= $pages
             ? $this->customerQuery->page
             : 1;
-        $customers = $this->customerRepository->page($search, self::PAGE, ($page - 1) * self::PAGE);
-        $parts = [new KeyedComponent('table', $this->customerTable->table($this->customerQuery, $customers, $count, $page, $pages))];
+        $rows = [];
+
+        foreach ($this->customerRepository->page($search, self::PAGE, ($page - 1) * self::PAGE) as $customer) {
+            $rows[] = $this->customerRowForm->shown($customer);
+        }
+
+        $parts = [new KeyedComponent('table', $this->customerTable->table($this->customerQuery, $rows, $count, $page, $pages))];
 
         if ($pages > 1) {
             $parts[] = new KeyedComponent('pages', $this->customerTable->pagination($this->customerQuery, $page, $pages));

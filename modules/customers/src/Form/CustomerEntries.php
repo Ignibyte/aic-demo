@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Fills the customer form: from a post, each field as sent (a missing one or an array is empty); from a stored
- * customer; or blank.
+ * customer; from a stored customer with a list row's phone as sent (#28); or blank.
  */
 final readonly class CustomerEntries
 {
@@ -54,6 +54,20 @@ final readonly class CustomerEntries
             'notes' => $customerDetails->notes,
             'phone' => $customerDetails->phone,
         ]);
+    }
+
+    /**
+     * @param Customer               $customer      The stored customer.
+     * @param ServerRequestInterface $serverRequest A list row's save (#28), which sends the phone.
+     *
+     * @return CustomerEntry The stored customer's details, with the phone as the row sent it.
+     */
+    public function row(Customer $customer, ServerRequestInterface $serverRequest): CustomerEntry
+    {
+        $values = $this->filled($customer)->values;
+        $values['phone'] = $this->postedFields->value($serverRequest, 'phone');
+
+        return new CustomerEntry($values);
     }
 
     /**

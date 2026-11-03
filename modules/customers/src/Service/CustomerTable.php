@@ -14,6 +14,7 @@ use App\Theme\Components\Pagination\PageLink;
 use App\Theme\Components\Pagination\Pagination;
 use App\Theme\Components\StatusBadge\BadgeTone;
 use App\Theme\Components\StatusBadge\StatusBadge;
+use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableRow\TableCell;
 use App\Theme\Components\TableRow\TableRow;
 use InvalidArgumentException;
@@ -24,9 +25,9 @@ use function number_format;
 use function rawurlencode;
 
 /**
- * The customers' tables: the list's, a row per customer on the page, its name linked to the customer's page, with a
- * link per page that keeps the search (Tessera answers the pages with the list's results alone, `@customer-results`);
- * and a customer's vehicles bought, with the badge that counts them.
+ * The customers' tables: the list's, a row per customer on the page (`CustomerRowForm`'s, #28), with a link per page
+ * that keeps the search (Tessera answers the pages with the list's results alone, `@customer-results`); the list's
+ * results of one row, for a row's own answer; and a customer's vehicles bought, with the badge that counts them.
  */
 final readonly class CustomerTable
 {
@@ -35,6 +36,12 @@ final readonly class CustomerTable
      * `@customer-results`, and Tessera finds the results' path on the page, so no code here spells it.
      */
     public const string ANCHOR = 'customer-results';
+
+    /**
+     * Where the list's link to add a customer goes. It lives here so `CustomerList`, which took the row form (#28),
+     * stays within PHPMD's coupling of 15 (gate:10) without naming `Customer` too.
+     */
+    public const string ADD = Customer::PAGES . '/new';
 
     /**
      * What the list's table and pages update: its results, by their anchor.
@@ -47,24 +54,16 @@ final readonly class CustomerTable
     private const string TARGET = 'content';
 
     /**
-     * @param CustomerQuery  $customerQuery What the list was asked for.
-     * @param list<Customer> $customers     The page's customers.
-     * @param int            $count         How many customers match.
-     * @param int            $page          The page shown.
-     * @param int            $pages         How many pages there are.
-     *
-     * @throws InvalidArgumentException When a key is malformed.
+     * @param CustomerQuery        $customerQuery What the list was asked for.
+     * @param list<KeyedComponent> $rows          The page's customers' rows.
+     * @param int                  $count         How many customers match.
+     * @param int                  $page          The page shown.
+     * @param int                  $pages         How many pages there are.
      *
      * @return DataTable The page's rows under the heads, or the empty line.
      */
-    public function table(CustomerQuery $customerQuery, array $customers, int $count, int $page, int $pages): DataTable
+    public function table(CustomerQuery $customerQuery, array $rows, int $count, int $page, int $pages): DataTable
     {
-        $rows = [];
-
-        foreach ($customers as $customer) {
-            $rows[] = new KeyedComponent('customer-' . $customer->id, $this->row($customer));
-        }
-
         $empty = $customerQuery->search === ''
             ? 'No customers yet. Add the first one.'
             : 'No customer matches. Try another search, or clear it.';
@@ -75,6 +74,19 @@ final readonly class CustomerTable
             new TableColumn('Phone', '', 'none', '', false),
             new TableColumn('Added', '', 'none', '', false),
         ], $rows);
+    }
+
+    /**
+     * @param KeyedComponent $keyedComponent One customer's row, shown or as a form.
+     *
+     * @throws InvalidArgumentException When a key is malformed.
+     *
+     * @return TableResults The list's results holding that row alone, under the keys the list's results have, for a
+     *                      row's own answer (#28).
+     */
+    public function alone(KeyedComponent $keyedComponent): TableResults
+    {
+        return new TableResults([new KeyedComponent('table', $this->table(new CustomerQuery('', 1), [$keyedComponent], 1, 1, 1))]);
     }
 
     /**
@@ -137,23 +149,6 @@ final readonly class CustomerTable
         }
 
         return new Pagination('customers-pages', self::RESULTS, $pageLinks);
-    }
-
-    /**
-     * @param Customer $customer A customer.
-     *
-     * @return TableRow Its row: the name, linked to its page, the email, the phone and the day it was added.
-     */
-    private function row(Customer $customer): TableRow
-    {
-        $customerDetails = $customer->customerDetails;
-
-        return new TableRow([
-            new TableCell($customerDetails->name, $customer->path(), false, false, null),
-            new TableCell($customerDetails->email, '', false, false, null),
-            new TableCell($customerDetails->phone, '', false, false, null),
-            new TableCell($customer->addedOn, '', false, false, null),
-        ]);
     }
 
     /**

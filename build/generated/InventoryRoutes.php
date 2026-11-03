@@ -16,6 +16,8 @@ use App\Inventory\Controller\VehiclePage;
 use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
+use App\Inventory\Controller\VehicleRowEditPage;
+use App\Inventory\Controller\VehicleRowPage;
 use App\Inventory\Controller\VehicleUpdatePost;
 
 /**
@@ -44,6 +46,8 @@ final readonly class InventoryRoutes
             ->post('/app/inventory/{vin}/photos/{position:int}/delete', VehiclePhotoDeletePost::class)
             ->get('/app/inventory/{vin}/delete', VehicleDeletePage::class)
             ->post('/app/inventory/{vin}/delete', VehicleDeletePost::class)
-            ->get('/app/inventory', InventoryListPage::class);
+            ->get('/app/inventory', InventoryListPage::class)
+            ->get('/app/inventory/{vin}/row', VehicleRowPage::class)
+            ->get('/app/inventory/{vin}/row/edit', VehicleRowEditPage::class);
     }
 }

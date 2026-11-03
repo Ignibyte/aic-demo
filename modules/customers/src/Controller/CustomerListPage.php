@@ -43,6 +43,6 @@ final readonly class CustomerListPage implements Page
     {
         $panel = $this->customerList->panel($serverRequest);
 
-        return $this->staffPages->page('Customers', [new KeyedComponent('customers', $panel)], 200);
+        return $this->staffPages->page('Customers', [new KeyedComponent(CustomerList::KEY, $panel)], 200);
     }
 }

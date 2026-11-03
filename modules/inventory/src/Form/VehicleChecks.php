@@ -18,6 +18,7 @@ use UnexpectedValueException;
 
 use function checkdate;
 use function mb_strlen;
+use function number_format;
 use function preg_match;
 use function strtoupper;
 use function substr;
@@ -25,8 +26,9 @@ use function trim;
 
 /**
  * The vehicle form's checks, one per field: the VIN's form, check digit and uniqueness, the model year's range, the
- * texts and their column lengths, whole numbers from 0, a known status (sold, for a vehicle with a recorded sale) and a
- * real date. A valid entry becomes the `Vehicle` it describes.
+ * texts and their column lengths, whole numbers from 0, a list price no lower than the cost, a known status (sold, for a
+ * vehicle with a recorded sale) and a real date. A valid entry becomes the `Vehicle` it describes. A list's row saves
+ * through them too (#28).
  */
 final readonly class VehicleChecks
 {
@@ -76,7 +78,7 @@ final readonly class VehicleChecks
             'body_style' => $this->textError($vehicleEntry->value('body_style'), 'body style', 30, true),
             'cost' => $this->wholeError($vehicleEntry->value('cost'), 'The cost is whole dollars, 0 or more.'),
             'exterior_colour' => $this->textError($vehicleEntry->value('exterior_colour'), 'colour', 30, true),
-            'list_price' => $this->wholeError($vehicleEntry->value('list_price'), 'The list price is whole dollars, 0 or more.'),
+            'list_price' => $this->priceError($vehicleEntry->value('list_price'), $vehicleEntry->value('cost')),
             'make' => $this->textError($vehicleEntry->value('make'), 'make', 40, true),
             'mileage' => $this->wholeError($vehicleEntry->value('mileage'), 'Mileage is a whole number of miles, 0 or more.'),
             'model' => $this->textError($vehicleEntry->value('model'), 'model', 60, true),
@@ -222,6 +224,23 @@ final readonly class VehicleChecks
         return preg_match('/^\\d{1,7}$/', trim($value)) === 1
             ? ''
             : $message;
+    }
+
+    /**
+     * @param string $listPrice A posted list price.
+     * @param string $cost      A posted cost.
+     *
+     * @return string Why the list price is refused: not whole dollars, or below a cost that is (#28); empty when it is
+     *                fine.
+     */
+    private function priceError(string $listPrice, string $cost): string
+    {
+        $error = $this->wholeError($listPrice, 'The list price is whole dollars, 0 or more.');
+        $below = $error === '' && preg_match('/^\\d{1,7}$/', trim($cost)) === 1 && (int) trim($listPrice) < (int) trim($cost);
+
+        return $below
+            ? 'The list price is below the cost, $' . number_format((int) trim($cost)) . '.'
+            : $error;
     }
 
     /**

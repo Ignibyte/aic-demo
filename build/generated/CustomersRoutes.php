@@ -13,6 +13,9 @@ use App\Customers\Controller\CustomerEditPage;
 use App\Customers\Controller\CustomerListPage;
 use App\Customers\Controller\CustomerNewPage;
 use App\Customers\Controller\CustomerPage;
+use App\Customers\Controller\CustomerRowEditPage;
+use App\Customers\Controller\CustomerRowPage;
+use App\Customers\Controller\CustomerRowPut;
 use App\Customers\Controller\CustomerUpdatePost;
 
 /**
@@ -38,6 +41,9 @@ final readonly class CustomersRoutes
             ->post('/app/customers/{id:int}', CustomerUpdatePost::class)
             ->get('/app/customers/{id:int}/delete', CustomerDeletePage::class)
             ->post('/app/customers/{id:int}/delete', CustomerDeletePost::class)
-            ->get('/app/customers', CustomerListPage::class);
+            ->get('/app/customers', CustomerListPage::class)
+            ->get('/app/customers/{id:int}/row', CustomerRowPage::class)
+            ->get('/app/customers/{id:int}/row/edit', CustomerRowEditPage::class)
+            ->put('/app/customers/{id:int}/row', CustomerRowPut::class);
     }
 }

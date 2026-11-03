@@ -25,6 +25,7 @@ final readonly class ModuleRoutes
         $routeCollector = (new StaffRoutes())->add($routeCollector);
         $routeCollector = (new CustomersRoutes())->add($routeCollector);
         $routeCollector = (new InventoryRoutes())->add($routeCollector);
+        $routeCollector = (new InventoryRoutesPart2())->add($routeCollector);
         $routeCollector = (new HoldsRoutes())->add($routeCollector);
         $routeCollector = (new SalesRoutes())->add($routeCollector);
         $routeCollector = (new DashboardRoutes())->add($routeCollector);
@@ -34,6 +35,6 @@ final readonly class ModuleRoutes
         $routeCollector = (new ReportsRoutes())->add($routeCollector);
         $routeCollector = (new SiteRoutes())->add($routeCollector);
 
-        return (new StorefrontRoutes())->add($routeCollector);
+        return (new ModuleRoutesPart2())->add($routeCollector);
     }
 }

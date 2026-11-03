@@ -11,7 +11,7 @@ use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DetailCard\DetailCard;
 use App\Theme\Components\DownloadLink\DownloadLink;
-use App\Theme\Components\FilterBar\FilterBar;
+use App\Theme\Components\EditRow\EditRow;
 use Override;
 
 /**
@@ -43,7 +43,7 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
             $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
             $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
             $component instanceof DownloadLink => $this->renderDownloadLink($component, $renderPass),
-            $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
+            $component instanceof EditRow => $this->renderEditRow($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -97,17 +97,17 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     }
 
     /**
-     * @param FilterBar  $filterBar  The component; its template reads it.
+     * @param EditRow    $editRow    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/FilterBar/filter-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/EditRow/edit-row.phtml.
      */
-    private function renderFilterBar(FilterBar $filterBar, RenderPass $renderPass): string
+    private function renderEditRow(EditRow $editRow, RenderPass $renderPass): string
     {
-        $renderPass->open($filterBar);
-        require __DIR__ . '/templates/themes/lotline/components/FilterBar/filter-bar.phtml';
+        $renderPass->open($editRow);
+        require __DIR__ . '/templates/themes/lotline/components/EditRow/edit-row.phtml';
 
         return $renderPass->close();
     }

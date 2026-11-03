@@ -78,6 +78,27 @@
             "path": "/app/customers"
         },
         {
+            "handler": "App\\Customers\\Controller\\CustomerRowPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerRowEditPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row/edit"
+        },
+        {
+            "handler": "App\\Customers\\Controller\\CustomerRowPut",
+            "kind": "Page",
+            "method": "PUT",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row"
+        },
+        {
             "handler": "App\\Inventory\\Controller\\VehicleNewPage",
             "kind": "Page",
             "method": "GET",
@@ -153,6 +174,27 @@
             "method": "GET",
             "module": "inventory",
             "path": "/app/inventory"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleRowPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/row"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleRowEditPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/row/edit"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleRowPut",
+            "kind": "Page",
+            "method": "PUT",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/row"
         },
         {
             "handler": "App\\Holds\\Controller\\HoldNewPage",
@@ -1093,6 +1135,11 @@
                 "component": "App\\Theme\\Components\\DownloadLink\\DownloadLink",
                 "generated": "build/generated/templates/themes/lotline/components/DownloadLink/download-link.phtml",
                 "source": "themes/lotline/components/DownloadLink/download-link.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\EditRow\\EditRow",
+                "generated": "build/generated/templates/themes/lotline/components/EditRow/edit-row.phtml",
+                "source": "themes/lotline/components/EditRow/edit-row.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\FilterBar\\FilterBar",

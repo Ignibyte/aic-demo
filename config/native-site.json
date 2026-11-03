@@ -390,6 +390,42 @@
             "captures": false
         },
         {
+            "name": "vehicle row, anonymous",
+            "method": "GET",
+            "path": "/app/inventory/0LTAAA000SR104729/row",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle row form, anonymous",
+            "method": "GET",
+            "path": "/app/inventory/0LTAAA000SR104729/row/edit",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "customer row, anonymous",
+            "method": "GET",
+            "path": "/app/customers/1/row",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "customer row form, anonymous",
+            "method": "GET",
+            "path": "/app/customers/1/row/edit",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
             "name": "sign-in page, for the inventory",
             "method": "GET",
             "path": "/sign-in?next=%2Fapp%2Finventory",
@@ -612,6 +648,87 @@
             "form": "vin=0LTGATE19SR999001&year=2025&make=Gate&model=Probe&trim=Base&body_style=Sedan&mileage=10&exterior_colour=Grey&list_price=20000&cost=18000&status=in_stock&added_on=2026-10-01&aic_csrf={csrf}&aic_envelope={envelope}",
             "header": "",
             "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle row",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/row",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle row form",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/row/edit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle row form, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/row/edit",
+            "form": "",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-0LTGATE19SR999001",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle row, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/row",
+            "form": "",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-0LTGATE19SR999001",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle row save, no token",
+            "method": "PUT",
+            "path": "/app/inventory/0LTGATE19SR999001/row",
+            "form": "list_price=20500&status=in_stock",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "vehicle row save, no props",
+            "method": "PUT",
+            "path": "/app/inventory/0LTGATE19SR999001/row",
+            "form": "list_price=20500&status=in_stock&aic_csrf={csrf}",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "vehicle row save, no props, from Tessera",
+            "method": "PUT",
+            "path": "/app/inventory/0LTGATE19SR999001/row",
+            "form": "list_price=20500&status=in_stock&aic_csrf={csrf}",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-0LTGATE19SR999001",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "vehicle row, malformed VIN",
+            "method": "GET",
+            "path": "/app/inventory/nope/row",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle row form, malformed VIN",
+            "method": "GET",
+            "path": "/app/inventory/nope/row/edit",
+            "form": "",
+            "header": "",
+            "status": 404,
             "captures": false
         },
         {
@@ -1298,6 +1415,69 @@
             "form": "name=Gate%20Probe&email=gate.probe%40example.test&phone=%28503%29%20555-0198&address=1%20Gate%20Street%2C%20Ridgeway&notes=Made%20by%20gate%3A23.&aic_csrf={csrf}&aic_envelope={envelope}",
             "header": "",
             "status": 303,
+            "captures": false
+        },
+        {
+            "name": "customer row",
+            "method": "GET",
+            "path": "{note}/row",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer row form",
+            "method": "GET",
+            "path": "{note}/row/edit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer row save, no token",
+            "method": "PUT",
+            "path": "{note}/row",
+            "form": "phone=%28503%29%20555-0123",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "customer row save, no props",
+            "method": "PUT",
+            "path": "{note}/row",
+            "form": "phone=%28503%29%20555-0123&aic_csrf={csrf}",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "customer row form, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/customers/1/row/edit",
+            "form": "",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @customer-1",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer row, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/customers/1/row",
+            "form": "",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @customer-1",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customer row, unknown id",
+            "method": "GET",
+            "path": "/app/customers/999999999/row",
+            "form": "",
+            "header": "",
+            "status": 404,
             "captures": false
         },
         {

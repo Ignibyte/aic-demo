@@ -11,6 +11,7 @@ use AIC\Storage\Application\PublicFiles;
 use App\Finance\Service\FinanceRates;
 use App\Inventory\Controller\InventoryListPage;
 use App\Inventory\Controller\VehicleDeletePost;
+use App\Inventory\Form\VehicleRowForm;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Service\InventoryList;
 use App\Inventory\Service\VehicleSales;
@@ -49,13 +50,11 @@ final readonly class InventoryHandlersPart3
             new PublicFiles($this->handlerContext->root()),
             $this->handlerContext->tagged(FinanceRates::class),
         );
+        $inventoryList = new InventoryList(new VehicleRepository($entityStore), new VehicleRowForm($this->handlerContext->envelopeCodec()));
 
         return [
             InventoryListPage::class => $this->handlerContext->page(
-                new InventoryListPage(
-                    new StaffPages($this->handlerContext->documents()),
-                    new InventoryList(new VehicleRepository($entityStore)),
-                ),
+                new InventoryListPage(new StaffPages($this->handlerContext->documents()), $inventoryList),
             ),
             VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($vehicleServices)),
         ];
