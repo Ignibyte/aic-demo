@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Staff\Controller;
 
 use AIC\Auth\Application\Authenticator;
+use AIC\Auth\Domain\SignedInUser;
 use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageFullVisit;
@@ -64,10 +65,10 @@ final readonly class SignInPost implements Page
         $email = $this->postedFields->value($serverRequest, 'email');
         $next = $this->postedFields->value($serverRequest, 'next');
         $password = $this->postedFields->value($serverRequest, 'password');
-        // A second read of the member by email, after login() read their credentials through StaffRepository: login()
-        // gives back nothing of the user it read, so the name and role the session keeps are read again (AIC #238).
-        $staffMember = $this->authenticator->login($serverRequest, $email, $password)
-            ? $this->staffRepository->member($email)
+        // login() hands back what StaffRepository read with the credentials (AIC #238), so the member is read once.
+        $signedIn = $this->authenticator->login($serverRequest, $email, $password);
+        $staffMember = $signedIn instanceof SignedInUser
+            ? $this->staffRepository->signedIn($signedIn)
             : null;
 
         if (!$staffMember instanceof StaffMember) {
