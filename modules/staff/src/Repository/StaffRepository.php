@@ -6,6 +6,7 @@ namespace App\Staff\Repository;
 
 use AIC\Auth\Contracts\UserCredentials;
 use AIC\Auth\Contracts\UserProvider;
+use AIC\Auth\Domain\SignedInUser;
 use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityStore;
@@ -47,8 +48,10 @@ final readonly class StaffRepository implements UserProvider
      *
      * @throws QueryException           When the query fails.
      * @throws InvalidArgumentException When the entity type is malformed.
+     * @throws UnexpectedValueException When their stored role is no role.
      *
-     * @return UserCredentials|null Their id and hash; null when no one signs in with it, they are deactivated, or they
+     * @return UserCredentials|null Their id and hash, and the member's email, name, role and stamp as its profile for the
+     *                              session (AIC #238); null when no one signs in with it, they are deactivated, or they
      *                              have no password yet.
      */
     #[Override]
@@ -64,27 +67,29 @@ final readonly class StaffRepository implements UserProvider
             return null;
         }
 
-        return new UserCredentials((string) $row->int('id'), $row->string('password_hash'));
+        $staffMember = $this->staffMember($row);
+        $profile = ['email' => $staffMember->email, 'name' => $staffMember->name, 'role' => $staffMember->role->value];
+
+        return new UserCredentials((string) $row->int('id'), $row->string('password_hash'), [...$profile, 'stamp' => $staffMember->stamp]);
     }
 
     /**
-     * @param string $email The email they sign in with.
+     * @param SignedInUser $signedInUser Who a sign-in signed in, with the profile `credentials()` gave (AIC #238).
      *
-     * @throws QueryException           When the query fails.
-     * @throws UnexpectedValueException When their stored role is no role.
-     * @throws InvalidArgumentException When the entity type is malformed.
+     * @throws UnexpectedValueException When the profile's role is no role.
      *
-     * @return StaffMember|null The member; null when no one signs in with it.
+     * @return StaffMember The member, from that profile, with no second read.
      */
-    public function member(string $email): ?StaffMember
+    public function signedIn(SignedInUser $signedInUser): StaffMember
     {
-        $row = $this->byEmail($email);
+        $profile = $signedInUser->profile;
 
-        if (!$row instanceof Row) {
-            return null;
-        }
-
-        return $this->staffMember($row);
+        return new StaffMember(
+            $profile['email'] ?? '',
+            $profile['name'] ?? '',
+            $this->roles->stored($profile['role'] ?? ''),
+            $profile['stamp'] ?? '',
+        );
     }
 
     /**
