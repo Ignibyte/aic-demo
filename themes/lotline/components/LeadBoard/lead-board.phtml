@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\LeadBoard\LeadBoard $leadBoard */ ?>
+<div class="grid gap-3 md:grid-cols-3 xl:grid-cols-5" id="leads-board-columns" data-stream="<?= $leadBoard->stream ?>" data-signals__region="{dragAction: '', dragTail: '', dragFrom: ''}"><?php foreach ($leadBoard->columns as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?></div>

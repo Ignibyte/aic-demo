@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\BootstrapIntro\BootstrapIntro;
+use App\Theme\Components\BulkBar\BulkBar;
 use App\Theme\Components\CarGrid\CarGrid;
 use App\Theme\Components\CarProfile\CarProfile;
-use App\Theme\Components\CheckGroup\CheckGroup;
-use App\Theme\Components\ColumnChart\ColumnChart;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
+            $component instanceof BulkBar => $this->renderBulkBar($component, $renderPass),
             $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
             $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
-            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
-            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param BootstrapIntro $bootstrapIntro The component; its template reads it.
+     * @param RenderPass     $renderPass     The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml.
+     */
+    private function renderBootstrapIntro(BootstrapIntro $bootstrapIntro, RenderPass $renderPass): string
+    {
+        $renderPass->open($bootstrapIntro);
+        require __DIR__ . '/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param BulkBar    $bulkBar    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/BulkBar/bulk-bar.phtml.
+     */
+    private function renderBulkBar(BulkBar $bulkBar, RenderPass $renderPass): string
+    {
+        $renderPass->open($bulkBar);
+        require __DIR__ . '/templates/themes/lotline/components/BulkBar/bulk-bar.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         $renderPass->open($carProfile);
         require __DIR__ . '/templates/themes/lotline/components/CarProfile/car-profile.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param CheckGroup $checkGroup The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
-     */
-    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
-    {
-        $renderPass->open($checkGroup);
-        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ColumnChart $columnChart The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
-     */
-    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
-    {
-        $renderPass->open($columnChart);
-        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
 
         return $renderPass->close();
     }

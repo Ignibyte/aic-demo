@@ -8,16 +8,12 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Leads\Controller\LeadAssignPost;
-use App\Leads\Controller\LeadClosePost;
-use App\Leads\Controller\LeadListPage;
 use App\Leads\Controller\LeadPage;
 use App\Leads\Repository\LeadRepository;
 use App\Leads\Repository\SellerRepository;
 use App\Leads\Service\LeadCards;
-use App\Leads\Service\LeadList;
 use App\Leads\Service\LeadMoves;
 use App\Leads\Service\LeadServices;
-use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -51,10 +47,6 @@ final readonly class LeadsHandlers
 
         return [
             LeadAssignPost::class => $this->handlerContext->page(new LeadAssignPost($leadMoves)),
-            LeadClosePost::class => $this->handlerContext->page(new LeadClosePost($leadMoves)),
-            LeadListPage::class => $this->handlerContext->page(
-                new LeadListPage(new StaffPages($this->handlerContext->documents()), new LeadList($leadRepository, $sellerRepository)),
-            ),
             LeadPage::class => $this->handlerContext->page(new LeadPage($leadCards)),
         ];
     }

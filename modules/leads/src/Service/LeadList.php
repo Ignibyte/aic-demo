@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Leads\Service;
 
 use AIC\Component\Domain\KeyedComponent;
+use AIC\Component\Domain\Tabs;
 use AIC\Database\Contracts\QueryException;
 use App\Leads\Form\LeadFilters;
 use App\Leads\Repository\LeadRepository;
@@ -15,8 +16,9 @@ use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * The open leads, newest first (#18): a filter bar for the kind and the salesperson, a plain GET form that answers the
- * content region in place, and the table of the newest 50 the filter keeps, with how many it keeps in all.
+ * The open leads, newest first (#18): the tabs to the board (#30), a filter bar for the kind and the salesperson, a
+ * plain GET form that answers the content region in place, and the table of the newest 50 the filter keeps, with how
+ * many it keeps in all.
  */
 final readonly class LeadList
 {
@@ -45,13 +47,14 @@ final readonly class LeadList
 
     /**
      * @param ServerRequestInterface $serverRequest The list's request, with its session.
+     * @param Tabs                   $tabs          The tabs between the list and the board, the list's current.
      *
      * @throws QueryException When the leads cannot be read.
      * @throws LogicException When the request carries no session, or a key or a type is malformed.
      *
      * @return Panel The list's panel.
      */
-    public function panel(ServerRequestInterface $serverRequest): Panel
+    public function panel(ServerRequestInterface $serverRequest, Tabs $tabs): Panel
     {
         $sellers = $this->sellerRepository->all();
         $leadQuery = $this->leadQueries->read($serverRequest, $sellers);
@@ -63,6 +66,7 @@ final readonly class LeadList
             $body[] = new KeyedComponent($key, $notice);
         }
 
+        $body[] = new KeyedComponent('views', $tabs);
         $body[] = new KeyedComponent('filters', $this->leadFilters->filterBar($leadQuery, $sellers));
         $body[] = new KeyedComponent('table', $this->openLeads->table($leads, $count));
         $description = 'Questions and test drive requests from the public car pages, newest first';

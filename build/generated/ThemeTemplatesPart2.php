@@ -10,8 +10,8 @@ use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\BellItem\BellItem;
 use App\Theme\Components\BellItems\BellItems;
-use App\Theme\Components\BootstrapIntro\BootstrapIntro;
-use App\Theme\Components\BulkBar\BulkBar;
+use App\Theme\Components\BoardColumn\BoardColumn;
+use App\Theme\Components\BoardStack\BoardStack;
 use Override;
 
 /**
@@ -42,8 +42,8 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
         return match (true) {
             $component instanceof BellItem => $this->renderBellItem($component, $renderPass),
             $component instanceof BellItems => $this->renderBellItems($component, $renderPass),
-            $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
-            $component instanceof BulkBar => $this->renderBulkBar($component, $renderPass),
+            $component instanceof BoardColumn => $this->renderBoardColumn($component, $renderPass),
+            $component instanceof BoardStack => $this->renderBoardStack($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -81,33 +81,33 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
     }
 
     /**
-     * @param BootstrapIntro $bootstrapIntro The component; its template reads it.
-     * @param RenderPass     $renderPass     The pass its template writes through.
+     * @param BoardColumn $boardColumn The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/BoardColumn/board-column.phtml.
      */
-    private function renderBootstrapIntro(BootstrapIntro $bootstrapIntro, RenderPass $renderPass): string
+    private function renderBoardColumn(BoardColumn $boardColumn, RenderPass $renderPass): string
     {
-        $renderPass->open($bootstrapIntro);
-        require __DIR__ . '/templates/themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml';
+        $renderPass->open($boardColumn);
+        require __DIR__ . '/templates/themes/lotline/components/BoardColumn/board-column.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param BulkBar    $bulkBar    The component; its template reads it.
+     * @param BoardStack $boardStack The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/BulkBar/bulk-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/BoardStack/board-stack.phtml.
      */
-    private function renderBulkBar(BulkBar $bulkBar, RenderPass $renderPass): string
+    private function renderBoardStack(BoardStack $boardStack, RenderPass $renderPass): string
     {
-        $renderPass->open($bulkBar);
-        require __DIR__ . '/templates/themes/lotline/components/BulkBar/bulk-bar.phtml';
+        $renderPass->open($boardStack);
+        require __DIR__ . '/templates/themes/lotline/components/BoardStack/board-stack.phtml';
 
         return $renderPass->close();
     }

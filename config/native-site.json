@@ -1021,6 +1021,25 @@
             "captures": false
         },
         {
+            "name": "leads board, the gate's inquiry New",
+            "method": "GET",
+            "path": "/app/leads?view=board",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "leads board, its stream read for its five columns",
+            "method": "GET",
+            "path": "/app/leads/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 5
+        },
+        {
             "name": "lead reassign, not a salesperson",
             "method": "POST",
             "path": "{note}/assign",
@@ -1090,6 +1109,69 @@
             "form": "",
             "header": "",
             "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead stage, no token",
+            "method": "POST",
+            "path": "{note}/stage",
+            "form": "stage=contacted",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "lead stage, a stage that is none",
+            "method": "POST",
+            "path": "{note}/stage",
+            "form": "stage=bogus&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "lead stage, to Contacted",
+            "method": "POST",
+            "path": "{note}/stage",
+            "form": "stage=contacted&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "leads board, the gate's inquiry Contacted",
+            "method": "GET",
+            "path": "/app/leads?view=board",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead stage, to Won from Tessera",
+            "method": "PATCH",
+            "path": "{note}/stage",
+            "form": "stage=won&aic_csrf={csrf}",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @leads-contacted, @leads-won",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "lead stage, unknown lead",
+            "method": "PATCH",
+            "path": "/app/leads/999999999/stage",
+            "form": "stage=won&aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "lead stage, to Lost, closed again",
+            "method": "POST",
+            "path": "{note}/stage",
+            "form": "stage=lost&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
             "captures": false
         },
         {

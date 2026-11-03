@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\CheckGroup\CheckGroup;
+use App\Theme\Components\ColumnChart\ColumnChart;
 use App\Theme\Components\ConfirmCard\ConfirmCard;
 use App\Theme\Components\DataTable\DataTable;
-use App\Theme\Components\DetailCard\DetailCard;
-use App\Theme\Components\DownloadLink\DownloadLink;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
+            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
             $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
             $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
-            $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
-            $component instanceof DownloadLink => $this->renderDownloadLink($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param CheckGroup $checkGroup The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
+     */
+    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
+    {
+        $renderPass->open($checkGroup);
+        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param ColumnChart $columnChart The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
+     */
+    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
+    {
+        $renderPass->open($columnChart);
+        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($dataTable);
         require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DetailCard $detailCard The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DetailCard/detail-card.phtml.
-     */
-    private function renderDetailCard(DetailCard $detailCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($detailCard);
-        require __DIR__ . '/templates/themes/lotline/components/DetailCard/detail-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DownloadLink $downloadLink The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DownloadLink/download-link.phtml.
-     */
-    private function renderDownloadLink(DownloadLink $downloadLink, RenderPass $renderPass): string
-    {
-        $renderPass->open($downloadLink);
-        require __DIR__ . '/templates/themes/lotline/components/DownloadLink/download-link.phtml';
 
         return $renderPass->close();
     }

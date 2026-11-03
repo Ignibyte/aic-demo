@@ -20,7 +20,7 @@ use function implode;
  * Tells people about a lead (#18), through AIC's Notifier, which queues one `notify` job per channel: the salesperson
  * it is assigned to gets a notification kept in the database and mailed, and the visitor a confirmation by mail. An
  * unassigned lead tells the visitor alone. The visitor's mail is signed with the dealership's name from the settings'
- * profile (#22).
+ * profile (#22). A lead moved to Won on the board (#30) tells its salesperson in their inbox alone.
  */
 final readonly class LeadNotices
 {
@@ -50,6 +50,29 @@ final readonly class LeadNotices
         }
 
         $this->notifier->send($this->forVisitor($lead, $this->dealershipProfiles->profile()->name), ['mail']);
+    }
+
+    /**
+     * Tells the salesperson their lead was won, in their inbox alone; a lead with no salesperson tells no one.
+     *
+     * @param Lead   $lead  The lead, as stored, at Won.
+     * @param string $mover Who moved it there.
+     *
+     * @throws JsonException  When the delivery's payload cannot be encoded.
+     * @throws QueryException When the delivery cannot be queued.
+     */
+    public function won(Lead $lead, string $mover): void
+    {
+        $seller = $lead->seller;
+
+        if (!$seller instanceof Seller) {
+            return;
+        }
+
+        $subject = 'Won: ' . $lead->leadDetails->name . ' on the ' . $lead->leadCar->title;
+        $body = $mover . ' moved the lead from ' . $lead->leadDetails->name . ' about the ' . $lead->leadCar->title
+            . " to Won on the leads board.\n\nOpen the lead: " . $lead->path();
+        $this->notifier->send(new Notification((string) $seller->id, $seller->email, $subject, $body, $lead->path()), ['database']);
     }
 
     /**

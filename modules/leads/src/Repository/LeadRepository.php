@@ -12,6 +12,7 @@ use AIC\Entity\Application\EntityStore;
 use App\Customers\Entity\CustomerTable;
 use App\Leads\Entity\Lead;
 use App\Leads\Entity\LeadDetails;
+use App\Leads\Entity\LeadStage;
 use App\Leads\Entity\LeadTable;
 use App\Leads\Entity\LeadWrite;
 use App\Leads\Service\LeadRows;
@@ -20,8 +21,9 @@ use Throwable;
 
 /**
  * The leads (#18): one recorded for the salesperson whose turn it is, one found with its car, its salesperson and its
- * customer, the open ones a filter keeps, and a lead reassigned or closed. Customers are read through their module's
- * exported entity type, for the email match.
+ * customer, the open ones a filter keeps, a stage's leads for the board (#30), and a lead reassigned. A lead's stage
+ * changes through `LeadMoveRepository`, which records the move. Customers are read through their module's exported
+ * entity type, for the email match.
  */
 final readonly class LeadRepository
 {
@@ -74,6 +76,7 @@ final readonly class LeadRepository
             'message' => $leadDetails->message,
             'name' => $leadDetails->name,
             'phone' => $leadDetails->phone,
+            'stage' => LeadStage::New->value,
             'status' => self::OPEN,
             'vehicle_id' => $vehicleId,
         ];
@@ -194,15 +197,36 @@ final readonly class LeadRepository
     }
 
     /**
-     * @param int $id A lead's id.
+     * @param LeadStage $leadStage A stage.
+     * @param int       $limit     The most to read.
      *
-     * @throws QueryException           When the lead cannot be written.
-     * @throws EntityNotFoundException  When the lead went meanwhile.
-     * @throws InvalidArgumentException When the leads' type is malformed.
+     * @throws QueryException           When the leads cannot be read.
+     * @throws InvalidArgumentException When a type is malformed.
+     *
+     * @return list<Lead> The leads at that stage, newest first.
      */
-    public function close(int $id): void
+    public function inStage(LeadStage $leadStage, int $limit): array
     {
-        $this->entityStore->update($this->leadTable->type(), $id, ['status' => 'closed']);
+        $leads = [];
+
+        foreach ($this->joined()->where('stage', $leadStage->value)->orderByDescending('id')->limit($limit)->rows() as $row) {
+            $leads[] = $this->leadRows->lead($row);
+        }
+
+        return $leads;
+    }
+
+    /**
+     * @param LeadStage $leadStage A stage.
+     *
+     * @throws QueryException           When the leads cannot be counted.
+     * @throws InvalidArgumentException When the leads' type is malformed.
+     *
+     * @return int How many leads are at that stage.
+     */
+    public function countStage(LeadStage $leadStage): int
+    {
+        return $this->entityStore->query($this->leadTable->type())->where('stage', $leadStage->value)->totals()->count();
     }
 
     /**
