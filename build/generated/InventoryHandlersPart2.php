@@ -8,6 +8,8 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Storage\Application\PublicFiles;
+use App\Finance\Service\FinanceRates;
+use App\Inventory\Controller\VehicleDeletePage;
 use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
@@ -46,13 +48,15 @@ final readonly class InventoryHandlersPart2
         $vehicleServices = new VehicleServices(
             $entityStore,
             $this->handlerContext->documents(),
-            $this->handlerContext->envelopeCodec(),
+            $staffSeals,
             $this->handlerContext->tagged(VehicleSales::class),
             $publicFiles,
+            $this->handlerContext->tagged(FinanceRates::class),
         );
         $vehiclePhotoForms = new VehiclePhotoForms($staffSeals, $vehiclePhotos, $vehicleServices);
 
         return [
+            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($vehicleServices)),
             VehiclePhotoDeletePost::class => $this->handlerContext->page(new VehiclePhotoDeletePost($vehiclePhotoForms)),
             VehiclePhotoPost::class => $this->handlerContext->page(new VehiclePhotoPost($vehiclePhotoForms)),
             VehiclePhotoStream::class => $this->handlerContext->stream(new VehiclePhotoStream($vehiclePhotoForms)),

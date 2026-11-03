@@ -52,6 +52,7 @@
         "psr-4": {
             "App\\Customers\\": "modules/customers/src/",
             "App\\Dashboard\\": "modules/dashboard/src/",
+            "App\\Finance\\": "modules/finance/src/",
             "App\\Generated\\": "build/generated/",
             "App\\Holds\\": "modules/holds/src/",
             "App\\Inbox\\": "modules/inbox/src/",

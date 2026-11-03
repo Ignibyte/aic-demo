@@ -105,7 +105,8 @@ final readonly class ProfileFields
      *
      * @throws LogicException When a key is malformed.
      *
-     * @return FormGrid The text fields, `profile-<name>` each.
+     * @return FormGrid The text fields, `profile-<name>` each; the APR a text field, so no browser step rule refuses a
+     *                  decimal before the checks see it (#26).
      */
     private function grid(ProfileEntry $profileEntry, array $errors): FormGrid
     {
@@ -116,6 +117,7 @@ final readonly class ProfileFields
             $this->field($profileEntry, $errors, 'opens_at', 'Opens at', 'time'),
             $this->field($profileEntry, $errors, 'closes_at', 'Closes at', 'time'),
             $this->field($profileEntry, $errors, 'aged_stock_days', 'Aged stock after (days)', 'number'),
+            $this->field($profileEntry, $errors, 'default_apr', 'Default APR (%)', 'text'),
         ]);
     }
 

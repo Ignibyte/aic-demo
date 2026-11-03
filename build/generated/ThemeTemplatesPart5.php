@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\FinanceCalculator\FinanceCalculator;
 use App\Theme\Components\FormActions\FormActions;
 use App\Theme\Components\FormField\FormField;
 use App\Theme\Components\FormGrid\FormGrid;
-use App\Theme\Components\FormValue\FormValue;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof FinanceCalculator => $this->renderFinanceCalculator($component, $renderPass),
             $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
             $component instanceof FormField => $this->renderFormField($component, $renderPass),
             $component instanceof FormGrid => $this->renderFormGrid($component, $renderPass),
-            $component instanceof FormValue => $this->renderFormValue($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param FinanceCalculator $financeCalculator The component; its template reads it.
+     * @param RenderPass        $renderPass        The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FinanceCalculator/finance-calculator.phtml.
+     */
+    private function renderFinanceCalculator(FinanceCalculator $financeCalculator, RenderPass $renderPass): string
+    {
+        $renderPass->open($financeCalculator);
+        require __DIR__ . '/templates/themes/lotline/components/FinanceCalculator/finance-calculator.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     {
         $renderPass->open($formGrid);
         require __DIR__ . '/templates/themes/lotline/components/FormGrid/form-grid.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param FormValue  $formValue  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/FormValue/form-value.phtml.
-     */
-    private function renderFormValue(FormValue $formValue, RenderPass $renderPass): string
-    {
-        $renderPass->open($formValue);
-        require __DIR__ . '/templates/themes/lotline/components/FormValue/form-value.phtml';
 
         return $renderPass->close();
     }

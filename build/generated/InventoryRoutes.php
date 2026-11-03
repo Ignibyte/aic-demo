@@ -39,11 +39,11 @@ final readonly class InventoryRoutes
             ->get('/app/inventory/{vin}', VehiclePage::class)
             ->get('/app/inventory/{vin}/edit', VehicleEditPage::class)
             ->post('/app/inventory/{vin}', VehicleUpdatePost::class)
-            ->get('/app/inventory/{vin}/delete', VehicleDeletePage::class)
-            ->post('/app/inventory/{vin}/delete', VehicleDeletePost::class)
             ->post('/app/inventory/{vin}/photos', VehiclePhotoPost::class)
             ->get('/app/inventory/{vin}/photos/{position:int}', VehiclePhotoStream::class)
             ->post('/app/inventory/{vin}/photos/{position:int}/delete', VehiclePhotoDeletePost::class)
+            ->get('/app/inventory/{vin}/delete', VehicleDeletePage::class)
+            ->post('/app/inventory/{vin}/delete', VehicleDeletePost::class)
             ->get('/app/inventory', InventoryListPage::class);
     }
 }

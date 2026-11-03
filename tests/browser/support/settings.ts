@@ -115,7 +115,7 @@ export async function expectAnsweredInPlace(requests: SentRequest[], action: str
 }
 
 // Fills the profile form's fields that are given.
-export async function fillProfile(page: Page, values: Partial<Record<'name' | 'address' | 'phone' | 'opens_at' | 'closes_at' | 'aged_stock_days', string>>): Promise<void> {
+export async function fillProfile(page: Page, values: Partial<Record<'name' | 'address' | 'phone' | 'opens_at' | 'closes_at' | 'aged_stock_days' | 'default_apr', string>>): Promise<void> {
     for (const [field, value] of Object.entries(values)) {
         await page.locator(`#profile-${field}`).fill(value);
     }

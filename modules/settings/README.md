@@ -1,6 +1,6 @@
 # Settings
 
-The admins' settings at `/app/settings` (#22): the dealership's profile, the staff, and the password links a member is mailed. The module requires `staff` alone. The `users` table and its rules stay there: deactivation, the last admin, the password write and the check of every signed-in session. This module reaches them through staff's exported `AccountRepository`. `storefront`, `leads` and `reports` require this module for the profile.
+The admins' settings at `/app/settings` (#22): the dealership's profile, the staff, and the password links a member is mailed. The module requires `staff` and `finance` (#26), whose plugin type it implements and whose standard APR it starts at. The `users` table and its rules stay there: deactivation, the last admin, the password write and the check of every signed-in session. This module reaches them through staff's exported `AccountRepository`. `storefront`, `leads` and `reports` require this module for the profile.
 
 ## Who may
 
@@ -8,16 +8,17 @@ An admin alone. `SettingsAccess::guard()` answers every settings route, a GET or
 
 ## The profile
 
-`dealership_profile` holds one row, its `slot` always `main`: the name, address, phone, opening and closing time (`HH:MM`), the open days as ISO weekday digits (`123456` is Monday to Saturday) and the aged-stock threshold in days. Until the first save the table is empty and `ProfileRepository::profile()` gives the defaults the app had in code and config before: Ridgeway Motors, no address or phone, open Monday to Saturday 09:00 to 18:00, aged after 60 days. So no page changes until an admin saves.
+`dealership_profile` holds one row, its `slot` always `main`: the name, address, phone, opening and closing time (`HH:MM`), the open days as ISO weekday digits (`123456` is Monday to Saturday), the aged-stock threshold in days, and the default APR the payment calculator starts at (#26), in basis points (`default_apr_bp`, 690 is 6.90%). `AddDefaultApr` adds that column as nullable, since AIC adds a column to a table that may have rows only so, and null reads as finance's standard 6.90% (`Payments::STANDARD_APR`). Until the first save the table is empty and `ProfileRepository::profile()` gives the defaults the app had in code and config before: Ridgeway Motors, no address or phone, open Monday to Saturday 09:00 to 18:00, aged after 60 days, at 6.90%. So no page changes until an admin saves.
 
 `DealershipProfiles` (exported) reads it for the other modules, on each call, so a save reaches the next page and the next job. `DealershipProfile` and `OpeningHours` (exported) carry it. `OpeningHours` says whether a weekday is open, gives the last start of a test drive an hour before closing, and words the days (`Monday to Saturday` for a run of three or more, else `Monday, Wednesday and Friday`). Readers:
 
 - `storefront`: the public header's name, and the footer's address, phone and hours.
-- `staff`: the staff pages' name for the dealership, through `DealershipNameRepository`, the plugin of staff's `DealershipNames` type (#23), since staff cannot require settings. The plugin keeps the name it read for the rest of the request (#25), since a page that names the dealership in its content and its footer read the profile twice; each request starts afresh, so a save reaches the next page.
+- `staff`: the staff pages' name for the dealership, through `DealershipNameRepository`, the plugin of staff's `DealershipNames` type (#23), since staff cannot require settings. The plugin keeps the profile it read for the rest of the request (#25), since a page that names the dealership in its content and its footer read the profile twice; each request starts afresh, so a save reaches the next page.
+- `inventory`: the vehicle page's payment calculator starts at the default APR (#26), through the same `DealershipNameRepository`, registered also as the plugin of finance's `FinanceRates` type. The container builds one instance for both types, so the calculator and the footer share one read.
 - `leads`: the test-drive form's line and its checks, and the name that signs a visitor's mail.
 - `reports`: the aged-stock threshold and the name in the daily digest.
 
-`POST /app/settings/profile` checks each field (`ProfileChecks`): a name of at most 100 characters, an address of at most 200, a phone as customers' are or none, two times `HH:MM` with the closing at least an hour after the opening, at least one open day, and 1 to 365 days. A refusal answers the page as 422 with each error beside its field. A save is one transaction in `ProfileRepository::save()`. It inserts the defaults if the row is missing, so there is a row to lock, then reads the row `FOR UPDATE` and compares it with the values the form showed. It upserts on `slot` only when they match, then answers 303 to the page with "Saved the dealership's profile."
+`POST /app/settings/profile` checks each field (`ProfileChecks`): a name of at most 100 characters, an address of at most 200, a phone as customers' are or none, two times `HH:MM` with the closing at least an hour after the opening, at least one open day, 1 to 365 days, and a default APR from 0 to 30 percent with up to two decimals (a text field, so a browser's step rule never blocks a decimal). A blank APR saves the standard 6.90%, so a post from a form that predates the field still saves. A refusal answers the page as 422 with each error beside its field. A save is one transaction in `ProfileRepository::save()`. It inserts the defaults if the row is missing, so there is a row to lock, then reads the row `FOR UPDATE` and compares it with the values the form showed. It upserts on `slot` only when they match, then answers 303 to the page with "Saved the dealership's profile."
 
 ## The staff
 

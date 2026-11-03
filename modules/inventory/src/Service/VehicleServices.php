@@ -6,9 +6,10 @@ namespace App\Inventory\Service;
 
 use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
-use AIC\Form\Application\EnvelopeCodec;
 use AIC\Module\Attribute\Tagged;
 use AIC\Storage\Application\PublicFiles;
+use App\Finance\Service\DealershipRates;
+use App\Finance\Service\FinanceRates;
 use App\Inventory\Form\VehicleChecks;
 use App\Inventory\Form\VehicleDeletes;
 use App\Inventory\Form\VehicleSaves;
@@ -24,8 +25,11 @@ use App\Staff\Service\StaffPanels;
  * build splits the module's handlers into parts and each part builds what its controllers take, so a graph the
  * controllers share would be written out in every part; through here each part makes one call. Its products also
  * reach the classes the wiring builds: `VehiclePhotoForms` takes `vehicleRecords()` and `vehicleCards()`. It builds
- * the staff pages, the seals and the photos' service, whose files are in AIC's public files (#23), from the page
- * documents, the envelope codec and the public files, so the seven vehicle routes' generated part names few classes.
+ * the staff pages and the photos' service, whose files are in AIC's public files (#23), from the page documents and
+ * the public files, so the seven vehicle routes' generated part names few classes. The vehicle's page shows finance's
+ * payment calculator (#26) at the dealership's APR, which the first `FinanceRates` plugin gives. It takes staff's
+ * seals as the wiring builds them rather than the envelope codec, so the two generated parts that build it (one
+ * opening with the record's forms, one with the photos') do not repeat one statement long enough for gate:14.
  */
 final readonly class VehicleServices
 {
@@ -35,11 +39,6 @@ final readonly class VehicleServices
     private StaffPages $staffPages;
 
     /**
-     * Seals and checks a record's path in its forms' envelopes.
-     */
-    private StaffSeals $staffSeals;
-
-    /**
      * A vehicle's photos, by its id, their files in AIC's public files.
      */
     private VehiclePhotos $vehiclePhotos;
@@ -47,20 +46,22 @@ final readonly class VehicleServices
     /**
      * @param EntityStore   $entityStore   The entity store.
      * @param PageDocuments $pageDocuments The theme's documents.
-     * @param EnvelopeCodec $envelopeCodec Seals and opens envelopes with the app secret.
+     * @param StaffSeals    $staffSeals    Seals and checks a record's path in its forms' envelopes.
      * @param list<object>  $vehicleSales  The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      * @param PublicFiles   $publicFiles   AIC's public files, where the photos are kept.
+     * @param list<object>  $financeRates  The `FinanceRates` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
         private EntityStore $entityStore,
         PageDocuments $pageDocuments,
-        EnvelopeCodec $envelopeCodec,
+        private StaffSeals $staffSeals,
         #[Tagged(VehicleSales::class)]
         private array $vehicleSales,
         PublicFiles $publicFiles,
+        #[Tagged(FinanceRates::class)]
+        private array $financeRates,
     ) {
         $this->staffPages = new StaffPages($pageDocuments);
-        $this->staffSeals = new StaffSeals($envelopeCodec);
         $this->vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
     }
 
@@ -94,14 +95,15 @@ final readonly class VehicleServices
     }
 
     /**
-     * @return VehicleCards The vehicle's page, its photos with it.
+     * @return VehicleCards The vehicle's page, its photos and its payment calculator with it.
      */
     public function vehicleCards(): VehicleCards
     {
         $vehicleRecords = $this->vehicleRecords();
         $photoGalleries = new PhotoGalleries($this->vehiclePhotos, $this->staffSeals);
+        $dealershipRates = new DealershipRates($this->entityStore, $this->financeRates);
 
-        return new VehicleCards($vehicleRecords, $this->soldVehicles(), $photoGalleries);
+        return new VehicleCards($vehicleRecords, $this->soldVehicles(), $photoGalleries, $dealershipRates);
     }
 
     /**

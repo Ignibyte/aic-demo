@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\StoreHeading\StoreHeading;
 use App\Theme\Components\SubmitButton\SubmitButton;
 use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableRow\TableRow;
-use App\Theme\Components\TopBar\TopBar;
 use Override;
 
 /**
@@ -25,7 +24,7 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The templates after these.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new ThemeTemplatesPart12(),
     ) {
     }
 
@@ -41,12 +40,28 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof StoreHeading => $this->renderStoreHeading($component, $renderPass),
             $component instanceof SubmitButton => $this->renderSubmitButton($component, $renderPass),
             $component instanceof TableResults => $this->renderTableResults($component, $renderPass),
             $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
-            $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param StoreHeading $storeHeading The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/StoreHeading/store-heading.phtml.
+     */
+    private function renderStoreHeading(StoreHeading $storeHeading, RenderPass $renderPass): string
+    {
+        $renderPass->open($storeHeading);
+        require __DIR__ . '/templates/themes/lotline/components/StoreHeading/store-heading.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -93,22 +108,6 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     {
         $renderPass->open($tableRow);
         require __DIR__ . '/templates/themes/lotline/components/TableRow/table-row.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param TopBar     $topBar     The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/TopBar/top-bar.phtml.
-     */
-    private function renderTopBar(TopBar $topBar, RenderPass $renderPass): string
-    {
-        $renderPass->open($topBar);
-        require __DIR__ . '/templates/themes/lotline/components/TopBar/top-bar.phtml';
 
         return $renderPass->close();
     }

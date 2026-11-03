@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use AIC\Controller\Contracts\PageResponse;
+use App\Finance\Service\DealershipRates;
 use App\Inventory\Entity\Vehicle;
 use App\Photos\Service\PhotoGalleries;
 use App\Staff\Service\StaffNotices;
@@ -20,9 +21,9 @@ use function number_format;
 
 /**
  * A vehicle's page: the notice its last save left, then its card with its status, what it is, its mileage, list
- * price and day on the lot (never its cost), and buttons to edit it, delete it or go back to the list; then its photos
- * (#16), with the reason when an upload was refused; then its sale, when one is recorded, or, for a vehicle not sold, a
- * button to record one.
+ * price and day on the lot (never its cost), and buttons to edit it, delete it or go back to the list; then finance's
+ * payment calculator at its list price and the dealership's APR (#26); then its photos (#16), with the reason when an
+ * upload was refused; then its sale, when one is recorded, or, for a vehicle not sold, a button to record one.
  */
 final readonly class VehicleCards
 {
@@ -30,6 +31,7 @@ final readonly class VehicleCards
      * @param VehicleRecords  $vehicleRecords  The route's vehicle, the 404 page and the vehicle pages' frame.
      * @param SoldVehicles    $soldVehicles    The vehicle's sale, and where to record one.
      * @param PhotoGalleries  $photoGalleries  The vehicle's photos.
+     * @param DealershipRates $dealershipRates The payment calculator at the dealership's default APR.
      * @param VehicleStatuses $vehicleStatuses Gives the status its badge.
      * @param StaffNotices    $staffNotices    The last save's notice.
      */
@@ -37,6 +39,7 @@ final readonly class VehicleCards
         private VehicleRecords $vehicleRecords,
         private SoldVehicles $soldVehicles,
         private PhotoGalleries $photoGalleries,
+        private DealershipRates $dealershipRates,
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
@@ -66,6 +69,7 @@ final readonly class VehicleCards
 
         $vehicleSale = $this->soldVehicles->sale($vehicle->vin);
         $body['card'] = $this->card($vehicle, $this->soldVehicles->recordPath($vehicle, $vehicleSale));
+        $body['finance'] = $this->dealershipRates->calculator($vehicle->price->list);
         $vehicleId = $this->vehicleRecords->vehicleId($serverRequest);
         $body['photos'] = $this->photoGalleries->gallery($serverRequest, $vehicleId, $vehicle->path(), $vehicle->title(), $refusal);
 

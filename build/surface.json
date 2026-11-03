@@ -113,20 +113,6 @@
             "path": "/app/inventory/{vin}"
         },
         {
-            "handler": "App\\Inventory\\Controller\\VehicleDeletePage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "inventory",
-            "path": "/app/inventory/{vin}/delete"
-        },
-        {
-            "handler": "App\\Inventory\\Controller\\VehicleDeletePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "inventory",
-            "path": "/app/inventory/{vin}/delete"
-        },
-        {
             "handler": "App\\Inventory\\Controller\\VehiclePhotoPost",
             "kind": "Page",
             "method": "POST",
@@ -146,6 +132,20 @@
             "method": "POST",
             "module": "inventory",
             "path": "/app/inventory/{vin}/photos/{position:int}/delete"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleDeletePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/delete"
+        },
+        {
+            "handler": "App\\Inventory\\Controller\\VehicleDeletePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inventory",
+            "path": "/app/inventory/{vin}/delete"
         },
         {
             "handler": "App\\Inventory\\Controller\\InventoryListPage",
@@ -726,6 +726,24 @@
             "bindings": [],
             "blocks": [],
             "exports": [
+                "App\\Finance\\Service\\FinanceCalculators",
+                "App\\Finance\\Service\\Payments",
+                "App\\Finance\\Service\\FinanceRates",
+                "App\\Finance\\Service\\DealershipRates"
+            ],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "finance",
+            "namespace": "App\\Finance\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": []
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
                 "App\\Inventory\\Service\\VehicleSales",
                 "App\\Inventory\\Entity\\VehicleSale",
                 "App\\Inventory\\Entity\\Vehicle",
@@ -755,7 +773,8 @@
             "prefixes": [],
             "requires": [
                 "staff",
-                "photos"
+                "photos",
+                "finance"
             ]
         },
         {
@@ -872,7 +891,8 @@
             "migrations": [
                 "App\\Settings\\Migration\\CreateDealershipProfileTable",
                 "App\\Settings\\Migration\\CreatePasswordLinksTable",
-                "App\\Settings\\Migration\\CreatePasswordLinkStatesView"
+                "App\\Settings\\Migration\\CreatePasswordLinkStatesView",
+                "App\\Settings\\Migration\\AddDefaultApr"
             ],
             "name": "settings",
             "namespace": "App\\Settings\\",
@@ -880,11 +900,16 @@
                 {
                     "class": "App\\Settings\\Repository\\DealershipNameRepository",
                     "type": "App\\Staff\\Service\\DealershipNames"
+                },
+                {
+                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
+                    "type": "App\\Finance\\Service\\FinanceRates"
                 }
             ],
             "prefixes": [],
             "requires": [
-                "staff"
+                "staff",
+                "finance"
             ]
         },
         {
@@ -977,12 +1002,17 @@
                 "photos",
                 "staff",
                 "leads",
-                "settings"
+                "settings",
+                "finance"
             ]
         }
     ],
     "theme": {
         "assets": [
+            {
+                "kind": "Script",
+                "path": "themes/lotline/assets/helpers.js"
+            },
             {
                 "kind": "Style",
                 "path": "themes/lotline/assets/lotline.css"
@@ -1068,6 +1098,11 @@
                 "component": "App\\Theme\\Components\\FilterBar\\FilterBar",
                 "generated": "build/generated/templates/themes/lotline/components/FilterBar/filter-bar.phtml",
                 "source": "themes/lotline/components/FilterBar/filter-bar.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FinanceCalculator\\FinanceCalculator",
+                "generated": "build/generated/templates/themes/lotline/components/FinanceCalculator/finance-calculator.phtml",
+                "source": "themes/lotline/components/FinanceCalculator/finance-calculator.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\FormActions\\FormActions",

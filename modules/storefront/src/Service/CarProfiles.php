@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Storefront\Service;
 
+use App\Finance\Service\FinanceCalculators;
 use App\Inventory\Entity\ListedVehicle;
 use App\Photos\Service\VehiclePhotos;
 use App\Theme\Components\CarProfile\CarProfile;
@@ -17,30 +18,34 @@ use function count;
 
 /**
  * One car's public page: its photos in the order they were added, in the theme's `PhotoGallery` with no controls, the
- * first the main one, each image's `alt` naming the car and the photo's number; its title, trim and price; and its
- * details, as the theme's `Fact`s. Nothing here knows its VIN or its cost.
+ * first the main one, each image's `alt` naming the car and the photo's number; its title, trim and price; finance's
+ * payment calculator at its price (#26); and its details, as the theme's `Fact`s. Nothing here knows its VIN or its
+ * cost.
  */
 final readonly class CarProfiles
 {
     /**
-     * @param VehiclePhotos $vehiclePhotos The car's photos.
-     * @param CarFigures    $carFigures    Its price and mileage as written.
+     * @param VehiclePhotos      $vehiclePhotos      The car's photos.
+     * @param CarFigures         $carFigures         Its price and mileage as written.
+     * @param FinanceCalculators $financeCalculators Builds its payment calculator.
      */
     public function __construct(
         private VehiclePhotos $vehiclePhotos,
         private CarFigures $carFigures = new CarFigures(),
+        private FinanceCalculators $financeCalculators = new FinanceCalculators(),
     ) {
     }
 
     /**
-     * @param ListedVehicle $listedVehicle A car for sale.
+     * @param ListedVehicle $listedVehicle  A car for sale.
+     * @param int           $aprBasisPoints The dealership's default APR, in basis points, for its calculator.
      *
      * @throws LogicException   When the photos' entity type is malformed.
      * @throws RuntimeException When its photos cannot be read.
      *
      * @return CarProfile Its page's content.
      */
-    public function profile(ListedVehicle $listedVehicle): CarProfile
+    public function profile(ListedVehicle $listedVehicle, int $aprBasisPoints): CarProfile
     {
         $title = $listedVehicle->title();
         $facts = [
@@ -55,7 +60,9 @@ final readonly class CarProfiles
         $price = $this->carFigures->price($listedVehicle->price);
         $photoGallery = new PhotoGallery('car-photos', 'Photos', 'No photos yet.', $this->photos($listedVehicle), []);
 
-        return new CarProfile('car', $title, $listedVehicle->trim, $price, $facts, $photoGallery, CarSlugs::PAGES);
+        $financeCalculator = $this->financeCalculators->calculator($listedVehicle->price, $aprBasisPoints);
+
+        return new CarProfile('car', $title, $listedVehicle->trim, $price, $facts, $photoGallery, $financeCalculator, CarSlugs::PAGES);
     }
 
     /**

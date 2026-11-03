@@ -1,0 +1,45 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/FinanceCalculator/finance-calculator.phtml by composer run build; edit that file, never this one. */ ?>
+<section<?= $renderPass->marks() ?> class="card border border-base-300 bg-base-100" id="finance" aria-labelledby="finance-title"
+    data-signals="{price: <?= $renderPass->text((string) ($financeCalculator->price)) ?>, down: <?= $renderPass->text((string) ($financeCalculator->down)) ?>, trade: 0, term: <?= $renderPass->text((string) ($financeCalculator->term)) ?>, apr: <?= $renderPass->text((string) ($financeCalculator->aprBasisPoints)) ?> / 100, warn: <?= $renderPass->text((string) ($financeCalculator->warnPercent)) ?>}"
+    data-computed:financed="Math.max(0, $price - ($down || 0) - ($trade || 0))"
+    data-computed:rate="Math.max(0, $apr || 0) / 1200"
+    data-computed:months="$term || 60"
+    data-computed:growth="Math.pow(1 + $rate, $months)"
+    data-computed:payment="$rate === 0 ? $financed / $months : $financed * $rate * $growth / ($growth - 1)"
+    data-computed:interest="$payment * $months - $financed">
+<div class="card-body gap-4">
+<h2 class="card-title text-lg" id="finance-title">Monthly payment</h2>
+<div class="grid gap-4" id="finance-calculator" hidden data-attr:hidden="false">
+<div class="grid gap-x-4 sm:grid-cols-2">
+<fieldset class="fieldset sm:col-span-2"><label class="label" for="finance-down">Down payment ($)</label>
+<input class="range range-sm" id="finance-down-range" type="range" min="0" max="<?= $renderPass->text((string) ($financeCalculator->price)) ?>" step="100" aria-label="Down payment" data-attr:max="$price" data-bind:down="">
+<input class="input w-full" id="finance-down" type="number" min="0" step="100" data-bind:down="">
+</fieldset>
+<fieldset class="fieldset"><label class="label" for="finance-term">Term</label>
+<select class="select w-full" id="finance-term" data-bind:term=""><option value="36">36 months</option><option value="48">48 months</option><option value="60">60 months</option><option value="72">72 months</option></select>
+</fieldset>
+<fieldset class="fieldset"><label class="label" for="finance-apr">APR (%)</label>
+<input class="input w-full" id="finance-apr" type="number" min="0" step="0.01" data-bind:apr="">
+</fieldset>
+<fieldset class="fieldset sm:col-span-2"><label class="label" for="finance-trade">Trade-in value ($)</label>
+<input class="input w-full" id="finance-trade" type="number" min="0" step="100" data-bind:trade="">
+</fieldset>
+</div>
+<div aria-live="polite">
+<p class="text-3xl font-semibold" id="finance-payment" data-class="{'text-warning': $payment &gt; $price * $warn / 100}" data-text="money($payment)"><?= $renderPass->text($financeCalculator->payment) ?></p>
+<p class="text-sm opacity-70">a month, before tax and fees</p>
+<p class="text-sm text-warning" id="finance-warning" data-show="$payment &gt; $price * $warn / 100">That is more than <?= $renderPass->text((string) ($financeCalculator->warnPercent)) ?>% of the price a month.</p>
+<p class="text-sm text-success" id="finance-covered" data-show="($down || 0) + ($trade || 0) &gt;= $price">The down payment and trade-in cover the price: there is nothing to finance.</p>
+</div>
+<div class="grid gap-1 text-sm">
+<p><span class="opacity-70">Amount financed</span> <span class="font-semibold" id="finance-financed" data-text="money($financed)"><?= $renderPass->text($financeCalculator->financed) ?></span></p>
+<p><span class="opacity-70">Total interest</span> <span class="font-semibold" id="finance-interest" data-text="money($interest)"><?= $renderPass->text($financeCalculator->interest) ?></span></p>
+</div>
+</div>
+<div class="overflow-x-auto rounded-box border border-base-300" id="finance-examples" data-show="false">
+<table class="table table-sm"><caption class="p-2 text-left text-sm opacity-70"><?= $renderPass->text($financeCalculator->caption) ?></caption>
+<thead><tr><th>Term</th><th class="text-right">Monthly payment</th><th class="text-right">Total interest</th></tr></thead>
+<tbody><?php foreach ($financeCalculator->examples as $financeExample): ?><tr><td><?= $renderPass->text((string) ($financeExample->months)) ?> months</td><td class="text-right"><?= $renderPass->text($financeExample->payment) ?></td><td class="text-right"><?= $renderPass->text($financeExample->interest) ?></td></tr><?php endforeach; ?></tbody></table>
+</div>
+</div>
+</section>

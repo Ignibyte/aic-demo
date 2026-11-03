@@ -2,9 +2,10 @@
 number: 26
 title: "Finance calculator on the vehicle page, all in the browser"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-03T02:28:46Z
+phase: "docs"
 ---
 
 A buyer on `/cars/{vin}` and staff on `/app/inventory/{vin}` see a payment calculator beside the
