@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Photos\Service;
 
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Form\Application\FormTokens;
 use App\Photos\Entity\VehiclePhoto;
@@ -32,7 +33,7 @@ final readonly class PhotoGalleries
     /**
      * @param VehiclePhotos $vehiclePhotos The vehicle's photos, and who may change them.
      * @param StaffSeals    $staffSeals    Seals the photo a delete form is for.
-     * @param FormTokens    $formTokens    Issues the visitor's CSRF token.
+     * @param FormTokens    $formTokens    Issues the visitor's guard fields.
      */
     public function __construct(
         private VehiclePhotos $vehiclePhotos,
@@ -61,20 +62,19 @@ final readonly class PhotoGalleries
         string $vehicleTitle,
         string $refusal,
     ): PhotoGallery {
-        $mayChange = $this->vehiclePhotos->mayChange($serverRequest);
-        $formToken = $mayChange
-            ? $this->formTokens->issue($serverRequest)->value()
-            : '';
+        $guardFields = $this->vehiclePhotos->mayChange($serverRequest)
+            ? $this->formTokens->guard($serverRequest)
+            : null;
         $vehiclePhotos = $this->vehiclePhotos->photos($vehicleId);
         $photos = [];
 
         foreach ($vehiclePhotos as $vehiclePhoto) {
             $alt = $vehicleTitle . ', photo ' . $vehiclePhoto->position . ' of ' . count($vehiclePhotos);
-            $photos[] = $this->galleryPhoto($vehiclePhoto, $vehiclePath, $alt, $formToken);
+            $photos[] = $this->galleryPhoto($vehiclePhoto, $vehiclePath, $alt, $guardFields);
         }
 
-        $controls = $mayChange
-            ? [new KeyedComponent('upload', $this->photoForms->upload($vehiclePath, $refusal, $formToken))]
+        $controls = $guardFields instanceof GuardFields
+            ? [new KeyedComponent('upload', $this->photoForms->upload($vehiclePath, $refusal, $guardFields))]
             : [];
 
         return new PhotoGallery('vehicle-photos', 'Photos', 'No photos of this vehicle yet.', $photos, $controls);
@@ -84,22 +84,23 @@ final readonly class PhotoGalleries
      * @param VehiclePhoto $vehiclePhoto A photo.
      * @param string       $vehiclePath  Its vehicle's page.
      * @param string       $alt          What it shows.
-     * @param string       $formToken    The visitor's CSRF token; empty for one who may not change the photos.
+     * @param ?GuardFields $guardFields  The visitor's CSRF token and the honeypot; null for one who may not change the
+     *                                   photos.
      *
      * @throws LogicException When the photo cannot be sealed.
      *
-     * @return GalleryPhoto The photo in the gallery, its delete form under it when there is a token.
+     * @return GalleryPhoto The photo in the gallery, its delete form under it when there are guard fields.
      */
     private function galleryPhoto(
         VehiclePhoto $vehiclePhoto,
         string $vehiclePath,
         string $alt,
-        string $formToken,
+        ?GuardFields $guardFields,
     ): GalleryPhoto {
         $actions = [];
 
-        if ($formToken !== '') {
-            $deleteForm = $this->photoForms->delete($vehiclePhoto, $vehiclePath, $formToken);
+        if ($guardFields instanceof GuardFields) {
+            $deleteForm = $this->photoForms->delete($vehiclePhoto, $vehiclePath, $guardFields);
             $actions[] = new KeyedComponent('delete-' . $vehiclePhoto->position, $deleteForm);
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reports\Service;
 
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Database\Contracts\QueryException;
 use App\Reports\Entity\ReportKind;
@@ -36,14 +37,14 @@ final readonly class ReportCards
     /**
      * @param ReportKind  $reportKind  The report.
      * @param ReportRange $reportRange The range shown.
-     * @param string      $token       The export form's token.
+     * @param GuardFields $guardFields The export form's CSRF token and honeypot.
      *
      * @throws QueryException           When the figures cannot be read.
      * @throws InvalidArgumentException When a key is malformed.
      *
      * @return KeyedComponent The report's panel, keyed and identified `report-<report>`.
      */
-    public function card(ReportKind $reportKind, ReportRange $reportRange, string $token): KeyedComponent
+    public function card(ReportKind $reportKind, ReportRange $reportRange, GuardFields $guardFields): KeyedComponent
     {
         $figures = $this->figureRepository->figures($reportKind, $reportRange);
         $id = 'report-' . $reportKind->value;
@@ -51,7 +52,7 @@ final readonly class ReportCards
         $panel = new Panel($id, $reportKind->title(), $range, $reportKind === ReportKind::Sales, [
             new KeyedComponent('chart', $this->reportCharts->chart($reportKind, $figures)),
             new KeyedComponent('table', $this->figureTables->table($reportKind, $figures)),
-            new KeyedComponent('export', $this->exportForms->form($reportKind, $reportRange, $token)),
+            new KeyedComponent('export', $this->exportForms->form($reportKind, $reportRange, $guardFields)),
         ]);
 
         return new KeyedComponent($id, $panel);

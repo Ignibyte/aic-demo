@@ -6,6 +6,7 @@ namespace App\Inbox\Service;
 
 use AIC\Component\Domain\Button;
 use AIC\Component\Domain\Form;
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Notification\Domain\InboxItem;
 use App\Theme\Components\DataTable\DataTable;
@@ -65,15 +66,15 @@ final readonly class InboxRows
     }
 
     /**
-     * @param string $token The form's token.
+     * @param GuardFields $guardFields The form's CSRF token and honeypot.
      *
      * @return Form "Mark all read", posted to `/app/inbox/read-all`.
      */
-    public function readAllForm(string $token): Form
+    public function readAllForm(GuardFields $guardFields): Form
     {
         $button = new Button('Mark all read', 'submit', 'inbox-read-all');
 
-        return new Form('inbox-read-all-form', BellParts::INBOX . '/read-all', [$button], $token);
+        return new Form('inbox-read-all-form', BellParts::INBOX . '/read-all', [$button], $guardFields);
     }
 
     /**

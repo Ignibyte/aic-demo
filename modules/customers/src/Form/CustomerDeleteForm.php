@@ -30,7 +30,7 @@ final readonly class CustomerDeleteForm
      * @param StaffPanels     $staffPanels     The customer pages' frame.
      * @param StaffSeals      $staffSeals      Seals the customer's path.
      * @param StaffDealership $staffDealership The dealership's name, for a refusal.
-     * @param FormTokens      $formTokens      Issues the visitor's CSRF token.
+     * @param FormTokens      $formTokens      Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -88,7 +88,7 @@ final readonly class CustomerDeleteForm
         $form = new Form('customer-delete-form', $path . '/delete', [
             $this->staffSeals->field($path),
             new Button('Delete', 'submit', 'customer-delete-confirm'),
-        ], $this->formTokens->issue($serverRequest)->value());
+        ], $this->formTokens->guard($serverRequest));
 
         return new ConfirmCard(
             'Delete ' . $customerDetails->name . '?',

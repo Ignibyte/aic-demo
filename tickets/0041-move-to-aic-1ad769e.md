@@ -2,9 +2,10 @@
 number: 41
 title: "Move to AIC 1ad769e: the guard fields, and the compiler fixes for #248 and #245"
 type: chore
-status: open
+status: closed
 created: 2026-11-03T13:30:00Z
-updated: 2026-11-03T13:30:00Z
+updated: 2026-11-03T19:56:19Z
+phase: "docs"
 ---
 
 The operator moved `../aic-nextgen-stable` from `cb07056` to `1ad769e` (AIC #239, #240, #246,

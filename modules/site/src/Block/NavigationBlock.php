@@ -72,17 +72,15 @@ final readonly class NavigationBlock implements Block
         $home = $staffMember instanceof StaffMember
             ? '/app'
             : '/';
-        $links = [new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home))];
+        $staffLinks = $staffMember instanceof StaffMember
+            ? self::staffLinks($heroicons, $path, $staffMember)
+            : [];
 
-        // Appended one by one: elephc refuses a local typed `array<C>` reassigned inside an `if` from a function declared
-        // only `array` (AIC #248).
-        foreach ($staffMember instanceof StaffMember ? self::staffLinks($heroicons, $path, $staffMember) : [] as $staffLink) {
-            $links[] = $staffLink;
-        }
-
-        $links[] = new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path)));
-
-        return new Navigation(self::NAME, $links);
+        return new Navigation(self::NAME, [
+            new KeyedComponent('dashboard', new NavLink($home, 'Dashboard', $heroicons->home(), $path === $home)),
+            ...$staffLinks,
+            new KeyedComponent('theme', new NavLink('/theme', 'Theme', $heroicons->cog(), self::isCurrent('/theme', $path))),
+        ]);
     }
 
     /**

@@ -11,6 +11,7 @@ use AIC\Component\Domain\FileInput;
 use AIC\Component\Domain\Form;
 use AIC\Component\Domain\FormEncoding;
 use AIC\Component\Domain\FormField;
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\Paragraph;
 use App\Photos\Entity\VehiclePhoto;
 use App\Photos\Service\VehiclePhotos;
@@ -32,13 +33,13 @@ final readonly class PhotoForms
     }
 
     /**
-     * @param string $vehiclePath The vehicle's page.
-     * @param string $refusal     Why the last upload was refused; empty when none was.
-     * @param string $formToken   The visitor's CSRF token.
+     * @param string      $vehiclePath The vehicle's page.
+     * @param string      $refusal     Why the last upload was refused; empty when none was.
+     * @param GuardFields $guardFields The visitor's CSRF token and the honeypot.
      *
      * @return Form The multipart form that posts one photo to `{vehicle page}/photos`.
      */
-    public function upload(string $vehiclePath, string $refusal, string $formToken): Form
+    public function upload(string $vehiclePath, string $refusal, GuardFields $guardFields): Form
     {
         $fileInput = new FileInput('vehicle-photo-file', VehiclePhotos::FIELD, 'image/jpeg,image/png,image/webp');
         $formField = new FormField('Add a photo', 'vehicle-photo-file', $fileInput);
@@ -50,19 +51,19 @@ final readonly class PhotoForms
             : [new Alert(AlertSeverity::Error, $refusal, 'vehicle-photo-error')];
         $fields = [...$alerts, $formField, $paragraph, $button];
 
-        return new Form('vehicle-photo-form', $vehiclePath . '/photos', $fields, $formToken, FormEncoding::Multipart);
+        return new Form('vehicle-photo-form', $vehiclePath . '/photos', $fields, $guardFields, FormEncoding::Multipart);
     }
 
     /**
      * @param VehiclePhoto $vehiclePhoto A photo.
      * @param string       $vehiclePath  Its vehicle's page.
-     * @param string       $formToken    The visitor's CSRF token.
+     * @param GuardFields  $guardFields  The visitor's CSRF token and the honeypot.
      *
      * @throws LogicException When the photo cannot be sealed.
      *
      * @return Form The form that deletes it, posting to `{photo}/delete` with the photo sealed.
      */
-    public function delete(VehiclePhoto $vehiclePhoto, string $vehiclePath, string $formToken): Form
+    public function delete(VehiclePhoto $vehiclePhoto, string $vehiclePath, GuardFields $guardFields): Form
     {
         $id = $this->photoId($vehiclePhoto);
         $fields = [
@@ -70,7 +71,7 @@ final readonly class PhotoForms
             new Button('Delete photo ' . $vehiclePhoto->position, 'submit', $id . '-delete'),
         ];
 
-        return new Form($id . '-delete-form', $vehiclePhoto->path($vehiclePath) . '/delete', $fields, $formToken);
+        return new Form($id . '-delete-form', $vehiclePhoto->path($vehiclePath) . '/delete', $fields, $guardFields);
     }
 
     /**

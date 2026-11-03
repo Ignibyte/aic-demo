@@ -21,8 +21,8 @@ use App\Staff\Service\StaffSession;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function array_diff;
 use function count;
-use function in_array;
 
 /**
  * A bulk edit of the inventory list (#29): set a status, move to a lot location, or delete, for every ticked vehicle at
@@ -228,17 +228,10 @@ final readonly class VehicleBulkEdits
      * @param array<string, string> $refusals Why each refused vehicle was refused, by VIN.
      *
      * @return array<string, string> Those refusals, and each of its VINs no vehicle has, refused as no longer on the lot.
-     *                               A loop rather than `array_diff()`: elephc reads no phpdoc, so it refuses to compile
-     *                               `array_diff()` over the edit's VINs, which it cannot tell are an array (gate:21,
-     *                               AIC #245).
      */
     private function missing(BulkEdit $bulkEdit, array $found, array $refusals): array
     {
-        foreach ($bulkEdit->vins as $vin) {
-            if (in_array($vin, $found, true)) {
-                continue;
-            }
-
+        foreach (array_diff($bulkEdit->vins, $found) as $vin) {
             $refusals[$vin] = VehicleChecks::NOT_LISTED;
         }
 

@@ -8,12 +8,13 @@ use AIC\Component\Domain\KeyedComponent;
 use App\Leads\Entity\LeadKind;
 use App\Theme\Components\FormField\FormField;
 use App\Theme\Components\FormGrid\FormGrid;
+use App\Theme\Components\SubmitButton\SubmitButton;
 use InvalidArgumentException;
 
 /**
  * A lead form's fields (#18), each with what was typed and its error: name, email and phone in a grid, with a test
- * drive's day (`type="date"`) and time (`type="time"`), then the question or the test drive's note. Their ids start
- * with the kind's slug, so the two forms on one page never share one.
+ * drive's day (`type="date"`) and time (`type="time"`), then the question or the test drive's note, then the Send
+ * button. Their ids start with the kind's slug, so the two forms on one page never share one.
  */
 final readonly class LeadFields
 {
@@ -64,6 +65,21 @@ final readonly class LeadFields
             : 'Anything we should know (optional)';
 
         return new FormField($leadKind->slug() . '-message', 'message', $label, 'textarea', $leadEntry->message, $error, $inquiry, false);
+    }
+
+    /**
+     * @param LeadKind $leadKind Which form.
+     *
+     * @return SubmitButton Its Send button, whose target is its own panel's anchor, so Tessera swaps that panel alone.
+     */
+    public function send(LeadKind $leadKind): SubmitButton
+    {
+        $slug = $leadKind->slug();
+        $label = $leadKind === LeadKind::Inquiry
+            ? 'Send question'
+            : 'Ask for this drive';
+
+        return new SubmitButton($label, $slug . '-send', '@car-' . $slug);
     }
 
     /**

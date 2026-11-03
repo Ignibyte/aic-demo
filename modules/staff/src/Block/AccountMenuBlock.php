@@ -27,7 +27,7 @@ final readonly class AccountMenuBlock implements Block
 {
     /**
      * @param StaffSession $staffSession Who is signed in.
-     * @param FormTokens   $formTokens   Issues the sign-out form's CSRF token.
+     * @param FormTokens   $formTokens   Issues the sign-out form's guard fields.
      */
     public function __construct(
         private StaffSession $staffSession = new StaffSession(),
@@ -61,8 +61,8 @@ final readonly class AccountMenuBlock implements Block
             return new Link('Sign in', '/sign-in');
         }
 
-        $token = $this->formTokens->issue($serverRequest)->value();
-        $form = new Form('sign-out-form', '/sign-out', [new Button('Sign out', 'submit', 'sign-out')], $token);
+        $guardFields = $this->formTokens->guard($serverRequest);
+        $form = new Form('sign-out-form', '/sign-out', [new Button('Sign out', 'submit', 'sign-out')], $guardFields);
 
         return new SignedInMenu('account', $staffMember->name, $staffMember->role->label(), $staffMember->email, $form);
     }

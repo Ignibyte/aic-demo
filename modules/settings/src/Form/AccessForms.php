@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class AccessForms
 {
     /**
-     * @param FormTokens $formTokens Issues the visitor's CSRF token.
+     * @param FormTokens $formTokens Issues the visitor's guard fields.
      */
     public function __construct(
         private FormTokens $formTokens = new FormTokens(),
@@ -41,7 +41,7 @@ final readonly class AccessForms
             ? [new HiddenInput('active', '0'), new SubmitButton('Deactivate', 'member-active', '')]
             : [new HiddenInput('active', '1'), new SubmitButton('Reactivate', 'member-active', '')];
 
-        return new Form('member-active-form', $path . '/active', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('member-active-form', $path . '/active', $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**
@@ -56,6 +56,6 @@ final readonly class AccessForms
     {
         $fields = [new SubmitButton('Send a password link', 'member-link', '')];
 
-        return new Form('member-link-form', $path . '/link', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('member-link-form', $path . '/link', $fields, $this->formTokens->guard($serverRequest));
     }
 }

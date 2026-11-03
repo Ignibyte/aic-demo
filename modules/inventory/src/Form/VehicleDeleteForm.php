@@ -27,7 +27,7 @@ final readonly class VehicleDeleteForm
     /**
      * @param StaffPanels $staffPanels The vehicle pages' frame.
      * @param StaffSeals  $staffSeals  Seals the vehicle's path.
-     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
+     * @param FormTokens  $formTokens  Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -77,7 +77,7 @@ final readonly class VehicleDeleteForm
         $form = new Form('vehicle-delete-form', $path . '/delete', [
             $this->staffSeals->field($path),
             new Button('Delete', 'submit', 'vehicle-delete-confirm'),
-        ], $this->formTokens->issue($serverRequest)->value());
+        ], $this->formTokens->guard($serverRequest));
 
         return new ConfirmCard(
             $title . '?',

@@ -7,6 +7,7 @@ namespace App\Leads\Form;
 use AIC\Component\Domain\Alert;
 use AIC\Component\Domain\AlertSeverity;
 use AIC\Component\Domain\Form;
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Form\Application\FormTokens;
 use App\Leads\Entity\LeadKind;
@@ -14,7 +15,6 @@ use App\Settings\Entity\OpeningHours;
 use App\Theme\Components\Notice\Notice;
 use App\Theme\Components\Notice\NoticeTone;
 use App\Theme\Components\Panel\Panel;
-use App\Theme\Components\SubmitButton\SubmitButton;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -28,7 +28,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class LeadForms
 {
     /**
-     * @param FormTokens $formTokens Issues the visitor's CSRF token, opening a session for one who never signed in.
+     * @param FormTokens $formTokens Issues the visitor's guard fields, opening a session for one who never signed in.
      * @param LeadFields $leadFields The forms' fields.
      */
     public function __construct(
@@ -48,12 +48,12 @@ final readonly class LeadForms
      */
     public function blank(ServerRequestInterface $serverRequest, string $path, OpeningHours $openingHours): array
     {
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $leadEntry = new LeadEntry('', '', '', '', '', '');
 
         return [
-            $this->formPanel(LeadKind::Inquiry, $path, $token, $leadEntry, [], $openingHours),
-            $this->formPanel(LeadKind::TestDrive, $path, $token, $leadEntry, [], $openingHours),
+            $this->formPanel(LeadKind::Inquiry, $path, $guardFields, $leadEntry, [], $openingHours),
+            $this->formPanel(LeadKind::TestDrive, $path, $guardFields, $leadEntry, [], $openingHours),
         ];
     }
 
@@ -77,10 +77,10 @@ final readonly class LeadForms
         array $errors,
         OpeningHours $openingHours,
     ): array {
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $other = $leadKind->other();
-        $keyedComponent = $this->sentPanel($leadKind, $path, $token, $leadEntry, $errors, $openingHours);
-        $blank = $this->formPanel($other, $path, $token, new LeadEntry('', '', '', '', '', ''), [], $openingHours);
+        $keyedComponent = $this->sentPanel($leadKind, $path, $guardFields, $leadEntry, $errors, $openingHours);
+        $blank = $this->formPanel($other, $path, $guardFields, new LeadEntry('', '', '', '', '', ''), [], $openingHours);
 
         return $leadKind === LeadKind::Inquiry
             ? [$keyedComponent, $blank]
@@ -90,7 +90,7 @@ final readonly class LeadForms
     /**
      * @param LeadKind              $leadKind     The form that was sent.
      * @param string                $path         The car's public page.
-     * @param string                $token        The visitor's CSRF token.
+     * @param GuardFields           $guardFields  The visitor's CSRF token and the honeypot.
      * @param LeadEntry             $leadEntry    What was typed, or what was stored.
      * @param array<string, string> $errors       Why each refused field is refused; empty when the lead was recorded.
      * @param OpeningHours          $openingHours When the dealership is open.
@@ -102,13 +102,13 @@ final readonly class LeadForms
     private function sentPanel(
         LeadKind $leadKind,
         string $path,
-        string $token,
+        GuardFields $guardFields,
         LeadEntry $leadEntry,
         array $errors,
         OpeningHours $openingHours,
     ): KeyedComponent {
         if ($errors !== []) {
-            return $this->formPanel($leadKind, $path, $token, $leadEntry, $errors, $openingHours);
+            return $this->formPanel($leadKind, $path, $guardFields, $leadEntry, $errors, $openingHours);
         }
 
         return $this->panel($leadKind, [new KeyedComponent('thanks', $this->thanks($leadKind, $leadEntry))], $openingHours);
@@ -117,7 +117,7 @@ final readonly class LeadForms
     /**
      * @param LeadKind              $leadKind     Which form.
      * @param string                $path         The car's public page.
-     * @param string                $token        The visitor's CSRF token.
+     * @param GuardFields           $guardFields  The visitor's CSRF token and the honeypot.
      * @param LeadEntry             $leadEntry    The values to show.
      * @param array<string, string> $errors       Why each refused field is refused, by name.
      * @param OpeningHours          $openingHours When the dealership is open.
@@ -129,7 +129,7 @@ final readonly class LeadForms
     private function formPanel(
         LeadKind $leadKind,
         string $path,
-        string $token,
+        GuardFields $guardFields,
         LeadEntry $leadEntry,
         array $errors,
         OpeningHours $openingHours,
@@ -138,15 +138,12 @@ final readonly class LeadForms
         $body = $errors === []
             ? []
             : [new KeyedComponent('alert', new Alert(AlertSeverity::Error, 'Fix the fields marked below.', $slug . '-error'))];
-        $send = $leadKind === LeadKind::Inquiry
-            ? 'Send question'
-            : 'Ask for this drive';
         $fields = [
             $this->leadFields->grid($leadKind, $leadEntry, $errors),
             $this->leadFields->message($leadKind, $leadEntry, $errors['message'] ?? ''),
-            new SubmitButton($send, $slug . '-send', '@car-' . $slug),
+            $this->leadFields->send($leadKind),
         ];
-        $body[] = new KeyedComponent('form', new Form($slug . '-form', $path . '/' . $slug, $fields, $token));
+        $body[] = new KeyedComponent('form', new Form($slug . '-form', $path . '/' . $slug, $fields, $guardFields));
 
         return $this->panel($leadKind, $body, $openingHours);
     }

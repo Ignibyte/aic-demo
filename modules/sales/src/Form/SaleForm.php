@@ -25,7 +25,7 @@ final readonly class SaleForm
     /**
      * @param StaffPanels $staffPanels The sale pages' frame.
      * @param SaleFields  $saleFields  The grid of fields.
-     * @param FormTokens  $formTokens  Issues the visitor's CSRF token.
+     * @param FormTokens  $formTokens  Issues the visitor's guard fields.
      */
     public function __construct(
         private StaffPanels $staffPanels,
@@ -56,8 +56,8 @@ final readonly class SaleForm
             : [new Alert(AlertSeverity::Error, 'Fix the fields marked below.', 'sale-error')];
         $formGrid = $this->saleFields->grid($saleEntry, $errors);
         $formActions = new FormActions('Record the sale', 'sale-save', Sale::PAGES);
-        $token = $this->formTokens->issue($serverRequest)->value();
-        $form = new Form('sale-form', Sale::PAGES, [...$alerts, $formGrid, $formActions], $token);
+        $guardFields = $this->formTokens->guard($serverRequest);
+        $form = new Form('sale-form', Sale::PAGES, [...$alerts, $formGrid, $formActions], $guardFields);
         $description = 'Choose the vehicle, the customer and the salesperson. Recording the sale marks the vehicle sold.';
 
         return $this->staffPanels->page('Record a sale', 'Record a sale', $description, ['form' => $form], $status);

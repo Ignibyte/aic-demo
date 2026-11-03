@@ -25,7 +25,7 @@ final readonly class PasswordChecks
 {
     /**
      * @param PostedFields $postedFields Reads the posted fields.
-     * @param FormTokens   $formTokens   Issues the visitor's CSRF token.
+     * @param FormTokens   $formTokens   Issues the visitor's guard fields.
      */
     public function __construct(
         private PostedFields $postedFields = new PostedFields(),
@@ -85,6 +85,6 @@ final readonly class PasswordChecks
         $fields[] = new FormField('password-confirm', 'confirm', 'The same password again', 'password', '', $again, true, false);
         $fields[] = new SubmitButton('Set my password', 'password-save', '');
 
-        return new Form('password-form', $path, $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('password-form', $path, $fields, $this->formTokens->guard($serverRequest));
     }
 }

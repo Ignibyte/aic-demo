@@ -21,7 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class LeadActions
 {
     /**
-     * @param FormTokens $formTokens Issues the CSRF token.
+     * @param FormTokens $formTokens Issues the guard fields.
      */
     public function __construct(
         private FormTokens $formTokens = new FormTokens(),
@@ -53,7 +53,7 @@ final readonly class LeadActions
         $selectField = new SelectField('lead-salesperson', 'salesperson', 'Salesperson', 'Choose a salesperson', $options, $error, false);
         $fields = [$selectField, new SubmitButton('Reassign', 'lead-assign', '')];
 
-        return new Form('lead-assign-form', $lead->path() . '/assign', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('lead-assign-form', $lead->path() . '/assign', $fields, $this->formTokens->guard($serverRequest));
     }
 
     /**
@@ -68,6 +68,6 @@ final readonly class LeadActions
     {
         $fields = [new SubmitButton('Close this lead', 'lead-close', '')];
 
-        return new Form('lead-close-form', $lead->path() . '/close', $fields, $this->formTokens->issue($serverRequest)->value());
+        return new Form('lead-close-form', $lead->path() . '/close', $fields, $this->formTokens->guard($serverRequest));
     }
 }
