@@ -57,9 +57,10 @@ function sidebar(name: Section): (page: Page) => Locator {
     return (page) => page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name, exact: true });
 }
 
-// The last record link in a list's table, near the foot of the list, where a page scrolled down still shows it.
+// The last record link in a list's table, near the foot of the list, where a page scrolled down still shows it. A
+// row's cells edited in place (#28) link to the record's edit page instead, so those are not record links.
 function lastRecord(table: string, prefix: string): (page: Page) => Locator {
-    return (page) => page.locator(`#${table} tbody a[href^="${prefix}"]`).last();
+    return (page) => page.locator(`#${table} tbody a[href^="${prefix}"]:not([href$="/edit"])`).last();
 }
 
 // A page whose heading is fixed.

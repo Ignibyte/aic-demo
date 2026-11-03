@@ -161,6 +161,7 @@ none
 - [AIC\Notification](../../../vendor/aic/framework/docs/systems.md#10-background-work)
 - [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Session](../../../vendor/aic/framework/docs/systems.md#8-form-security)
+- [AIC\Tessera](../../../vendor/aic/framework/docs/systems.md#7-the-browser-runtime)
 
 ### Other modules
 

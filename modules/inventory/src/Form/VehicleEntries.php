@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Fills the vehicle form: from a post, each field as sent (a missing one or an array is empty); from a stored
- * vehicle; or blank, in stock and on the lot from today.
+ * vehicle; from a stored vehicle with a list row's fields as sent (#28); or blank, in stock and on the lot from today.
  */
 final readonly class VehicleEntries
 {
@@ -30,13 +30,19 @@ final readonly class VehicleEntries
      */
     public function posted(ServerRequestInterface $serverRequest): VehicleEntry
     {
-        $values = [];
+        return $this->sent([], $serverRequest, VehicleEntry::FIELDS);
+    }
 
-        foreach (VehicleEntry::FIELDS as $name) {
-            $values[$name] = $this->postedFields->value($serverRequest, $name);
-        }
-
-        return new VehicleEntry($values);
+    /**
+     * @param Vehicle                $vehicle       The stored vehicle.
+     * @param ServerRequestInterface $serverRequest A list row's save (#28).
+     * @param list<string>           $names         The fields the row sends.
+     *
+     * @return VehicleEntry The stored vehicle's values, with those fields as the row sent them.
+     */
+    public function row(Vehicle $vehicle, ServerRequestInterface $serverRequest, array $names): VehicleEntry
+    {
+        return $this->sent($this->filled($vehicle)->values, $serverRequest, $names);
     }
 
     /**
@@ -70,5 +76,21 @@ final readonly class VehicleEntries
     public function blank(string $today): VehicleEntry
     {
         return new VehicleEntry(['status' => VehicleStatus::InStock->value, 'added_on' => $today]);
+    }
+
+    /**
+     * @param array<string, string>  $values        The values to start from.
+     * @param ServerRequestInterface $serverRequest A post.
+     * @param list<string>           $names         The fields it sends.
+     *
+     * @return VehicleEntry The values, each of those fields as posted.
+     */
+    private function sent(array $values, ServerRequestInterface $serverRequest, array $names): VehicleEntry
+    {
+        foreach ($names as $name) {
+            $values[$name] = $this->postedFields->value($serverRequest, $name);
+        }
+
+        return new VehicleEntry($values);
     }
 }

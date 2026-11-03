@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Inventory\Service;
 
 use AIC\Component\Domain\KeyedComponent;
-use App\Inventory\Entity\Vehicle;
 use App\Inventory\Form\InventoryQuery;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
@@ -13,8 +12,6 @@ use App\Theme\Components\FormValue\FormValue;
 use App\Theme\Components\Pagination\PageLink;
 use App\Theme\Components\Pagination\Pagination;
 use App\Theme\Components\TableResults\TableResults;
-use App\Theme\Components\TableRow\TableCell;
-use App\Theme\Components\TableRow\TableRow;
 use InvalidArgumentException;
 
 use function number_format;
@@ -22,8 +19,9 @@ use function number_format;
 /**
  * The inventory list's results: a row per vehicle on the page, heads that sort (a second click on the sorted one
  * reverses it), a link per page, each link keeping the search and filters, and the sort the filter form sends.
- * `InventoryResults` builds them from what it read when the results are rendered (#14). Tessera answers a filter, a
- * sort or a page with them alone: each control targets them as `@inventory-results`.
+ * `InventoryResults` builds them from what it read when the results are rendered (#14), its rows from `VehicleRowForm`.
+ * Tessera answers a filter, a sort or a page with them alone: each control targets them as `@inventory-results`. A
+ * row's own answer (#28) holds the results of that row alone, so the row sits where the list puts it.
  */
 final readonly class InventoryTable
 {
@@ -34,21 +32,19 @@ final readonly class InventoryTable
     public const string ANCHOR = 'inventory-results';
 
     /**
-     * @param InventoryLinks  $inventoryLinks  Writes the links.
-     * @param VehicleStatuses $vehicleStatuses Gives each status its badge colour.
+     * @param InventoryLinks $inventoryLinks Writes the links.
      */
     public function __construct(
         private InventoryLinks $inventoryLinks = new InventoryLinks(),
-        private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
     ) {
     }
 
     /**
-     * @param InventoryQuery $inventoryQuery What the list was asked for.
-     * @param list<Vehicle>  $vehicles       The page's vehicles.
-     * @param int            $count          How many vehicles match.
-     * @param int            $page           The page shown.
-     * @param int            $pages          How many pages there are.
+     * @param InventoryQuery       $inventoryQuery What the list was asked for.
+     * @param list<KeyedComponent> $rows           The page's vehicles' rows.
+     * @param int                  $count          How many vehicles match.
+     * @param int                  $page           The page shown.
+     * @param int                  $pages          How many pages there are.
      *
      * @throws InvalidArgumentException When a key is malformed.
      *
@@ -56,7 +52,7 @@ final readonly class InventoryTable
      */
     public function results(
         InventoryQuery $inventoryQuery,
-        array $vehicles,
+        array $rows,
         int $count,
         int $page,
         int $pages,
@@ -64,7 +60,7 @@ final readonly class InventoryTable
         $sort = $this->inventoryLinks->sortValue($inventoryQuery->sort, $inventoryQuery->descending);
         $parts = [
             new KeyedComponent('sort', new FormValue(InventoryFilters::FORM, 'sort', $sort)),
-            new KeyedComponent('table', $this->table($inventoryQuery, $vehicles, $count, $page, $pages)),
+            new KeyedComponent('table', $this->table($inventoryQuery, $rows, $count, $page, $pages)),
         ];
 
         if ($pages > 1) {
@@ -75,29 +71,36 @@ final readonly class InventoryTable
     }
 
     /**
-     * @param InventoryQuery $inventoryQuery What the list was asked for.
-     * @param list<Vehicle>  $vehicles       The page's vehicles.
-     * @param int            $count          How many vehicles match.
-     * @param int            $page           The page shown.
-     * @param int            $pages          How many pages there are.
+     * @param KeyedComponent $keyedComponent One vehicle's row, shown or as a form.
      *
      * @throws InvalidArgumentException When a key is malformed.
+     *
+     * @return TableResults The results holding that row alone, under the keys the list's results have, for a row's own
+     *                      answer (#28).
+     */
+    public function alone(KeyedComponent $keyedComponent): TableResults
+    {
+        $inventoryQuery = new InventoryQuery('', '', '', null, null, InventoryQuery::DEFAULT_SORT, true, 1);
+
+        return new TableResults([new KeyedComponent('table', $this->table($inventoryQuery, [$keyedComponent], 1, 1, 1))]);
+    }
+
+    /**
+     * @param InventoryQuery       $inventoryQuery What the list was asked for.
+     * @param list<KeyedComponent> $rows           The page's vehicles' rows.
+     * @param int                  $count          How many vehicles match.
+     * @param int                  $page           The page shown.
+     * @param int                  $pages          How many pages there are.
      *
      * @return DataTable The page's rows under the heads, or the empty line.
      */
     private function table(
         InventoryQuery $inventoryQuery,
-        array $vehicles,
+        array $rows,
         int $count,
         int $page,
         int $pages,
     ): DataTable {
-        $rows = [];
-
-        foreach ($vehicles as $vehicle) {
-            $rows[] = new KeyedComponent($vehicle->vin, $this->row($vehicle));
-        }
-
         $summary = $this->summary($count, $page, $pages);
         $empty = 'No vehicle matches. Try fewer filters, or clear them.';
 
@@ -121,30 +124,6 @@ final readonly class InventoryTable
         }
 
         return new Pagination('vehicles-pages', '@' . self::ANCHOR, $links);
-    }
-
-    /**
-     * @param Vehicle $vehicle A vehicle.
-     *
-     * @return TableRow Its row: the VIN, linked to its page, what it is, its mileage and price, its status as a badge and
-     *                  the day it came.
-     */
-    private function row(Vehicle $vehicle): TableRow
-    {
-        $status = $vehicle->status;
-
-        return new TableRow([
-            new TableCell($vehicle->vin, $vehicle->path(), true, false, null),
-            new TableCell((string) $vehicle->year, '', false, false, null),
-            new TableCell($vehicle->make, '', false, false, null),
-            new TableCell($vehicle->model . ' ' . $vehicle->trim, '', false, false, null),
-            new TableCell($vehicle->bodyStyle, '', false, false, null),
-            new TableCell($vehicle->exteriorColour, '', false, false, null),
-            new TableCell(number_format($vehicle->mileage) . ' mi', '', false, true, null),
-            new TableCell('$' . number_format($vehicle->price->list), '', false, true, null),
-            new TableCell($status->label(), '', false, false, $this->vehicleStatuses->tone($status)),
-            new TableCell($vehicle->addedOn, '', false, false, null),
-        ]);
     }
 
     /**

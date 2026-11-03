@@ -35,14 +35,14 @@ final readonly class ModuleHandlers
             (new StaffHandlers($this->handlerContext))->byId(),
             (new CustomersHandlers($this->handlerContext))->byId(),
             (new CustomersHandlersPart2($this->handlerContext))->byId(),
+            (new CustomersHandlersPart3($this->handlerContext))->byId(),
             (new InventoryHandlers($this->handlerContext))->byId(),
             (new InventoryHandlersPart2($this->handlerContext))->byId(),
             (new InventoryHandlersPart3($this->handlerContext))->byId(),
+            (new InventoryHandlersPart4($this->handlerContext))->byId(),
             (new HoldsHandlers($this->handlerContext))->byId(),
             (new SalesHandlers($this->handlerContext))->byId(),
             (new SalesHandlersPart2($this->handlerContext))->byId(),
-            (new SalesHandlersPart3($this->handlerContext))->byId(),
-            (new DashboardHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart2($this->handlerContext))->byId(),
         );
     }

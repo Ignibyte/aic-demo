@@ -43,6 +43,6 @@ final readonly class InventoryListPage implements Page
     {
         $panel = $this->inventoryList->panel($serverRequest);
 
-        return $this->staffPages->page('Inventory', [new KeyedComponent('vehicles', $panel)], 200);
+        return $this->staffPages->page('Inventory', [new KeyedComponent(InventoryList::KEY, $panel)], 200);
     }
 }

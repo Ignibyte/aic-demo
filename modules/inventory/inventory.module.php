@@ -17,7 +17,9 @@ declare(strict_types=1);
  * APR finance's `FinanceRates` plugin gives, so it requires finance; the
  * delete's page and post come after the photo routes, so the second handler
  * part opens with the photos' forms rather than the record services the first
- * one opens with (gate:14). The build reads it; nothing reads it at run time.
+ * one opens with (gate:14). A list row is edited in place (#28): its row shown, its row as a form, and its save, a
+ * PUT (AIC #242), after the list's route, so their generated part builds the rows' services alone and does not
+ * open as the record's forms' part does (gate:14). The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -33,6 +35,9 @@ use App\Inventory\Controller\VehiclePage;
 use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
+use App\Inventory\Controller\VehicleRowEditPage;
+use App\Inventory\Controller\VehicleRowPage;
+use App\Inventory\Controller\VehicleRowPut;
 use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Entity\ListingQuery;
@@ -67,6 +72,9 @@ return (new ModuleManifest('inventory'))
     ->route(RouteMethod::Get, '/app/inventory/{vin}/delete', VehicleDeletePage::class)
     ->route(RouteMethod::Post, '/app/inventory/{vin}/delete', VehicleDeletePost::class)
     ->route(RouteMethod::Get, '/app/inventory', InventoryListPage::class)
+    ->route(RouteMethod::Get, '/app/inventory/{vin}/row', VehicleRowPage::class)
+    ->route(RouteMethod::Get, '/app/inventory/{vin}/row/edit', VehicleRowEditPage::class)
+    ->route(RouteMethod::Put, '/app/inventory/{vin}/row', VehicleRowPut::class)
     ->factory(VehicleServices::class)
     ->command('inventory:seed', InventorySeed::class)
     ->migration(CreateVehiclesTable::class)
