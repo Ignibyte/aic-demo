@@ -39,6 +39,7 @@ Every component, layout and asset lives in `themes/lotline/` (#153). The page `t
 | `App\Theme\Components\BulkBar\BulkBar` | `themes/lotline/components/BulkBar/bulk-bar.phtml` |
 | `App\Theme\Components\CarGrid\CarGrid` | `themes/lotline/components/CarGrid/car-grid.phtml` |
 | `App\Theme\Components\CarProfile\CarProfile` | `themes/lotline/components/CarProfile/car-profile.phtml` |
+| `App\Theme\Components\CardMove\CardMove` | `themes/lotline/components/CardMove/card-move.phtml` |
 | `App\Theme\Components\CheckGroup\CheckGroup` | `themes/lotline/components/CheckGroup/check-group.phtml` |
 | `App\Theme\Components\ColumnChart\ColumnChart` | `themes/lotline/components/ColumnChart/column-chart.phtml` |
 | `App\Theme\Components\ConfirmCard\ConfirmCard` | `themes/lotline/components/ConfirmCard/confirm-card.phtml` |
@@ -66,9 +67,8 @@ Every component, layout and asset lives in `themes/lotline/` (#153). The page `t
 | `App\Theme\Components\PanelGrid\PanelGrid` | `themes/lotline/components/PanelGrid/panel-grid.phtml` |
 | `App\Theme\Components\PhotoGallery\PhotoGallery` | `themes/lotline/components/PhotoGallery/photo-gallery.phtml` |
 | `App\Theme\Components\RangeLinks\RangeLinks` | `themes/lotline/components/RangeLinks/range-links.phtml` |
-| `App\Theme\Components\SearchField\SearchField` | `themes/lotline/components/SearchField/search-field.phtml` |
 
-and 13 more: `bin/aic code:tree themes`
+and 14 more: `bin/aic code:tree themes`
 
 Named layouts: a Page passes a `ThemeLayoutName` case; a file a layout leaves out falls back to the theme's own (`bin/aic make:layout <name>`).
 

@@ -1,0 +1,8 @@
+# Publishes the web container's Mailpit SMTP port (1025) on a free 127.0.0.1 port Docker picks, since 1025 may be
+# taken on the host. The browser looks run the queue worker on the host (`$AIC_PHP bin/aic queue:work`, AIC #225) and
+# hand it that port as AIC_MAIL_PORT, read from `ddev describe -j` (or `docker port`), so its mail lands in DDEV's
+# Mailpit, where the looks read it. Run `ddev restart` after this file changes.
+services:
+  web:
+    ports:
+      - "127.0.0.1::1025"

@@ -60,7 +60,7 @@ Each report is a list of `ReportFigure`s (a key, a label, a count and an amount)
 
 ## Checks
 
-The looks run in DDEV, whose web container reaches Mailpit: `bin/aic schedule:run <YYYY-MM-DDTHH:MM>` on a minute no one ran before, `bin/aic queue:work`, and Mailpit read through its HTTP API.
+The looks run the console on the host (`$AIC_PHP bin/aic`, AIC #225; `tests/browser/support/console.ts`), with DDEV's Mailpit SMTP at the port DDEV publishes for it: `bin/aic schedule:run <YYYY-MM-DDTHH:MM>` on a minute no one ran before, `bin/aic queue:work`, and Mailpit read through its HTTP API.
 
 - `tests/browser/aged-stock.spec.ts`: vehicles of the look's own on the lot 61, 60 and 75 days (one on hold) and one sold after 90; the 07:00 minute and one worker give each sales manager one notification whose lines are exactly the vehicles the database says are aged, mailed too, and opened from the inbox onto the inventory.
 - `tests/browser/daily-digest.spec.ts`: a car added, a car sold and two leads today; the 21:00 minute mails the sales manager and the admin one digest each, whose figures match the database's own counts, and the salesperson none.

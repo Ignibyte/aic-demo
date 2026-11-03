@@ -190,7 +190,7 @@ export function storedExports(member: Member): StoredExport[] {
     });
 }
 
-// Where the export's file is, in this checkout's private files, as the worker in DDEV writes it.
+// Where the export's file is, in this checkout's private files, as the worker writes it.
 export function exportFile(id: number): string {
     return resolve('var/storage/private/exports', `${id}.csv`);
 }

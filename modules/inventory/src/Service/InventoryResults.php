@@ -37,10 +37,10 @@ final readonly class InventoryResults implements ComponentSource
      * @param InventoryTable         $inventoryTable    The table and the pages.
      * @param InventoryQuery         $inventoryQuery    What the list was asked for.
      * @param VehicleRowForm         $vehicleRowForm    Each vehicle's row.
-     * @param ServerRequestInterface $serverRequest     The list's request, with its session, for the visitor's form token,
-     *                                                  which the action bar posts (#29).
+     * @param ServerRequestInterface $serverRequest     The list's request, with its session, for the guard fields the
+     *                                                  action bar posts (#29, AIC #246).
      * @param InventoryLinks         $inventoryLinks    Writes the list's link the bar goes back to.
-     * @param FormTokens             $formTokens        Issues the visitor's form token.
+     * @param FormTokens             $formTokens        Gives the visitor's guard fields: their form token and the honeypot.
      */
     public function __construct(
         private VehicleRepository $vehicleRepository,
@@ -82,7 +82,7 @@ final readonly class InventoryResults implements ComponentSource
         $statuses = $count === 0
             ? []
             : $this->vehicleRepository->statuses($inventoryQuery);
-        $bulkBar = $this->inventoryTable->bar($this->formTokens->issue($this->serverRequest)->value(), $back);
+        $bulkBar = $this->inventoryTable->bar($this->formTokens->guard($this->serverRequest), $back);
         $tableTotals = $this->inventoryTable->totals($count, $page, $pages, $statuses, '', false, $vins);
 
         return $this->inventoryTable->results($inventoryQuery, $rows, $page, $pages, $bulkBar, $tableTotals);

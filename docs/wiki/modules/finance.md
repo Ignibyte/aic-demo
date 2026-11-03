@@ -68,6 +68,7 @@ none
 
 ### Framework systems
 
+- [AIC\Component](../../../vendor/aic/framework/docs/systems.md#4-components)
 - [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 

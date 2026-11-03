@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Inventory\Service;
 
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use App\Inventory\Form\InventoryQuery;
 use App\Inventory\Form\VehicleRowForm;
@@ -12,7 +13,6 @@ use App\Theme\Components\BulkBar\BulkConfirm;
 use App\Theme\Components\DataTable\DataTable;
 use App\Theme\Components\DataTable\TableColumn;
 use App\Theme\Components\FormValue\FormValue;
-use App\Theme\Components\SelectField\SelectOption;
 use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableTotals\TableTotals;
 use InvalidArgumentException;
@@ -121,25 +121,29 @@ final readonly class InventoryTable
     }
 
     /**
-     * @param string $token      The visitor's form token.
-     * @param string $back       The list the bar is shown on, path and query.
-     * @param bool   $confirming Whether it asks to confirm a delete posted without script, the delete chosen.
-     * @param int    $ticked     How many rows are ticked as it arrives.
+     * @param GuardFields $guardFields The visitor's form token and the honeypot, which the bar's form renders.
+     * @param string      $back        The list the bar is shown on, path and query; the list itself by default.
+     * @param bool        $confirming  Whether it asks to confirm a delete posted without script, the delete chosen.
+     * @param int         $ticked      How many rows are ticked as it arrives.
      *
      * @return BulkBar The action bar: set a status (sold is a sale's), move to a lot location, or delete.
      */
-    public function bar(string $token, string $back, bool $confirming = false, int $ticked = 0): BulkBar
-    {
+    public function bar(
+        GuardFields $guardFields,
+        string $back = VehicleRowForm::LIST,
+        bool $confirming = false,
+        int $ticked = 0,
+    ): BulkBar {
         $warning = 'A deleted vehicle is gone from the lot for good; this cannot be undone.';
         $bulkConfirm = new BulkConfirm('delete', 'Delete the ticked vehicles?', $warning, $confirming, $ticked);
 
         return new BulkBar(
             VehicleRowForm::BULK,
             VehicleRowForm::ACTION,
-            $token,
+            $guardFields,
             $back,
             'With the ticked vehicles',
-            $this->choices($confirming),
+            $this->vehicleStatuses->bulkChoices($confirming),
             VehicleRowForm::ANCHOR,
             self::TOTALS,
             self::ANCHOR,
@@ -199,27 +203,6 @@ final readonly class InventoryTable
         }
 
         return implode(',', $quoted);
-    }
-
-    /**
-     * @param bool $confirming Whether a delete is being confirmed, so it is the one chosen.
-     *
-     * @return list<SelectOption> The bar's choices: each status but sold, each lot location, and delete.
-     */
-    private function choices(bool $confirming): array
-    {
-        $choices = [
-            new SelectOption('status:in_stock', 'Set to In stock', false),
-            new SelectOption('status:on_hold', 'Set to On hold', false),
-        ];
-
-        foreach ($this->vehicleStatuses->locations() as $vehicleLocation) {
-            $choices[] = new SelectOption('location:' . $vehicleLocation->value, 'Move to ' . $vehicleLocation->label(), false);
-        }
-
-        $choices[] = new SelectOption('delete', 'Delete', $confirming);
-
-        return $choices;
     }
 
     /**

@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\Panel\Panel;
 use App\Theme\Components\PanelGrid\PanelGrid;
 use App\Theme\Components\PhotoGallery\PhotoGallery;
 use App\Theme\Components\RangeLinks\RangeLinks;
-use App\Theme\Components\SearchField\SearchField;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof Panel => $this->renderPanel($component, $renderPass),
             $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
             $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
             $component instanceof RangeLinks => $this->renderRangeLinks($component, $renderPass),
-            $component instanceof SearchField => $this->renderSearchField($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param Panel      $panel      The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/Panel/panel.phtml.
+     */
+    private function renderPanel(Panel $panel, RenderPass $renderPass): string
+    {
+        $renderPass->open($panel);
+        require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     {
         $renderPass->open($rangeLinks);
         require __DIR__ . '/templates/themes/lotline/components/RangeLinks/range-links.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SearchField $searchField The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SearchField/search-field.phtml.
-     */
-    private function renderSearchField(SearchField $searchField, RenderPass $renderPass): string
-    {
-        $renderPass->open($searchField);
-        require __DIR__ . '/templates/themes/lotline/components/SearchField/search-field.phtml';
 
         return $renderPass->close();
     }

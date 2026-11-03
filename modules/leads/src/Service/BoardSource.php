@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Leads\Service;
 
+use AIC\Component\Domain\GuardFields;
 use AIC\Controller\Contracts\EventSource;
 use AIC\Controller\Contracts\ServerEvent;
 use AIC\Database\Contracts\QueryException;
@@ -69,7 +70,7 @@ final class BoardSource implements EventSource
      * @param LeadRepository     $leadRepository     The leads the columns show.
      * @param LeadMoveRepository $leadMoveRepository The moves.
      * @param BoardViewer        $boardViewer        Who looks, which decides the cards' menus.
-     * @param string             $token              Their form token, which the menus' forms carry.
+     * @param GuardFields        $guardFields        Their form token and honeypot, which the menus' forms carry.
      * @param int                $after              The last move the page has; the stream sends only what came after.
      * @param bool               $fresh              Whether the connection starts with every column, for a page that
      *                                               named no move.
@@ -80,7 +81,7 @@ final class BoardSource implements EventSource
         private readonly LeadRepository $leadRepository,
         private readonly LeadMoveRepository $leadMoveRepository,
         private readonly BoardViewer $boardViewer,
-        private readonly string $token,
+        private readonly GuardFields $guardFields,
         private int $after,
         private readonly bool $fresh,
         private readonly BoardCards $boardCards = new BoardCards(),
@@ -221,7 +222,7 @@ final class BoardSource implements EventSource
                 $this->leadRepository->inStage($leadStage, BoardColumnSource::SHOWN),
                 $this->leadRepository->countStage($leadStage),
                 $this->boardViewer,
-                $this->token,
+                $this->guardFields,
                 0,
             );
             $eventId = $index === $last

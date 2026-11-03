@@ -176,19 +176,33 @@ export async function walkCalculator(page: Page, apr: number): Promise<void> {
     await expect(shown.covered).toBeHidden();
 }
 
-// Holds the no-script table to the three example terms at the default down payment and that APR.
+// Holds the no-script table to the three example terms at the default down payment and that APR: AIC's `Table` atom,
+// its two money columns, head and cells, marked to sit at the end and set there by the theme (AIC #240).
 export async function expectExamples(page: Page, apr: number): Promise<void> {
     const shown = calculator(page);
     await expect(shown.body).toBeHidden();
     await expect(shown.examples).toBeVisible();
-    await expect(shown.examples.locator('caption')).toHaveText(
+    const table = shown.examples.locator('table.aic-table');
+    await expect(table).toHaveCount(1);
+    await expect(table.locator('caption')).toHaveText(
         `With $1,700 down and no trade-in, at ${apr.toFixed(2)}% APR, before tax and fees.`,
     );
-    const rows = shown.examples.locator('tbody tr');
+    const heads = table.locator('thead th');
+    await expect(heads).toHaveText(['Term', 'Monthly payment', 'Total interest']);
+    const rows = table.locator('tbody tr');
     await expect(rows).toHaveCount(3);
 
     for (const [index, months] of [36, 48, 60].entries()) {
         const expected = figures({ down: DOWN, trade: 0, apr, months });
         await expect(rows.nth(index).locator('td')).toHaveText([`${months} months`, expected.payment, expected.interest]);
+    }
+
+    for (const column of [heads, ...[0, 1, 2].map((index) => rows.nth(index).locator('td'))]) {
+        await expect(column.nth(0)).not.toHaveClass(/aic-align-end/);
+
+        for (const money of [1, 2]) {
+            await expect(column.nth(money)).toHaveClass('aic-align-end');
+            await expect(column.nth(money)).toHaveCSS('text-align', 'end');
+        }
     }
 }

@@ -6,8 +6,8 @@ import { fillInquiry, firstCar, inquiryThanks, lookEmail, mailFor, mailText, nex
 test.beforeEach(() => removeLeadLooks());
 test.afterEach(() => removeLeadLooks());
 
-// These looks depend on DDEV: only its web container reaches Mailpit's SMTP on this box, so the worker runs there
-// (`ddev exec bin/aic queue:work`), and Mailpit is read at the address `ddev describe -j` gives.
+// These looks run the worker on this host (`$AIC_PHP bin/aic queue:work`, AIC #225), mailing into DDEV's Mailpit
+// through the SMTP port DDEV publishes, and read Mailpit at the address `ddev describe -j` gives.
 test('sending a lead queues its job and no mail; one worker run mails the salesperson and the visitor and stores the notification', async ({ page }) => {
     const errors = collectFormErrors(page);
     const car = firstCar();

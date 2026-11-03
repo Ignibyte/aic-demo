@@ -18,8 +18,8 @@ function notices(userId: string): { subject: string; link: string; body: string 
         });
 }
 
-// This look depends on DDEV: the worker runs in its web container (`ddev exec bin/aic queue:work`), as the leads looks'
-// does, against the database the site under test uses.
+// This look runs the worker on this host (`$AIC_PHP bin/aic queue:work`, AIC #225), as the leads looks do, against the
+// database the site under test uses.
 test('a move to Won queues one lead-won job, whose run tells the salesperson in their inbox; no salesperson, or off Won first, tells no one', async ({ page }) => {
     const errors = collectFormErrors(page);
     const car = firstCar();

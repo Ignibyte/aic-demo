@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\SearchField\SearchField;
 use App\Theme\Components\SelectField\SelectField;
 use App\Theme\Components\SignedInMenu\SignedInMenu;
 use App\Theme\Components\SiteFooter\SiteFooter;
-use App\Theme\Components\StatTiles\StatTiles;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof SearchField => $this->renderSearchField($component, $renderPass),
             $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
             $component instanceof SignedInMenu => $this->renderSignedInMenu($component, $renderPass),
             $component instanceof SiteFooter => $this->renderSiteFooter($component, $renderPass),
-            $component instanceof StatTiles => $this->renderStatTiles($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param SearchField $searchField The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SearchField/search-field.phtml.
+     */
+    private function renderSearchField(SearchField $searchField, RenderPass $renderPass): string
+    {
+        $renderPass->open($searchField);
+        require __DIR__ . '/templates/themes/lotline/components/SearchField/search-field.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     {
         $renderPass->open($siteFooter);
         require __DIR__ . '/templates/themes/lotline/components/SiteFooter/site-footer.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param StatTiles  $statTiles  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/StatTiles/stat-tiles.phtml.
-     */
-    private function renderStatTiles(StatTiles $statTiles, RenderPass $renderPass): string
-    {
-        $renderPass->open($statTiles);
-        require __DIR__ . '/templates/themes/lotline/components/StatTiles/stat-tiles.phtml';
 
         return $renderPass->close();
     }

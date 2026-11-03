@@ -7,8 +7,8 @@ import { expectBellCount, insertMember, isRead, lookEmail, removeInboxLooks, sig
 test.beforeEach(() => removeInboxLooks());
 test.afterEach(() => removeInboxLooks());
 
-// This look depends on DDEV: the worker runs in its web container (`ddev exec bin/aic queue:work`), as the leads looks'
-// does, against the database the site under test uses.
+// This look runs the worker on this host (`$AIC_PHP bin/aic queue:work`, AIC #225), as the leads looks do, against the
+// database the site under test uses.
 test("a visitor's lead lights the salesperson's bell live, and opening it from the menu marks it read", async ({ browser, page }) => {
     const errors = collectFormErrors(page);
     const car = firstCar();

@@ -1,8 +1,8 @@
-import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, type Page } from '@playwright/test';
+import { aic } from './console';
 import { checkDigitHolds, literal, sql } from './inventory';
 import { mailFor, removeMail } from './leads';
 import { photoFile } from './photos';
@@ -117,10 +117,10 @@ export function restoreSalespeople(ids: string[]): void {
     }
 }
 
-// Runs `bin/aic queue:work` once in DDEV's web container, the one place on this box that reaches Mailpit's SMTP, against
-// the database the sites use too, and gives its line.
+// Runs `bin/aic queue:work` once on this host (AIC #225), against the database the site under test uses, mailing into
+// DDEV's Mailpit (`./console`), and gives its line.
 export function work(): string {
-    return execFileSync('ddev', ['exec', 'bin/aic', 'queue:work', '1000'], { encoding: 'utf8' }).trim();
+    return aic(['queue:work', '1000']).trim();
 }
 
 // The journey's lead, as stored: its id and its salesperson's email.

@@ -15,8 +15,8 @@ test.beforeEach(async () => {
 });
 test.afterEach(() => removeHoldLooks(since));
 
-// These looks depend on DDEV: the scheduler and the worker run in its web container (`ddev exec`), which reaches
-// Mailpit's SMTP, and Mailpit is read at the address `ddev describe -j` gives.
+// These looks run the scheduler and the worker on this host (`$AIC_PHP bin/aic`, AIC #225), mailing into DDEV's Mailpit
+// through the SMTP port DDEV publishes, and read Mailpit at the address `ddev describe -j` gives.
 test('a held car leaves the public site and sells to no one else; after its 48 hours the release job puts it back and tells who placed it', async ({ page, request }) => {
     const errors = collectFormErrors(page);
     const salesperson = insertMember('Hal Holder', 'salesperson');

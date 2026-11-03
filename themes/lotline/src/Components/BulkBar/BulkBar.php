@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Theme\Components\BulkBar;
 
 use AIC\Component\Contracts\Component;
+use AIC\Component\Domain\GuardFields;
 use App\Theme\Components\SelectField\SelectOption;
 
 /**
@@ -20,7 +21,7 @@ final readonly class BulkBar implements Component
     /**
      * @param string             $id          The form's id, which the rows' boxes name.
      * @param string             $action      Where it posts.
-     * @param string             $token       The visitor's form token.
+     * @param GuardFields        $guardFields The form token and the honeypot, which the form renders first (AIC #246).
      * @param string             $back        The list it was shown on, path and query, which a plain post goes back to.
      * @param string             $label       The choice's label (`With the ticked vehicles`).
      * @param list<SelectOption> $choices     What it can do, each a value the server reads and its text.
@@ -32,7 +33,7 @@ final readonly class BulkBar implements Component
     public function __construct(
         public string $id,
         public string $action,
-        public string $token,
+        public GuardFields $guardFields,
         public string $back,
         public string $label,
         public array $choices,

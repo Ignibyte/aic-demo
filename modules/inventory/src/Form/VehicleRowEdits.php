@@ -54,7 +54,7 @@ final readonly class VehicleRowEdits
      * @param EnvelopeCodec   $envelopeCodec   Seals with the app secret: the row's props, and their check on a save.
      * @param list<object>    $vehicleSales    The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      * @param VehicleEntries  $vehicleEntries  Fills the form from the vehicle and the row's post.
-     * @param FormTokens      $formTokens      The visitor's form token, which the page's action bar posts (#29).
+     * @param FormTokens      $formTokens      Gives the guard fields the page's action bar posts (#29, AIC #246).
      */
     public function __construct(
         private VehicleRowPages $vehicleRowPages,
@@ -82,11 +82,11 @@ final readonly class VehicleRowEdits
      */
     public function shown(ServerRequestInterface $serverRequest): PageResponse
     {
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $vehicle = $this->vehicleRecords->find($serverRequest);
 
         return $vehicle instanceof Vehicle
-            ? $this->vehicleRowPages->page($token, $this->vehicleRowForm->shown($vehicle), 200)
+            ? $this->vehicleRowPages->page($guardFields, $this->vehicleRowForm->shown($vehicle), 200)
             : $this->vehicleRecords->missing();
     }
 
@@ -107,10 +107,10 @@ final readonly class VehicleRowEdits
             return $this->vehicleRecords->missing();
         }
 
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $editing = $this->vehicleRowForm->editing($vehicle, $this->vehicleEntries->filled($vehicle), []);
 
-        return $this->vehicleRowPages->page($token, $editing, 200);
+        return $this->vehicleRowPages->page($guardFields, $editing, 200);
     }
 
     /**
@@ -135,19 +135,19 @@ final readonly class VehicleRowEdits
             return $this->vehicleRecords->refused();
         }
 
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $vehicleRecordRepository = $this->vehicleRecords->repository();
         $vehicleEntry = $this->vehicleEntries->row($current, $serverRequest, VehicleRowForm::FIELDS);
         $errors = $this->vehicleChecks->errors($vehicleEntry, $current->vin, $vehicleRecordRepository->today());
 
         if ($errors !== []) {
-            return $this->vehicleRowPages->page($token, $this->vehicleRowForm->editing($current, $vehicleEntry, $errors), 422);
+            return $this->vehicleRowPages->page($guardFields, $this->vehicleRowForm->editing($current, $vehicleEntry, $errors), 422);
         }
 
         $vehicle = $this->vehicleChecks->vehicle($vehicleEntry);
 
         return $vehicleRecordRepository->update($current->vin, $vehicle)
-            ? $this->vehicleRowPages->page($token, $this->vehicleRowForm->shown($vehicle), 200)
+            ? $this->vehicleRowPages->page($guardFields, $this->vehicleRowForm->shown($vehicle), 200)
             : $this->vehicleRecords->missing();
     }
 }

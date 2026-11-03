@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Inventory\Form;
 
+use AIC\Component\Domain\GuardFields;
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Controller\Application\PageDocuments;
 use AIC\Controller\Domain\PageDocument;
 use AIC\Entity\Application\EntityStore;
-use App\Inventory\Entity\Vehicle;
 use App\Inventory\Service\InventoryList;
 use App\Inventory\Service\InventoryTable;
 use App\Inventory\Service\SoldVehicles;
@@ -45,7 +45,7 @@ final readonly class VehicleRowPages
     }
 
     /**
-     * @param string         $token          The visitor's form token, which the action bar posts (#29).
+     * @param GuardFields    $guardFields    The visitor's form token and the honeypot, which the action bar posts (#29).
      * @param KeyedComponent $keyedComponent The vehicle's row, shown or as a form.
      * @param int            $status         200, or 422 for a refused save.
      *
@@ -54,9 +54,9 @@ final readonly class VehicleRowPages
      * @return PageDocument The inventory page, its list's panel holding that row alone where the list puts it, with the
      *                      action bar its box posts with and the totals line (#29).
      */
-    public function page(string $token, KeyedComponent $keyedComponent, int $status): PageDocument
+    public function page(GuardFields $guardFields, KeyedComponent $keyedComponent, int $status): PageDocument
     {
-        $bulkBar = $this->inventoryTable->bar($token, Vehicle::PAGES);
+        $bulkBar = $this->inventoryTable->bar($guardFields);
         $tableTotals = $this->inventoryTable->totals(1, 1, 1, [], '', false, [$keyedComponent->key()]);
         $touched = $this->inventoryTable->touched([$keyedComponent], $bulkBar, $tableTotals);
 
