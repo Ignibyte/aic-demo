@@ -7,9 +7,15 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Storage\Application\PublicFiles;
+use App\Finance\Service\FinanceRates;
 use App\Inventory\Controller\InventoryListPage;
+use App\Inventory\Controller\VehicleDeletePost;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Service\InventoryList;
+use App\Inventory\Service\VehicleSales;
+use App\Inventory\Service\VehicleServices;
+use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -34,12 +40,24 @@ final readonly class InventoryHandlersPart3
      */
     public function byId(): array
     {
-        $vehicleRepository = new VehicleRepository(new EntityStore($this->handlerContext->database()));
+        $entityStore = new EntityStore($this->handlerContext->database());
+        $vehicleServices = new VehicleServices(
+            $entityStore,
+            $this->handlerContext->documents(),
+            new StaffSeals($this->handlerContext->envelopeCodec()),
+            $this->handlerContext->tagged(VehicleSales::class),
+            new PublicFiles($this->handlerContext->root()),
+            $this->handlerContext->tagged(FinanceRates::class),
+        );
 
         return [
             InventoryListPage::class => $this->handlerContext->page(
-                new InventoryListPage(new StaffPages($this->handlerContext->documents()), new InventoryList($vehicleRepository)),
+                new InventoryListPage(
+                    new StaffPages($this->handlerContext->documents()),
+                    new InventoryList(new VehicleRepository($entityStore)),
+                ),
             ),
+            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($vehicleServices)),
         ];
     }
 }

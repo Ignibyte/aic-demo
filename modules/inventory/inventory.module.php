@@ -13,7 +13,11 @@ declare(strict_types=1);
  * view, which sales and the dashboard read (#14); and the vehicles for sale, without
  * their VINs or costs, which the storefront shows the public (#17). The list's route comes last,
  * so the generated handler parts do not each open with the record services
- * (gate:14). The build reads it; nothing reads it at run time.
+ * (gate:14). A vehicle's page shows finance's payment calculator (#26), at the
+ * APR finance's `FinanceRates` plugin gives, so it requires finance; the
+ * delete's page and post come after the photo routes, so the second handler
+ * part opens with the photos' forms rather than the record services the first
+ * one opens with (gate:14). The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -51,16 +55,17 @@ use App\Inventory\Service\Vins;
 return (new ModuleManifest('inventory'))
     ->requires('staff')
     ->requires('photos')
+    ->requires('finance')
     ->route(RouteMethod::Get, '/app/inventory/new', VehicleNewPage::class)
     ->route(RouteMethod::Post, '/app/inventory', VehicleCreatePost::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}', VehiclePage::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}/edit', VehicleEditPage::class)
     ->route(RouteMethod::Post, '/app/inventory/{vin}', VehicleUpdatePost::class)
-    ->route(RouteMethod::Get, '/app/inventory/{vin}/delete', VehicleDeletePage::class)
-    ->route(RouteMethod::Post, '/app/inventory/{vin}/delete', VehicleDeletePost::class)
     ->route(RouteMethod::Post, '/app/inventory/{vin}/photos', VehiclePhotoPost::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}/photos/{position:int}', VehiclePhotoStream::class)
     ->route(RouteMethod::Post, '/app/inventory/{vin}/photos/{position:int}/delete', VehiclePhotoDeletePost::class)
+    ->route(RouteMethod::Get, '/app/inventory/{vin}/delete', VehicleDeletePage::class)
+    ->route(RouteMethod::Post, '/app/inventory/{vin}/delete', VehicleDeletePost::class)
     ->route(RouteMethod::Get, '/app/inventory', InventoryListPage::class)
     ->factory(VehicleServices::class)
     ->command('inventory:seed', InventorySeed::class)

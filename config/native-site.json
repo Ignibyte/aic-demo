@@ -2062,6 +2062,15 @@
             "captures": false
         },
         {
+            "name": "settings profile, the APR refused",
+            "method": "POST",
+            "path": "/app/settings/profile",
+            "form": "name=Gate%20Motors&address=1%20Gate%20Road&phone=%28503%29%20555-0100&opens_at=08%3A00&closes_at=17%3A00&day_1=1&day_2=1&day_3=1&day_4=1&day_5=1&aged_stock_days=45&default_apr=31&aic_csrf={csrf}&aic_envelope={envelope}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
             "name": "settings profile, saved",
             "method": "POST",
             "path": "/app/settings/profile",

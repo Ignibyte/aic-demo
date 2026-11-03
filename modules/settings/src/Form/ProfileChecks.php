@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Settings\Form;
 
 use AIC\Form\Application\PostedFields;
+use App\Finance\Service\Payments;
 use App\Settings\Entity\DealershipProfile;
 use App\Settings\Entity\OpeningHours;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,15 +13,18 @@ use Psr\Http\Message\ServerRequestInterface;
 use function array_filter;
 use function mb_strlen;
 use function preg_match;
+use function strlen;
+use function strpos;
 use function substr;
 use function trim;
 
 /**
  * The profile form (#22): what a post sent, its checks one per field, and the profile a valid entry describes. A name
  * of at most 100 characters; an address of at most 200; a phone as customers' is, or none; an opening and a closing
- * time `HH:MM`, the closing at least an hour after the opening so a test drive fits; at least one open day; and an
- * aged-stock threshold of 1 to 365 days. Times compare as minutes since midnight, in integers (elephc refuses `<`
- * between two strings, as leads' hours note).
+ * time `HH:MM`, the closing at least an hour after the opening so a test drive fits; at least one open day; an
+ * aged-stock threshold of 1 to 365 days; and a default APR from 0 to 30 percent with up to two decimals, blank for the
+ * standard 6.90% (#26), so a post from a form that predates the field still saves. Times compare as minutes since
+ * midnight and the APR as basis points, in integers (elephc refuses `<` between two strings, as leads' hours note).
  */
 final readonly class ProfileChecks
 {
@@ -33,6 +37,16 @@ final readonly class ProfileChecks
      * A time of day, `HH:MM`.
      */
     private const string TIME = '/^([01]\\d|2[0-3]):[0-5]\\d$/';
+
+    /**
+     * An APR as typed: whole percent, then up to two decimals.
+     */
+    private const string APR = '/^\\d{1,2}(\\.\\d{1,2})?$/';
+
+    /**
+     * The highest APR the profile takes, in basis points: 30%.
+     */
+    private const int MAX_APR = 3_000;
 
     /**
      * @param PostedFields $postedFields Reads the posted fields.
@@ -85,6 +99,7 @@ final readonly class ProfileChecks
             'aged_stock_days' => $this->daysError(trim($profileEntry->value('aged_stock_days'))),
             'closes_at' => $this->closesError($opensAt, trim($profileEntry->value('closes_at'))),
             'days' => $this->openDaysError($profileEntry->value('open_days')),
+            'default_apr' => $this->aprError(trim($profileEntry->value('default_apr'))),
             'name' => $this->nameError(trim($profileEntry->value('name'))),
             'opens_at' => $this->opensError($opensAt),
             'phone' => $this->phoneError(trim($profileEntry->value('phone'))),
@@ -112,6 +127,7 @@ final readonly class ProfileChecks
             trim($profileEntry->value('phone')),
             $openingHours,
             (int) trim($profileEntry->value('aged_stock_days')),
+            $this->basisPoints(trim($profileEntry->value('default_apr'))) ?? Payments::STANDARD_APR,
         );
     }
 
@@ -220,5 +236,49 @@ final readonly class ProfileChecks
         return preg_match('/^\\d{1,3}$/', $days) === 1 && (int) $days >= 1 && (int) $days <= 365
             ? ''
             : 'Give a whole number of days from 1 to 365.';
+    }
+
+    /**
+     * @param string $apr The posted APR, trimmed.
+     *
+     * @return string Why it is refused; empty when it is blank or a percentage from 0 to 30 with up to two decimals.
+     */
+    private function aprError(string $apr): string
+    {
+        if ($apr === '') {
+            return '';
+        }
+
+        $basisPoints = $this->basisPoints($apr);
+
+        return $basisPoints !== null && $basisPoints <= self::MAX_APR
+            ? ''
+            : 'Give the APR as a percentage from 0 to 30, such as 6.9, or leave it blank for 6.90.';
+    }
+
+    /**
+     * @param string $apr An APR as typed, trimmed.
+     *
+     * @return int|null It in basis points (`6.9` is 690); null when it is blank or not a percentage with up to two
+     *                  decimals.
+     */
+    private function basisPoints(string $apr): ?int
+    {
+        if (preg_match(self::APR, $apr) !== 1) {
+            return null;
+        }
+
+        $dot = strpos($apr, '.');
+
+        if ($dot === false) {
+            return (int) $apr * 100;
+        }
+
+        $decimals = substr($apr, $dot + 1);
+        $hundredths = strlen($decimals) === 1
+            ? (int) $decimals * 10
+            : (int) $decimals;
+
+        return (int) substr($apr, 0, $dot) * 100 + $hundredths;
     }
 }

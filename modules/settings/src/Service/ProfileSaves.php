@@ -32,6 +32,7 @@ final readonly class ProfileSaves
         'address' => 'Address',
         'aged_stock_days' => 'Aged stock after (days)',
         'closes_at' => 'Closes at',
+        'default_apr' => 'Default APR (%)',
         'name' => 'Name',
         'opens_at' => 'Opens at',
         'open_days' => 'Open on',

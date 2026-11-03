@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Schema\Contracts\Migration;
+use App\Settings\Migration\AddDefaultApr;
 use App\Settings\Migration\CreateDealershipProfileTable;
 use App\Settings\Migration\CreatePasswordLinksTable;
 use App\Settings\Migration\CreatePasswordLinkStatesView;
@@ -24,6 +25,7 @@ final readonly class SettingsMigrations
             new CreateDealershipProfileTable(),
             new CreatePasswordLinksTable(),
             new CreatePasswordLinkStatesView(),
+            new AddDefaultApr(),
         ];
     }
 }

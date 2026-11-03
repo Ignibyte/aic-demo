@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Container\Contracts\ServiceProvider;
 use AIC\Container\Contracts\ServiceRegistry;
+use App\Finance\Service\FinanceRates;
 use App\Settings\Repository\DealershipNameRepository;
 use App\Staff\Service\DealershipNames;
 use Override;
@@ -27,5 +28,10 @@ final readonly class SettingsProvider implements ServiceProvider
             static fn (): DealershipNameRepository => new DealershipNameRepository(),
         );
         $serviceRegistry->tag(DealershipNames::class, DealershipNameRepository::class);
+        $serviceRegistry->singleton(
+            DealershipNameRepository::class,
+            static fn (): DealershipNameRepository => new DealershipNameRepository(),
+        );
+        $serviceRegistry->tag(FinanceRates::class, DealershipNameRepository::class);
     }
 }

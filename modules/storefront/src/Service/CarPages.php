@@ -16,10 +16,11 @@ use RuntimeException;
 use Throwable;
 
 /**
- * A car's public page (#17, #18): its photos, details and price, and below them the two lead forms, "Ask about this
- * car" and "Book a test drive", which leads' `LeadDesk` builds and records. Shown to a GET with both forms blank, and
- * answering a sent form with that form thanked (200) or refused (422) in its panel. A car that is not in stock, or a
- * slug that is not its own, answers 404 for a post as for the page.
+ * A car's public page (#17, #18): its photos, details and price, with finance's payment calculator under the price at
+ * the dealership's APR (#26), and below them the two lead forms, "Ask about this car" and "Book a test drive", which
+ * leads' `LeadDesk` builds and records. The page reads the dealership's profile once, for the APR and the frame. Shown
+ * to a GET with both forms blank, and answering a sent form with that form thanked (200) or refused (422) in its
+ * panel. A car that is not in stock, or a slug that is not its own, answers 404 for a post as for the page.
  */
 final readonly class CarPages
 {
@@ -92,15 +93,16 @@ final readonly class CarPages
      * @throws LogicException   When an entity type is malformed, or a key or a region does not fit the theme.
      * @throws RuntimeException When its photos cannot be read.
      *
-     * @return PageDocument The car's page: its profile, then the lead panels side by side.
+     * @return PageDocument The car's page: its profile with its calculator, then the lead panels side by side.
      */
     private function page(ListedVehicle $listedVehicle, array $panels, int $status): PageDocument
     {
+        $dealershipProfile = $this->storePages->profile();
         $parts = [
-            new KeyedComponent('car', $this->carProfiles->profile($listedVehicle)),
+            new KeyedComponent('car', $this->carProfiles->profile($listedVehicle, $dealershipProfile->aprBasisPoints)),
             new KeyedComponent('leads', new PanelGrid($panels)),
         ];
 
-        return $this->storePages->page($listedVehicle->title(), $parts, $status);
+        return $this->storePages->framed($dealershipProfile, $listedVehicle->title(), $parts, $status);
     }
 }

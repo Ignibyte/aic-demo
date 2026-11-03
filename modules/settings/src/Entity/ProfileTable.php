@@ -10,7 +10,8 @@ use AIC\Entity\Domain\FieldType;
 use InvalidArgumentException;
 
 /**
- * The `dealership_profile` table as an entity type (#22): this module's migration creates it, so it alone names it.
+ * The `dealership_profile` table as an entity type (#22): this module's migrations create it and add its default APR
+ * (#26), so it alone names it.
  */
 final readonly class ProfileTable
 {
@@ -35,6 +36,7 @@ final readonly class ProfileTable
             new Field('closes_at', FieldType::Text),
             new Field('open_days', FieldType::Text),
             new Field('aged_stock_days', FieldType::Integer),
+            new Field('default_apr_bp', FieldType::Integer, true),
             new Field('updated_at', FieldType::UpdatedAt),
         ]);
     }

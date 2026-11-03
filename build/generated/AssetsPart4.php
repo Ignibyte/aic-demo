@@ -22,16 +22,17 @@ final readonly class AssetsPart4
     {
         return [
             new PublicAsset(
-                'theme_lotline/lotline.css',
-                '/assets/e31786ee12f75758f1bbdcae725aeeae4b3d26fe8866129cf539335a9c6c5d15/themes/'
-                    . 'lotline/lotline.css',
-                'e31786ee12f75758f1bbdcae725aeeae4b3d26fe8866129cf539335a9c6c5d15/themes/lotline/'
-                    . 'lotline.css',
-                'text/css; charset=utf-8',
-                '1e9d2c4215dee2b6c2df3d3a9f629e6315cc8bdda071fde3e807882a91828c90',
-                135_796,
-                '/assets/themes/lotline/lotline.css',
+                'theme_lotline/helpers.js',
+                '/assets/8c6b9931510f92b7bd595d7fb6607023a78a2a371123571867bbca120f2bbcd8/themes/'
+                    . 'lotline/helpers.js',
+                '8c6b9931510f92b7bd595d7fb6607023a78a2a371123571867bbca120f2bbcd8/themes/lotline/'
+                    . 'helpers.js',
+                'text/javascript; charset=utf-8',
+                'a367b39d72a0edd8e49d59a165416c029d2c959968bf017eac67a3e9ddfd4ad4',
+                757,
+                '/assets/themes/lotline/helpers.js',
             ),
+            ...(new AssetsPart5())->all(),
         ];
     }
 }

@@ -7,6 +7,7 @@ namespace App\Settings\Repository;
 use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityStore;
+use App\Finance\Service\Payments;
 use App\Settings\Entity\DealershipProfile;
 use App\Settings\Entity\OpeningHours;
 use App\Settings\Entity\ProfileTable;
@@ -112,12 +113,15 @@ final readonly class ProfileRepository
     }
 
     /**
-     * @return DealershipProfile Ridgeway Motors, open Monday to Saturday from 09:00 to 18:00, aged after 60 days, with
-     *                           no address or phone: the profile until an admin saves one, as the app had it before.
+     * @return DealershipProfile Ridgeway Motors, open Monday to Saturday from 09:00 to 18:00, aged after 60 days, at the
+     *                           standard 6.90% APR, with no address or phone: the profile until an admin saves one, as
+     *                           the app had it before.
      */
     private function defaults(): DealershipProfile
     {
-        return new DealershipProfile('Ridgeway Motors', '', '', new OpeningHours('09:00', '18:00', '123456'), 60);
+        $openingHours = new OpeningHours('09:00', '18:00', '123456');
+
+        return new DealershipProfile('Ridgeway Motors', '', '', $openingHours, 60, Payments::STANDARD_APR);
     }
 
     /**
@@ -133,6 +137,7 @@ final readonly class ProfileRepository
             'address' => $dealershipProfile->address,
             'aged_stock_days' => $dealershipProfile->agedStockDays,
             'closes_at' => $openingHours->closesAt,
+            'default_apr_bp' => $dealershipProfile->aprBasisPoints,
             'name' => $dealershipProfile->name,
             'opens_at' => $openingHours->opensAt,
             'open_days' => $openingHours->openDays,
@@ -146,7 +151,7 @@ final readonly class ProfileRepository
      *
      * @throws QueryException When a column is missing.
      *
-     * @return DealershipProfile The profile it holds.
+     * @return DealershipProfile The profile it holds; a null APR, as a row saved before #26 has, is the standard one.
      */
     private function fromRow(Row $row): DealershipProfile
     {
@@ -156,6 +161,7 @@ final readonly class ProfileRepository
             $row->string('phone'),
             new OpeningHours($row->string('opens_at'), $row->string('closes_at'), $row->string('open_days')),
             $row->int('aged_stock_days'),
+            $row->intOrNull('default_apr_bp') ?? Payments::STANDARD_APR,
         );
     }
 }
