@@ -15,8 +15,8 @@ test.afterEach(() => removeHoldLooks(since));
 // The aged-stock jobs the look queues at once.
 const JOBS = 20;
 
-// These looks depend on DDEV: the workers run in its web container (`ddev exec`), which reaches Mailpit's SMTP, and
-// Mailpit is read at the address `ddev describe -j` gives.
+// These looks run the workers on this host (`$AIC_PHP bin/aic queue:work`, AIC #225), mailing into DDEV's Mailpit
+// through the SMTP port DDEV publishes, and read Mailpit at the address `ddev describe -j` gives.
 test('two workers started together on one queue run each job once', async () => {
     const manager = insertMember('Wes Workers', 'sales_manager');
     insertLookVehicle(VINS.aged61, 'in_stock', 61, 'Aged61');

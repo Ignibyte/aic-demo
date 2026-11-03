@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { expect, type Page } from '@playwright/test';
+import { aic } from './console';
 import { literal, sql } from './inventory';
 import { SLUG } from './storefront';
 
@@ -133,10 +134,10 @@ export function inquiryThanks(visitor: Visitor): string {
     return `Thanks, ${visitor.name}. We have your question and will reply to ${visitor.email} soon.`;
 }
 
-// Runs `bin/aic queue:work` once in DDEV's web container, the one place on this box that reaches Mailpit's SMTP, against
-// the database gate:23's sites use too.
+// Runs `bin/aic queue:work` once on this host (AIC #225), against the database the site under test uses, mailing into
+// DDEV's Mailpit (`./console`).
 export function runWorker(): string {
-    return execFileSync('ddev', ['exec', 'bin/aic', 'queue:work'], { encoding: 'utf8' });
+    return aic(['queue:work']);
 }
 
 // Mailpit's HTTP address, as DDEV gives it.

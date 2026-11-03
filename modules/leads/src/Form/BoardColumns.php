@@ -17,14 +17,14 @@ use UnexpectedValueException;
 
 /**
  * The leads board's five columns (#30), in board order: each keyed by its stage's value, anchored `leads-<stage>`, and
- * built from a `BoardColumnSource` that holds the viewer, their form token and the lead that just moved, so a Tessera
+ * built from a `BoardColumnSource` that holds the viewer, their guard fields and the lead that just moved, so a Tessera
  * answer reads only the columns it renders.
  */
 final readonly class BoardColumns
 {
     /**
      * @param LeadAccess $leadAccess Who looks.
-     * @param FormTokens $formTokens Issues the viewer's form token, which the cards' forms carry.
+     * @param FormTokens $formTokens Gives the viewer's guard fields, which the cards' forms carry (AIC #246).
      */
     public function __construct(
         private LeadAccess $leadAccess = new LeadAccess(),
@@ -45,11 +45,11 @@ final readonly class BoardColumns
     public function columns(LeadRepository $leadRepository, ServerRequestInterface $serverRequest, int $moved): array
     {
         $boardViewer = $this->leadAccess->viewer($serverRequest);
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $columns = [];
 
         foreach (LeadStage::New->board() as $leadStage) {
-            $source = new BoardColumnSource($leadRepository, $leadStage, $boardViewer, $token, $moved);
+            $source = new BoardColumnSource($leadRepository, $leadStage, $boardViewer, $guardFields, $moved);
             $columns[] = new KeyedComponent($leadStage->value, new SourcedComponent($source), '', $leadStage->anchor());
         }
 

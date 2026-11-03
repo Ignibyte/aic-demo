@@ -1,6 +1,7 @@
 // Bulk edit of the inventory list (#29): ticked rows deleted at once, after a confirm card. Delete opens the card and
-// sends nothing, Keep them closes it, and Delete them sends one Tessera action with the confirmation; each deleted row
-// comes back in place, shown deleted, and the totals line's count goes down. A deleted vehicle's photo file goes too.
+// sends nothing, Keep them closes it, and Delete them sends one Tessera action with the confirmation; AIC answers each
+// deleted row's target removed (AIC #247), so the rows leave the page, the row beside them stays as it was, and the
+// totals line's count goes down. A deleted vehicle's photo file goes too.
 
 import { existsSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
@@ -15,7 +16,7 @@ import { insertVehicle, testVehicle } from './support/vehicles';
 test.beforeEach(() => removeBulkLooks());
 test.afterEach(() => removeBulkLooks());
 
-test('ticked rows are deleted after the confirm card, each shown deleted in place, the count down', async ({ page }) => {
+test('ticked rows are deleted after the confirm card and leave the page, the count down', async ({ page }) => {
     test.setTimeout(90_000);
     const errors = collectFormErrors(page);
     insertVehicle(testVehicle(VINS.first));
@@ -53,7 +54,7 @@ test('ticked rows are deleted after the confirm card, each shown deleted in plac
     expect(requests).toEqual([]);
     expect(present([VINS.first, VINS.second])).toBe(2);
 
-    // Delete them sends one action, confirmed, answered with the two rows shown deleted and the totals.
+    // Delete them sends one action, confirmed, answered with the two rows' targets removed and the totals.
     await page.locator('#vehicles-bulk-apply').click();
     await expect(card).toBeVisible();
     await page.locator('#vehicles-bulk-delete').click();
@@ -61,12 +62,12 @@ test('ticked rows are deleted after the confirm card, each shown deleted in plac
     const fields = sentFields(request);
     expect(fields.bulk).toEqual(['delete']);
     expect(fields.confirmed).toEqual(['yes']);
+    const rowPaths = request.targets.split(',').map((entry) => entry.trim().split(' '))
+        .filter((entry) => entry[entry.length - 1] !== '@inventory-totals').map((entry) => entry[0]);
+    expect([...request.removed].sort()).toEqual(rowPaths.sort());
 
     for (const vin of [VINS.first, VINS.second]) {
-        await expect(row(page, vin)).toHaveClass(/line-through/);
-        await expect(row(page, vin).locator('td').nth(8)).toHaveText('Deleted');
-        await expect(row(page, vin).locator('input[type="checkbox"]')).toHaveCount(0);
-        await expect(row(page, vin).locator('a')).toHaveCount(0);
+        await expect(row(page, vin)).toHaveCount(0);
     }
 
     await expect(card).toBeHidden();
@@ -74,7 +75,7 @@ test('ticked rows are deleted after the confirm card, each shown deleted in plac
     await expect(page.locator('#vehicles-table-outcome')).toHaveText('Deleted 2 vehicles.');
     await expect(page.locator('#vehicles-bulk-count')).toBeHidden();
     await expect(box(page, VINS.beside)).not.toBeChecked();
-    await expectRowsKept([row(page, VINS.first), row(page, VINS.second), row(page, VINS.beside)]);
+    await expectRowsKept([row(page, VINS.beside)]);
     expect(present([VINS.first, VINS.second])).toBe(0);
     expect(present([VINS.beside])).toBe(1);
 

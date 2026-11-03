@@ -37,9 +37,7 @@
 </div>
 </div>
 <div class="overflow-x-auto rounded-box border border-base-300" id="finance-examples" data-show="false">
-<table class="table table-sm"><caption class="p-2 text-left text-sm opacity-70"><?= $financeCalculator->caption ?></caption>
-<thead><tr><th>Term</th><th class="text-right">Monthly payment</th><th class="text-right">Total interest</th></tr></thead>
-<tbody><?php foreach ($financeCalculator->examples as $financeExample): ?><tr><td><?= $financeExample->months ?> months</td><td class="text-right"><?= $financeExample->payment ?></td><td class="text-right"><?= $financeExample->interest ?></td></tr><?php endforeach ?></tbody></table>
+<?= $financeCalculator->examples ?>
 </div>
 </div>
 </section>

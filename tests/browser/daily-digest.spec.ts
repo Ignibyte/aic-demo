@@ -17,8 +17,8 @@ function figure(statement: string): number {
     return Number(sql(statement)[0]);
 }
 
-// These looks depend on DDEV: the scheduler and the worker run in its web container (`ddev exec`), which reaches
-// Mailpit's SMTP, and Mailpit is read through its HTTP API at the address `ddev describe -j` gives.
+// These looks run the scheduler and the worker on this host (`$AIC_PHP bin/aic`, AIC #225), mailing into DDEV's Mailpit
+// through the SMTP port DDEV publishes, and read Mailpit through its HTTP API at the address `ddev describe -j` gives.
 test("the 21:00 schedule mails each manager the day's sales, leads and new stock, as the database counts them", async () => {
     const manager = insertMember('Dee Digest', 'sales_manager');
     const admin = insertMember('Ada Admin', 'admin');

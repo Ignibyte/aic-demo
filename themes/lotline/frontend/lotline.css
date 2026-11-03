@@ -85,7 +85,9 @@
  * render fixed aic-* classes; the site's theme owns their look, so each maps to
  * its daisyUI component here; the current tab is the link AIC marks
  * `aria-current="page"`. The CSRF form's honeypot stays out of sight, and a
- * link in the header (the signed-out "Sign in") is a small ghost button.
+ * link in the header (the signed-out "Sign in") is a small ghost button. AIC's
+ * table is daisyUI's small table, its caption small and quiet above it, and a
+ * column AIC marks `aic-align-end` (money, counts: AIC #240) sits at the end.
  */
 @layer components {
 	.aic-form {
@@ -123,5 +125,14 @@
 	}
 	.aic-tabs > a[aria-current="page"] {
 		@apply tab-active;
+	}
+	.aic-table {
+		@apply table table-sm;
+	}
+	.aic-table caption {
+		@apply p-2 text-left text-sm opacity-70;
+	}
+	.aic-table .aic-align-end {
+		@apply text-end;
 	}
 }

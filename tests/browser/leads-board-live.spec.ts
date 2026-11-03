@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { collectFormErrors } from './support/forms';
-import { column, countAt, expectCount, insertLead, insertMember, openBoard, removeBoardLooks } from './support/board';
+import { column, countAt, expectCount, holdStream, insertLead, insertMember, openBoard, removeBoardLooks } from './support/board';
 
 test.beforeEach(() => removeBoardLooks());
 test.afterEach(() => removeBoardLooks());
@@ -21,7 +21,10 @@ test('a move one salesperson makes shows on another salesperson\'s open board, b
         (window as unknown as { boardLook: string }).boardLook = 'same document';
     });
 
-    // Ann moves her card to Won on her own board.
+    // Ann moves her card to Won on her own board. Her stream is held back: a fresh connection sends every column
+    // first, and that patch landing between her two clicks closes the menu she opened. Her move's own answer is
+    // the PATCH; Bo's stream is the one this look follows.
+    await holdStream(page);
     await openBoard(page, ann);
     const appointment = countAt('appointment');
     const won = countAt('won');

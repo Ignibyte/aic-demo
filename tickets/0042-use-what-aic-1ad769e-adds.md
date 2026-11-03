@@ -2,9 +2,10 @@
 number: 42
 title: "Use what AIC 1ad769e adds: guard fields, page scripts, removal, aligned tables, the worker in looks"
 type: chore
-status: open
+status: closed
 created: 2026-11-03T13:30:00Z
-updated: 2026-11-03T13:30:00Z
+updated: 2026-11-03T22:39:11Z
+phase: "docs"
 ---
 
 AIC `1ad769e` (pinned by #41) adds what Lotline had worked around:

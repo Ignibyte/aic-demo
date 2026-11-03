@@ -22,15 +22,15 @@ final readonly class AssetsPart4
     {
         return [
             new PublicAsset(
-                'theme_lotline/helpers.js',
-                '/assets/87c4a3bf2460a00ebca384190c66f5cb609b571e4c89bb16cc1980ac7cc27f09/themes/'
-                    . 'lotline/helpers.js',
-                '87c4a3bf2460a00ebca384190c66f5cb609b571e4c89bb16cc1980ac7cc27f09/themes/lotline/'
-                    . 'helpers.js',
+                'theme_lotline/helpers.page.js',
+                '/assets/d5af65b289d05cc77dbe02862a220549682f61fd573e59153b01f565e901633b/themes/'
+                    . 'lotline/helpers.page.js',
+                'd5af65b289d05cc77dbe02862a220549682f61fd573e59153b01f565e901633b/themes/lotline/'
+                    . 'helpers.page.js',
                 'text/javascript; charset=utf-8',
-                'a367b39d72a0edd8e49d59a165416c029d2c959968bf017eac67a3e9ddfd4ad4',
-                757,
-                '/assets/themes/lotline/helpers.js',
+                'cf6fdaf6b58d040744592be5d07622713c45e63ab2c9e1524847c76d9f3face9',
+                941,
+                '/assets/themes/lotline/helpers.page.js',
             ),
             ...(new AssetsPart5())->all(),
         ];

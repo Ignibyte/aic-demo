@@ -54,6 +54,11 @@ final readonly class VehicleRowForm
     public const string ACTION = Vehicle::PAGES . '/bulk';
 
     /**
+     * The list a row's own answer shows the action bar on, which its plain post goes back to.
+     */
+    public const string LIST = Vehicle::PAGES;
+
+    /**
      * Seals the vehicle's path as the row's props.
      */
     private StaffSeals $staffSeals;
@@ -115,21 +120,21 @@ final readonly class VehicleRowForm
     }
 
     /**
-     * @param string $vin   The VIN of a vehicle a bulk edit deleted, or found gone (#29).
-     * @param string $title What it was; empty when it was not found.
+     * @param string $vin The VIN of a ticked row a bulk edit found no vehicle for (#29).
      *
      * @throws LogicException When the VIN does not fit a key.
      *
-     * @return KeyedComponent Its row in place, under its key and anchor: its VIN and what it was as text, no box and no
-     *                        links, Deleted in its status cell, the row set apart; the list's next read leaves it out.
+     * @return KeyedComponent Its row in place, under its key and anchor: its VIN and "No longer on the lot" as text, no box
+     *                        and no links, Deleted in its status cell, the row set apart; the list's next read leaves it
+     *                        out. A vehicle the edit deletes itself answers no row and leaves the page (AIC #247).
      */
-    public function gone(string $vin, string $title): KeyedComponent
+    public function gone(string $vin): KeyedComponent
     {
         $tableCell = new TableCell('', '', false, false, null);
 
         return new KeyedComponent($vin, new TableRow([
             new TableCell($vin, '', true, false, null),
-            new TableCell($title === '' ? 'No longer on the lot' : $title, '', false, false, null),
+            new TableCell('No longer on the lot', '', false, false, null),
             $tableCell,
             $tableCell,
             $tableCell,

@@ -73,6 +73,7 @@ export interface SentRequest {
     contentType: string;
     location: string;
     templates: string[];
+    removed: string[];
     headers: Record<string, string>;
     body: string;
 }
@@ -105,6 +106,9 @@ export async function recordRequests(page: Page): Promise<SentRequest[]> {
         const body = await response.text();
         const answer = response.headers();
         const contentType = answer['content-type'] ?? '';
+        const fragments = contentType.startsWith('text/vnd.tessera+html')
+            ? [...body.matchAll(/<template data-target="([^"]*)"( data-mode="remove")?>/g)]
+            : [];
 
         requests.push({
             method: request.method(),
@@ -116,9 +120,8 @@ export async function recordRequests(page: Page): Promise<SentRequest[]> {
             status: response.status(),
             contentType,
             location: answer['tessera-location'] ?? answer['location'] ?? '',
-            templates: contentType.startsWith('text/vnd.tessera+html')
-                ? [...body.matchAll(/<template data-target="([^"]*)">/g)].map((match) => match[1])
-                : [],
+            templates: fragments.map((match) => match[1]),
+            removed: fragments.filter((match) => match[2] !== undefined).map((match) => match[1]),
             headers,
             body: request.postData() ?? '',
         });

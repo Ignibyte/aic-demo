@@ -114,8 +114,9 @@ final readonly class VehicleBulkPages
      * @throws RuntimeException When the list cannot be read (`QueryException`), or a stored status is no status.
      * @throws LogicException   When the request has no session, a key does not fit, or a region does not fit the theme.
      *
-     * @return PageResponse For Tessera, 200: the rows as they are now (a deleted one in place, gone) and the totals line
-     *                      saying what was done; for a plain post, 303 back to the list with that as a notice.
+     * @return PageResponse For Tessera, 200: the rows as they are now (a deleted one not at all, so it leaves the page)
+     *                      and the totals line saying what was done; for a plain post, 303 back to the list with that as
+     *                      a notice.
      */
     public function applied(
         ServerRequestInterface $serverRequest,
@@ -145,7 +146,8 @@ final readonly class VehicleBulkPages
      * @throws RuntimeException When the list cannot be read (`QueryException`), or a stored status is no status.
      * @throws LogicException   When the request has no session, a key does not fit, or a region does not fit the theme.
      *
-     * @return PageResponse 200: each deleted row in place, gone, and the totals line, the page's VINs without theirs.
+     * @return PageResponse 200: the bar and the totals line, the page's VINs without theirs, and no row for a deleted
+     *                      vehicle, so AIC answers each deleted row's target removed and it leaves the page (AIC #247).
      */
     private function deleted(
         ServerRequestInterface $serverRequest,
@@ -153,11 +155,9 @@ final readonly class VehicleBulkPages
         array $before,
         string $outcome,
     ): PageResponse {
-        $rows = [];
         $deleted = [];
 
         foreach ($before as $vehicle) {
-            $rows[] = $this->vehicleRowForm->gone($vehicle->vin, $vehicle->title());
             $deleted[] = $vehicle->vin;
         }
 
@@ -171,7 +171,7 @@ final readonly class VehicleBulkPages
             $page[] = $vin;
         }
 
-        return $this->page($serverRequest, $bulkEdit, $rows, $page, $outcome, 200);
+        return $this->page($serverRequest, $bulkEdit, [], $page, $outcome, 200);
     }
 
     /**
@@ -205,7 +205,7 @@ final readonly class VehicleBulkPages
                 continue;
             }
 
-            $rows[] = $this->vehicleRowForm->gone($vin, '');
+            $rows[] = $this->vehicleRowForm->gone($vin);
         }
 
         return $rows;
@@ -241,7 +241,7 @@ final readonly class VehicleBulkPages
             ? []
             : $this->vehicleRepository->statuses($inventoryQuery);
         $confirming = $bulkEdit->deletes() && !$bulkEdit->confirmed && $status === 200;
-        $bulkBar = $this->inventoryTable->bar($bulkEdit->token, $bulkEdit->back, $confirming, count($bulkEdit->vins));
+        $bulkBar = $this->inventoryTable->bar($bulkEdit->guardFields, $bulkEdit->back, $confirming, count($bulkEdit->vins));
         $number = $inventoryQuery->page <= $pages
             ? $inventoryQuery->page
             : 1;

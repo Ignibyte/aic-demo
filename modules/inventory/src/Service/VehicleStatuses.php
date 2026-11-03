@@ -6,6 +6,7 @@ namespace App\Inventory\Service;
 
 use App\Inventory\Entity\VehicleLocation;
 use App\Inventory\Entity\VehicleStatus;
+use App\Theme\Components\SelectField\SelectOption;
 use App\Theme\Components\StatusBadge\BadgeTone;
 use App\Theme\Components\StatusBadge\StatusBadge;
 use UnexpectedValueException;
@@ -90,5 +91,27 @@ final readonly class VehicleStatuses
     public function badge(VehicleStatus $vehicleStatus, string $id): StatusBadge
     {
         return new StatusBadge($vehicleStatus->label(), $this->tone($vehicleStatus), $id);
+    }
+
+    /**
+     * @param bool $confirming Whether a delete is being confirmed, so it is the one chosen.
+     *
+     * @return list<SelectOption> The inventory's action bar's choices (#29): each status but sold, each lot location in
+     *                            order, and delete.
+     */
+    public function bulkChoices(bool $confirming): array
+    {
+        $choices = [
+            new SelectOption('status:in_stock', 'Set to In stock', false),
+            new SelectOption('status:on_hold', 'Set to On hold', false),
+        ];
+
+        foreach ($this->locations() as $vehicleLocation) {
+            $choices[] = new SelectOption('location:' . $vehicleLocation->value, 'Move to ' . $vehicleLocation->label(), false);
+        }
+
+        $choices[] = new SelectOption('delete', 'Delete', $confirming);
+
+        return $choices;
     }
 }

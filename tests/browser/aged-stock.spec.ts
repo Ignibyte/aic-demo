@@ -23,8 +23,8 @@ function agedLines(): string[] {
     );
 }
 
-// These looks depend on DDEV: the scheduler and the worker run in its web container (`ddev exec`), which reaches
-// Mailpit's SMTP, and Mailpit is read at the address `ddev describe -j` gives.
+// These looks run the scheduler and the worker on this host (`$AIC_PHP bin/aic`, AIC #225), mailing into DDEV's Mailpit
+// through the SMTP port DDEV publishes, and read Mailpit at the address `ddev describe -j` gives.
 test('the 07:00 schedule lists the vehicles on the lot more than 60 days in one notification to each sales manager', async ({ page }) => {
     const manager = insertMember('Mia Manager', 'sales_manager');
     const salesperson = insertMember('Sam Seller', 'salesperson');

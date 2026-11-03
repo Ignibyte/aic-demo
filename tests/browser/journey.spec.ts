@@ -15,8 +15,8 @@ test.beforeEach(async () => removeJourneyLooks());
 test.afterEach(async () => removeJourneyLooks());
 
 // One day on the site, end to end: the lot, the public list, the inbox, holds, sales, the dashboard and the reports
-// together, as the people who use them would go through them. This look depends on DDEV, as the leads' and reports'
-// looks do: the worker runs in its web container (`ddev exec bin/aic queue:work`), and the mail is read from Mailpit.
+// together, as the people who use them would go through them. The worker runs on this host, as in the leads' and
+// reports' looks (`$AIC_PHP bin/aic queue:work`, AIC #225), and the mail is read from DDEV's Mailpit.
 test('a car added in the morning is asked about, held, sold, counted and exported by the evening', async ({ browser, page }) => {
     test.setTimeout(180_000);
     const errors = collectFormErrors(page);

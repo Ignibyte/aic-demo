@@ -50,8 +50,8 @@ test('the list and the board are two tabs; the board shows the five stages, thei
     await expect(contacted.locator('a[id^="lead-name-"]')).toHaveText(['Board Newer', 'Board Older']);
     await expect(column(page, 'won').locator(`#lead-card-${unassigned}`)).toHaveCount(1);
     await expect(card(page, older)).toContainText(car.title);
-    await expect(card(page, older).locator('p').last()).toHaveText(/^Question · Board Ann · \d{4}-\d{2}-\d{2}$/);
-    await expect(card(page, unassigned).locator('p').last()).toContainText('Question · Unassigned · ');
+    await expect(card(page, older).locator(':scope > p').last()).toHaveText(/^Question · Board Ann · \d{4}-\d{2}-\d{2}$/);
+    await expect(card(page, unassigned).locator(':scope > p').last()).toContainText('Question · Unassigned · ');
     await expect(card(page, older).locator(`#lead-name-${older}`)).toHaveAttribute('href', `/app/leads/${older}`);
 
     // A manager may move every card: each drags and has a menu with one form per other stage.

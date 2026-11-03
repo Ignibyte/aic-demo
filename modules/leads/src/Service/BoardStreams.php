@@ -19,7 +19,7 @@ use function strlen;
 /**
  * Where a connection of the leads board's stream starts (#30): after the `Last-Event-ID` Tessera sends when it
  * reconnects; else after the newest move, with every column sent first, since the page names no move (gate:23 compares
- * each site's page, and a move's id would differ between its passes). The viewer and their form token go with it, so
+ * each site's page, and a move's id would differ between its passes). The viewer and their guard fields go with it, so
  * each card's menu is the one the page shows them.
  */
 final readonly class BoardStreams
@@ -33,7 +33,7 @@ final readonly class BoardStreams
      * @param LeadRepository     $leadRepository     The leads.
      * @param LeadMoveRepository $leadMoveRepository The moves.
      * @param LeadAccess         $leadAccess         Who looks.
-     * @param FormTokens         $formTokens         Issues their form token.
+     * @param FormTokens         $formTokens         Gives their guard fields (AIC #246).
      */
     public function __construct(
         private LeadRepository $leadRepository,
@@ -55,7 +55,7 @@ final readonly class BoardStreams
     public function connection(ServerRequestInterface $serverRequest): EventSource
     {
         $boardViewer = $this->leadAccess->viewer($serverRequest);
-        $token = $this->formTokens->issue($serverRequest)->value();
+        $guardFields = $this->formTokens->guard($serverRequest);
         $resumed = $serverRequest->getHeaderLine('Last-Event-ID');
 
         $fresh = $resumed === '' || strlen($resumed) > self::DIGITS || !ctype_digit($resumed);
@@ -63,6 +63,6 @@ final readonly class BoardStreams
             ? $this->leadMoveRepository->newest()
             : (int) $resumed;
 
-        return new BoardSource($this->leadRepository, $this->leadMoveRepository, $boardViewer, $token, $after, $fresh);
+        return new BoardSource($this->leadRepository, $this->leadMoveRepository, $boardViewer, $guardFields, $after, $fresh);
     }
 }

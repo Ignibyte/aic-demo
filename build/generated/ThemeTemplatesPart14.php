@@ -9,6 +9,7 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\TableTotals\TableTotals;
 use App\Theme\Components\TopBar\TopBar;
 use Override;
 
@@ -38,9 +39,26 @@ final readonly class ThemeTemplatesPart14 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof TableTotals => $this->renderTableTotals($component, $renderPass),
             $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param TableTotals $tableTotals The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/TableTotals/table-totals.phtml.
+     */
+    private function renderTableTotals(TableTotals $tableTotals, RenderPass $renderPass): string
+    {
+        $renderPass->open($tableTotals);
+        require __DIR__ . '/templates/themes/lotline/components/TableTotals/table-totals.phtml';
+
+        return $renderPass->close();
     }
 
     /**

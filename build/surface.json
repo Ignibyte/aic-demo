@@ -1091,7 +1091,7 @@
         "assets": [
             {
                 "kind": "Script",
-                "path": "themes/lotline/assets/helpers.js"
+                "path": "themes/lotline/assets/helpers.page.js"
             },
             {
                 "kind": "Style",
@@ -1158,6 +1158,11 @@
                 "component": "App\\Theme\\Components\\CarProfile\\CarProfile",
                 "generated": "build/generated/templates/themes/lotline/components/CarProfile/car-profile.phtml",
                 "source": "themes/lotline/components/CarProfile/car-profile.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CardMove\\CardMove",
+                "generated": "build/generated/templates/themes/lotline/components/CardMove/card-move.phtml",
+                "source": "themes/lotline/components/CardMove/card-move.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\CheckGroup\\CheckGroup",

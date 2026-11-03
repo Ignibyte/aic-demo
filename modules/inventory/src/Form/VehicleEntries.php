@@ -108,7 +108,7 @@ final readonly class VehicleEntries
      * @return BulkEdit What it asks: the choice read as an action and its status or location (none for a choice the
      *                  action bar does not offer), the ticked VINs once each, the page's VINs, the confirmation, the
      *                  list it came from (kept only when it is the list's path) and its query, whether Tessera sent it,
-     *                  and the visitor's form token.
+     *                  and the visitor's guard fields.
      */
     public function bulk(ServerRequestInterface $serverRequest): BulkEdit
     {
@@ -127,7 +127,7 @@ final readonly class VehicleEntries
             $back,
             $this->query($back),
             $serverRequest->getHeaderLine(TesseraRequest::REQUEST) !== '',
-            $this->formTokens->issue($serverRequest)->value(),
+            $this->formTokens->guard($serverRequest),
         );
     }
 

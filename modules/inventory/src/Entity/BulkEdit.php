@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Inventory\Entity;
 
+use AIC\Component\Domain\GuardFields;
+
 use function count;
 use function number_format;
 
 /**
  * A bulk edit of the inventory list as posted (#29), read: what it does and to what, the ticked VINs, the rows the page
  * showed, whether a delete was confirmed, the list it came from (which a plain post goes back to) and its query, whether
- * Tessera sent it, and the visitor's form token.
+ * Tessera sent it, and the visitor's guard fields.
  */
 final readonly class BulkEdit
 {
@@ -29,7 +31,7 @@ final readonly class BulkEdit
      * @param string                $back            The list it came from, the list's path and its query.
      * @param array<string, string> $query           The list's query's single values, read from `back`.
      * @param bool                  $enhanced        Whether Tessera sent it, so only the touched rows and the totals come back.
-     * @param string                $token           The visitor's form token, for the action bar its answer shows again.
+     * @param GuardFields           $guardFields     The visitor's form token and honeypot, for the bar its answer shows again.
      */
     public function __construct(
         public ?BulkAction $bulkAction,
@@ -41,7 +43,7 @@ final readonly class BulkEdit
         public string $back,
         public array $query,
         public bool $enhanced,
-        public string $token,
+        public GuardFields $guardFields,
     ) {
     }
 

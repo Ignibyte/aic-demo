@@ -6,6 +6,7 @@ namespace App\Leads\Service;
 
 use AIC\Component\Contracts\Component;
 use AIC\Component\Contracts\ComponentSource;
+use AIC\Component\Domain\GuardFields;
 use AIC\Database\Contracts\QueryException;
 use App\Leads\Entity\BoardViewer;
 use App\Leads\Entity\LeadStage;
@@ -15,8 +16,8 @@ use InvalidArgumentException;
 use Override;
 
 /**
- * One column of the leads board as a source (#30, AIC #192): it holds the repository, its stage, the viewer, their form
- * token and the lead that just moved, and reads only in `build()`, which the render pass calls when it renders the
+ * One column of the leads board as a source (#30, AIC #192): it holds the repository, its stage, the viewer, their guard
+ * fields and the lead that just moved, and reads only in `build()`, which the render pass calls when it renders the
  * column. A move's answer names two columns, so it reads those two and no other.
  */
 final readonly class BoardColumnSource implements ComponentSource
@@ -30,7 +31,7 @@ final readonly class BoardColumnSource implements ComponentSource
      * @param LeadRepository $leadRepository The leads.
      * @param LeadStage      $leadStage      The column's stage.
      * @param BoardViewer    $boardViewer    Who looks.
-     * @param string         $token          Their form token.
+     * @param GuardFields    $guardFields    Their form token and honeypot.
      * @param int            $moved          The lead that just moved, whose menu takes focus; 0 for none.
      * @param BoardCards     $boardCards     Builds the column.
      */
@@ -38,7 +39,7 @@ final readonly class BoardColumnSource implements ComponentSource
         private LeadRepository $leadRepository,
         private LeadStage $leadStage,
         private BoardViewer $boardViewer,
-        private string $token,
+        private GuardFields $guardFields,
         private int $moved,
         private BoardCards $boardCards = new BoardCards(),
     ) {
@@ -58,7 +59,7 @@ final readonly class BoardColumnSource implements ComponentSource
             $this->leadRepository->inStage($this->leadStage, self::SHOWN),
             $this->leadRepository->countStage($this->leadStage),
             $this->boardViewer,
-            $this->token,
+            $this->guardFields,
             $this->moved,
         );
     }
