@@ -10,3 +10,7 @@ composer_version: "2"
 corepack_enable: false
 xdebug_enabled: false
 use_dns_when_possible: true
+# AIC's profiler (Lotline #25): every request recorded, the toolbar on every page and /_profiler.
+# DDEV merges this with .ddev/config.local.yaml's web_environment; production leaves it unset.
+web_environment:
+    - AIC_PROFILER=1

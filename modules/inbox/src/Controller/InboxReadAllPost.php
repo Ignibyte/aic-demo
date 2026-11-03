@@ -11,7 +11,6 @@ use App\Inbox\Service\InboxMoves;
 use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
-use UnexpectedValueException;
 
 /**
  * POST /app/inbox/read-all: marks every notification of the signed-in member read (#19) and answers 303 to the inbox
@@ -30,9 +29,8 @@ final readonly class InboxReadAllPost implements Page
     /**
      * @param ServerRequestInterface $serverRequest The posted form, with its session.
      *
-     * @throws QueryException           When the member cannot be read or the notifications written.
-     * @throws LogicException           When the request carries no session, or the users' type is malformed.
-     * @throws UnexpectedValueException When the kept role is no role.
+     * @throws QueryException When the notifications cannot be written.
+     * @throws LogicException When the request carries no session.
      *
      * @return PageResponse 303 to the inbox.
      */

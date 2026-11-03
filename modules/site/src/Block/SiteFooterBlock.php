@@ -7,15 +7,15 @@ namespace App\Site\Block;
 use AIC\Block\Contracts\Block;
 use AIC\Block\Contracts\Placement;
 use AIC\Component\Contracts\Component;
+use AIC\Component\Domain\SourcedComponent;
+use App\Site\Service\FooterPart;
 use App\Staff\Service\StaffDealership;
-use App\Theme\Components\SiteFooter\SiteFooter;
-use InvalidArgumentException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 
 /**
- * The footer line, in `footer` on every page: the site's name and the dealership's, from its profile (#23).
+ * The footer line, in `footer` on every page: the site's name and the dealership's, from its profile (#23), read from
+ * its source, `FooterPart`, when the page renders the footer (#25).
  */
 final readonly class SiteFooterBlock implements Block
 {
@@ -44,14 +44,11 @@ final readonly class SiteFooterBlock implements Block
     /**
      * @param ServerRequestInterface $serverRequest The page's request; the line is the same on every page.
      *
-     * @throws RuntimeException         When the dealership's name cannot be read.
-     * @throws InvalidArgumentException When an entity type the name is read through is malformed.
-     *
-     * @return Component The footer.
+     * @return Component The footer, built from its source when it is rendered.
      */
     #[Override]
     public function component(ServerRequestInterface $serverRequest): Component
     {
-        return new SiteFooter(self::NAME, $this->staffDealership->name());
+        return new SourcedComponent(new FooterPart($this->staffDealership, self::NAME));
     }
 }

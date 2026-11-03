@@ -6,7 +6,7 @@ namespace App\Storefront\Service;
 
 use AIC\Component\Domain\KeyedComponent;
 use App\Inventory\Entity\ListedVehicle;
-use App\Photos\Service\VehiclePhotos;
+use App\Photos\Entity\VehiclePhoto;
 use App\Storefront\Form\CarQuery;
 use App\Theme\Components\CarGrid\CarGrid;
 use App\Theme\Components\CarGrid\CarTile;
@@ -16,18 +16,19 @@ use RuntimeException;
 
 /**
  * The public list's results: a card per car on the page, each with its main photo when it has one, and past one page
- * `CarLinks`' link per page. `CarResults` builds them from what it read when they are rendered.
+ * `CarLinks`' link per page. `CarResults` builds them from what it read when they are rendered. The page's photos are
+ * read at once, not once a car (#25).
  */
 final readonly class CarTiles
 {
     /**
-     * @param VehiclePhotos $vehiclePhotos The cars' photos.
-     * @param CarSlugs      $carSlugs      Each car's page.
-     * @param CarLinks      $carLinks      The page links.
-     * @param CarFigures    $carFigures    Each car's price and mileage as written.
+     * @param CarFinder  $carFinder  The cars' photos.
+     * @param CarSlugs   $carSlugs   Each car's page.
+     * @param CarLinks   $carLinks   The page links.
+     * @param CarFigures $carFigures Each car's price and mileage as written.
      */
     public function __construct(
-        private VehiclePhotos $vehiclePhotos,
+        private CarFinder $carFinder,
         private CarSlugs $carSlugs = new CarSlugs(),
         private CarLinks $carLinks = new CarLinks(),
         private CarFigures $carFigures = new CarFigures(),
@@ -48,10 +49,11 @@ final readonly class CarTiles
      */
     public function results(CarQuery $carQuery, array $listedVehicles, int $count, int $page, int $pages): TableResults
     {
+        $photos = $this->carFinder->photosOf($listedVehicles);
         $tiles = [];
 
         foreach ($listedVehicles as $listedVehicle) {
-            $tiles[] = $this->tile($listedVehicle);
+            $tiles[] = $this->tile($listedVehicle, $photos[$listedVehicle->id] ?? []);
         }
 
         $empty = 'No car for sale matches. Try fewer filters, or clear them.';
@@ -65,18 +67,15 @@ final readonly class CarTiles
     }
 
     /**
-     * @param ListedVehicle $listedVehicle A car for sale.
-     *
-     * @throws LogicException   When the photos' entity type is malformed.
-     * @throws RuntimeException When its photos cannot be read.
+     * @param ListedVehicle      $listedVehicle A car for sale.
+     * @param list<VehiclePhoto> $photos        Its photos, the first added first.
      *
      * @return CarTile Its card: its title, mileage and price, linked to its page, with its first photo when it has one.
      */
-    private function tile(ListedVehicle $listedVehicle): CarTile
+    private function tile(ListedVehicle $listedVehicle, array $photos): CarTile
     {
         $path = $this->carSlugs->path($listedVehicle);
         $title = $listedVehicle->title();
-        $photos = $this->vehiclePhotos->photos($listedVehicle->id);
         $source = $photos === []
             ? ''
             : $photos[0]->source();

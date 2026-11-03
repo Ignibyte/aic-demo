@@ -37,6 +37,18 @@ Open the URL `ddev start` printed, sign in at `/sign-in` with the admin's email 
 look around. `/theme` is the style guide, open without signing in. This runs Lotline under PHP
 (nginx and php-fpm in DDEV), the runtime to use in production.
 
+### See it work
+
+DDEV runs Lotline with AIC's profiler on (`AIC_PROFILER=1` in `.ddev/config.yaml`). Every page
+ends with a small "AIC" bar: click it for the page's status, time, SQL count and size, then filter
+the inventory, sort it, change page, save a vehicle or wait on the dashboard, and each request
+Tessera sends lists below it with its targets, status, milliseconds and bytes. Each line opens the
+request's profile at `/_profiler/{id}`, with its statements (a repeated one is marked), the
+templates it rendered and the Tessera headers asked and answered. `/_profiler` lists the newest
+hundred requests. To turn the profiler off, delete the `AIC_PROFILER=1` line from
+`.ddev/config.yaml` and run `ddev restart`. Production and the FrankenPHP container never set it,
+so they record nothing.
+
 ### Under FrankenPHP
 
 `deploy/frankenphp/` holds a Caddyfile and a PHP 8.5 container. From `lotline/`:

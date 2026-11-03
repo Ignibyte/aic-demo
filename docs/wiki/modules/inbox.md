@@ -93,6 +93,7 @@ none
 
 | Class | File |
 | --- | --- |
+| `App\Inbox\Service\BellPart` | [modules/inbox/src/Service/BellPart.php](../../../modules/inbox/src/Service/BellPart.php) |
 | `App\Inbox\Service\BellParts` | [modules/inbox/src/Service/BellParts.php](../../../modules/inbox/src/Service/BellParts.php) |
 | `App\Inbox\Service\BellSource` | [modules/inbox/src/Service/BellSource.php](../../../modules/inbox/src/Service/BellSource.php) |
 | `App\Inbox\Service\BellStreams` | [modules/inbox/src/Service/BellStreams.php](../../../modules/inbox/src/Service/BellStreams.php) |
@@ -107,6 +108,7 @@ none
 
 ### Framework systems
 
+- [AIC\Auth](../../../vendor/aic/framework/docs/systems.md#9-auth)
 - [AIC\Block](../../../vendor/aic/framework/docs/systems.md#6-blocks)
 - [AIC\Component](../../../vendor/aic/framework/docs/systems.md#4-components)
 - [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
@@ -115,13 +117,14 @@ none
 - [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 - [AIC\Notification](../../../vendor/aic/framework/docs/systems.md#10-background-work)
+- [AIC\Session](../../../vendor/aic/framework/docs/systems.md#8-form-security)
 - [AIC\Tessera](../../../vendor/aic/framework/docs/systems.md#7-the-browser-runtime)
 
 ### Other modules
 
 | Module | Classes it uses |
 | --- | --- |
-| [staff](staff.md) | `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
+| [staff](staff.md) | `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 
 ## Used by
 

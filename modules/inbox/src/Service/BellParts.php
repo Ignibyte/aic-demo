@@ -62,9 +62,10 @@ final readonly class BellParts
      * @throws QueryException           When the notifications cannot be read.
      * @throws InvalidArgumentException When a key is malformed.
      *
-     * @return KeyedComponent The bell, keyed `bell`: the unread count, the latest five, and the stream after the newest.
+     * @return Bell The bell: the unread count, the latest five, and the stream after the newest. `BellPart` builds it
+     *              when the page renders it, under the key `bell`.
      */
-    public function bell(string $userId): KeyedComponent
+    public function bell(string $userId): Bell
     {
         $inboxItems = $userId === ''
             ? []
@@ -82,7 +83,7 @@ final readonly class BellParts
         $count = new KeyedComponent('count', new BellCount($this->badge($unread)), '', 'bell-count');
         $list = new KeyedComponent('items', new BellItems($items, 'No notifications yet.'), '', 'bell-items');
 
-        return new KeyedComponent('bell', new Bell($stream, $this->heroicons->bell(), $count, $list, self::INBOX));
+        return new Bell($stream, $this->heroicons->bell(), $count, $list, self::INBOX);
     }
 
     /**

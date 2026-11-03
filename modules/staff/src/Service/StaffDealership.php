@@ -11,8 +11,9 @@ use InvalidArgumentException;
 
 /**
  * The dealership's name for the staff pages (#23): the sign-in panel, the staff footer, `/`, the dashboard and the
- * customers' and sales' pages name it from the profile an admin keeps, through the first `DealershipNames` plugin, read
- * on each call so a rename reaches the next page. With no plugin it says "the dealership".
+ * customers' and sales' pages name it from the profile an admin keeps, through the first `DealershipNames` plugin, which
+ * may keep what it read for the rest of the request (#25), so a rename reaches the next page. With no plugin it says
+ * "the dealership".
  */
 final readonly class StaffDealership
 {

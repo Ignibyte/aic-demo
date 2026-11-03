@@ -64,6 +64,8 @@ final readonly class SignInPost implements Page
         $email = $this->postedFields->value($serverRequest, 'email');
         $next = $this->postedFields->value($serverRequest, 'next');
         $password = $this->postedFields->value($serverRequest, 'password');
+        // A second read of the member by email, after login() read their credentials through StaffRepository: login()
+        // gives back nothing of the user it read, so the name and role the session keeps are read again (AIC #238).
         $staffMember = $this->authenticator->login($serverRequest, $email, $password)
             ? $this->staffRepository->member($email)
             : null;

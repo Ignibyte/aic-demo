@@ -173,7 +173,7 @@ none
 | [customers](customers.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\DealershipNames`, `App\Staff\Service\StaffDealership`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 | [dashboard](dashboard.md) | `App\Staff\Service\StaffDealership`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffSession` |
 | [holds](holds.md) | `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
-| [inbox](inbox.md) | `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
+| [inbox](inbox.md) | `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 | [inventory](inventory.md) | `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests` |
 | [leads](leads.md) | `App\Staff\Entity\Role`, `App\Staff\Entity\StaffMember`, `App\Staff\Entity\StaffTable`, `App\Staff\Service\StaffNotices`, `App\Staff\Service\StaffPages`, `App\Staff\Service\StaffPanels`, `App\Staff\Service\StaffRequests`, `App\Staff\Service\StaffSession` |
 | [photos](photos.md) | `App\Staff\Entity\Role`, `App\Staff\Form\StaffSeals`, `App\Staff\Service\StaffSession` |

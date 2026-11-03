@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Notification\Application\Inbox;
 use App\Inbox\Controller\InboxReadAllPost;
-use App\Inbox\Controller\NotificationPage;
-use App\Inbox\Repository\MemberRepository;
 use App\Inbox\Service\InboxMoves;
 use App\Inbox\Service\InboxOwners;
 use App\Inbox\Service\InboxServices;
@@ -37,17 +34,11 @@ final readonly class InboxHandlersPart2
      */
     public function byId(): array
     {
-        $inboxServices = new InboxServices($this->handlerContext->documents());
-        $staffPanels = $inboxServices->staffPanels();
-        $inbox = new Inbox($this->handlerContext->database());
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $memberRepository = new MemberRepository($entityStore);
-        $inboxOwners = new InboxOwners($memberRepository);
-        $inboxMoves = new InboxMoves($staffPanels, $inbox, $inboxOwners);
+        $staffPanels = (new InboxServices($this->handlerContext->documents()))->staffPanels();
+        $inboxMoves = new InboxMoves($staffPanels, new Inbox($this->handlerContext->database()), new InboxOwners());
 
         return [
             InboxReadAllPost::class => $this->handlerContext->page(new InboxReadAllPost($inboxMoves)),
-            NotificationPage::class => $this->handlerContext->page(new NotificationPage($inboxMoves)),
         ];
     }
 }

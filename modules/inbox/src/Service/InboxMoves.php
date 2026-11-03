@@ -74,9 +74,8 @@ final readonly class InboxMoves
     /**
      * @param ServerRequestInterface $serverRequest The posted form, with its session.
      *
-     * @throws QueryException           When the member cannot be read or the notifications written.
-     * @throws LogicException           When the request carries no session, or the users' type is malformed.
-     * @throws UnexpectedValueException When the kept role is no role.
+     * @throws QueryException When the notifications cannot be written.
+     * @throws LogicException When the request carries no session.
      *
      * @return PageResponse 303 to the inbox, with the notice.
      */

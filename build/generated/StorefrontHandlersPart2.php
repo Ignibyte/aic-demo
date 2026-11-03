@@ -40,7 +40,7 @@ final readonly class StorefrontHandlersPart2
         $publicFiles = new PublicFiles($this->handlerContext->root());
         $vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
         $carFinder = new CarFinder($listedVehicleRepository, $vehiclePhotos);
-        $feedVehicles = new FeedVehicles($listedVehicleRepository, $vehiclePhotos);
+        $feedVehicles = new FeedVehicles($listedVehicleRepository, $carFinder);
 
         return [
             CarPhotoStream::class => $this->handlerContext->stream(new CarPhotoStream($carFinder)),

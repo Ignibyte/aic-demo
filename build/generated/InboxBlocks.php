@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Block\Contracts\Block;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use AIC\Notification\Application\Inbox;
 use App\Inbox\Block\BellBlock;
-use App\Inbox\Repository\MemberRepository;
 use App\Inbox\Service\BellParts;
 use App\Inbox\Service\InboxOwners;
 
@@ -32,10 +30,8 @@ final readonly class InboxBlocks
      */
     public function all(): array
     {
-        $memberRepository = new MemberRepository(new EntityStore($this->handlerContext->database()));
-
         return [
-            new BellBlock(new InboxOwners($memberRepository), new BellParts(new Inbox($this->handlerContext->database()))),
+            new BellBlock(new InboxOwners(), new BellParts(new Inbox($this->handlerContext->database()))),
         ];
     }
 }

@@ -7,17 +7,19 @@ namespace App\Inbox\Block;
 use AIC\Block\Contracts\Block;
 use AIC\Block\Contracts\Placement;
 use AIC\Component\Contracts\Component;
-use AIC\Database\Contracts\QueryException;
+use AIC\Component\Domain\KeyedComponent;
+use AIC\Component\Domain\SourcedComponent;
+use App\Inbox\Service\BellPart;
 use App\Inbox\Service\BellParts;
 use App\Inbox\Service\InboxOwners;
 use LogicException;
 use Override;
 use Psr\Http\Message\ServerRequestInterface;
-use UnexpectedValueException;
 
 /**
  * The notification bell in the top bar of every staff page (#19), before the account menu: the signed-in member's
- * unread count and latest five, kept live by the stream it names.
+ * unread count and latest five, kept live by the stream it names. They are read from its source, `BellPart`, when the
+ * page renders the bell (#25), so a Tessera answer for another target reads none of them.
  */
 final readonly class BellBlock implements Block
 {
@@ -43,15 +45,15 @@ final readonly class BellBlock implements Block
     /**
      * @param ServerRequestInterface $serverRequest The page's request, with its session.
      *
-     * @throws QueryException           When the member or their notifications cannot be read.
-     * @throws LogicException           When the request carries no session, or a key or the users' type is malformed.
-     * @throws UnexpectedValueException When the kept role is no role.
+     * @throws LogicException When the request carries no session, or the key is malformed.
      *
-     * @return Component The bell, keyed `bell`.
+     * @return Component The bell, keyed `bell`, built from its source when it is rendered.
      */
     #[Override]
     public function component(ServerRequestInterface $serverRequest): Component
     {
-        return $this->bellParts->bell($this->inboxOwners->userId($serverRequest));
+        $bellPart = new BellPart($this->bellParts, $this->inboxOwners->userId($serverRequest));
+
+        return new KeyedComponent('bell', new SourcedComponent($bellPart));
     }
 }

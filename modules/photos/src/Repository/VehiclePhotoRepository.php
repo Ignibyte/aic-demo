@@ -15,7 +15,8 @@ use function count;
 
 /**
  * A vehicle's photo rows through the entity store: read in the order they were added, counted, added and deleted; and,
- * across vehicles, the rows that hold one file's bytes and the vehicles with any photo.
+ * across vehicles, the photos of several in one read, the rows that hold one file's bytes and the vehicles with any
+ * photo.
  */
 final readonly class VehiclePhotoRepository
 {
@@ -47,6 +48,47 @@ final readonly class VehiclePhotoRepository
 
         foreach ($rows as $row) {
             $photos[] = $this->photo($row, count($photos) + 1);
+        }
+
+        return $photos;
+    }
+
+    /**
+     * The photos of several vehicles in one read (#25), for a page that shows many: the profiler showed `/cars` and the
+     * feed reading them once a car.
+     *
+     * @param list<int> $vehicleIds Vehicles' ids.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     *
+     * @return array<int, list<VehiclePhoto>> Each vehicle's photos by its id, the first added first, each with its
+     *                                        position from 1; a vehicle with none has no entry.
+     */
+    public function photosOf(array $vehicleIds): array
+    {
+        if ($vehicleIds === []) {
+            return [];
+        }
+
+        $ids = [];
+
+        foreach ($vehicleIds as $vehicleId) {
+            $ids[] = (string) $vehicleId;
+        }
+
+        $rows = $this->entityStore->query($this->vehiclePhotoTable->type())
+            ->whereIn('vehicle_id', $ids)
+            ->orderBy('vehicle_id')
+            ->orderBy('id')
+            ->rows();
+        $photos = [];
+
+        foreach ($rows as $row) {
+            $vehicleId = self::vehicleId($row);
+            $own = $photos[$vehicleId] ?? [];
+            $own[] = $this->photo($row, count($own) + 1);
+            $photos[$vehicleId] = $own;
         }
 
         return $photos;

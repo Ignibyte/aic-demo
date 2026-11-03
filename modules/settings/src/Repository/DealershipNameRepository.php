@@ -11,10 +11,17 @@ use Override;
 /**
  * Staff's `DealershipNames` plugin (#23): the dealership's name from its profile's one row, or the default until a
  * first save, for the staff pages. The generated provider builds it with no arguments, so it reads through the entity
- * store each call hands it.
+ * store the first call hands it. It keeps what it read for the rest of the request (#25): the request's plugins are
+ * built once for it, and a page that names the dealership in its content and its footer read the profile twice. Every
+ * request starts afresh, so a rename still reaches the next page.
  */
-final readonly class DealershipNameRepository implements DealershipNames
+final class DealershipNameRepository implements DealershipNames
 {
+    /**
+     * The name read this request; null until the first call.
+     */
+    private ?string $name = null;
+
     /**
      * @param EntityStore $entityStore The entity store.
      *
@@ -23,6 +30,8 @@ final readonly class DealershipNameRepository implements DealershipNames
     #[Override]
     public function name(EntityStore $entityStore): string
     {
-        return (new ProfileRepository($entityStore))->profile()->name;
+        $this->name ??= (new ProfileRepository($entityStore))->profile()->name;
+
+        return $this->name;
     }
 }
