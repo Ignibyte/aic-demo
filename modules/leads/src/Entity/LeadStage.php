@@ -38,24 +38,13 @@ enum LeadStage: string
      */
     public function label(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::New) {
-            return 'New';
-        }
-
-        if ($this === self::Contacted) {
-            return 'Contacted';
-        }
-
-        if ($this === self::Appointment) {
-            return 'Appointment';
-        }
-
-        if ($this === self::Won) {
-            return 'Won';
-        }
-
-        return 'Lost';
+        return match ($this) {
+            self::New => 'New',
+            self::Contacted => 'Contacted',
+            self::Appointment => 'Appointment',
+            self::Won => 'Won',
+            self::Lost => 'Lost',
+        };
     }
 
     /**

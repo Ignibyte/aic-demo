@@ -7,6 +7,8 @@ namespace App\Inventory\Form;
 use AIC\Form\Application\FormTokens;
 use AIC\Form\Application\PostedFields;
 use AIC\Form\Domain\SameOriginPath;
+use AIC\Http\Domain\InputParser;
+use AIC\Http\Domain\MalformedInputException;
 use AIC\Tessera\Domain\TesseraRequest;
 use App\Inventory\Entity\BulkAction;
 use App\Inventory\Entity\BulkEdit;
@@ -19,7 +21,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use function array_keys;
 use function array_slice;
-use function explode;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -28,7 +29,6 @@ use function str_starts_with;
 use function strlen;
 use function strpos;
 use function substr;
-use function urldecode;
 
 /**
  * Fills the vehicle form: from a post, each field as sent (a missing one or an array is empty); from a stored
@@ -42,12 +42,14 @@ final readonly class VehicleEntries
      * @param VehicleStatuses $vehicleStatuses The statuses and the lot's locations a bulk edit may name (#29).
      * @param SameOriginPath  $sameOriginPath  Keeps a bulk edit's way back on this site, else the list.
      * @param FormTokens      $formTokens      The visitor's form token, which a bulk edit's answer posts again.
+     * @param InputParser     $inputParser     Reads the query of the list a bulk edit came from.
      */
     public function __construct(
         private PostedFields $postedFields = new PostedFields(),
         private VehicleStatuses $vehicleStatuses = new VehicleStatuses(),
         private SameOriginPath $sameOriginPath = new SameOriginPath(Vehicle::PAGES),
         private FormTokens $formTokens = new FormTokens(),
+        private InputParser $inputParser = new InputParser(),
     ) {
     }
 
@@ -154,11 +156,8 @@ final readonly class VehicleEntries
     /**
      * @param string $back The list's path, with or without a query.
      *
-     * @return array<string, string> Its query's fields by name, each decoded, as the list reads them. It is split
-     *                               with string functions: read through AIC's `InputParser::fields()` and a loop that
-     *                               kept its `is_string()` values, the compiled site (elephc) answered with the whole
-     *                               list's totals where PHP answered with the searched list's. Which of the two elephc
-     *                               compiles differently is not isolated, and no AIC or elephc ticket carries it yet.
+     * @return array<string, string> Its query's plain fields by name, each decoded, as the list reads them; a list or
+     *                               a map in it is left out, and a query AIC refuses as malformed gives none.
      */
     private function query(string $back): array
     {
@@ -169,14 +168,18 @@ final readonly class VehicleEntries
             return $query;
         }
 
-        foreach (explode('&', substr($back, $mark + 1)) as $pair) {
-            $sign = strpos($pair, '=');
+        try {
+            $fields = $this->inputParser->fields(substr($back, $mark + 1));
+        } catch (MalformedInputException) {
+            return $query;
+        }
 
-            if ($sign === false) {
+        foreach ($fields as $name => $value) {
+            if (!is_string($value)) {
                 continue;
             }
 
-            $query[urldecode(substr($pair, 0, $sign))] = urldecode(substr($pair, $sign + 1));
+            $query[$name] = $value;
         }
 
         return $query;

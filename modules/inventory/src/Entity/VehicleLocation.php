@@ -27,19 +27,11 @@ enum VehicleLocation: string
      */
     public function label(): string
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($this === self::FrontRow) {
-            return 'Front row';
-        }
-
-        if ($this === self::Showroom) {
-            return 'Showroom';
-        }
-
-        if ($this === self::BackLot) {
-            return 'Back lot';
-        }
-
-        return 'Service bay';
+        return match ($this) {
+            self::FrontRow => 'Front row',
+            self::Showroom => 'Showroom',
+            self::BackLot => 'Back lot',
+            self::ServiceBay => 'Service bay',
+        };
     }
 }

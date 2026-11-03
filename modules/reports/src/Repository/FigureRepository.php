@@ -64,20 +64,12 @@ final readonly class FigureRepository
      */
     public function figures(ReportKind $reportKind, ReportRange $reportRange): array
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($reportKind === ReportKind::Sales) {
-            return $this->months($reportRange);
-        }
-
-        if ($reportKind === ReportKind::Salespeople) {
-            return $this->salespeople($reportRange);
-        }
-
-        if ($reportKind === ReportKind::Inventory) {
-            return $this->makes($reportRange);
-        }
-
-        return $this->leads($reportRange);
+        return match ($reportKind) {
+            ReportKind::Sales => $this->months($reportRange),
+            ReportKind::Salespeople => $this->salespeople($reportRange),
+            ReportKind::Inventory => $this->makes($reportRange),
+            ReportKind::Leads => $this->leads($reportRange),
+        };
     }
 
     /**

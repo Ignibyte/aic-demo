@@ -188,6 +188,7 @@ none
 - [AIC\Database](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
 - [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
+- [AIC\Http](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
 - [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
 - [AIC\Notification](../../../vendor/aic/framework/docs/systems.md#10-background-work)
 - [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)

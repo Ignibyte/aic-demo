@@ -231,8 +231,10 @@ final readonly class VehiclePhotos
     {
         $staffMember = $this->staffSession->member($serverRequest);
 
-        // A comparison rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        return $staffMember !== null && $staffMember->role !== Role::Salesperson;
+        return $staffMember !== null && match ($staffMember->role) {
+            Role::Admin, Role::SalesManager => true,
+            Role::Salesperson => false,
+        };
     }
 
     /**

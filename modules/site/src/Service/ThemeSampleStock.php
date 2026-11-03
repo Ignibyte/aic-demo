@@ -127,16 +127,11 @@ final readonly class ThemeSampleStock
      */
     public function tone(string $status): BadgeTone
     {
-        // if/return rather than match: elephc cannot lower a match whose arms are enum cases yet (AIC #164).
-        if ($status === 'in_stock') {
-            return BadgeTone::Success;
-        }
-
-        if ($status === 'on_hold') {
-            return BadgeTone::Warning;
-        }
-
-        return BadgeTone::Neutral;
+        return match ($status) {
+            'in_stock' => BadgeTone::Success,
+            'on_hold' => BadgeTone::Warning,
+            default => BadgeTone::Neutral,
+        };
     }
 
     /**
