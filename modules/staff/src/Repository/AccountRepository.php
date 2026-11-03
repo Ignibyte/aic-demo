@@ -95,14 +95,13 @@ final readonly class AccountRepository
      * @throws RuntimeException         When the statement fails, or the role is no role.
      * @throws InvalidArgumentException When a value does not fit its field.
      *
-     * @return int The new member's id; 0 when someone already signs in with the email, which no member's id is.
+     * @return int|null The new member's id; null when someone already signs in with the email.
      */
-    public function add(string $email, string $name, string $role): int
+    public function add(string $email, string $name, string $role): ?int
     {
         $values = ['email' => $email, 'name' => $name, 'role' => $this->roles->stored($role)->value, 'password_hash' => ''];
 
-        // 0 rather than null: elephc does not narrow a nullable id for the caller (no AIC ticket carries it yet).
-        return $this->entityStore->insertIfAbsent($this->staffTable->type(), $values, 'email') ?? 0;
+        return $this->entityStore->insertIfAbsent($this->staffTable->type(), $values, 'email');
     }
 
     /**

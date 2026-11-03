@@ -25,8 +25,8 @@ final readonly class ChangeLines
         $changes = [];
 
         foreach ($labels as $field => $label) {
-            $before = $this->value($then, $field);
-            $after = $this->value($now, $field);
+            $before = $then[$field] ?? '';
+            $after = $now[$field] ?? '';
 
             if ($before === $after) {
                 continue;
@@ -37,19 +37,5 @@ final readonly class ChangeLines
 
         return 'Someone saved ' . $what . ' after you opened it, so your changes were not saved. Since then: '
             . implode('; ', $changes) . '. Your changes are still in the form: check them and save again to keep them.';
-    }
-
-    /**
-     * Reads one value through a native `string` return, so the compiled site compares strings (elephc types an element
-     * read straight from an array as mixed; no AIC ticket carries it yet).
-     *
-     * @param array<string, string> $values Values by field name.
-     * @param string                $field  A field's name.
-     *
-     * @return string Its value; empty when it has none.
-     */
-    private function value(array $values, string $field): string
-    {
-        return $values[$field] ?? '';
     }
 }

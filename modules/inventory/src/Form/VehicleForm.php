@@ -66,11 +66,10 @@ final readonly class VehicleForm
             : [new Alert(AlertSeverity::Error, 'Fix the fields marked below.', 'vehicle-error')];
         $grid = $this->vehicleFields->grid($vehicleEntry, $errors);
         $formActions = new FormActions('Save', 'vehicle-save', $path);
-        // Each branch spreads the alerts alone: elephc's build of the site answered 500 when a second list was spread
-        // after them (gate:23). No AIC ticket carries this yet.
-        $fields = $editing
-            ? [...$alerts, $this->staffSeals->field($path), $grid, $formActions]
-            : [...$alerts, $grid, $formActions];
+        $seal = $editing
+            ? [$this->staffSeals->field($path)]
+            : [];
+        $fields = [...$alerts, ...$seal, $grid, $formActions];
         $form = new Form('vehicle-form', $path, $fields, $this->formTokens->issue($serverRequest)->value());
         $description = "Prices are whole dollars. The cost stays off the vehicle's page.";
 

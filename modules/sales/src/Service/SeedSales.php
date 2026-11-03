@@ -12,20 +12,22 @@ use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Service\SeedVehicles;
 use App\Inventory\Service\Vins;
 use App\Sales\Entity\SeedSale;
+use DateInterval;
+use DateTimeImmutable;
+use InvalidArgumentException;
 
 use function count;
+use function date_create_immutable;
+use function date_interval_create_from_date_string;
 use function explode;
 use function intdiv;
-use function substr;
 
 /**
  * The seed's invented sales, the same on every call: 36 vehicles of its own, three sold a month from November 2025 to
  * October 2026, each a few days after it came onto the lot; and the 8 vehicles the inventory seed marks sold, each
  * sold 10 days after it came. They go to the seeded customers and the sales staff in turn, at their list price less a
- * small discount. Every date is fixed, counted from the month's own days, so no PHP date class is needed: plain
- * arithmetic is what elephc is known to compile, as `SeedVehicles` notes; no AIC ticket carries the date classes. A
- * sale's day is its vehicle's day on the lot and its days there, counted over the months' lengths (#14), since the
- * entity store writes a sale's values and not a sum Postgres works out.
+ * small discount. Every date is fixed. A sale's day is its vehicle's day on the lot and its days there, counted with
+ * `DateTimeImmutable` (#14), since the entity store writes a sale's values and not a sum Postgres works out.
  *
  * @psalm-type SeedModel = array{make: string, model: string, trims: string, body: string, price: int}
  */
@@ -73,13 +75,11 @@ final readonly class SeedSales
      * @param Vins          $vins          Writes each VIN.
      * @param SeedVehicles  $seedVehicles  The inventory seed's vehicles.
      * @param SeedCustomers $seedCustomers The customers seed's customers.
-     * @param MonthLengths  $monthLengths  How long a month is.
      */
     public function __construct(
         private Vins $vins = new Vins(),
         private SeedVehicles $seedVehicles = new SeedVehicles(),
         private SeedCustomers $seedCustomers = new SeedCustomers(),
-        private MonthLengths $monthLengths = new MonthLengths(),
     ) {
     }
 
@@ -99,6 +99,8 @@ final readonly class SeedSales
 
     /**
      * @param list<string> $sellers The sales staff's logins; none gives no sales.
+     *
+     * @throws InvalidArgumentException When a vehicle's day on the lot is no day.
      *
      * @return list<SeedSale> The 44 sales: its own vehicles' and then the inventory seed's sold ones.
      */
@@ -162,6 +164,8 @@ final readonly class SeedSales
      * @param list<string> $emails  The customers' emails, at least one.
      * @param list<string> $sellers The sales staff's logins, at least one.
      *
+     * @throws InvalidArgumentException When the vehicle's day on the lot is no day.
+     *
      * @return SeedSale Its sale, to the customer and the seller its place picks, at its list price less 0 to $1,000.
      */
     private function sale(Vehicle $vehicle, int $days, int $place, array $emails, array $sellers): SeedSale
@@ -221,20 +225,19 @@ final readonly class SeedSales
      * @param string $day  A day, `YYYY-MM-DD`.
      * @param int    $days How many days after it, from 0.
      *
+     * @throws InvalidArgumentException When the day is no day.
+     *
      * @return string The day that many days later, `YYYY-MM-DD`, across the ends of months and years.
      */
     private function later(string $day, int $days): string
     {
-        $year = (int) substr($day, 0, 4);
-        $month = (int) substr($day, 5, 2);
-        $date = (int) substr($day, 8, 2) + $days;
+        $start = date_create_immutable($day);
+        $dateInterval = date_interval_create_from_date_string($days . ' days');
 
-        while ($date > $this->monthLengths->days($year, $month)) {
-            $date -= $this->monthLengths->days($year, $month);
-            $year += intdiv($month, 12);
-            $month = $month % 12 + 1;
+        if (!$start instanceof DateTimeImmutable || !$dateInterval instanceof DateInterval) {
+            throw new InvalidArgumentException('No day is written ' . $day . '.');
         }
 
-        return $year . '-' . ($month < 10 ? '0' : '') . $month . '-' . ($date < 10 ? '0' : '') . $date;
+        return $start->add($dateInterval)->format('Y-m-d');
     }
 }

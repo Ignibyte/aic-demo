@@ -45,11 +45,10 @@ final readonly class PhotoForms
         $hint = 'JPEG, PNG or WebP, up to 8 MB each, and up to ' . VehiclePhotos::MOST . ' photos.';
         $paragraph = new Paragraph($hint, 'vehicle-photo-hint');
         $button = new Button('Add photo', 'submit', 'vehicle-photo-add');
-        // Two literal lists rather than a spread: elephc's build of the site answered 500 for a list spread before
-        // more items, as `VehicleForm` notes. No AIC ticket carries this yet.
-        $fields = $refusal === ''
-            ? [$formField, $paragraph, $button]
-            : [new Alert(AlertSeverity::Error, $refusal, 'vehicle-photo-error'), $formField, $paragraph, $button];
+        $alerts = $refusal === ''
+            ? []
+            : [new Alert(AlertSeverity::Error, $refusal, 'vehicle-photo-error')];
+        $fields = [...$alerts, $formField, $paragraph, $button];
 
         return new Form('vehicle-photo-form', $vehiclePath . '/photos', $fields, $formToken, FormEncoding::Multipart);
     }

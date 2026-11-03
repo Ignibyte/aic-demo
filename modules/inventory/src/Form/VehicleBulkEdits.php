@@ -229,8 +229,8 @@ final readonly class VehicleBulkEdits
      *
      * @return array<string, string> Those refusals, and each of its VINs no vehicle has, refused as no longer on the lot.
      *                               A loop rather than `array_diff()`: elephc reads no phpdoc, so it refuses to compile
-     *                               `array_diff()` over the edit's VINs, which it cannot tell are an array (gate:21; no
-     *                               elephc ticket carries this yet).
+     *                               `array_diff()` over the edit's VINs, which it cannot tell are an array (gate:21,
+     *                               AIC #245).
      */
     private function missing(BulkEdit $bulkEdit, array $found, array $refusals): array
     {

@@ -11,9 +11,10 @@ use AIC\Entity\Application\EntityStore;
 use AIC\Entity\Domain\Comparison;
 use App\Sales\Entity\Sale;
 use App\Sales\Entity\SaleTable;
+use DateTimeImmutable;
 use InvalidArgumentException;
 
-use function substr;
+use function date_create_immutable;
 use function trim;
 
 /**
@@ -25,12 +26,10 @@ use function trim;
 final readonly class SaleRows
 {
     /**
-     * @param SaleTable    $saleTable    The `sales` entity type.
-     * @param MonthLengths $monthLengths How long a month is.
+     * @param SaleTable $saleTable The `sales` entity type.
      */
     public function __construct(
         private SaleTable $saleTable = new SaleTable(),
-        private MonthLengths $monthLengths = new MonthLengths(),
     ) {
     }
 
@@ -65,23 +64,24 @@ final readonly class SaleRows
      * @param EntityQuery $entityQuery A query of `joined()`.
      * @param string      $month       A month, `YYYY-MM`.
      *
-     * @throws InvalidArgumentException When the query is not over the sales.
+     * @throws InvalidArgumentException When the query is not over the sales, or the month is no month.
      *
-     * @return EntityQuery It keeping the sales from the month's first day to its last, which `MonthLengths` works out
-     *                     by arithmetic rather than a PHP date class, which elephc is not known to compile.
+     * @return EntityQuery It keeping the sales from the month's first day to its last.
      */
     public function inMonth(EntityQuery $entityQuery, string $month): EntityQuery
     {
-        $last = $this->monthLengths->days((int) substr($month, 0, 4), (int) substr($month, 5, 2));
+        $first = date_create_immutable($month . '-01');
 
-        return $entityQuery->where('sold_on', $month . '-01', Comparison::GreaterOrEqual)
-            ->where('sold_on', $month . '-' . $last, Comparison::LessOrEqual);
+        if (!$first instanceof DateTimeImmutable) {
+            throw new InvalidArgumentException('No month is written ' . $month . '.');
+        }
+
+        return $entityQuery->where('sold_on', $first->format('Y-m-d'), Comparison::GreaterOrEqual)
+            ->where('sold_on', $first->format('Y-m-t'), Comparison::LessOrEqual);
     }
 
     /**
-     * Reads the row through a native `Row` parameter: elephc reads no phpdoc, so a row straight off a `rows()` list has
-     * no type to it, as `CustomerRows` notes. No AIC ticket carries this yet. The vehicle's title is its year, make,
-     * model and trim, trimmed, as the old statement built it.
+     * The vehicle's title is its year, make, model and trim, trimmed, as the old statement built it.
      *
      * @param Row $row A row of `joined()`.
      *

@@ -88,7 +88,7 @@ final readonly class ProfileRepository
         $stored = $this->fromRow($row)->values();
 
         foreach (DealershipProfile::FIELDS as $field) {
-            if ($this->value($stored, $field) !== $this->value($seen, $field)) {
+            if (($stored[$field] ?? '') !== ($seen[$field] ?? '')) {
                 return SettingsWrite::STALE;
             }
         }
@@ -96,20 +96,6 @@ final readonly class ProfileRepository
         $this->entityStore->upsert($entityType, $this->row($dealershipProfile), 'slot');
 
         return SettingsWrite::SAVED;
-    }
-
-    /**
-     * Reads one value through a native `string` return, so the compiled site compares strings (elephc types an element
-     * read straight from an array as mixed; no AIC ticket carries it yet).
-     *
-     * @param array<string, string> $values Values by field name.
-     * @param string                $field  A field's name.
-     *
-     * @return string Its value; empty when it has none.
-     */
-    private function value(array $values, string $field): string
-    {
-        return $values[$field] ?? '';
     }
 
     /**

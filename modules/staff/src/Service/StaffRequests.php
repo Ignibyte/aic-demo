@@ -10,9 +10,8 @@ use function array_key_exists;
 use function is_string;
 
 /**
- * A staff page's request read as plain text: a query parameter and a route attribute, each through a native `string`
- * return, so the checks after it work on a string under elephc, which does not narrow an untyped value by
- * `is_string()` (no AIC ticket carries this yet). Customers and sales share it, so the reading lives once (gate:14).
+ * A staff page's request read as plain text: a query parameter and a route attribute. Customers and sales share it, so
+ * the reading lives once (gate:14).
  */
 final readonly class StaffRequests
 {

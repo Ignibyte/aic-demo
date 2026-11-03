@@ -12,11 +12,8 @@ use function round;
 /**
  * The calculator's arithmetic on the server (#26), for its first figures and its example payments: the monthly payment
  * of an amortised loan, `financed * rate * growth / (growth - 1)` with `growth` the monthly rate's compound over the
- * term, the same formula the browser's signals use. The compound is a loop of multiplications rather than `pow()`:
- * the app uses no float `pow()` anywhere, and gate:21 and gate:23 have proved plain float multiplication alike under
- * PHP and the compiled site, so the loop keeps the example table's bytes the same on both without depending on how
- * elephc lowers `pow()`. No AIC ticket names a `pow()` defect; this is caution, not a carried workaround. An APR is
- * in basis points (690 is 6.90%) and money in whole dollars or cents, so no figure travels as a float.
+ * term, the same formula the browser's signals use. An APR is in basis points (690 is 6.90%) and money in whole
+ * dollars or cents, so no figure travels as a float.
  */
 final readonly class Payments
 {
@@ -43,11 +40,7 @@ final readonly class Payments
         }
 
         $rate = (float) $aprBasisPoints / 120_000.0;
-        $growth = 1.0;
-
-        for ($month = 0; $month < $months; $month += 1) {
-            $growth *= 1.0 + $rate;
-        }
+        $growth = (1.0 + $rate) ** (float) $months;
 
         return (float) $financed * $rate * $growth / ($growth - 1.0);
     }

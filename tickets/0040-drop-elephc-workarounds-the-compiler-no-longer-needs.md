@@ -2,9 +2,10 @@
 number: 40
 title: "Drop the elephc workarounds the current compiler no longer needs"
 type: chore
-status: open
+status: closed
 created: 2026-11-03T12:00:00Z
-updated: 2026-11-03T12:00:00Z
+updated: 2026-11-03T14:51:10Z
+phase: "docs"
 ---
 
 The operator probed every comment that shapes Lotline's code around elephc and says no ticket
@@ -37,3 +38,13 @@ workaround that turns out still to be needed stays, and the run says which, with
 output, through `workflow:ask`; the operator files the carry.
 
 ## Comments
+
+### 2026-11-03T15:30:00Z (operator)
+
+Delivered from run-09a9590982bf, archived unfinished on one criterion: every gate, the freeze,
+declaration, composition, rendered and browser rows passed, and criteria 1 to 7 and 9 to 14
+cite fresh green checks. Criterion 8 is not met: gate:10 (PHPMD `StaticAccess`) refuses
+`ReportKind::tryFrom()`, so `ReportKinds` keeps its loop over the cases, now commented with that
+reason rather than elephc. Criterion 11 takes `(1.0 + rate) ** (float) months`, the form Rector
+and Psalm leave of `pow()`. Two kept looks, leads-board-live and customers-search, failed at times
+on the compiled site with nothing on their path changed; they look timing-sensitive.

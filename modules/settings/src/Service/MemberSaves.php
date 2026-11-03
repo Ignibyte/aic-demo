@@ -70,7 +70,9 @@ final readonly class MemberSaves
         }
 
         $id = $this->accountRepository->add($memberEntry->email, trim($memberEntry->name), $memberEntry->role);
-        $staffAccount = $this->accountRepository->find($id);
+        $staffAccount = $id === null
+            ? null
+            : $this->accountRepository->find($id);
 
         if (!$staffAccount instanceof StaffAccount) {
             return $this->refused($serverRequest, $memberEntry, ['email' => MemberChecks::EMAIL_TAKEN]);

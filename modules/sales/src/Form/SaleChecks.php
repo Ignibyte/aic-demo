@@ -13,7 +13,6 @@ use InvalidArgumentException;
 
 use function checkdate;
 use function preg_match;
-use function strcmp;
 use function strtoupper;
 use function substr;
 use function trim;
@@ -161,8 +160,7 @@ final readonly class SaleChecks
     }
 
     /**
-     * Compares days as `YYYY-MM-DD` text with `strcmp()`: elephc refuses `<` and `>` between two strings (old Lotline's
-     * ticket 28); no AIC ticket carries it yet.
+     * Compares days as `YYYY-MM-DD` text, which sorts as the days do.
      *
      * @param string           $soldOn      The posted day.
      * @param string           $today       The database's today.
@@ -179,11 +177,11 @@ final readonly class SaleChecks
             return 'The sale date is a real date, as YYYY-MM-DD.';
         }
 
-        if (strcmp($soldOn, $today) > 0) {
+        if ($soldOn > $today) {
             return 'The sale date cannot be after today.';
         }
 
-        if ($saleVehicle instanceof SaleVehicle && strcmp($soldOn, $saleVehicle->addedOn) < 0) {
+        if ($saleVehicle instanceof SaleVehicle && $soldOn < $saleVehicle->addedOn) {
             return 'The sale date is before the vehicle came onto the lot, ' . $saleVehicle->addedOn . '.';
         }
 

@@ -18,8 +18,7 @@ use function trim;
 
 /**
  * Reads a lead's row, joined with its car (`v_`), its salesperson (`u_`) and its customer (`c_`), into a `Lead` (#18).
- * A null column reads as empty or 0 through a local test: elephc's build of the site mistypes `stringOrNull() ?? ''`
- * (found in this run; no AIC ticket carries it yet).
+ * A null column reads as empty or 0.
  */
 final readonly class LeadRows
 {
@@ -33,7 +32,7 @@ final readonly class LeadRows
     public function lead(Row $row): Lead
     {
         $title = trim($row->int('v_year') . ' ' . $row->string('v_make') . ' ' . $row->string('v_model') . ' ' . $row->string('v_trim'));
-        $customerId = $this->number($row, 'customer_id');
+        $customerId = $row->intOrNull('customer_id') ?? 0;
 
         return new Lead(
             $row->int('id'),
@@ -57,7 +56,7 @@ final readonly class LeadRows
      */
     public function stage(Row $row): LeadStage
     {
-        $stage = LeadStage::New->stored($this->text($row, 'stage'));
+        $stage = LeadStage::New->stored($row->stringOrNull('stage') ?? '');
 
         if ($stage instanceof LeadStage) {
             return $stage;
@@ -77,7 +76,7 @@ final readonly class LeadRows
      */
     public function sellerId(Row $row): int
     {
-        return $this->number($row, 'salesperson_id');
+        return $row->intOrNull('salesperson_id') ?? 0;
     }
 
     /**
@@ -95,8 +94,8 @@ final readonly class LeadRows
             $row->string('email'),
             $row->string('phone'),
             $row->string('message'),
-            $this->text($row, 'drive_on'),
-            $this->text($row, 'drive_at'),
+            $row->stringOrNull('drive_on') ?? '',
+            $row->stringOrNull('drive_at') ?? '',
         );
     }
 
@@ -114,43 +113,5 @@ final readonly class LeadRows
         return $id === 0
             ? null
             : new Seller($id, $row->string('u_email'), $row->string('u_name'));
-    }
-
-    /**
-     * @param Row    $row    A row.
-     * @param string $column A nullable text or date column.
-     *
-     * @throws QueryException When the column is of another type.
-     *
-     * @return string Its value; empty for null.
-     */
-    private function text(Row $row, string $column): string
-    {
-        $value = $row->stringOrNull($column);
-
-        if ($value === null) {
-            return '';
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param Row    $row    A row.
-     * @param string $column A nullable integer column.
-     *
-     * @throws QueryException When the column is of another type.
-     *
-     * @return int Its value; 0 for null.
-     */
-    private function number(Row $row, string $column): int
-    {
-        $value = $row->intOrNull($column);
-
-        if ($value === null) {
-            return 0;
-        }
-
-        return $value;
     }
 }

@@ -24,7 +24,7 @@ use function trim;
  * time `HH:MM`, the closing at least an hour after the opening so a test drive fits; at least one open day; an
  * aged-stock threshold of 1 to 365 days; and a default APR from 0 to 30 percent with up to two decimals, blank for the
  * standard 6.90% (#26), so a post from a form that predates the field still saves. Times compare as minutes since
- * midnight and the APR as basis points, in integers (elephc refuses `<` between two strings, as leads' hours note).
+ * midnight and the APR as basis points, in integers.
  */
 final readonly class ProfileChecks
 {

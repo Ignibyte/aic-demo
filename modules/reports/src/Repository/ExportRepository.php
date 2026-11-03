@@ -211,7 +211,7 @@ final readonly class ExportRepository
         $ids = [];
 
         foreach ($this->entityStore->query($this->exportTables->states())->where('expired', true)->orderBy('id')->rows() as $row) {
-            $ids[] = $this->idOf($row);
+            $ids[] = $row->int('id');
         }
 
         return $ids;
@@ -229,9 +229,6 @@ final readonly class ExportRepository
     }
 
     /**
-     * Reads the row through a native `Row` parameter: elephc types a row straight off a `rows()` loop too loosely to pass
-     * its columns on (no AIC ticket carries this yet), as reports' `ReportRepository` notes.
-     *
      * @param Row $row A row of `report_export_states`.
      *
      * @throws RuntimeException When a column is missing.
@@ -249,19 +246,5 @@ final readonly class ExportRepository
         $reportRange = new ReportRange($row->string('from_day'), $row->string('to_day'));
 
         return new ReportExport($row->int('id'), $row->int('user_id'), $reportKind, $reportRange, $row->string('status') === self::READY);
-    }
-
-    /**
-     * Reads the row through a native `Row` parameter, as `export()` does.
-     *
-     * @param Row $row A row of `report_export_states`.
-     *
-     * @throws RuntimeException When the column is missing.
-     *
-     * @return int Its id.
-     */
-    private function idOf(Row $row): int
-    {
-        return $row->int('id');
     }
 }

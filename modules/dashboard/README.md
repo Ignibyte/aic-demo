@@ -38,8 +38,6 @@ The reports are views the dashboard's own migration, `CreateDashboardViews`, cre
 | `latest(int)` | the sales recorded last, by id, the latest first, with the vehicle's title and the customer's and salesperson's names (sales' `Sale`) |
 | `version()` | what the live part's figures are now, as above |
 
-A row off `rows()` is read through a method with a native `Row` parameter, as `SaleRows` does, since elephc reads no phpdoc.
-
 ## Checks
 
 `config/native-site.json` ends with `GET /app` signed in (200), after the sales steps, and the staff steps still ask for it signed out (303) and signed in. Signed in, it then refreshes the live part, first by its path and, since #13, by `Tessera-Targets: @dashboard-live`, which each site resolves from its own page; both sites answer each with the same fragment. Since #14 a step refreshes the makes chart alone by `@dashboard-makes`. A step sends no props, so each of these renders; the 204 needs props the page sealed, which the browser look holds.

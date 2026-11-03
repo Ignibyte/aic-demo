@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Reports\Repository;
 
 use AIC\Database\Contracts\QueryException;
-use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityQuery;
 use AIC\Entity\Application\EntityStore;
 use AIC\Entity\Domain\Comparison;
@@ -196,27 +195,10 @@ final readonly class FigureRepository
         $names = [];
 
         foreach ($this->entityStore->query($this->staffTable->type())->rows() as $row) {
-            $login = $this->text($row, 'email');
-            $names[$login] = $this->text($row, 'name');
+            $names[$row->string('email')] = $row->string('name');
         }
 
         return $names;
-    }
-
-    /**
-     * Reads the row through a native `Row` parameter: elephc types a row straight off a `rows()` loop too loosely to pass
-     * its columns on (no AIC ticket carries this yet), as reports' `ReportRepository` notes.
-     *
-     * @param Row    $row    A row of the users.
-     * @param string $column One of its text columns.
-     *
-     * @throws QueryException When the column is missing.
-     *
-     * @return string Its value.
-     */
-    private function text(Row $row, string $column): string
-    {
-        return $row->string($column);
     }
 
     /**
