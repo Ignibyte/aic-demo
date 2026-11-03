@@ -8,6 +8,7 @@ use AIC\Component\Domain\KeyedComponent;
 use App\Inventory\Form\InventoryQuery;
 use App\Theme\Components\FilterBar\FilterBar;
 use App\Theme\Components\FormField\FormField;
+use App\Theme\Components\SearchField\SearchField;
 use App\Theme\Components\SelectField\SelectField;
 use App\Theme\Components\SelectField\SelectOption;
 use InvalidArgumentException;
@@ -15,7 +16,9 @@ use InvalidArgumentException;
 /**
  * The inventory list's filter bar: the search, the make and status selects and the price range, each showing what was
  * asked. It is a plain GET form, which Tessera answers with the results alone; the sort it sends sits in the results
- * (`InventoryTable`), tied to the form by its id, so a sort that swaps only them keeps it current.
+ * (`InventoryTable`), tied to the form by its id, so a sort that swaps only them keeps it current. The search submits
+ * the form on each pause in typing (#27): a Tessera visit of the results, the query in the URL. The box sits outside
+ * the results, so their answer leaves its focus and caret alone.
  */
 final readonly class InventoryFilters
 {
@@ -23,6 +26,11 @@ final readonly class InventoryFilters
      * The form's id.
      */
     public const string FORM = 'inventory-filters';
+
+    /**
+     * The search box's focus key, which Tessera restores focus to on Back and Forward.
+     */
+    public const string SEARCH = 'inventory-search';
 
     /**
      * @param VehicleStatuses $vehicleStatuses The statuses to offer.
@@ -42,17 +50,17 @@ final readonly class InventoryFilters
      */
     public function filterBar(InventoryQuery $inventoryQuery, array $makes): FilterBar
     {
-        $formField = new FormField('filter-q', 'q', 'Search', 'search', $inventoryQuery->search, '', false, true);
+        $searchField = new SearchField('filter-q', 'q', 'Search', $inventoryQuery->search, self::SEARCH);
         $make = new SelectField('filter-make', 'make', 'Make', 'Every make', $this->makes($inventoryQuery, $makes), '', true);
         $status = new SelectField('filter-status', 'status', 'Status', 'Every status', $this->statuses($inventoryQuery), '', true);
 
         return new FilterBar(self::FORM, InventoryLinks::PATH, '@' . InventoryTable::ANCHOR, [
-            new KeyedComponent('q', $formField),
+            new KeyedComponent('q', $searchField),
             new KeyedComponent('make', $make),
             new KeyedComponent('status', $status),
             new KeyedComponent('min_price', $this->price('min-price', 'min_price', 'Price from', $inventoryQuery->minPrice)),
             new KeyedComponent('max_price', $this->price('max-price', 'max_price', 'Price to', $inventoryQuery->maxPrice)),
-        ], InventoryLinks::PATH);
+        ], InventoryLinks::PATH, 'replace');
     }
 
     /**

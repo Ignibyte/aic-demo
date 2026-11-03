@@ -9,7 +9,8 @@ use AIC\Component\Domain\KeyedComponent;
 
 /**
  * A list's filters, from filter-bar.phtml: a GET search form of compact fields that Tessera answers in place, then
- * Filter and Clear.
+ * Filter and Clear. With a history mode the form carries it as `data-push` and Filter carries `data-push="push"`, so
+ * a submit without a submitter (a debounced search) takes the form's mode and a pressed Filter still adds an entry.
  */
 final readonly class FilterBar implements Component
 {
@@ -19,6 +20,7 @@ final readonly class FilterBar implements Component
      * @param string               $target    What Tessera updates: a region (`content`) or an anchor (`@NAME`).
      * @param list<KeyedComponent> $fields    The compact fields, each keyed by its name.
      * @param string               $clearHref The list with no filter.
+     * @param string               $history   Tessera's history mode for the form's own submits (`replace`); empty to push.
      */
     public function __construct(
         public string $id,
@@ -26,6 +28,7 @@ final readonly class FilterBar implements Component
         public string $target,
         public array $fields,
         public string $clearHref,
+        public string $history = '',
     ) {
     }
 }

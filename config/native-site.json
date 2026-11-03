@@ -1184,6 +1184,33 @@
             "captures": false
         },
         {
+            "name": "customers, searched as typed, whole page",
+            "method": "GET",
+            "path": "/app/customers?q=ada",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customers, searched as typed, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/customers?q=example.test",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @customer-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "customers, a search's second page, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/customers?q=example.test&page=2",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @customer-results",
+            "status": 200,
+            "captures": false
+        },
+        {
             "name": "customer form",
             "method": "GET",
             "path": "/app/customers/new",
@@ -1718,6 +1745,15 @@
             "name": "inventory table, a Tessera fragment by its anchor",
             "method": "GET",
             "path": "/app/inventory?make=Toyota&sort=-price",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "inventory, searched as typed, a Tessera fragment by its anchor",
+            "method": "GET",
+            "path": "/app/inventory?q=cr&make=&status=&min_price=&max_price=&sort=",
             "form": "",
             "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @inventory-results",
             "status": 200,

@@ -1,0 +1,4 @@
+<?php /** @var \App\Theme\Components\SearchField\SearchField $searchField */ ?>
+<fieldset class="fieldset"><label class="label" for="<?= $searchField->id ?>"><?= $searchField->label ?></label>
+<span class="input input-sm w-56"><input class="grow" id="<?= $searchField->id ?>" name="<?= $searchField->name ?>" type="search" value="<?= $searchField->value ?>" autocomplete="off" data-focus-key="<?= $searchField->focusKey ?>" data-on:input__debounce.300ms="el.form.requestSubmit()"><span class="loading loading-spinner loading-xs invisible in-data-loading:visible" aria-hidden="true"></span></span>
+</fieldset>

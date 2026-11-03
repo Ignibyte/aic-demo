@@ -1,0 +1,4 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/SearchField/search-field.phtml by composer run build; edit that file, never this one. */ ?>
+<fieldset<?= $renderPass->marks() ?> class="fieldset"><label class="label" for="<?= $renderPass->text($searchField->id) ?>"><?= $renderPass->text($searchField->label) ?></label>
+<span class="input input-sm w-56"><input class="grow" id="<?= $renderPass->text($searchField->id) ?>" name="<?= $renderPass->text($searchField->name) ?>" type="search" value="<?= $renderPass->text($searchField->value) ?>" autocomplete="off" data-focus-key="<?= $renderPass->text($searchField->focusKey) ?>" data-on:input__debounce.300ms="el.form.requestSubmit()"><span class="loading loading-spinner loading-xs invisible in-data-loading:visible" aria-hidden="true"></span></span>
+</fieldset>
