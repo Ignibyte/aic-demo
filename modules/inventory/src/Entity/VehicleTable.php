@@ -12,6 +12,7 @@ use InvalidArgumentException;
 /**
  * The `vehicles` table as an entity type (AIC #185): inventory's migration creates it, so this module alone names it.
  * Sales references a vehicle through it and reads its choices from it, and the dashboard counts it, so it is exported.
+ * Its location (#29) may be null: a vehicle stored before the column came has none.
  */
 final readonly class VehicleTable
 {
@@ -35,6 +36,7 @@ final readonly class VehicleTable
             new Field('cost', FieldType::Integer),
             new Field('status', FieldType::Text),
             new Field('added_on', FieldType::Date),
+            new Field('location', FieldType::Text, true),
             new Field('created_at', FieldType::CreatedAt),
             new Field('updated_at', FieldType::UpdatedAt),
         ]);

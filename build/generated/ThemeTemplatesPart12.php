@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\SubmitButton\SubmitButton;
 use App\Theme\Components\TableResults\TableResults;
 use App\Theme\Components\TableRow\TableRow;
-use App\Theme\Components\TopBar\TopBar;
+use App\Theme\Components\TableTotals\TableTotals;
 use Override;
 
 /**
@@ -24,7 +24,7 @@ final readonly class ThemeTemplatesPart12 implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The templates after these.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new ThemeTemplatesPart13(),
     ) {
     }
 
@@ -40,11 +40,28 @@ final readonly class ThemeTemplatesPart12 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof SubmitButton => $this->renderSubmitButton($component, $renderPass),
             $component instanceof TableResults => $this->renderTableResults($component, $renderPass),
             $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
-            $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
+            $component instanceof TableTotals => $this->renderTableTotals($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param SubmitButton $submitButton The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/SubmitButton/submit-button.phtml.
+     */
+    private function renderSubmitButton(SubmitButton $submitButton, RenderPass $renderPass): string
+    {
+        $renderPass->open($submitButton);
+        require __DIR__ . '/templates/themes/lotline/components/SubmitButton/submit-button.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -80,17 +97,17 @@ final readonly class ThemeTemplatesPart12 implements ComponentTemplates
     }
 
     /**
-     * @param TopBar     $topBar     The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param TableTotals $tableTotals The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TopBar/top-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/TableTotals/table-totals.phtml.
      */
-    private function renderTopBar(TopBar $topBar, RenderPass $renderPass): string
+    private function renderTableTotals(TableTotals $tableTotals, RenderPass $renderPass): string
     {
-        $renderPass->open($topBar);
-        require __DIR__ . '/templates/themes/lotline/components/TopBar/top-bar.phtml';
+        $renderPass->open($tableTotals);
+        require __DIR__ . '/templates/themes/lotline/components/TableTotals/table-totals.phtml';
 
         return $renderPass->close();
     }

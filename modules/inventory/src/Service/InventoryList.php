@@ -17,11 +17,12 @@ use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * The inventory list's panel: the notice a delete left, a link to add a vehicle, the filter bar and the results of the
- * page asked for, anchored `inventory-results` for the controls that refresh them. The results come from their source,
- * `InventoryResults`, which reads the vehicles only when the results are rendered (#14), so a refresh of them alone
- * reads the makes the query is checked against and their own vehicles, and nothing more. A row's own answer (#28)
- * builds the panel under the same key, title and results' key, holding that row alone.
+ * The inventory list's panel: the notice a delete or a bulk edit left, a link to add a vehicle, the filter bar and the
+ * results of the page asked for, anchored `inventory-results` for the controls that refresh them. The results come from
+ * their source, `InventoryResults`, which reads the vehicles only when the results are rendered (#14), so a refresh of
+ * them alone reads the makes the query is checked against and their own vehicles, and nothing more. A row's own answer
+ * (#28) and a bulk edit's (#29) build the panel under the same key, title and results' key, holding their rows alone.
+ * The results' action bar posts the visitor's form token, which the results issue from the request.
  */
 final readonly class InventoryList
 {
@@ -51,7 +52,7 @@ final readonly class InventoryList
      * @param InventoryQueries  $inventoryQueries  Reads what the list is asked for.
      * @param InventoryFilters  $inventoryFilters  The filter bar.
      * @param InventoryTable    $inventoryTable    The table and the pages.
-     * @param StaffNotices      $staffNotices      The last delete's notice.
+     * @param StaffNotices      $staffNotices      The last delete's or bulk edit's notice.
      */
     public function __construct(
         private VehicleRepository $vehicleRepository,
@@ -83,7 +84,13 @@ final readonly class InventoryList
 
         $body[] = new KeyedComponent('add', new Link('Add a vehicle', Vehicle::PAGES . '/new'));
         $body[] = new KeyedComponent('filters', $this->inventoryFilters->filterBar($inventoryQuery, $makes));
-        $inventoryResults = new InventoryResults($this->vehicleRepository, $this->inventoryTable, $inventoryQuery, $this->vehicleRowForm);
+        $inventoryResults = new InventoryResults(
+            $this->vehicleRepository,
+            $this->inventoryTable,
+            $inventoryQuery,
+            $this->vehicleRowForm,
+            $serverRequest,
+        );
         $body[] = new KeyedComponent(self::RESULTS, new SourcedComponent($inventoryResults), '', InventoryTable::ANCHOR);
 
         return new Panel(self::KEY, self::TITLE, self::LINE, true, $body);

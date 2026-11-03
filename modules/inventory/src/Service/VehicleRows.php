@@ -7,6 +7,7 @@ namespace App\Inventory\Service;
 use AIC\Database\Contracts\QueryException;
 use AIC\Database\Contracts\Row;
 use App\Inventory\Entity\Vehicle;
+use App\Inventory\Entity\VehicleLot;
 use App\Inventory\Entity\VehiclePrice;
 use UnexpectedValueException;
 
@@ -49,19 +50,20 @@ final readonly class VehicleRows
             $row->string('exterior_colour'),
             new VehiclePrice($row->int('list_price'), $row->int('cost')),
             $this->vehicleStatuses->stored($row->string('status')),
-            $row->string('added_on'),
+            new VehicleLot($row->string('added_on'), $this->vehicleStatuses->location($row->stringOrNull('location') ?? '')),
         );
     }
 
     /**
      * @param Vehicle $vehicle A vehicle.
      *
-     * @return array<string, string|int> Its values by field, every writable field of `VehicleTable`'s.
+     * @return array<string, string|int> Its values by field, every writable field of `VehicleTable`'s but its location,
+     *                                   which a bulk move alone writes (#29), so a save keeps it as it is.
      */
     public function values(Vehicle $vehicle): array
     {
         return [
-            'added_on' => $vehicle->addedOn,
+            'added_on' => $vehicle->lot->addedOn,
             'body_style' => $vehicle->bodyStyle,
             'cost' => $vehicle->price->cost,
             'exterior_colour' => $vehicle->exteriorColour,

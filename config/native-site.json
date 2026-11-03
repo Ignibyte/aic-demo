@@ -714,6 +714,60 @@
             "captures": false
         },
         {
+            "name": "vehicle bulk edit, no token",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=status%3Aon_hold&vins%5B%5D=0LTGATE19SR999001",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "vehicle bulk edit, no vehicle ticked",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=status%3Aon_hold&return=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle bulk edit, no choice",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=&vins%5B%5D=0LTGATE19SR999001&page%5B%5D=0LTGATE19SR999001&return=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle bulk edit, no choice, from Tessera",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=&vins%5B%5D=0LTGATE19SR999001&page%5B%5D=0LTGATE19SR999001&return=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "Tessera-Request: action\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-0LTGATE19SR999001, @inventory-totals",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle bulk edit, more than a page",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=status%3Aon_hold&vins%5B%5D=0LTBULKZ0SR999501&vins%5B%5D=0LTBULKZ0SR999502&vins%5B%5D=0LTBULKZ0SR999503&vins%5B%5D=0LTBULKZ0SR999504&vins%5B%5D=0LTBULKZ0SR999505&vins%5B%5D=0LTBULKZ0SR999506&vins%5B%5D=0LTBULKZ0SR999507&vins%5B%5D=0LTBULKZ0SR999508&vins%5B%5D=0LTBULKZ0SR999509&vins%5B%5D=0LTBULKZ0SR999510&vins%5B%5D=0LTBULKZ0SR999511&vins%5B%5D=0LTBULKZ0SR999512&vins%5B%5D=0LTBULKZ0SR999513&vins%5B%5D=0LTBULKZ0SR999514&vins%5B%5D=0LTBULKZ0SR999515&vins%5B%5D=0LTBULKZ0SR999516&return=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "vehicle bulk edit, a choice the bar does not offer",
+            "method": "POST",
+            "path": "/app/inventory/bulk",
+            "form": "bulk=paint%3Ared&vins%5B%5D=0LTGATE19SR999001&return=%2Fapp%2Finventory&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
             "name": "vehicle row, malformed VIN",
             "method": "GET",
             "path": "/app/inventory/nope/row",

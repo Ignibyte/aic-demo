@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
+use App\Inventory\Controller\VehicleBulkPost;
 use App\Inventory\Controller\VehicleRowPut;
 
 /**
@@ -24,6 +25,7 @@ final readonly class InventoryRoutesPart2
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
-            ->put('/app/inventory/{vin}/row', VehicleRowPut::class);
+            ->put('/app/inventory/{vin}/row', VehicleRowPut::class)
+            ->post('/app/inventory/bulk', VehicleBulkPost::class);
     }
 }

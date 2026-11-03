@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\Navigation\Navigation;
 use App\Theme\Components\Notice\Notice;
 use App\Theme\Components\Pagination\Pagination;
 use App\Theme\Components\Panel\Panel;
-use App\Theme\Components\PanelGrid\PanelGrid;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
             $component instanceof Notice => $this->renderNotice($component, $renderPass),
             $component instanceof Pagination => $this->renderPagination($component, $renderPass),
             $component instanceof Panel => $this->renderPanel($component, $renderPass),
-            $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param Navigation $navigation The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/Navigation/navigation.phtml.
+     */
+    private function renderNavigation(Navigation $navigation, RenderPass $renderPass): string
+    {
+        $renderPass->open($navigation);
+        require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     {
         $renderPass->open($panel);
         require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param PanelGrid  $panelGrid  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/PanelGrid/panel-grid.phtml.
-     */
-    private function renderPanelGrid(PanelGrid $panelGrid, RenderPass $renderPass): string
-    {
-        $renderPass->open($panelGrid);
-        require __DIR__ . '/templates/themes/lotline/components/PanelGrid/panel-grid.phtml';
 
         return $renderPass->close();
     }

@@ -11,7 +11,7 @@ use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\BellItem\BellItem;
 use App\Theme\Components\BellItems\BellItems;
 use App\Theme\Components\BootstrapIntro\BootstrapIntro;
-use App\Theme\Components\CarGrid\CarGrid;
+use App\Theme\Components\BulkBar\BulkBar;
 use Override;
 
 /**
@@ -43,7 +43,7 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
             $component instanceof BellItem => $this->renderBellItem($component, $renderPass),
             $component instanceof BellItems => $this->renderBellItems($component, $renderPass),
             $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
-            $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
+            $component instanceof BulkBar => $this->renderBulkBar($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -97,17 +97,17 @@ final readonly class ThemeTemplatesPart2 implements ComponentTemplates
     }
 
     /**
-     * @param CarGrid    $carGrid    The component; its template reads it.
+     * @param BulkBar    $bulkBar    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/CarGrid/car-grid.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/BulkBar/bulk-bar.phtml.
      */
-    private function renderCarGrid(CarGrid $carGrid, RenderPass $renderPass): string
+    private function renderBulkBar(BulkBar $bulkBar, RenderPass $renderPass): string
     {
-        $renderPass->open($carGrid);
-        require __DIR__ . '/templates/themes/lotline/components/CarGrid/car-grid.phtml';
+        $renderPass->open($bulkBar);
+        require __DIR__ . '/templates/themes/lotline/components/BulkBar/bulk-bar.phtml';
 
         return $renderPass->close();
     }

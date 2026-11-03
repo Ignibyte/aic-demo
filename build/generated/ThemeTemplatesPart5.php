@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\EditRow\EditRow;
 use App\Theme\Components\FilterBar\FilterBar;
 use App\Theme\Components\FinanceCalculator\FinanceCalculator;
 use App\Theme\Components\FormActions\FormActions;
-use App\Theme\Components\FormField\FormField;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof EditRow => $this->renderEditRow($component, $renderPass),
             $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
             $component instanceof FinanceCalculator => $this->renderFinanceCalculator($component, $renderPass),
             $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
-            $component instanceof FormField => $this->renderFormField($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param EditRow    $editRow    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/EditRow/edit-row.phtml.
+     */
+    private function renderEditRow(EditRow $editRow, RenderPass $renderPass): string
+    {
+        $renderPass->open($editRow);
+        require __DIR__ . '/templates/themes/lotline/components/EditRow/edit-row.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     {
         $renderPass->open($formActions);
         require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param FormField  $formField  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/FormField/form-field.phtml.
-     */
-    private function renderFormField(FormField $formField, RenderPass $renderPass): string
-    {
-        $renderPass->open($formField);
-        require __DIR__ . '/templates/themes/lotline/components/FormField/form-field.phtml';
 
         return $renderPass->close();
     }

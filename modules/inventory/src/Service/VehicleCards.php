@@ -110,7 +110,7 @@ final readonly class VehicleCards
             new Fact('Exterior colour', $vehicle->exteriorColour, false),
             new Fact('Mileage', number_format($vehicle->mileage) . ' mi', false),
             new Fact('List price', '$' . number_format($vehicle->price->list), false),
-            new Fact('On the lot since', $vehicle->addedOn, false),
+            new Fact('On the lot since', $vehicle->lot->addedOn, false),
         ], '', $actions);
     }
 }

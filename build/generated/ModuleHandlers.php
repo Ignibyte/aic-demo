@@ -40,9 +40,9 @@ final readonly class ModuleHandlers
             (new InventoryHandlersPart2($this->handlerContext))->byId(),
             (new InventoryHandlersPart3($this->handlerContext))->byId(),
             (new InventoryHandlersPart4($this->handlerContext))->byId(),
+            (new InventoryHandlersPart5($this->handlerContext))->byId(),
             (new HoldsHandlers($this->handlerContext))->byId(),
             (new SalesHandlers($this->handlerContext))->byId(),
-            (new SalesHandlersPart2($this->handlerContext))->byId(),
             (new ModuleHandlersPart2($this->handlerContext))->byId(),
         );
     }

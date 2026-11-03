@@ -68,7 +68,7 @@ test('the toolbar lists each exchange of a vehicle row with the row alone, and n
     await price.press('Enter');
     await expect(price).toHaveAttribute('aria-invalid', 'true');
     await price.press('Escape');
-    await expect(row.locator('input')).toHaveCount(0);
+    await expect(row.locator('input:not([name="vins[]"])')).toHaveCount(0);
 
     await openToolbar(page);
     const form = rowLine('GET', `${PATH}/row/edit`, anchor, '200');

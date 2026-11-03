@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\CarGrid\CarGrid;
 use App\Theme\Components\CarProfile\CarProfile;
 use App\Theme\Components\CheckGroup\CheckGroup;
 use App\Theme\Components\ColumnChart\ColumnChart;
-use App\Theme\Components\ConfirmCard\ConfirmCard;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
             $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
             $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
             $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
-            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param CarGrid    $carGrid    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CarGrid/car-grid.phtml.
+     */
+    private function renderCarGrid(CarGrid $carGrid, RenderPass $renderPass): string
+    {
+        $renderPass->open($carGrid);
+        require __DIR__ . '/templates/themes/lotline/components/CarGrid/car-grid.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         $renderPass->open($columnChart);
         require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ConfirmCard $confirmCard The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
-     */
-    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($confirmCard);
-        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
 
         return $renderPass->close();
     }
