@@ -2,9 +2,10 @@
 number: 35
 title: "The jobs page: queued, retrying and failed work"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-04T23:05:58Z
+phase: "docs"
 ---
 
 Admins see AIC's queue at `/app/jobs`: pending, running, retrying (with the next attempt's time

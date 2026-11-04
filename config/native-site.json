@@ -3659,6 +3659,62 @@
             "console": "user:remove gate-newcomer@lotline.test"
         },
         {
+            "name": "jobs, signed in, the queue drained",
+            "method": "GET",
+            "path": "/app/jobs",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "jobs, a Tessera refresh of the live part by its anchor",
+            "method": "GET",
+            "path": "/app/jobs",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @jobs-live",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "jobs retry, no token",
+            "method": "POST",
+            "path": "/app/jobs/failed/999999999/retry",
+            "form": "",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "jobs retry, unknown",
+            "method": "POST",
+            "path": "/app/jobs/failed/999999999/retry",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "jobs discard, no token",
+            "method": "POST",
+            "path": "/app/jobs/failed/999999999/discard",
+            "form": "",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "jobs discard, unknown",
+            "method": "POST",
+            "path": "/app/jobs/failed/999999999/discard",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "inbox, sign-out",
             "method": "POST",
             "path": "/sign-out",
@@ -3753,6 +3809,24 @@
             "method": "POST",
             "path": "/app/settings/profile",
             "form": "name=Gate",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "jobs, signed out",
+            "method": "GET",
+            "path": "/app/jobs",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "jobs retry, signed out",
+            "method": "POST",
+            "path": "/app/jobs/failed/1/retry",
+            "form": "",
             "header": "",
             "status": 303,
             "captures": false

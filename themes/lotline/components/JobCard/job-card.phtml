@@ -1,0 +1,7 @@
+<?php /** @var \App\Theme\Components\JobCard\JobCard $jobCard */ ?>
+<div class="card bg-base-100" id="<?= $jobCard->id ?>"><div class="card-body">
+<div class="flex flex-wrap items-center gap-3"><h3 class="card-title font-mono" id="<?= $jobCard->id ?>-title"><?= $jobCard->title ?></h3><?= $jobCard->statusBadge ?></div>
+<dl class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2 text-sm"><?php foreach ($jobCard->facts as $fact): ?><dt class="opacity-70"><?= $fact->term ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $fact->detail ?></dd><?php endforeach ?></dl>
+<p class="font-mono text-sm" id="<?= $jobCard->id ?>-reason"><?= $jobCard->reason ?></p>
+<div class="card-actions mt-4"><form method="post" action="<?= $jobCard->retry ?>"><?= $jobCard->guardFields ?><button class="btn btn-sm btn-primary" type="submit" id="<?= $jobCard->id ?>-retry">Retry now</button></form><form method="post" action="<?= $jobCard->discard ?>"><?= $jobCard->guardFields ?><button class="btn btn-sm btn-error btn-outline" type="submit" id="<?= $jobCard->id ?>-discard">Discard</button></form></div>
+</div></div>
