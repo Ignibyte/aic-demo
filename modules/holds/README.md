@@ -17,6 +17,8 @@ A vehicle in stock kept for a customer for 48 hours (#20): off the public site, 
 
 A hold whose customer was deleted has none, so the vehicle sells to no one until the hold is released.
 
+For a vehicle's page (#31) `HoldRepository` also gives `forVehicle()`, the vehicle's newest holds from `hold_states` by its VIN whatever their status, each a `HoldTrace` (exported) with its state as staff read it (Active, Expired once its time passed, Released or Sold; `HoldRows::trace()`), and `version()`, the vehicle's holds' count, newest `updated_at` and how many active ones passed their time. The `panels` module's leads and holds panel reads them.
+
 ## Pages
 
 | Route | Controller | What it answers |

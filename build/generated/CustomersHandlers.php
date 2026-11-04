@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Customers\Controller\CustomerCreatePost;
 use App\Customers\Controller\CustomerDeletePage;
@@ -14,9 +13,6 @@ use App\Customers\Controller\CustomerEditPage;
 use App\Customers\Controller\CustomerNewPage;
 use App\Customers\Controller\CustomerPage;
 use App\Customers\Controller\CustomerUpdatePost;
-use App\Customers\Service\CustomerPurchases;
-use App\Customers\Service\CustomerServices;
-use App\Staff\Service\DealershipNames;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -40,25 +36,17 @@ final readonly class CustomersHandlers
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $customerServices = new CustomerServices(
-            $entityStore,
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->documents(),
-            $this->handlerContext->tagged(CustomerPurchases::class),
-            $this->handlerContext->tagged(DealershipNames::class),
-        );
-        $customerSaves = $customerServices->customerSaves();
-        $customerDeletes = $customerServices->customerDeletes();
+        $customersHandlerServices = new CustomersHandlerServices($this->handlerContext);
+        $customerCards = $customersHandlerServices->customerServices()->customerCards();
 
         return [
-            CustomerCreatePost::class => $this->handlerContext->page(new CustomerCreatePost($customerSaves)),
-            CustomerDeletePage::class => $this->handlerContext->page(new CustomerDeletePage($customerDeletes)),
-            CustomerDeletePost::class => $this->handlerContext->page(new CustomerDeletePost($customerDeletes)),
-            CustomerEditPage::class => $this->handlerContext->page(new CustomerEditPage($customerSaves)),
-            CustomerNewPage::class => $this->handlerContext->page(new CustomerNewPage($customerSaves)),
-            CustomerPage::class => $this->handlerContext->page(new CustomerPage($customerServices->customerCards())),
-            CustomerUpdatePost::class => $this->handlerContext->page(new CustomerUpdatePost($customerSaves)),
+            CustomerCreatePost::class => $this->handlerContext->page(new CustomerCreatePost($customersHandlerServices->customerSaves())),
+            CustomerDeletePage::class => $this->handlerContext->page(new CustomerDeletePage($customersHandlerServices->customerDeletes())),
+            CustomerDeletePost::class => $this->handlerContext->page(new CustomerDeletePost($customersHandlerServices->customerDeletes())),
+            CustomerEditPage::class => $this->handlerContext->page(new CustomerEditPage($customersHandlerServices->customerSaves())),
+            CustomerNewPage::class => $this->handlerContext->page(new CustomerNewPage($customersHandlerServices->customerSaves())),
+            CustomerPage::class => $this->handlerContext->page(new CustomerPage($customerCards)),
+            CustomerUpdatePost::class => $this->handlerContext->page(new CustomerUpdatePost($customersHandlerServices->customerSaves())),
         ];
     }
 }

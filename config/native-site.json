@@ -408,6 +408,33 @@
             "captures": false
         },
         {
+            "name": "vehicle price history panel, anonymous",
+            "method": "GET",
+            "path": "/app/inventory/0LTAAA000SR104729/price-history",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle similar vehicles panel, anonymous",
+            "method": "GET",
+            "path": "/app/inventory/0LTAAA000SR104729/similar",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "vehicle leads and holds panel, anonymous",
+            "method": "GET",
+            "path": "/app/inventory/0LTAAA000SR104729/activity",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
             "name": "customer row, anonymous",
             "method": "GET",
             "path": "/app/customers/1/row",
@@ -567,6 +594,96 @@
             "form": "",
             "header": "",
             "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle page, a Tessera visit with its panels as skeletons",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle price history panel",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/price-history",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle price history panel, a Tessera refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/price-history",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-price-history",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle price history panel, a VIN on no vehicle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE99SR999099/price-history",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle similar vehicles panel",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/similar",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle similar vehicles panel, a Tessera refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/similar",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-similar",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle similar vehicles panel, a VIN on no vehicle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE99SR999099/similar",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "vehicle leads and holds panel",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/activity",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle leads and holds panel, a Tessera refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/activity",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-activity",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle leads and holds panel, a VIN on no vehicle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE99SR999099/activity",
+            "form": "",
+            "header": "",
+            "status": 404,
             "captures": false
         },
         {
@@ -3400,6 +3517,42 @@
             "path": "/app/inventory/0LTGATE49SR999025",
             "form": "",
             "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle page, a Tessera visit with its panels as skeletons",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle price history panel, its refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025/price-history",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-price-history",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle similar vehicles panel, its refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025/similar",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-similar",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "profiled vehicle leads and holds panel, its refresh by its anchor",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE49SR999025/activity",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @vehicle-activity",
             "status": 200,
             "captures": false
         },

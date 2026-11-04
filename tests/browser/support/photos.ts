@@ -178,15 +178,18 @@ export interface Answer {
     location: string;
 }
 
-// Records the page's answers but its assets, its images and the bell's stream. It only listens: `recordRequests()` sends each request again
-// through `route.fetch()`, which sends a multipart upload's file empty, so the photo looks cannot use it.
+// Records the page's answers but its assets, its images, the bell's stream and Tessera's refreshes: the vehicle page's
+// panels load and poll by refresh (#31), as `recordRequests()` lets them go by. It only listens: `recordRequests()`
+// sends each request again through `route.fetch()`, which sends a multipart upload's file empty, so the photo looks
+// cannot use it.
 export function recordAnswers(page: Page): Answer[] {
     const answers: Answer[] = [];
     page.on('response', (response) => {
         const request = response.request();
         const url = new URL(request.url());
 
-        const stream = request.headers()['tessera-request'] === 'stream';
+        const kind = request.headers()['tessera-request'];
+        const stream = kind === 'stream' || kind === 'refresh';
 
         if (url.pathname.startsWith('/assets/') || request.resourceType() === 'image' || stream) {
             return;

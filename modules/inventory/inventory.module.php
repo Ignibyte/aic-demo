@@ -20,7 +20,9 @@ declare(strict_types=1);
  * one opens with (gate:14). A list row is edited in place (#28): its row shown, its row as a form, and its save, a
  * PUT (AIC #242), after the list's route, so their generated part builds the rows' services alone and does not
  * open as the record's forms' part does (gate:14). The list's ticked rows are edited at once (#29): a POST, last, that
- * sets their status, moves them to a lot location (a column its own migration adds) or deletes them. The build reads it;
+ * sets their status, moves them to a lot location (a column its own migration adds) or deletes them. A vehicle's page
+ * places the panels the `VehiclePanel` plugins give (#31), which the panels module registers, and its exported price
+ * changes (`vehicle_prices`, their own migration) are what one of them draws. The build reads it;
  * nothing reads it at run time.
  */
 
@@ -44,20 +46,25 @@ use App\Inventory\Controller\VehicleRowPut;
 use App\Inventory\Controller\VehicleUpdatePost;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Entity\ListingQuery;
+use App\Inventory\Entity\PricePoint;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Entity\VehicleLot;
+use App\Inventory\Entity\VehiclePanel;
 use App\Inventory\Entity\VehiclePrice;
 use App\Inventory\Entity\VehicleSale;
 use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Migration\AddVehicleLocation;
 use App\Inventory\Migration\CreateTodayView;
+use App\Inventory\Migration\CreateVehiclePricesTable;
 use App\Inventory\Migration\CreateVehiclesTable;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Inventory\Repository\TodayRepository;
+use App\Inventory\Repository\VehiclePriceRepository;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Repository\VehicleStatusRepository;
 use App\Inventory\Service\SeedVehicles;
+use App\Inventory\Service\VehicleRecords;
 use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
 use App\Inventory\Service\Vins;
@@ -86,6 +93,7 @@ return (new ModuleManifest('inventory'))
     ->migration(CreateVehiclesTable::class)
     ->migration(CreateTodayView::class)
     ->migration(AddVehicleLocation::class)
+    ->migration(CreateVehiclePricesTable::class)
     ->export(VehicleSales::class)
     ->export(VehicleSale::class)
     ->export(Vehicle::class)
@@ -100,4 +108,8 @@ return (new ModuleManifest('inventory'))
     ->export(TodayRepository::class)
     ->export(ListedVehicleRepository::class)
     ->export(ListedVehicle::class)
-    ->export(ListingQuery::class);
+    ->export(ListingQuery::class)
+    ->export(VehiclePanel::class)
+    ->export(PricePoint::class)
+    ->export(VehiclePriceRepository::class)
+    ->export(VehicleRecords::class);

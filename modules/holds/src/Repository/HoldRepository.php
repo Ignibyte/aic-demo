@@ -12,6 +12,7 @@ use App\Holds\Entity\Hold;
 use App\Holds\Entity\HoldDetails;
 use App\Holds\Entity\HoldStatus;
 use App\Holds\Entity\HoldTable;
+use App\Holds\Entity\HoldTrace;
 use App\Holds\Entity\HoldWrite;
 use App\Holds\Service\HoldRows;
 use App\Inventory\Entity\VehicleStatus;
@@ -26,6 +27,7 @@ use Throwable;
  * `markReleased()`. Exported: `sales` asks whether a vehicle is held for another customer and ends
  * a hold when its vehicle is sold, both on its own transaction. The placement's closure is static and calls one public
  * method of this repository, `placeLocked()`, the shape the native compiler takes for a closure; nothing else calls it.
+ * A vehicle's page lists its holds, newest first, with their version, which its leads and holds panel polls (#31).
  */
 final readonly class HoldRepository
 {
@@ -179,6 +181,55 @@ final readonly class HoldRepository
     public function endForSale(int $vehicleId): void
     {
         $this->activeFor($vehicleId)->changes()->update(['status' => HoldStatus::Sold->value]);
+    }
+
+    /**
+     * @param string $vin   A vehicle's VIN.
+     * @param int    $limit How many to read, at least 1.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed or the limit is below 1.
+     *
+     * @return list<HoldTrace> Its newest holds, whatever their status, at most `$limit`, newest first.
+     */
+    public function forVehicle(string $vin, int $limit): array
+    {
+        $traces = [];
+        $rows = $this->entityStore->query($this->holdTable->states())
+            ->where('vin', $vin)
+            ->orderByDescending('id')
+            ->limit($limit)
+            ->rows();
+
+        foreach ($rows as $row) {
+            $traces[] = $this->holdRows->trace($row);
+        }
+
+        return $traces;
+    }
+
+    /**
+     * @param string $vin A vehicle's VIN.
+     *
+     * @throws QueryException           When a query fails.
+     * @throws InvalidArgumentException When an entity type is malformed.
+     *
+     * @return string What its holds are now: their count, the newest `updated_at` among them and how many active ones
+     *                have passed their time, so a hold placed, released, sold or expired changes it.
+     */
+    public function version(string $vin): string
+    {
+        $entityQuery = $this->entityStore->query($this->holdTable->type())
+            ->with('vehicle_id', 'v')
+            ->where('v.vin', $vin);
+        $expired = $this->entityStore->query($this->holdTable->states())
+            ->where('vin', $vin)
+            ->where('status', HoldStatus::Active->value)
+            ->where('expired', true);
+
+        $updated = $entityQuery->totals()->max('updated_at') ?? '';
+
+        return $entityQuery->totals()->count() . '.' . $updated . '.' . $expired->totals()->count();
     }
 
     /**

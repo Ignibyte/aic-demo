@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Inventory\Repository\VehicleStatusRepository;
-use App\Sales\Controller\SaleCreatePost;
-use App\Sales\Controller\SaleNewPage;
 use App\Sales\Controller\SalePage;
 use App\Sales\Controller\SaleVoidPage;
-use App\Sales\Repository\SaleRecordRepository;
-use App\Sales\Service\SaleRecordServices;
-use App\Sales\Service\SaleServices;
-use App\Staff\Service\DealershipNames;
+use App\Sales\Controller\SaleVoidPost;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -39,24 +32,12 @@ final readonly class SalesHandlersPart2
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $vehicleStatusRepository = new VehicleStatusRepository($entityStore);
-        $saleRecordRepository = new SaleRecordRepository($entityStore, $vehicleStatusRepository);
-        $saleServices = new SaleServices($entityStore, $this->handlerContext->documents(), $saleRecordRepository);
-        $saleSaves = $saleServices->saleSaves();
-        $saleRecordServices = new SaleRecordServices(
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->documents(),
-            $saleRecordRepository,
-            $entityStore,
-            $this->handlerContext->tagged(DealershipNames::class),
-        );
+        $salesHandlerServices = new SalesHandlerServices($this->handlerContext);
 
         return [
-            SaleCreatePost::class => $this->handlerContext->page(new SaleCreatePost($saleSaves)),
-            SaleNewPage::class => $this->handlerContext->page(new SaleNewPage($saleSaves)),
-            SalePage::class => $this->handlerContext->page(new SalePage($saleRecordServices->saleCards())),
-            SaleVoidPage::class => $this->handlerContext->page(new SaleVoidPage($saleRecordServices->saleVoids())),
+            SalePage::class => $this->handlerContext->page(new SalePage($salesHandlerServices->saleRecordServices()->saleCards())),
+            SaleVoidPage::class => $this->handlerContext->page(new SaleVoidPage($salesHandlerServices->saleVoids())),
+            SaleVoidPost::class => $this->handlerContext->page(new SaleVoidPost($salesHandlerServices->saleVoids())),
         ];
     }
 }

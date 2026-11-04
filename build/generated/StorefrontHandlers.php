@@ -5,19 +5,16 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use AIC\Queue\Application\PostgresQueue;
-use AIC\Storage\Application\PublicFiles;
-use App\Inventory\Repository\TodayRepository;
-use App\Leads\Repository\LeadRepository;
-use App\Leads\Service\LeadDesk;
-use App\Settings\Service\DealershipProfiles;
 use App\Storefront\Controller\CarInquiryPost;
+use App\Storefront\Controller\CarListPage;
 use App\Storefront\Controller\CarPage;
+use App\Storefront\Controller\CarPhotoStream;
 use App\Storefront\Controller\CarTestDrivePost;
-use App\Storefront\Service\StorePages;
-use App\Storefront\Service\StoreServices;
+use App\Storefront\Controller\VehicleFeedApi;
+use App\Storefront\Controller\VehicleFeedItemApi;
+use App\Storefront\Service\CarListing;
+use App\Storefront\Service\CarTiles;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -41,21 +38,23 @@ final readonly class StorefrontHandlers
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $dealershipProfiles = new DealershipProfiles($entityStore);
-        $storePages = new StorePages($this->handlerContext->documents(), $dealershipProfiles);
-        $postgresQueue = new PostgresQueue($this->handlerContext->database());
-        $todayRepository = new TodayRepository($entityStore);
-        $leadRepository = new LeadRepository($entityStore);
-        $leadDesk = new LeadDesk($postgresQueue, $todayRepository, $leadRepository, $dealershipProfiles);
-        $publicFiles = new PublicFiles($this->handlerContext->root());
-        $storeServices = new StoreServices($entityStore, $storePages, $leadDesk, $publicFiles);
-        $carPages = $storeServices->carPages();
+        $storefrontHandlerServices = new StorefrontHandlerServices($this->handlerContext);
+        $storefrontHandlerServicesPart2 = new StorefrontHandlerServicesPart2($this->handlerContext);
+        $carListing = new CarListing(
+            $storefrontHandlerServices->listedVehicleRepository(),
+            new CarTiles($storefrontHandlerServices->carFinder()),
+        );
 
         return [
-            CarInquiryPost::class => $this->handlerContext->page(new CarInquiryPost($carPages)),
-            CarPage::class => $this->handlerContext->page(new CarPage($carPages)),
-            CarTestDrivePost::class => $this->handlerContext->page(new CarTestDrivePost($carPages)),
+            CarInquiryPost::class => $this->handlerContext->page(new CarInquiryPost($storefrontHandlerServices->carPages())),
+            CarListPage::class => $this->handlerContext->page(new CarListPage($storefrontHandlerServices->storePages(), $carListing)),
+            CarPage::class => $this->handlerContext->page(new CarPage($storefrontHandlerServices->carPages())),
+            CarPhotoStream::class => $this->handlerContext->stream(new CarPhotoStream($storefrontHandlerServices->carFinder())),
+            CarTestDrivePost::class => $this->handlerContext->page(new CarTestDrivePost($storefrontHandlerServices->carPages())),
+            VehicleFeedApi::class => $this->handlerContext->api(new VehicleFeedApi($storefrontHandlerServicesPart2->feedVehicles())),
+            VehicleFeedItemApi::class => $this->handlerContext->api(
+                new VehicleFeedItemApi($storefrontHandlerServices->carFinder(), $storefrontHandlerServicesPart2->feedVehicles()),
+            ),
         ];
     }
 }

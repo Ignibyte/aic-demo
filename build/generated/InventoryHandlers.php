@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use AIC\Storage\Application\PublicFiles;
-use App\Finance\Service\FinanceRates;
 use App\Inventory\Controller\VehicleCreatePost;
+use App\Inventory\Controller\VehicleDeletePage;
+use App\Inventory\Controller\VehicleDeletePost;
 use App\Inventory\Controller\VehicleEditPage;
 use App\Inventory\Controller\VehicleNewPage;
 use App\Inventory\Controller\VehiclePage;
+use App\Inventory\Controller\VehiclePhotoDeletePost;
+use App\Inventory\Controller\VehiclePhotoPost;
+use App\Inventory\Controller\VehiclePhotoStream;
 use App\Inventory\Controller\VehicleUpdatePost;
-use App\Inventory\Service\VehicleSales;
-use App\Inventory\Service\VehicleServices;
-use App\Staff\Form\StaffSeals;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -40,25 +39,25 @@ final readonly class InventoryHandlers
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
-        $publicFiles = new PublicFiles($this->handlerContext->root());
-        $vehicleServices = new VehicleServices(
-            $entityStore,
-            $this->handlerContext->documents(),
-            $staffSeals,
-            $this->handlerContext->tagged(VehicleSales::class),
-            $publicFiles,
-            $this->handlerContext->tagged(FinanceRates::class),
-        );
-        $vehicleSaves = $vehicleServices->vehicleSaves();
+        $inventoryHandlerServices = new InventoryHandlerServices($this->handlerContext);
 
         return [
-            VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($vehicleSaves)),
-            VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($vehicleSaves)),
-            VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($vehicleSaves)),
-            VehiclePage::class => $this->handlerContext->page(new VehiclePage($vehicleServices->vehicleCards())),
-            VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($vehicleSaves)),
+            VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($inventoryHandlerServices->vehicleSaves())),
+            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($inventoryHandlerServices->vehicleServices())),
+            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($inventoryHandlerServices->vehicleServices())),
+            VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($inventoryHandlerServices->vehicleSaves())),
+            VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($inventoryHandlerServices->vehicleSaves())),
+            VehiclePage::class => $this->handlerContext->page(
+                new VehiclePage($inventoryHandlerServices->vehicleServices()->vehicleCards()),
+            ),
+            VehiclePhotoDeletePost::class => $this->handlerContext->page(
+                new VehiclePhotoDeletePost($inventoryHandlerServices->vehiclePhotoForms()),
+            ),
+            VehiclePhotoPost::class => $this->handlerContext->page(new VehiclePhotoPost($inventoryHandlerServices->vehiclePhotoForms())),
+            VehiclePhotoStream::class => $this->handlerContext->stream(
+                new VehiclePhotoStream($inventoryHandlerServices->vehiclePhotoForms()),
+            ),
+            VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($inventoryHandlerServices->vehicleSaves())),
         ];
     }
 }

@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Auth\Application\PgcryptoPasswordHasher;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use AIC\Queue\Application\PostgresQueue;
+use App\Settings\Controller\MemberActivePost;
 use App\Settings\Controller\MemberAddPost;
+use App\Settings\Controller\MemberLinkPost;
+use App\Settings\Controller\MemberPage;
+use App\Settings\Controller\MemberPost;
+use App\Settings\Controller\PasswordPage;
+use App\Settings\Controller\PasswordPost;
 use App\Settings\Controller\ProfilePost;
 use App\Settings\Controller\SettingsPage;
-use App\Settings\Service\MemberServices;
-use App\Settings\Service\SettingsServices;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
@@ -37,23 +38,22 @@ final readonly class SettingsHandlers
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $settingsServices = new SettingsServices($entityStore, $this->handlerContext->envelopeCodec(), $this->handlerContext->documents());
-        $pgcryptoPasswordHasher = new PgcryptoPasswordHasher($this->handlerContext->database());
-        $memberServices = new MemberServices(
-            $pgcryptoPasswordHasher,
-            $this->handlerContext->documents(),
-            $this->handlerContext->envelopeCodec(),
-            $entityStore,
-            new PostgresQueue($this->handlerContext->database()),
-        );
+        $settingsHandlerServices = new SettingsHandlerServices($this->handlerContext);
+        $settingsAccess = $settingsHandlerServices->settingsServices()->settingsAccess();
+        $settingsPanels = $settingsHandlerServices->settingsServices()->settingsPanels();
 
         return [
-            MemberAddPost::class => $this->handlerContext->page(new MemberAddPost($memberServices->memberSaves())),
-            ProfilePost::class => $this->handlerContext->page(new ProfilePost($settingsServices->profileSaves())),
-            SettingsPage::class => $this->handlerContext->page(
-                new SettingsPage($settingsServices->settingsAccess(), $settingsServices->settingsPanels()),
+            MemberActivePost::class => $this->handlerContext->page(new MemberActivePost($settingsHandlerServices->memberMoves())),
+            MemberAddPost::class => $this->handlerContext->page(new MemberAddPost($settingsHandlerServices->memberSaves())),
+            MemberLinkPost::class => $this->handlerContext->page(new MemberLinkPost($settingsHandlerServices->memberMoves())),
+            MemberPage::class => $this->handlerContext->page(new MemberPage($settingsHandlerServices->memberSaves())),
+            MemberPost::class => $this->handlerContext->page(new MemberPost($settingsHandlerServices->memberServices()->memberEdits())),
+            PasswordPage::class => $this->handlerContext->page(new PasswordPage($settingsHandlerServices->passwordDesk())),
+            PasswordPost::class => $this->handlerContext->page(new PasswordPost($settingsHandlerServices->passwordDesk())),
+            ProfilePost::class => $this->handlerContext->page(
+                new ProfilePost($settingsHandlerServices->settingsServices()->profileSaves()),
             ),
+            SettingsPage::class => $this->handlerContext->page(new SettingsPage($settingsAccess, $settingsPanels)),
         ];
     }
 }

@@ -414,6 +414,27 @@
             "path": "/app/leads"
         },
         {
+            "handler": "App\\Panels\\Controller\\PriceHistoryPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "panels",
+            "path": "/app/inventory/{vin}/price-history"
+        },
+        {
+            "handler": "App\\Panels\\Controller\\SimilarVehiclesPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "panels",
+            "path": "/app/inventory/{vin}/similar"
+        },
+        {
+            "handler": "App\\Panels\\Controller\\VehicleActivityPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "panels",
+            "path": "/app/inventory/{vin}/activity"
+        },
+        {
             "handler": "App\\Reports\\Controller\\ReportsPage",
             "kind": "Page",
             "method": "GET",
@@ -834,7 +855,11 @@
                 "App\\Inventory\\Repository\\TodayRepository",
                 "App\\Inventory\\Repository\\ListedVehicleRepository",
                 "App\\Inventory\\Entity\\ListedVehicle",
-                "App\\Inventory\\Entity\\ListingQuery"
+                "App\\Inventory\\Entity\\ListingQuery",
+                "App\\Inventory\\Entity\\VehiclePanel",
+                "App\\Inventory\\Entity\\PricePoint",
+                "App\\Inventory\\Repository\\VehiclePriceRepository",
+                "App\\Inventory\\Service\\VehicleRecords"
             ],
             "factories": [
                 "App\\Inventory\\Service\\VehicleServices"
@@ -843,7 +868,8 @@
             "migrations": [
                 "App\\Inventory\\Migration\\CreateVehiclesTable",
                 "App\\Inventory\\Migration\\CreateTodayView",
-                "App\\Inventory\\Migration\\AddVehicleLocation"
+                "App\\Inventory\\Migration\\AddVehicleLocation",
+                "App\\Inventory\\Migration\\CreateVehiclePricesTable"
             ],
             "name": "inventory",
             "namespace": "App\\Inventory\\",
@@ -859,7 +885,8 @@
             "bindings": [],
             "blocks": [],
             "exports": [
-                "App\\Holds\\Repository\\HoldRepository"
+                "App\\Holds\\Repository\\HoldRepository",
+                "App\\Holds\\Entity\\HoldTrace"
             ],
             "factories": [
                 "App\\Holds\\Service\\HoldServices"
@@ -996,7 +1023,9 @@
             "exports": [
                 "App\\Leads\\Service\\LeadDesk",
                 "App\\Leads\\Entity\\LeadKind",
-                "App\\Leads\\Entity\\LeadReply"
+                "App\\Leads\\Entity\\LeadReply",
+                "App\\Leads\\Repository\\VehicleLeadRepository",
+                "App\\Leads\\Entity\\VehicleLead"
             ],
             "factories": [
                 "App\\Leads\\Service\\LeadServices"
@@ -1016,6 +1045,37 @@
                 "inventory",
                 "customers",
                 "settings"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "panels",
+            "namespace": "App\\Panels\\",
+            "plugins": [
+                {
+                    "class": "App\\Panels\\Service\\PriceHistoryPanel",
+                    "type": "App\\Inventory\\Entity\\VehiclePanel"
+                },
+                {
+                    "class": "App\\Panels\\Service\\SimilarVehiclesPanel",
+                    "type": "App\\Inventory\\Entity\\VehiclePanel"
+                },
+                {
+                    "class": "App\\Panels\\Service\\VehicleActivityPanel",
+                    "type": "App\\Inventory\\Entity\\VehiclePanel"
+                }
+            ],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "leads",
+                "holds"
             ]
         },
         {
@@ -1245,6 +1305,11 @@
                 "source": "themes/lotline/components/IconLegend/icon-legend.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\LazyPanel\\LazyPanel",
+                "generated": "build/generated/templates/themes/lotline/components/LazyPanel/lazy-panel.phtml",
+                "source": "themes/lotline/components/LazyPanel/lazy-panel.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\LeadBoard\\LeadBoard",
                 "generated": "build/generated/templates/themes/lotline/components/LeadBoard/lead-board.phtml",
                 "source": "themes/lotline/components/LeadBoard/lead-board.phtml"
@@ -1293,6 +1358,11 @@
                 "component": "App\\Theme\\Components\\PhotoGallery\\PhotoGallery",
                 "generated": "build/generated/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml",
                 "source": "themes/lotline/components/PhotoGallery/photo-gallery.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\PriceLine\\PriceLine",
+                "generated": "build/generated/templates/themes/lotline/components/PriceLine/price-line.phtml",
+                "source": "themes/lotline/components/PriceLine/price-line.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\RangeLinks\\RangeLinks",

@@ -17,11 +17,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
 use function count;
+use function strrpos;
+use function substr;
 
 /**
  * A vehicle's photos as the theme's `PhotoGallery`, for its page: every photo, the first as the main one, each with
  * an `alt` that names the vehicle; and, for a sales manager or an admin, `PhotoForms`' delete form under each photo and
- * its upload form after them. A salesperson gets the photos alone.
+ * its upload form after them. A salesperson gets the photos alone. Its strip (#31) is named by the vehicle's VIN, the
+ * number of photos and the newest photo's bytes, so Tessera keeps it across a redraw with the same photos.
  */
 final readonly class PhotoGalleries
 {
@@ -77,7 +80,36 @@ final readonly class PhotoGalleries
             ? [new KeyedComponent('upload', $this->photoForms->upload($vehiclePath, $refusal, $guardFields))]
             : [];
 
-        return new PhotoGallery('vehicle-photos', 'Photos', 'No photos of this vehicle yet.', $photos, $controls);
+        $strip = $this->strip($vehiclePath, $vehiclePhotos);
+
+        return new PhotoGallery('vehicle-photos', 'Photos', 'No photos of this vehicle yet.', $photos, $controls, $strip);
+    }
+
+    /**
+     * @param string             $vehiclePath   A vehicle's page, `/app/inventory/{VIN}`.
+     * @param list<VehiclePhoto> $vehiclePhotos Its photos.
+     *
+     * @return string Its strip's id, `vehicle-photos-<VIN>-<count>-<tag>`: the VIN is the page's last segment, and the
+     *                tag the first 12 hex digits of the newest photo's SHA-256, `none` with no photo. Its bytes, not its
+     *                id, so both of gate:23's passes write the same id.
+     */
+    private function strip(string $vehiclePath, array $vehiclePhotos): string
+    {
+        $newest = 0;
+        $tag = 'none';
+
+        foreach ($vehiclePhotos as $vehiclePhoto) {
+            if ($vehiclePhoto->id <= $newest) {
+                continue;
+            }
+
+            $newest = $vehiclePhoto->id;
+            $tag = substr($vehiclePhoto->sha256, 0, 12);
+        }
+
+        $vin = substr($vehiclePath, (int) strrpos($vehiclePath, '/') + 1);
+
+        return 'vehicle-photos-' . $vin . '-' . count($vehiclePhotos) . '-' . $tag;
     }
 
     /**

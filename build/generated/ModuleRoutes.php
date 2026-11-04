@@ -32,8 +32,8 @@ final readonly class ModuleRoutes
         $routeCollector = (new InboxRoutes())->add($routeCollector);
         $routeCollector = (new SettingsRoutes())->add($routeCollector);
         $routeCollector = (new LeadsRoutes())->add($routeCollector);
+        $routeCollector = (new PanelsRoutes())->add($routeCollector);
         $routeCollector = (new ReportsRoutes())->add($routeCollector);
-        $routeCollector = (new SiteRoutes())->add($routeCollector);
 
         return (new ModuleRoutesPart2())->add($routeCollector);
     }

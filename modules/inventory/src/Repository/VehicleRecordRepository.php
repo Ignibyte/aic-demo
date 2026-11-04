@@ -13,11 +13,13 @@ use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Service\VehicleRows;
 use InvalidArgumentException;
+use Throwable;
 use UnexpectedValueException;
 
 /**
  * One vehicle at a time, by its VIN, through the entity store (#14): read, its id found, checked for a taken VIN, made,
- * changed and deleted; and the database's own today, which the vehicle form's checks and its first date read.
+ * changed and deleted; and the database's own today, which the vehicle form's checks and its first date read. A change
+ * of its list price is recorded with the change (#31).
  */
 final readonly class VehicleRecordRepository
 {
@@ -106,21 +108,81 @@ final readonly class VehicleRecordRepository
     }
 
     /**
+     * Changes the vehicle in one transaction with the record of its list price change (#31): it locks the vehicle's
+     * row, writes every value, and when the list price is another inserts one `vehicle_prices` row, so a save that
+     * fails records no change and a change is never recorded without its save.
+     *
      * @param string  $vin     The VIN the vehicle has now.
      * @param Vehicle $vehicle Every value it is to have.
      *
-     * @throws QueryException           When the statement fails, such as on a VIN another vehicle took since the check,
-     *                                  which `VehicleSaves` answers as that refusal.
+     * @throws QueryException           When a statement fails, such as on a VIN another vehicle took since the check,
+     *                                  which `VehicleSaves` answers as that refusal; the transaction is rolled back first.
      * @throws InvalidArgumentException When a value does not fit its field.
      *
      * @return bool Whether it was changed; false when no vehicle has the VIN any more.
      */
     public function update(string $vin, Vehicle $vehicle): bool
     {
-        return $this->entityStore->query($this->vehicleTable->type())
-            ->where('vin', $vin)
+        $vehicleId = $this->vehicleId($vin);
+
+        if ($vehicleId === 0) {
+            return false;
+        }
+
+        $vehicleRecordRepository = $this;
+
+        try {
+            $this->entityStore->transaction(static function () use ($vehicleRecordRepository, $vehicleId, $vehicle): void {
+                $vehicleRecordRepository->updateLocked($vehicleId, $vehicle);
+            });
+        } catch (QueryException $queryException) {
+            throw $queryException;
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            throw $invalidArgumentException;
+        } catch (Throwable $throwable) {
+            throw new QueryException('The vehicle ' . $vin . ' could not be saved.', 0, $throwable);
+        }
+
+        // The vehicle now has the VIN it was given, so it was changed when that VIN names the row it locked.
+        return $this->vehicleId($vehicle->vin) === $vehicleId;
+    }
+
+    /**
+     * Writes a vehicle's values and, when its list price is another, the change. The lock holds only inside a
+     * transaction; `update()` calls this inside its own, and nothing else may call it. It is public because the
+     * transaction's closure is static and calls one public method of this repository, the shape the native compiler
+     * takes for a closure, as `HoldRepository::placeLocked()` is.
+     *
+     * @param int     $vehicleId The vehicle's row.
+     * @param Vehicle $vehicle   Every value it is to have.
+     *
+     * @throws QueryException           When a statement fails.
+     * @throws InvalidArgumentException When a value does not fit its field.
+     */
+    public function updateLocked(int $vehicleId, Vehicle $vehicle): void
+    {
+        $row = $this->entityStore->query($this->vehicleTable->type())->where('id', $vehicleId)->forUpdate()->first();
+
+        if (!$row instanceof Row) {
+            return;
+        }
+
+        $this->entityStore->query($this->vehicleTable->type())
+            ->where('id', $vehicleId)
             ->changes()
-            ->update($this->vehicleRows->values($vehicle)) === 1;
+            ->update($this->vehicleRows->values($vehicle));
+        $from = $row->int('list_price');
+
+        if ($from === $vehicle->price->list) {
+            return;
+        }
+
+        $this->entityStore->insert($this->vehicleTable->prices(), [
+            'changed_on' => $this->todayRepository->today(),
+            'from_price' => $from,
+            'to_price' => $vehicle->price->list,
+            'vehicle_id' => $vehicleId,
+        ]);
     }
 
     /**

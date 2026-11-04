@@ -18,8 +18,11 @@ use App\Inventory\Service\Vins;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
+use function array_filter;
+use function array_map;
 use function checkdate;
 use function implode;
+use function in_array;
 use function mb_strlen;
 use function number_format;
 use function preg_match;
@@ -110,11 +113,11 @@ final readonly class VehicleChecks
             'model' => $this->textError($vehicleEntry->value('model'), 'model', 60, true),
             'status' => $this->statusError($vehicleEntry->value('status'), $currentVin),
             'trim' => $this->textError($vehicleEntry->value('trim'), 'trim', 60, false),
-            'vin' => $this->vinError($this->vin($vehicleEntry), $currentVin),
+            'vin' => $this->vinError(strtoupper(trim($vehicleEntry->value('vin'))), $currentVin),
             'year' => $this->yearError(trim($vehicleEntry->value('year')), (int) substr($today, 0, 4) + 1),
         ];
 
-        return $this->refused($errors);
+        return array_filter($errors, static fn (string $error): bool => $error !== '');
     }
 
     /**
@@ -127,10 +130,8 @@ final readonly class VehicleChecks
      */
     public function vehicle(VehicleEntry $vehicleEntry): Vehicle
     {
-        $vehiclePrice = new VehiclePrice((int) trim($vehicleEntry->value('list_price')), (int) trim($vehicleEntry->value('cost')));
-
         return new Vehicle(
-            $this->vin($vehicleEntry),
+            strtoupper(trim($vehicleEntry->value('vin'))),
             (int) trim($vehicleEntry->value('year')),
             trim($vehicleEntry->value('make')),
             trim($vehicleEntry->value('model')),
@@ -138,7 +139,7 @@ final readonly class VehicleChecks
             trim($vehicleEntry->value('body_style')),
             (int) trim($vehicleEntry->value('mileage')),
             trim($vehicleEntry->value('exterior_colour')),
-            $vehiclePrice,
+            new VehiclePrice((int) trim($vehicleEntry->value('list_price')), (int) trim($vehicleEntry->value('cost'))),
             $this->vehicleStatuses->stored($vehicleEntry->value('status')),
             new VehicleLot(trim($vehicleEntry->value('added_on')), $this->vehicleStatuses->location($vehicleEntry->value('location'))),
         );
@@ -194,36 +195,6 @@ final readonly class VehicleChecks
         $values['status'] = $vehicleStatus->value;
 
         return implode(' ', $this->errors(new VehicleEntry($values), $vehicle->vin, $today));
-    }
-
-    /**
-     * @param array<string, string> $errors Each field's message, by name; empty for a field that passed.
-     *
-     * @return array<string, string> The refused fields' messages only.
-     */
-    private function refused(array $errors): array
-    {
-        $refused = [];
-
-        foreach ($errors as $name => $error) {
-            if ($error === '') {
-                continue;
-            }
-
-            $refused[$name] = $error;
-        }
-
-        return $refused;
-    }
-
-    /**
-     * @param VehicleEntry $vehicleEntry What was posted.
-     *
-     * @return string Its VIN, trimmed and in capitals.
-     */
-    private function vin(VehicleEntry $vehicleEntry): string
-    {
-        return strtoupper(trim($vehicleEntry->value('vin')));
     }
 
     /**
@@ -328,34 +299,20 @@ final readonly class VehicleChecks
      *
      * @throws QueryException When the vehicle's sale cannot be read.
      *
-     * @return string Why it is refused; empty when it is fine.
+     * @return string Why it is refused: no status, or a status but sold for a vehicle with a recorded sale; empty when it
+     *                is fine.
      */
     private function statusError(string $status, string $currentVin): string
     {
-        foreach ($this->vehicleStatuses->all() as $vehicleStatus) {
-            if ($vehicleStatus->value === $status) {
-                return $this->saleError($status, $currentVin);
-            }
+        $values = array_map(static fn (VehicleStatus $vehicleStatus): string => $vehicleStatus->value, $this->vehicleStatuses->all());
+
+        if (!in_array($status, $values, true)) {
+            return 'Choose a status.';
         }
 
-        return 'Choose a status.';
-    }
+        $kept = $currentVin !== '' && $status !== VehicleStatus::Sold->value && $this->soldVehicles->sale($currentVin) !== null;
 
-    /**
-     * @param string $status     A known status.
-     * @param string $currentVin The VIN of the vehicle being changed; empty for a new one.
-     *
-     * @throws QueryException When the vehicle's sale cannot be read.
-     *
-     * @return string Why a status but sold is refused for a vehicle with a recorded sale; empty otherwise.
-     */
-    private function saleError(string $status, string $currentVin): string
-    {
-        if ($currentVin === '' || $status === VehicleStatus::Sold->value) {
-            return '';
-        }
-
-        return $this->soldVehicles->sale($currentVin) !== null
+        return $kept
             ? self::SALE_RECORDED
             : '';
     }

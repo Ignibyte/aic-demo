@@ -15,7 +15,8 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * The signed envelope a record's edit or delete form carries: it seals the path of the record the form was issued
  * for, so a post is held to that record and no other. Vehicles and customers share it. A list's row carries the same
- * seal as its Tessera props (#28), so a row's save is held to its own record too.
+ * seal as its Tessera props (#28), so a row's save is held to its own record too. A vehicle page's panel (#31) carries
+ * its version as its props, which a refresh of it sends back and is read by its anchor.
  */
 final readonly class StaffSeals
 {
@@ -23,6 +24,11 @@ final readonly class StaffSeals
      * The sealed value's name.
      */
     private const string PATH = 'path';
+
+    /**
+     * A panel's sealed version's name.
+     */
+    private const string VERSION = 'version';
 
     /**
      * Reads a row's props back from the Tessera request.
@@ -100,5 +106,55 @@ final readonly class StaffSeals
         }
 
         return ($props[self::PATH] ?? '') === $path;
+    }
+
+    /**
+     * @param string $version What a panel's data is now.
+     *
+     * @throws LogicException When the version cannot be encoded, which a version of digits, dots and a time always can.
+     *
+     * @return string The props token sealing it, for the panel (#31).
+     */
+    public function version(string $version): string
+    {
+        try {
+            return $this->envelopeCodec->seal([self::VERSION => $version]);
+        } catch (JsonException $jsonException) {
+            throw new LogicException('The version "' . $version . '" cannot be sealed.', 0, $jsonException);
+        }
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest A request to a panel's route.
+     * @param string                 $anchor        The panel's anchor, without its `@`.
+     *
+     * @return bool Whether the props sent back for it, if any, are whole; false when they were altered.
+     */
+    public function propsHold(ServerRequestInterface $serverRequest, string $anchor): bool
+    {
+        try {
+            $this->tesseraProps->forTarget($serverRequest, '@' . $anchor);
+        } catch (InvalidEnvelope) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param ServerRequestInterface $serverRequest A request to a panel's route, whose props `propsHold()` found whole.
+     * @param string                 $anchor        The panel's anchor, without its `@`.
+     * @param string                 $version       What the panel's data is now.
+     *
+     * @return bool Whether it is a refresh of that panel alone whose props carry that version; false for any other
+     *              request, and for props that do not open.
+     */
+    public function unchanged(ServerRequestInterface $serverRequest, string $anchor, string $version): bool
+    {
+        try {
+            return $this->tesseraProps->unchanged($serverRequest, '@' . $anchor, $version);
+        } catch (InvalidEnvelope) {
+            return false;
+        }
     }
 }

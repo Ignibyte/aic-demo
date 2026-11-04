@@ -2,9 +2,10 @@
 number: 31
 title: "Lazy panels and prefetched pages"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-04T03:27:26Z
+phase: "docs"
 ---
 
 The vehicle page's heavy parts load after the page: price history (a server-drawn SVG line),

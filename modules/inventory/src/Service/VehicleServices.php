@@ -10,6 +10,7 @@ use AIC\Module\Attribute\Tagged;
 use AIC\Storage\Application\PublicFiles;
 use App\Finance\Service\DealershipRates;
 use App\Finance\Service\FinanceRates;
+use App\Inventory\Entity\VehiclePanel;
 use App\Inventory\Form\VehicleChecks;
 use App\Inventory\Form\VehicleDeletes;
 use App\Inventory\Form\VehicleSaves;
@@ -29,7 +30,9 @@ use App\Staff\Service\StaffPanels;
  * the public files, so the seven vehicle routes' generated part names few classes. The vehicle's page shows finance's
  * payment calculator (#26) at the dealership's APR, which the first `FinanceRates` plugin gives. It takes staff's
  * seals as the wiring builds them rather than the envelope codec, so the two generated parts that build it (one
- * opening with the record's forms, one with the photos') do not repeat one statement long enough for gate:14.
+ * opening with the record's forms, one with the photos') do not repeat one statement long enough for gate:14. The
+ * vehicle's page places the `VehiclePanel` plugins' panels (#31), which `VehicleRecords` asks, each sealing its version
+ * through staff's seals.
  */
 final readonly class VehicleServices
 {
@@ -50,6 +53,7 @@ final readonly class VehicleServices
      * @param list<object>  $vehicleSales  The `VehicleSales` plugins, in tag order (`#[Tagged]`).
      * @param PublicFiles   $publicFiles   AIC's public files, where the photos are kept.
      * @param list<object>  $financeRates  The `FinanceRates` plugins, in tag order (`#[Tagged]`).
+     * @param list<object>  $vehiclePanels The `VehiclePanel` plugins, in tag order (`#[Tagged]`).
      */
     public function __construct(
         private EntityStore $entityStore,
@@ -60,6 +64,8 @@ final readonly class VehicleServices
         PublicFiles $publicFiles,
         #[Tagged(FinanceRates::class)]
         private array $financeRates,
+        #[Tagged(VehiclePanel::class)]
+        private array $vehiclePanels,
     ) {
         $this->staffPages = new StaffPages($pageDocuments);
         $this->vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
@@ -111,7 +117,7 @@ final readonly class VehicleServices
      */
     public function vehicleRecords(): VehicleRecords
     {
-        return new VehicleRecords($this->entityStore, $this->panels());
+        return new VehicleRecords($this->entityStore, $this->panels(), $this->staffSeals, $this->vehiclePanels);
     }
 
     /**
