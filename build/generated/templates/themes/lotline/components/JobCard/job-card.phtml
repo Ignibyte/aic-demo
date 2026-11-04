@@ -1,0 +1,7 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/JobCard/job-card.phtml by composer run build; edit that file, never this one. */ ?>
+<div<?= $renderPass->marks() ?> class="card bg-base-100" id="<?= $renderPass->text($jobCard->id) ?>"><div class="card-body">
+<div class="flex flex-wrap items-center gap-3"><h3 class="card-title font-mono" id="<?= $renderPass->text($jobCard->id) ?>-title"><?= $renderPass->text($jobCard->title) ?></h3><?= $renderPass->child($jobCard->statusBadge, 'JobCard.1') ?></div>
+<dl class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2 text-sm"><?php foreach ($jobCard->facts as $fact): ?><dt class="opacity-70"><?= $renderPass->text($fact->term) ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $renderPass->text($fact->detail) ?></dd><?php endforeach; ?></dl>
+<p class="font-mono text-sm" id="<?= $renderPass->text($jobCard->id) ?>-reason"><?= $renderPass->text($jobCard->reason) ?></p>
+<div class="card-actions mt-4"><form method="post" action="<?= $renderPass->text($jobCard->retry) ?>"><?= $renderPass->child($jobCard->guardFields, 'JobCard.2') ?><button class="btn btn-sm btn-primary" type="submit" id="<?= $renderPass->text($jobCard->id) ?>-retry">Retry now</button></form><form method="post" action="<?= $renderPass->text($jobCard->discard) ?>"><?= $renderPass->child($jobCard->guardFields, 'JobCard.3') ?><button class="btn btn-sm btn-error btn-outline" type="submit" id="<?= $renderPass->text($jobCard->id) ?>-discard">Discard</button></form></div>
+</div></div>

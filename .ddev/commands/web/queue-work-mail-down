@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+## Description: Run bin/aic queue:work with the mail server out of reach, so each mail it takes retries (Lotline #35)
+## Usage: queue-work-mail-down [max]
+## Example: "ddev queue-work-mail-down" or "ddev queue-work-mail-down 10"
+
+# The dev environment's mail fault switch, and its only one: nothing in the app
+# reads a switch, and the production image never copies .ddev/. Port 1 answers
+# nothing, so AIC's mail channel cannot reach the server: a delivery answers
+# JobRetry (30 seconds, five attempts) and then JobFailed with the reason,
+# which /app/jobs shows. A plain `ddev exec bin/aic queue:work` delivers again.
+
+set -euo pipefail
+
+AIC_MAIL_PORT=1 exec php bin/aic queue:work "$@"

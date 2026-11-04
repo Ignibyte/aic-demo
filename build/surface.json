@@ -568,6 +568,27 @@
             "path": "/app/inbox/read-all"
         },
         {
+            "handler": "App\\Jobs\\Controller\\JobsPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "jobs",
+            "path": "/app/jobs"
+        },
+        {
+            "handler": "App\\Jobs\\Controller\\FailedRetryPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "jobs",
+            "path": "/app/jobs/failed/{id:int}/retry"
+        },
+        {
+            "handler": "App\\Jobs\\Controller\\FailedDiscardPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "jobs",
+            "path": "/app/jobs/failed/{id:int}/discard"
+        },
+        {
             "handler": "App\\Panels\\Controller\\PriceHistoryPage",
             "kind": "Page",
             "method": "GET",
@@ -1335,6 +1356,21 @@
             "factories": [],
             "middleware": [],
             "migrations": [],
+            "name": "jobs",
+            "namespace": "App\\Jobs\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
             "name": "panels",
             "namespace": "App\\Panels\\",
             "plugins": [
@@ -1632,6 +1668,11 @@
                 "component": "App\\Theme\\Components\\IconLegend\\IconLegend",
                 "generated": "build/generated/templates/themes/lotline/components/IconLegend/icon-legend.phtml",
                 "source": "themes/lotline/components/IconLegend/icon-legend.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\JobCard\\JobCard",
+                "generated": "build/generated/templates/themes/lotline/components/JobCard/job-card.phtml",
+                "source": "themes/lotline/components/JobCard/job-card.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\LazyPanel\\LazyPanel",

@@ -91,7 +91,7 @@ final readonly class NavigationBlock implements Block
      * @throws LogicException When a link's key is malformed.
      *
      * @return list<KeyedComponent> The staff areas' links, each current on its pages; Reports for a manager alone,
-     *                              Settings for an admin alone.
+     *                              Settings and Jobs for an admin alone.
      */
     private static function staffLinks(Heroicons $heroicons, string $path, StaffMember $staffMember): array
     {
@@ -110,6 +110,7 @@ final readonly class NavigationBlock implements Block
 
         if ($staffMember->role === Role::Admin) {
             $links[] = self::link('settings', '/app/settings', 'Settings', $heroicons->cog(), $path);
+            $links[] = self::link('jobs', '/app/jobs', 'Jobs', $heroicons->queueList(), $path);
         }
 
         return $links;

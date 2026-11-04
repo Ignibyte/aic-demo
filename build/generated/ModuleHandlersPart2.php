@@ -41,8 +41,8 @@ final readonly class ModuleHandlersPart2
             (new DashboardHandlers($this->handlerContext))->byId(),
             (new DownloadsHandlers($this->handlerContext))->byId(),
             (new InboxHandlers($this->handlerContext))->byId(),
+            (new JobsHandlers($this->handlerContext))->byId(),
             (new PanelsHandlers($this->handlerContext))->byId(),
-            (new ReportsHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart3($this->handlerContext))->byId(),
         );
     }

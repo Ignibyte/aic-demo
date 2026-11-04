@@ -60,6 +60,7 @@
             "App\\Holds\\": "modules/holds/src/",
             "App\\Inbox\\": "modules/inbox/src/",
             "App\\Inventory\\": "modules/inventory/src/",
+            "App\\Jobs\\": "modules/jobs/src/",
             "App\\Leads\\": "modules/leads/src/",
             "App\\Panels\\": "modules/panels/src/",
             "App\\Photos\\": "modules/photos/src/",
