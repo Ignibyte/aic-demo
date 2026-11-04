@@ -12,6 +12,7 @@ use AIC\Module\Application\ConsoleContext;
 use AIC\Module\Application\ConsoleWiring;
 use AIC\Module\Application\JobWiring;
 use AIC\Module\Application\PluginWiring;
+use AIC\Module\Application\WebPresentation;
 use AIC\Schedule\Domain\Schedule;
 use AIC\Schema\Contracts\Migration;
 use InvalidArgumentException;
@@ -43,6 +44,17 @@ final readonly class ConsoleModules implements CommandWiring, ConsoleWiring, Job
     public function schedules(): array
     {
         return (new ModuleSchedules())->all();
+    }
+
+    /**
+     * @throws InvalidArgumentException When the compiled asset metadata is invalid.
+     *
+     * @return WebPresentation The compiled template and public asset catalogs.
+     */
+    #[Override]
+    public function presentation(): WebPresentation
+    {
+        return (new Presentation())->create();
     }
 
     /**

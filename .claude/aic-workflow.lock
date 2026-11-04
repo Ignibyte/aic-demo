@@ -8,12 +8,12 @@
         ".claude/skills/aic-workflow-check/SKILL.md": "sha256:a08654b36b7033042ca416a5a8065cb0e91409d2b90893c3f49512a02a90295b",
         ".claude/skills/aic-workflow-code/SKILL.md": "sha256:7920f140a511bae41a6909eb38100098ceb05dc7d35bc1d6013d1fae91389333",
         ".claude/skills/aic-workflow-complete/SKILL.md": "sha256:ce8238d555804a527e958071dd69e80429955b2f92c51fba6c9a9684eb486ffe",
-        ".claude/skills/aic-workflow-continue/SKILL.md": "sha256:7f2ca8a46543b757298df960812c57e1269f6dbee9d02216c3bd15b9e229e4b6",
+        ".claude/skills/aic-workflow-continue/SKILL.md": "sha256:ecf412d33d72da11896ff19b7db99d7d489ae192550ae494205f7630fcd0b6c7",
         ".claude/skills/aic-workflow-plan/SKILL.md": "sha256:d7bf55ad995cd28c91ba1f158c33ce0a76b83a4cacf5151f036b8792b89eaf54",
         ".claude/skills/aic-workflow-plan/spec-template.md": "sha256:7f5b5e20253eaac7de8461d9d2c4ca9283e6b41f0d3570b57aa34034d7504c82",
         ".claude/skills/aic-workflow-start/SKILL.md": "sha256:23fe853cb161afa7aee0723f4797dedb7f38e8aa42387953de57de1f55817a4a",
         ".claude/skills/aic-workflow-status/SKILL.md": "sha256:687902be86099360ad2f47c2f5eaadc621095820dabfaa029acd6ef624970563",
-        "AGENTS.md#aic-workflow": "sha256:096095b9a90c22bbc56b20a52b6112075f82cd560ebba0ffe59f3521db09dda0",
+        "AGENTS.md#aic-workflow": "sha256:2e677c2a8ce75d8fde8e3fb30673880ee219650e5122420374e514269b29d5eb",
         "CLAUDE.md#aic-workflow": "sha256:336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
         "tickets/README.md": "sha256:bac6472b42cd172a8147bb6a0da9f2521e2da1fa5dcf46a47b75e6a26fefec1e"
     }
