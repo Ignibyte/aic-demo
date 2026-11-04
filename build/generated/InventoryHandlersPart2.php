@@ -7,17 +7,14 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use AIC\Storage\Application\PublicFiles;
-use App\Finance\Service\FinanceRates;
-use App\Inventory\Controller\VehicleDeletePage;
-use App\Inventory\Controller\VehiclePhotoDeletePost;
-use App\Inventory\Controller\VehiclePhotoPost;
-use App\Inventory\Controller\VehiclePhotoStream;
-use App\Inventory\Form\VehiclePhotoForms;
-use App\Inventory\Service\VehicleSales;
-use App\Inventory\Service\VehicleServices;
-use App\Photos\Service\VehiclePhotos;
-use App\Staff\Form\StaffSeals;
+use App\Inventory\Controller\InventoryListPage;
+use App\Inventory\Controller\VehicleRowEditPage;
+use App\Inventory\Controller\VehicleRowPage;
+use App\Inventory\Controller\VehicleRowPut;
+use App\Inventory\Form\VehicleRowForm;
+use App\Inventory\Repository\VehicleRepository;
+use App\Inventory\Service\InventoryList;
+use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -41,25 +38,17 @@ final readonly class InventoryHandlersPart2
      */
     public function byId(): array
     {
-        $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
+        $inventoryHandlerServices = new InventoryHandlerServices($this->handlerContext);
         $entityStore = new EntityStore($this->handlerContext->database());
-        $publicFiles = new PublicFiles($this->handlerContext->root());
-        $vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
-        $vehicleServices = new VehicleServices(
-            $entityStore,
-            $this->handlerContext->documents(),
-            $staffSeals,
-            $this->handlerContext->tagged(VehicleSales::class),
-            $publicFiles,
-            $this->handlerContext->tagged(FinanceRates::class),
-        );
-        $vehiclePhotoForms = new VehiclePhotoForms($staffSeals, $vehiclePhotos, $vehicleServices);
+        $inventoryList = new InventoryList(new VehicleRepository($entityStore), new VehicleRowForm($this->handlerContext->envelopeCodec()));
 
         return [
-            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($vehicleServices)),
-            VehiclePhotoDeletePost::class => $this->handlerContext->page(new VehiclePhotoDeletePost($vehiclePhotoForms)),
-            VehiclePhotoPost::class => $this->handlerContext->page(new VehiclePhotoPost($vehiclePhotoForms)),
-            VehiclePhotoStream::class => $this->handlerContext->stream(new VehiclePhotoStream($vehiclePhotoForms)),
+            InventoryListPage::class => $this->handlerContext->page(
+                new InventoryListPage(new StaffPages($this->handlerContext->documents()), $inventoryList),
+            ),
+            VehicleRowEditPage::class => $this->handlerContext->page(new VehicleRowEditPage($inventoryHandlerServices->vehicleRowEdits())),
+            VehicleRowPage::class => $this->handlerContext->page(new VehicleRowPage($inventoryHandlerServices->vehicleRowEdits())),
+            VehicleRowPut::class => $this->handlerContext->page(new VehicleRowPut($inventoryHandlerServices->vehicleRowEdits())),
         ];
     }
 }

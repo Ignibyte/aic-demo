@@ -23,7 +23,10 @@ use function number_format;
  * A vehicle's page: the notice its last save left, then its card with its status, what it is, its mileage, list
  * price and day on the lot (never its cost), and buttons to edit it, delete it or go back to the list; then finance's
  * payment calculator at its list price and the dealership's APR (#26); then its photos (#16), with the reason when an
- * upload was refused; then its sale, when one is recorded, or, for a vehicle not sold, a button to record one.
+ * upload was refused; then its sale, when one is recorded, or, for a vehicle not sold, a button to record one; then the
+ * panels the `VehiclePanel` plugins give (#31). A Tessera visit (a link, a prefetch, Back and Forward, a redirect
+ * followed) gets each panel as a skeleton that Tessera loads from the panel's own route, so the page reads none of
+ * their data; any other request, a plain one with JavaScript off or a submit answered in place, gets them inline.
  */
 final readonly class VehicleCards
 {
@@ -78,8 +81,9 @@ final readonly class VehicleCards
         }
 
         $staffPanels = $this->vehicleRecords->panels();
+        $parts = $this->vehicleRecords->parts($serverRequest, $vehicle);
 
-        return $staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, $status);
+        return $staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, $status, $parts);
     }
 
     /**

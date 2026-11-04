@@ -9,14 +9,12 @@ use AIC\Module\Application\HandlerContext;
 use AIC\Notification\Application\Inbox;
 use App\Inbox\Controller\BellEvents;
 use App\Inbox\Controller\InboxPage;
+use App\Inbox\Controller\InboxReadAllPost;
 use App\Inbox\Controller\NotificationPage;
-use App\Inbox\Service\BellParts;
 use App\Inbox\Service\BellStreams;
 use App\Inbox\Service\InboxList;
-use App\Inbox\Service\InboxMoves;
 use App\Inbox\Service\InboxOwners;
 use App\Inbox\Service\InboxRows;
-use App\Inbox\Service\InboxServices;
 use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -41,18 +39,17 @@ final readonly class InboxHandlers
      */
     public function byId(): array
     {
+        $inboxHandlerServices = new InboxHandlerServices($this->handlerContext);
         $inbox = new Inbox($this->handlerContext->database());
         $inboxOwners = new InboxOwners();
-        $bellParts = new BellParts($inbox);
-        $inboxList = new InboxList($inbox, $inboxOwners, new InboxRows($bellParts));
-        $staffPanels = (new InboxServices($this->handlerContext->documents()))->staffPanels();
+        $inboxList = new InboxList($inbox, $inboxOwners, new InboxRows($inboxHandlerServices->bellParts()));
+        $bellStreams = new BellStreams($inboxOwners, $inbox, $inboxHandlerServices->bellParts());
 
         return [
-            BellEvents::class => $this->handlerContext->stream(new BellEvents(new BellStreams($inboxOwners, $inbox, $bellParts))),
+            BellEvents::class => $this->handlerContext->stream(new BellEvents($bellStreams)),
             InboxPage::class => $this->handlerContext->page(new InboxPage(new StaffPages($this->handlerContext->documents()), $inboxList)),
-            NotificationPage::class => $this->handlerContext->page(
-                new NotificationPage(new InboxMoves($staffPanels, $inbox, $inboxOwners)),
-            ),
+            InboxReadAllPost::class => $this->handlerContext->page(new InboxReadAllPost($inboxHandlerServices->inboxMoves())),
+            NotificationPage::class => $this->handlerContext->page(new NotificationPage($inboxHandlerServices->inboxMoves())),
         ];
     }
 }

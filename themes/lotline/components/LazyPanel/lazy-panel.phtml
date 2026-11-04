@@ -1,0 +1,4 @@
+<?php /** @var \App\Theme\Components\LazyPanel\LazyPanel $lazyPanel */ ?>
+<section class="flex flex-col gap-3 border-t border-base-300 pt-4" id="<?= $lazyPanel->id ?>" aria-labelledby="<?= $lazyPanel->id ?>-heading"<?php if ($lazyPanel->lazy !== ''): ?> aria-busy="true" data-lazy="<?= $lazyPanel->lazy ?>"<?php else: ?> data-poll__30s="<?= $lazyPanel->poll ?>"<?php endif; ?>><h3 class="text-lg font-semibold" id="<?= $lazyPanel->id ?>-heading"><?= $lazyPanel->heading ?></h3>
+<?php if ($lazyPanel->lazy !== ''): ?><div class="flex flex-col gap-2" aria-hidden="true"><div class="skeleton h-4 w-2/3"></div><div class="skeleton h-4 w-1/2"></div><div class="skeleton h-24 w-full"></div></div><?php else: ?><?php foreach ($lazyPanel->body as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?><?php endif; ?>
+</section>

@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\IconLegend\IconLegend;
+use App\Theme\Components\LazyPanel\LazyPanel;
 use App\Theme\Components\LeadBoard\LeadBoard;
 use App\Theme\Components\LeadCard\LeadCard;
-use App\Theme\Components\LiveParts\LiveParts;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof IconLegend => $this->renderIconLegend($component, $renderPass),
+            $component instanceof LazyPanel => $this->renderLazyPanel($component, $renderPass),
             $component instanceof LeadBoard => $this->renderLeadBoard($component, $renderPass),
             $component instanceof LeadCard => $this->renderLeadCard($component, $renderPass),
-            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -60,6 +60,22 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     {
         $renderPass->open($iconLegend);
         require __DIR__ . '/templates/themes/lotline/components/IconLegend/icon-legend.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param LazyPanel  $lazyPanel  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/LazyPanel/lazy-panel.phtml.
+     */
+    private function renderLazyPanel(LazyPanel $lazyPanel, RenderPass $renderPass): string
+    {
+        $renderPass->open($lazyPanel);
+        require __DIR__ . '/templates/themes/lotline/components/LazyPanel/lazy-panel.phtml';
 
         return $renderPass->close();
     }
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart8 implements ComponentTemplates
     {
         $renderPass->open($leadCard);
         require __DIR__ . '/templates/themes/lotline/components/LeadCard/lead-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LiveParts  $liveParts  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
-     */
-    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
-    {
-        $renderPass->open($liveParts);
-        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
 
         return $renderPass->close();
     }

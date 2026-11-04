@@ -9,7 +9,9 @@ use AIC\Component\Domain\KeyedComponent;
 
 /**
  * A record's photos, from photo-gallery.phtml: a heading, the photos in a grid, the first larger as the main photo,
- * a line when there are none, and the controls that change them for staff who may.
+ * a line when there are none, and the controls that change them for staff who may. The grid is the strip (#31): it
+ * carries `data-permanent` and an id named by the record and its photos, so Tessera keeps it, with its scroll, across a
+ * redraw that brings the same photos, and gives another record, or other photos, a new one.
  */
 final readonly class PhotoGallery implements Component
 {
@@ -19,6 +21,7 @@ final readonly class PhotoGallery implements Component
      * @param string               $empty    What it says when there are no photos.
      * @param list<GalleryPhoto>   $photos   The photos, the main one first.
      * @param list<KeyedComponent> $controls What changes them, such as an upload form; empty for none.
+     * @param string               $strip    The strip's id, from the record and its photos; empty for a strip Tessera need not keep.
      */
     public function __construct(
         public string $id,
@@ -26,6 +29,7 @@ final readonly class PhotoGallery implements Component
         public string $empty,
         public array $photos,
         public array $controls,
+        public string $strip = '',
     ) {
     }
 }

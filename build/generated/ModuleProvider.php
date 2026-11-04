@@ -22,5 +22,6 @@ final readonly class ModuleProvider implements ServiceProvider
     {
         (new SalesProvider())->register($serviceRegistry);
         (new SettingsProvider())->register($serviceRegistry);
+        (new PanelsProvider())->register($serviceRegistry);
     }
 }

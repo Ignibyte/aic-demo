@@ -9,7 +9,8 @@ declare(strict_types=1);
  * and the visitor through AIC's notifications, and the staff pages under
  * /app/leads, which staff's protected prefix keeps to signed-in staff. It
  * exports LeadDesk, which storefront's car pages hand their lead forms to, with
- * the kind and the reply its methods take and give. It requires staff for who
+ * the kind and the reply its methods take and give, and VehicleLeadRepository
+ * with VehicleLead, a vehicle's leads for its page's panel (#31). It requires staff for who
  * is signed in and the users, inventory for the vehicles and the database's
  * today, customers to link a lead by email, and settings for the dealership's
  * opening hours and name (#22). The board (#30) sits on the list's route, with
@@ -30,11 +31,13 @@ use App\Leads\Controller\LeadStagePatch;
 use App\Leads\Controller\LeadStagePost;
 use App\Leads\Entity\LeadKind;
 use App\Leads\Entity\LeadReply;
+use App\Leads\Entity\VehicleLead;
 use App\Leads\Job\SendLeadNotices;
 use App\Leads\Job\SendLeadWon;
 use App\Leads\Migration\AddLeadStage;
 use App\Leads\Migration\CreateLeadMovesTable;
 use App\Leads\Migration\CreateLeadsTable;
+use App\Leads\Repository\VehicleLeadRepository;
 use App\Leads\Service\LeadDesk;
 use App\Leads\Service\LeadServices;
 
@@ -58,4 +61,6 @@ return (new ModuleManifest('leads'))
     ->migration(CreateLeadMovesTable::class)
     ->export(LeadDesk::class)
     ->export(LeadKind::class)
-    ->export(LeadReply::class);
+    ->export(LeadReply::class)
+    ->export(VehicleLeadRepository::class)
+    ->export(VehicleLead::class);

@@ -5,13 +5,8 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use App\Customers\Controller\CustomerRowEditPage;
 use App\Customers\Controller\CustomerRowPut;
-use App\Customers\Form\CustomerRowEdits;
-use App\Customers\Form\CustomerRowPages;
-use App\Staff\Form\StaffSeals;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -35,14 +30,10 @@ final readonly class CustomersHandlersPart3
      */
     public function byId(): array
     {
-        $customerRowPages = new CustomerRowPages($this->handlerContext->documents());
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
-        $customerRowEdits = new CustomerRowEdits($customerRowPages, $entityStore, $staffSeals);
+        $customersHandlerServices = new CustomersHandlerServices($this->handlerContext);
 
         return [
-            CustomerRowEditPage::class => $this->handlerContext->page(new CustomerRowEditPage($customerRowEdits)),
-            CustomerRowPut::class => $this->handlerContext->page(new CustomerRowPut($customerRowEdits)),
+            CustomerRowPut::class => $this->handlerContext->page(new CustomerRowPut($customersHandlerServices->customerRowEdits())),
         ];
     }
 }

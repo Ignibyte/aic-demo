@@ -8,10 +8,9 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Customers\Controller\CustomerListPage;
+use App\Customers\Controller\CustomerRowEditPage;
 use App\Customers\Controller\CustomerRowPage;
-use App\Customers\Form\CustomerRowEdits;
 use App\Customers\Form\CustomerRowForm;
-use App\Customers\Form\CustomerRowPages;
 use App\Customers\Repository\CustomerRepository;
 use App\Customers\Service\CustomerList;
 use App\Staff\Form\StaffSeals;
@@ -41,17 +40,20 @@ final readonly class CustomersHandlersPart2
      */
     public function byId(): array
     {
+        $customersHandlerServices = new CustomersHandlerServices($this->handlerContext);
         $entityStore = new EntityStore($this->handlerContext->database());
         $staffDealership = new StaffDealership($entityStore, $this->handlerContext->tagged(DealershipNames::class));
         $staffSeals = new StaffSeals($this->handlerContext->envelopeCodec());
         $customerList = new CustomerList(new CustomerRepository($entityStore), $staffDealership, new CustomerRowForm($staffSeals));
-        $customerRowEdits = new CustomerRowEdits(new CustomerRowPages($this->handlerContext->documents()), $entityStore, $staffSeals);
 
         return [
             CustomerListPage::class => $this->handlerContext->page(
                 new CustomerListPage(new StaffPages($this->handlerContext->documents()), $customerList),
             ),
-            CustomerRowPage::class => $this->handlerContext->page(new CustomerRowPage($customerRowEdits)),
+            CustomerRowEditPage::class => $this->handlerContext->page(
+                new CustomerRowEditPage($customersHandlerServices->customerRowEdits()),
+            ),
+            CustomerRowPage::class => $this->handlerContext->page(new CustomerRowPage($customersHandlerServices->customerRowEdits())),
         ];
     }
 }

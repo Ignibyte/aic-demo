@@ -35,17 +35,29 @@ final readonly class StaffPanels
      * @param string                   $description The line under it.
      * @param array<string, Component> $body        What the panel shows, in order, by its key.
      * @param int                      $status      The page's status.
+     * @param list<KeyedComponent>     $parts       What it shows after that, already keyed, each keeping the props and
+     *                                              anchor it carries, such as a vehicle's panels (#31); empty for none.
      *
      * @throws InvalidArgumentException When a key or the status does not fit the theme.
      *
      * @return PageDocument The page.
      */
-    public function page(string $title, string $heading, string $description, array $body, int $status): PageDocument
-    {
+    public function page(
+        string $title,
+        string $heading,
+        string $description,
+        array $body,
+        int $status,
+        array $parts = [],
+    ): PageDocument {
         $keyed = [];
 
         foreach ($body as $key => $component) {
             $keyed[] = new KeyedComponent($key, $component);
+        }
+
+        foreach ($parts as $part) {
+            $keyed[] = $part;
         }
 
         $panel = new Panel($this->id, $heading, $description, true, $keyed);

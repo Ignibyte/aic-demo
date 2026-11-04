@@ -8,7 +8,9 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Repository\TodayRepository;
+use App\Sales\Controller\SaleCreatePost;
 use App\Sales\Controller\SaleListPage;
+use App\Sales\Controller\SaleNewPage;
 use App\Sales\Repository\SaleChoiceRepository;
 use App\Sales\Repository\SaleRepository;
 use App\Sales\Service\SaleList;
@@ -38,15 +40,18 @@ final readonly class SalesHandlers
      */
     public function byId(): array
     {
+        $salesHandlerServices = new SalesHandlerServices($this->handlerContext);
         $entityStore = new EntityStore($this->handlerContext->database());
         $saleChoiceRepository = new SaleChoiceRepository($entityStore, new TodayRepository($entityStore));
         $staffDealership = new StaffDealership($entityStore, $this->handlerContext->tagged(DealershipNames::class));
         $saleList = new SaleList(new SaleRepository($entityStore), $saleChoiceRepository, $staffDealership);
 
         return [
+            SaleCreatePost::class => $this->handlerContext->page(new SaleCreatePost($salesHandlerServices->saleSaves())),
             SaleListPage::class => $this->handlerContext->page(
                 new SaleListPage(new StaffPages($this->handlerContext->documents()), $saleList),
             ),
+            SaleNewPage::class => $this->handlerContext->page(new SaleNewPage($salesHandlerServices->saleSaves())),
         ];
     }
 }

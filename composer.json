@@ -58,6 +58,7 @@
             "App\\Inbox\\": "modules/inbox/src/",
             "App\\Inventory\\": "modules/inventory/src/",
             "App\\Leads\\": "modules/leads/src/",
+            "App\\Panels\\": "modules/panels/src/",
             "App\\Photos\\": "modules/photos/src/",
             "App\\Reports\\": "modules/reports/src/",
             "App\\Sales\\": "modules/sales/src/",

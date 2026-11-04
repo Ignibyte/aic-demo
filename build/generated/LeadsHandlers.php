@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Leads\Controller\LeadAssignPost;
+use App\Leads\Controller\LeadBoardEvents;
+use App\Leads\Controller\LeadClosePost;
+use App\Leads\Controller\LeadListPage;
 use App\Leads\Controller\LeadPage;
-use App\Leads\Repository\LeadRepository;
-use App\Leads\Repository\SellerRepository;
-use App\Leads\Service\LeadCards;
+use App\Leads\Controller\LeadStagePatch;
+use App\Leads\Controller\LeadStagePost;
+use App\Leads\Service\BoardStreams;
+use App\Leads\Service\LeadList;
 use App\Leads\Service\LeadMoves;
-use App\Leads\Service\LeadServices;
+use App\Staff\Service\StaffPages;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -37,17 +40,25 @@ final readonly class LeadsHandlers
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $leadRepository = new LeadRepository($entityStore);
-        $sellerRepository = new SellerRepository($entityStore);
-        $leadServices = new LeadServices($this->handlerContext->documents());
-        $staffPanels = $leadServices->staffPanels();
-        $leadCards = new LeadCards($leadRepository, $sellerRepository, $staffPanels);
-        $leadMoves = new LeadMoves($leadRepository, $sellerRepository, $leadCards);
+        $leadsHandlerServices = new LeadsHandlerServices($this->handlerContext);
+        $leadMoves = new LeadMoves(
+            $leadsHandlerServices->leadRepository(),
+            $leadsHandlerServices->sellerRepository(),
+            $leadsHandlerServices->leadCards(),
+        );
+        $boardStreams = new BoardStreams($leadsHandlerServices->leadRepository(), $leadsHandlerServices->leadMoveRepository());
+        $leadList = new LeadList($leadsHandlerServices->leadRepository(), $leadsHandlerServices->sellerRepository());
 
         return [
             LeadAssignPost::class => $this->handlerContext->page(new LeadAssignPost($leadMoves)),
-            LeadPage::class => $this->handlerContext->page(new LeadPage($leadCards)),
+            LeadBoardEvents::class => $this->handlerContext->stream(new LeadBoardEvents($boardStreams)),
+            LeadClosePost::class => $this->handlerContext->page(new LeadClosePost($leadsHandlerServices->stageMoves())),
+            LeadListPage::class => $this->handlerContext->page(
+                new LeadListPage(new StaffPages($this->handlerContext->documents()), $leadList, $leadsHandlerServices->leadBoard()),
+            ),
+            LeadPage::class => $this->handlerContext->page(new LeadPage($leadsHandlerServices->leadCards())),
+            LeadStagePatch::class => $this->handlerContext->page(new LeadStagePatch($leadsHandlerServices->stageMoves())),
+            LeadStagePost::class => $this->handlerContext->page(new LeadStagePost($leadsHandlerServices->stageMoves())),
         ];
     }
 }

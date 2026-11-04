@@ -10,6 +10,8 @@ What a visitor asks about a car on its public page, and how the salesperson hear
 
 `Entity/LeadTable` is its entity type, referring to inventory's, staff's and customers' exported types. `LeadRepository` records, finds, lists, reassigns and closes leads, and reads the salespeople, all through AIC's `EntityStore`.
 
+`VehicleLeadRepository`, exported with `VehicleLead`, is a vehicle's leads for its page's leads and holds panel (#31), by the vehicle's VIN: the newest, with the kind's and the stage's labels and the salesperson's name, and their version, the leads' count and newest id with their moves' count and newest id, so a new lead or a stage move changes it. The `panels` module reads the leads through it alone.
+
 ## Assignment
 
 The salespeople are the users whose role is `salesperson`, less those an admin deactivated (#22), who take no new lead and are no choice for a reassignment; a visitor's mail is signed with the dealership's name from the profile. `LeadRepository::record()` runs one `EntityStore::transaction()`: it locks the salespeople's rows ordered by id (`forUpdate`), reads the newest lead's salesperson, takes the next one by id (the first when there is none or past the last), and inserts the lead. A second lead at the same moment waits for the lock and sees the first, so leads go to each in turn. With no salesperson the lead is unassigned. Since the turn follows the newest lead, removing leads brings it back: gate:23's two passes, each deleting its car and the car's leads, assign alike.
