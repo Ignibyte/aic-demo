@@ -2,9 +2,10 @@
 number: 43
 title: "Move to AIC 98f7ea4 and Tessera 0.4.4: signal patches, prefetchable pages, hover prefetch"
 type: chore
-status: open
+status: closed
 created: 2026-11-04T00:30:00Z
-updated: 2026-11-04T00:30:00Z
+updated: 2026-11-04T08:12:05Z
+phase: "docs"
 ---
 
 The operator has moved `../aic-nextgen-stable` to AIC `98f7ea45fae3e9698f0ad9fa34b5792a10851ca9`, and has switched the two

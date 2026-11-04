@@ -11,6 +11,10 @@ declare(strict_types=1);
  * Upgrading is a new version and new sums here, then `composer run build`.
  * 0.4.2 (Tessera #41): a removed target touches only what it removed, so a
  * bulk delete's later fragments land after its rows leave (AIC #247).
+ * 0.4.4 (#43): a press drops a pending hover timer, so a click after a hover
+ * sends one request (Tessera #43); a keyboard focus prefetches as a hover
+ * does; a `data-on:dragstart` drag starts in Firefox; and Back to a page whose
+ * recorded target is gone loads the whole page (Tessera #39).
  *
  * The body cap (AIC #196): 12 MiB, above one vehicle photo's 8,000,000 bytes
  * (#16), so an oversized photo reaches UploadCheck and is refused in place
@@ -23,9 +27,9 @@ use AIC\Tessera\Domain\TesseraRelease;
 return new AppConfig(
     name: 'Lotline',
     theme: 'lotline',
-    tessera: new TesseraRelease('0.4.2', [
-        'tessera.csp.iife.js' => '95f7c2c63afd0a48b66cfa9dd524f21a6b2f74e8676586864d37a99c450c9527',
-        'tessera.csp.iife.js.map' => '8b751b5ab2d758af64f0d55c4c2fdfe53c6b92f8664914eec8a3d111bc9ea317',
+    tessera: new TesseraRelease('0.4.4', [
+        'tessera.csp.iife.js' => 'e2bdd4b39638468f498cd97d4a1865f250960e9dd5be3c339ceb0c40db7560c5',
+        'tessera.csp.iife.js.map' => '6ee44d291c9007b18aadd05155b2f21f8df0340be9e42a9460f972cc036afb72',
     ]),
     maxBodyBytes: 12_582_912,
 );

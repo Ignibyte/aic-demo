@@ -6,6 +6,7 @@ namespace App\Inventory\Form;
 
 use AIC\Component\Domain\KeyedComponent;
 use AIC\Controller\Contracts\PageResponse;
+use AIC\Controller\Contracts\SignalPatch;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Entity\Application\EntityStore;
 use App\Inventory\Entity\BulkEdit;
@@ -114,9 +115,9 @@ final readonly class VehicleBulkPages
      * @throws RuntimeException When the list cannot be read (`QueryException`), or a stored status is no status.
      * @throws LogicException   When the request has no session, a key does not fit, or a region does not fit the theme.
      *
-     * @return PageResponse For Tessera, 200: the rows as they are now (a deleted one not at all, so it leaves the page)
-     *                      and the totals line saying what was done; for a plain post, 303 back to the list with that as
-     *                      a notice.
+     * @return PageResponse For Tessera, 200: the rows as they are now (a deleted one not at all, so it leaves the page),
+     *                      the totals line saying what was done, and a signal patch emptying the selection (AIC #253);
+     *                      for a plain post, 303 back to the list with that as a notice.
      */
     public function applied(
         ServerRequestInterface $serverRequest,
@@ -134,7 +135,7 @@ final readonly class VehicleBulkPages
 
         return $bulkEdit->deletes()
             ? $this->deleted($serverRequest, $bulkEdit, $before, $outcome)
-            : $this->page($serverRequest, $bulkEdit, $this->rows($bulkEdit, $after, [], false), $bulkEdit->page, $outcome, 200);
+            : $this->page($serverRequest, $bulkEdit, $this->rows($bulkEdit, $after, [], false), $bulkEdit->page, $outcome, 200, true);
     }
 
     /**
@@ -171,7 +172,7 @@ final readonly class VehicleBulkPages
             $page[] = $vin;
         }
 
-        return $this->page($serverRequest, $bulkEdit, [], $page, $outcome, 200);
+        return $this->page($serverRequest, $bulkEdit, [], $page, $outcome, 200, true);
     }
 
     /**
@@ -218,12 +219,15 @@ final readonly class VehicleBulkPages
      * @param list<string>           $page          The VINs of the rows the page still shows.
      * @param string                 $outcome       What the totals line says was done or refused; empty for nothing.
      * @param int                    $status        200, or 422 for a refusal.
+     * @param bool                   $applied       Whether the batch was applied, so the answer empties the selection.
      *
      * @throws RuntimeException When the list cannot be read (`QueryException`), or a stored status is no status.
      * @throws LogicException   When a key does not fit, or a region does not fit the theme.
      *
      * @return PageResponse The inventory page, its list's panel holding the bar (asking first for a delete posted
-     *                      without its confirmation), the totals line of the list the edit came from, and the rows.
+     *                      without its confirmation), the totals line of the list the edit came from, and the rows;
+     *                      once applied, a signal patch emptying the selection, which the bar and the totals line hold
+     *                      in the `content` region's scope (AIC #253). A refusal keeps it; a page without script has none.
      */
     private function page(
         ServerRequestInterface $serverRequest,
@@ -232,6 +236,7 @@ final readonly class VehicleBulkPages
         array $page,
         string $outcome,
         int $status,
+        bool $applied = false,
     ): PageResponse {
         $listed = $serverRequest->withQueryParams($bulkEdit->query);
         $inventoryQuery = $this->inventoryQueries->read($listed, $this->vehicleRepository->makes());
@@ -248,6 +253,10 @@ final readonly class VehicleBulkPages
         $tableTotals = $this->inventoryTable->totals($count, $number, $pages, $statuses, $outcome, $status === 422, $page);
         $touched = $this->inventoryTable->touched($rows, $bulkBar, $tableTotals);
 
-        return $this->vehicleRowPages->frame($touched, $status);
+        $pageDocument = $this->vehicleRowPages->frame($touched, $status);
+
+        return $applied
+            ? $pageDocument->withSignalPatch(new SignalPatch('content', '{"selected":[]}'))
+            : $pageDocument;
     }
 }
