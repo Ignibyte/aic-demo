@@ -21,14 +21,15 @@ final readonly class ModuleMigrations
     {
         return array_merge(
             (new StaffMigrations())->all(),
-            (new CustomersMigrations())->all(),
             (new PhotosMigrations())->all(),
             (new InventoryMigrations())->all(),
+            (new CustomersMigrations())->all(),
+            (new SettingsMigrations())->all(),
+            (new LeadsMigrations())->all(),
+            (new ChatMigrations())->all(),
             (new HoldsMigrations())->all(),
             (new SalesMigrations())->all(),
             (new DashboardMigrations())->all(),
-            (new SettingsMigrations())->all(),
-            (new LeadsMigrations())->all(),
             (new ReportsMigrations())->all(),
         );
     }

@@ -22,83 +22,6 @@
             "path": "/sign-out"
         },
         {
-            "handler": "App\\Customers\\Controller\\CustomerNewPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/new"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerCreatePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "customers",
-            "path": "/app/customers"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/{id:int}"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerEditPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/edit"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerUpdatePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "customers",
-            "path": "/app/customers/{id:int}"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerDeletePage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/delete"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerDeletePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/delete"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerListPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerRowPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/row"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerRowEditPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/row/edit"
-        },
-        {
-            "handler": "App\\Customers\\Controller\\CustomerRowPut",
-            "kind": "Page",
-            "method": "PUT",
-            "module": "customers",
-            "path": "/app/customers/{id:int}/row"
-        },
-        {
             "handler": "App\\Inventory\\Controller\\VehicleNewPage",
             "kind": "Page",
             "method": "GET",
@@ -204,102 +127,81 @@
             "path": "/app/inventory/bulk"
         },
         {
-            "handler": "App\\Holds\\Controller\\HoldNewPage",
+            "handler": "App\\Customers\\Controller\\CustomerNewPage",
             "kind": "Page",
             "method": "GET",
-            "module": "holds",
-            "path": "/app/holds/new"
+            "module": "customers",
+            "path": "/app/customers/new"
         },
         {
-            "handler": "App\\Holds\\Controller\\HoldCreatePost",
+            "handler": "App\\Customers\\Controller\\CustomerCreatePost",
             "kind": "Page",
             "method": "POST",
-            "module": "holds",
-            "path": "/app/holds"
+            "module": "customers",
+            "path": "/app/customers"
         },
         {
-            "handler": "App\\Holds\\Controller\\HoldListPage",
+            "handler": "App\\Customers\\Controller\\CustomerPage",
             "kind": "Page",
             "method": "GET",
-            "module": "holds",
-            "path": "/app/holds"
+            "module": "customers",
+            "path": "/app/customers/{id:int}"
         },
         {
-            "handler": "App\\Sales\\Controller\\SaleListPage",
+            "handler": "App\\Customers\\Controller\\CustomerEditPage",
             "kind": "Page",
             "method": "GET",
-            "module": "sales",
-            "path": "/app/sales"
+            "module": "customers",
+            "path": "/app/customers/{id:int}/edit"
         },
         {
-            "handler": "App\\Sales\\Controller\\SaleNewPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "sales",
-            "path": "/app/sales/new"
-        },
-        {
-            "handler": "App\\Sales\\Controller\\SaleCreatePost",
+            "handler": "App\\Customers\\Controller\\CustomerUpdatePost",
             "kind": "Page",
             "method": "POST",
-            "module": "sales",
-            "path": "/app/sales"
+            "module": "customers",
+            "path": "/app/customers/{id:int}"
         },
         {
-            "handler": "App\\Sales\\Controller\\SalePage",
+            "handler": "App\\Customers\\Controller\\CustomerDeletePage",
             "kind": "Page",
             "method": "GET",
-            "module": "sales",
-            "path": "/app/sales/{id:int}"
+            "module": "customers",
+            "path": "/app/customers/{id:int}/delete"
         },
         {
-            "handler": "App\\Sales\\Controller\\SaleVoidPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "sales",
-            "path": "/app/sales/{id:int}/void"
-        },
-        {
-            "handler": "App\\Sales\\Controller\\SaleVoidPost",
+            "handler": "App\\Customers\\Controller\\CustomerDeletePost",
             "kind": "Page",
             "method": "POST",
-            "module": "sales",
-            "path": "/app/sales/{id:int}/void"
+            "module": "customers",
+            "path": "/app/customers/{id:int}/delete"
         },
         {
-            "handler": "App\\Dashboard\\Controller\\DashboardPage",
+            "handler": "App\\Customers\\Controller\\CustomerListPage",
             "kind": "Page",
             "method": "GET",
-            "module": "dashboard",
-            "path": "/app"
+            "module": "customers",
+            "path": "/app/customers"
         },
         {
-            "handler": "App\\Inbox\\Controller\\InboxPage",
+            "handler": "App\\Customers\\Controller\\CustomerRowPage",
             "kind": "Page",
             "method": "GET",
-            "module": "inbox",
-            "path": "/app/inbox"
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row"
         },
         {
-            "handler": "App\\Inbox\\Controller\\BellEvents",
-            "kind": "Stream",
-            "method": "GET",
-            "module": "inbox",
-            "path": "/app/inbox/events"
-        },
-        {
-            "handler": "App\\Inbox\\Controller\\NotificationPage",
+            "handler": "App\\Customers\\Controller\\CustomerRowEditPage",
             "kind": "Page",
             "method": "GET",
-            "module": "inbox",
-            "path": "/app/inbox/{id:int}"
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row/edit"
         },
         {
-            "handler": "App\\Inbox\\Controller\\InboxReadAllPost",
+            "handler": "App\\Customers\\Controller\\CustomerRowPut",
             "kind": "Page",
-            "method": "POST",
-            "module": "inbox",
-            "path": "/app/inbox/read-all"
+            "method": "PUT",
+            "module": "customers",
+            "path": "/app/customers/{id:int}/row"
         },
         {
             "handler": "App\\Settings\\Controller\\SettingsPage",
@@ -414,6 +316,167 @@
             "path": "/app/leads"
         },
         {
+            "handler": "App\\Chat\\Controller\\ChatEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "chat",
+            "path": "/chat/events"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatTypingPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "chat",
+            "path": "/chat/typing"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatReadPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "chat",
+            "path": "/chat/read"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatViewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "chat",
+            "path": "/app/chats/{id:int}"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatReplyPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "chat",
+            "path": "/app/chats/{id:int}/messages"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatStaffTypingPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "chat",
+            "path": "/app/chats/{id:int}/typing"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatClosePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "chat",
+            "path": "/app/chats/{id:int}/close"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\StaffChatEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "chat",
+            "path": "/app/chats/{id:int}/events"
+        },
+        {
+            "handler": "App\\Chat\\Controller\\ChatListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "chat",
+            "path": "/app/chats"
+        },
+        {
+            "handler": "App\\Holds\\Controller\\HoldNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "holds",
+            "path": "/app/holds/new"
+        },
+        {
+            "handler": "App\\Holds\\Controller\\HoldCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "holds",
+            "path": "/app/holds"
+        },
+        {
+            "handler": "App\\Holds\\Controller\\HoldListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "holds",
+            "path": "/app/holds"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleNewPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/new"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleCreatePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "sales",
+            "path": "/app/sales"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SalePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/{id:int}"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleVoidPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "sales",
+            "path": "/app/sales/{id:int}/void"
+        },
+        {
+            "handler": "App\\Sales\\Controller\\SaleVoidPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "sales",
+            "path": "/app/sales/{id:int}/void"
+        },
+        {
+            "handler": "App\\Dashboard\\Controller\\DashboardPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "dashboard",
+            "path": "/app"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\InboxPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\BellEvents",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox/events"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\NotificationPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "inbox",
+            "path": "/app/inbox/{id:int}"
+        },
+        {
+            "handler": "App\\Inbox\\Controller\\InboxReadAllPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "inbox",
+            "path": "/app/inbox/read-all"
+        },
+        {
             "handler": "App\\Panels\\Controller\\PriceHistoryPage",
             "kind": "Page",
             "method": "GET",
@@ -512,6 +575,13 @@
             "path": "/cars/{slug}/test-drive"
         },
         {
+            "handler": "App\\Storefront\\Controller\\CarChatPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/chat"
+        },
+        {
             "handler": "App\\Storefront\\Controller\\CarPhotoStream",
             "kind": "Stream",
             "method": "GET",
@@ -538,6 +608,27 @@
             "method": "GET",
             "module": "storefront",
             "path": "/cars"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/chat"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatMessagePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/chat/messages"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatEndPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/chat/end"
         }
     ],
     "commands": [
@@ -644,6 +735,12 @@
             "kind": "Job",
             "module": "reports",
             "name": "aged-stock"
+        },
+        {
+            "class": "App\\Chat\\Job\\SendChatTranscript",
+            "kind": "Job",
+            "module": "chat",
+            "name": "chat-transcript"
         },
         {
             "class": "App\\Reports\\Job\\SendDailyDigest",
@@ -777,31 +874,6 @@
             "bindings": [],
             "blocks": [],
             "exports": [
-                "App\\Customers\\Service\\CustomerPurchases",
-                "App\\Customers\\Entity\\Purchase",
-                "App\\Customers\\Service\\SeedCustomers",
-                "App\\Customers\\Entity\\CustomerDetails",
-                "App\\Customers\\Entity\\CustomerTable"
-            ],
-            "factories": [
-                "App\\Customers\\Service\\CustomerServices"
-            ],
-            "middleware": [],
-            "migrations": [
-                "App\\Customers\\Migration\\CreateCustomersTable"
-            ],
-            "name": "customers",
-            "namespace": "App\\Customers\\",
-            "plugins": [],
-            "prefixes": [],
-            "requires": [
-                "staff"
-            ]
-        },
-        {
-            "bindings": [],
-            "blocks": [],
-            "exports": [
                 "App\\Photos\\Service\\VehiclePhotos",
                 "App\\Photos\\Service\\PhotoGalleries",
                 "App\\Photos\\Entity\\VehiclePhoto"
@@ -879,6 +951,124 @@
                 "staff",
                 "photos",
                 "finance"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Customers\\Service\\CustomerPurchases",
+                "App\\Customers\\Entity\\Purchase",
+                "App\\Customers\\Service\\SeedCustomers",
+                "App\\Customers\\Entity\\CustomerDetails",
+                "App\\Customers\\Entity\\CustomerTable"
+            ],
+            "factories": [
+                "App\\Customers\\Service\\CustomerServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Customers\\Migration\\CreateCustomersTable"
+            ],
+            "name": "customers",
+            "namespace": "App\\Customers\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Settings\\Service\\DealershipProfiles",
+                "App\\Settings\\Entity\\DealershipProfile",
+                "App\\Settings\\Entity\\OpeningHours"
+            ],
+            "factories": [
+                "App\\Settings\\Service\\SettingsServices",
+                "App\\Settings\\Service\\MemberServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Settings\\Migration\\CreateDealershipProfileTable",
+                "App\\Settings\\Migration\\CreatePasswordLinksTable",
+                "App\\Settings\\Migration\\CreatePasswordLinkStatesView",
+                "App\\Settings\\Migration\\AddDefaultApr"
+            ],
+            "name": "settings",
+            "namespace": "App\\Settings\\",
+            "plugins": [
+                {
+                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
+                    "type": "App\\Staff\\Service\\DealershipNames"
+                },
+                {
+                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
+                    "type": "App\\Finance\\Service\\FinanceRates"
+                }
+            ],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "finance"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Leads\\Service\\LeadDesk",
+                "App\\Leads\\Entity\\LeadKind",
+                "App\\Leads\\Entity\\LeadReply",
+                "App\\Leads\\Repository\\VehicleLeadRepository",
+                "App\\Leads\\Entity\\VehicleLead"
+            ],
+            "factories": [
+                "App\\Leads\\Service\\LeadServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Leads\\Migration\\CreateLeadsTable",
+                "App\\Leads\\Migration\\AddLeadStage",
+                "App\\Leads\\Migration\\CreateLeadMovesTable"
+            ],
+            "name": "leads",
+            "namespace": "App\\Leads\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "customers",
+                "settings"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Chat\\Service\\ChatDesk",
+                "App\\Chat\\Entity\\ChatReply"
+            ],
+            "factories": [
+                "App\\Chat\\Service\\ChatServices"
+            ],
+            "middleware": [],
+            "migrations": [
+                "App\\Chat\\Migration\\CreateChatsTable",
+                "App\\Chat\\Migration\\CreateChatMessagesTable"
+            ],
+            "name": "chat",
+            "namespace": "App\\Chat\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "leads",
+                "settings"
             ]
         },
         {
@@ -983,73 +1173,6 @@
         {
             "bindings": [],
             "blocks": [],
-            "exports": [
-                "App\\Settings\\Service\\DealershipProfiles",
-                "App\\Settings\\Entity\\DealershipProfile",
-                "App\\Settings\\Entity\\OpeningHours"
-            ],
-            "factories": [
-                "App\\Settings\\Service\\SettingsServices",
-                "App\\Settings\\Service\\MemberServices"
-            ],
-            "middleware": [],
-            "migrations": [
-                "App\\Settings\\Migration\\CreateDealershipProfileTable",
-                "App\\Settings\\Migration\\CreatePasswordLinksTable",
-                "App\\Settings\\Migration\\CreatePasswordLinkStatesView",
-                "App\\Settings\\Migration\\AddDefaultApr"
-            ],
-            "name": "settings",
-            "namespace": "App\\Settings\\",
-            "plugins": [
-                {
-                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
-                    "type": "App\\Staff\\Service\\DealershipNames"
-                },
-                {
-                    "class": "App\\Settings\\Repository\\DealershipNameRepository",
-                    "type": "App\\Finance\\Service\\FinanceRates"
-                }
-            ],
-            "prefixes": [],
-            "requires": [
-                "staff",
-                "finance"
-            ]
-        },
-        {
-            "bindings": [],
-            "blocks": [],
-            "exports": [
-                "App\\Leads\\Service\\LeadDesk",
-                "App\\Leads\\Entity\\LeadKind",
-                "App\\Leads\\Entity\\LeadReply",
-                "App\\Leads\\Repository\\VehicleLeadRepository",
-                "App\\Leads\\Entity\\VehicleLead"
-            ],
-            "factories": [
-                "App\\Leads\\Service\\LeadServices"
-            ],
-            "middleware": [],
-            "migrations": [
-                "App\\Leads\\Migration\\CreateLeadsTable",
-                "App\\Leads\\Migration\\AddLeadStage",
-                "App\\Leads\\Migration\\CreateLeadMovesTable"
-            ],
-            "name": "leads",
-            "namespace": "App\\Leads\\",
-            "plugins": [],
-            "prefixes": [],
-            "requires": [
-                "staff",
-                "inventory",
-                "customers",
-                "settings"
-            ]
-        },
-        {
-            "bindings": [],
-            "blocks": [],
             "exports": [],
             "factories": [],
             "middleware": [],
@@ -1143,7 +1266,8 @@
                 "staff",
                 "leads",
                 "settings",
-                "finance"
+                "finance",
+                "chat"
             ]
         }
     ],
@@ -1223,6 +1347,46 @@
                 "component": "App\\Theme\\Components\\CardMove\\CardMove",
                 "generated": "build/generated/templates/themes/lotline/components/CardMove/card-move.phtml",
                 "source": "themes/lotline/components/CardMove/card-move.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatConversation\\ChatConversation",
+                "generated": "build/generated/templates/themes/lotline/components/ChatConversation/chat-conversation.phtml",
+                "source": "themes/lotline/components/ChatConversation/chat-conversation.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatDock\\ChatDock",
+                "generated": "build/generated/templates/themes/lotline/components/ChatDock/chat-dock.phtml",
+                "source": "themes/lotline/components/ChatDock/chat-dock.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatLine\\ChatLine",
+                "generated": "build/generated/templates/themes/lotline/components/ChatLine/chat-line.phtml",
+                "source": "themes/lotline/components/ChatLine/chat-line.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatList\\ChatList",
+                "generated": "build/generated/templates/themes/lotline/components/ChatList/chat-list.phtml",
+                "source": "themes/lotline/components/ChatList/chat-list.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatLog\\ChatLog",
+                "generated": "build/generated/templates/themes/lotline/components/ChatLog/chat-log.phtml",
+                "source": "themes/lotline/components/ChatLog/chat-log.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatSendForm\\ChatSendForm",
+                "generated": "build/generated/templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml",
+                "source": "themes/lotline/components/ChatSendForm/chat-send-form.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatStart\\ChatStart",
+                "generated": "build/generated/templates/themes/lotline/components/ChatStart/chat-start.phtml",
+                "source": "themes/lotline/components/ChatStart/chat-start.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\ChatThread\\ChatThread",
+                "generated": "build/generated/templates/themes/lotline/components/ChatThread/chat-thread.phtml",
+                "source": "themes/lotline/components/ChatThread/chat-thread.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\CheckGroup\\CheckGroup",

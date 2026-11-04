@@ -50,6 +50,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
+            "App\\Chat\\": "modules/chat/src/",
             "App\\Customers\\": "modules/customers/src/",
             "App\\Dashboard\\": "modules/dashboard/src/",
             "App\\Finance\\": "modules/finance/src/",

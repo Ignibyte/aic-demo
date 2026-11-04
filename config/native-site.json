@@ -1383,6 +1383,415 @@
             "captures": false
         },
         {
+            "name": "chat page, no chat open",
+            "method": "GET",
+            "path": "/chat",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat stream, no chat open",
+            "method": "GET",
+            "path": "/chat/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat typing, no chat open",
+            "method": "POST",
+            "path": "/chat/typing",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "chat read, no chat open",
+            "method": "POST",
+            "path": "/chat/read",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "chat start, no token",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=Is%20the%20gate%20probe%20still%20for%20sale%3F",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "chat start, honeypot filled",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=Is%20the%20gate%20probe%20still%20for%20sale%3F&aic_website=spam&aic_csrf={csrf}",
+            "header": "",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "chat start, no message",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=%20&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "chat start, an email that is none",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=nope&message=Is%20the%20gate%20probe%20still%20for%20sale%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "chat start, unknown car",
+            "method": "POST",
+            "path": "/cars/2023-volkswagen-tiguan-000000/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=Is%20the%20gate%20probe%20still%20for%20sale%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "chat start",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=Is%20the%20gate%20probe%20still%20for%20sale%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront car, with the chat open",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "storefront list, with the chat open",
+            "method": "GET",
+            "path": "/cars?make=Gate",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat page, the chat open",
+            "method": "GET",
+            "path": "/chat",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat stream, the thread and its signals",
+            "method": "GET",
+            "path": "/chat/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 2
+        },
+        {
+            "name": "chat message, no token",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=Hello&back=%2Fcars",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "chat message, empty",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=%20%20&back=%2Fcars&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "chat message",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=Can%20I%20see%20it%20today%3F%0ASay%20after%20four.&back=%2Fcars%2F2025-gate-probe-fa5196&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "chat message, from Tessera",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=Thanks%21&back=%2Fchat&aic_csrf={csrf}",
+            "header": "Tessera-Request: submit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline-store\r\nTessera-Targets: @chat-send",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat message, back to another site",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=One%20more&back=%2F%2Fexample.test&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "chat typing",
+            "method": "POST",
+            "path": "/chat/typing",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "chat read",
+            "method": "POST",
+            "path": "/chat/read",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "chats",
+            "method": "GET",
+            "path": "/app/chats",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "capture": "/app/chats/"
+        },
+        {
+            "name": "chat conversation",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat conversation, its stream read for the thread and its signals",
+            "method": "GET",
+            "path": "{note}/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 2
+        },
+        {
+            "name": "chat reply typing",
+            "method": "POST",
+            "path": "{note}/typing",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "chat reply, no token",
+            "method": "POST",
+            "path": "{note}/messages",
+            "form": "message=Yes",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "chat reply, empty",
+            "method": "POST",
+            "path": "{note}/messages",
+            "form": "message=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "chat reply",
+            "method": "POST",
+            "path": "{note}/messages",
+            "form": "message=Yes%2C%20it%20is%20on%20the%20lot.&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "chat stream, after the reply",
+            "method": "GET",
+            "path": "/chat/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "events": 2
+        },
+        {
+            "name": "chat close",
+            "method": "POST",
+            "path": "{note}/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "chat close, ended already",
+            "method": "POST",
+            "path": "{note}/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "chat reply, ended",
+            "method": "POST",
+            "path": "{note}/messages",
+            "form": "message=Still%20there%3F&aic_csrf={csrf}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "chat conversation, ended",
+            "method": "GET",
+            "path": "{note}",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chats, after a close",
+            "method": "GET",
+            "path": "/app/chats",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat message, the chat ended",
+            "method": "POST",
+            "path": "/chat/messages",
+            "form": "message=Hello%3F&back=%2Fchat&aic_csrf={csrf}",
+            "header": "",
+            "status": 409,
+            "captures": false
+        },
+        {
+            "name": "chat end, no chat open",
+            "method": "POST",
+            "path": "/chat/end",
+            "form": "back=%2Fchat&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "chat page, after the end",
+            "method": "GET",
+            "path": "/chat",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat start, a second chat",
+            "method": "POST",
+            "path": "/cars/2025-gate-probe-fa5196/chat",
+            "form": "name=Gate%20Chat&email=gate.chat%40example.test&message=One%20more%20question&aic_csrf={csrf}",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat page, the second chat open",
+            "method": "GET",
+            "path": "/chat",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat end, the chat open",
+            "method": "POST",
+            "path": "/chat/end",
+            "form": "back=%2Fcars%2F2025-gate-probe-fa5196&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "storefront car, after ending the chat",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat stream, after ending the chat",
+            "method": "GET",
+            "path": "/chat/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat conversation, unknown",
+            "method": "GET",
+            "path": "/app/chats/999999999",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "chat conversation stream, unknown",
+            "method": "GET",
+            "path": "/app/chats/999999999/events",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "chat close, unknown",
+            "method": "POST",
+            "path": "/app/chats/999999999/close",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "vehicle photo",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999001/photos/1",

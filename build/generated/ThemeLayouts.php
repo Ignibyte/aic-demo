@@ -83,7 +83,7 @@ final readonly class ThemeLayouts implements PageLayouts
     {
         return new TrackedAssets(
             $this->assetPath($this->publicAssets->named('app/styles'), 'application stylesheet'),
-            $this->assetPath($this->publicAssets->byPath('/assets/tessera-0.4.4/tessera.csp.iife.js'), 'pinned Tessera script'),
+            $this->assetPath($this->publicAssets->byPath('/assets/tessera-0.4.5/tessera.csp.iife.js'), 'pinned Tessera script'),
             [
                 $this->assetPath($this->publicAssets->byPath('/assets/themes/lotline/helpers.page.js'), 'a theme page script'),
             ],

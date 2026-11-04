@@ -1,0 +1,2 @@
+<?php /** @var \App\Theme\Components\ChatLine\ChatLine $chatLine */ ?>
+<div class="chat <?php if ($chatLine->mine): ?>chat-end<?php else: ?>chat-start<?php endif; ?>"><div class="chat-header text-xs"><?= $chatLine->author ?> <time class="opacity-60"><?= $chatLine->time ?></time></div><div class="chat-bubble whitespace-pre-line text-sm<?php if ($chatLine->mine): ?> chat-bubble-primary<?php endif; ?>"><?= $chatLine->body ?></div></div>

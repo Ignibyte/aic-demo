@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\StoreFooter\StoreFooter;
-use App\Theme\Components\StoreHeader\StoreHeader;
-use App\Theme\Components\StoreHeading\StoreHeading;
-use App\Theme\Components\SubmitButton\SubmitButton;
+use App\Theme\Components\PriceLine\PriceLine;
+use App\Theme\Components\RangeLinks\RangeLinks;
+use App\Theme\Components\SearchField\SearchField;
+use App\Theme\Components\SelectField\SelectField;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart13 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof StoreFooter => $this->renderStoreFooter($component, $renderPass),
-            $component instanceof StoreHeader => $this->renderStoreHeader($component, $renderPass),
-            $component instanceof StoreHeading => $this->renderStoreHeading($component, $renderPass),
-            $component instanceof SubmitButton => $this->renderSubmitButton($component, $renderPass),
+            $component instanceof PriceLine => $this->renderPriceLine($component, $renderPass),
+            $component instanceof RangeLinks => $this->renderRangeLinks($component, $renderPass),
+            $component instanceof SearchField => $this->renderSearchField($component, $renderPass),
+            $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param StoreFooter $storeFooter The component; its template reads it.
+     * @param PriceLine  $priceLine  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/PriceLine/price-line.phtml.
+     */
+    private function renderPriceLine(PriceLine $priceLine, RenderPass $renderPass): string
+    {
+        $renderPass->open($priceLine);
+        require __DIR__ . '/templates/themes/lotline/components/PriceLine/price-line.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param RangeLinks $rangeLinks The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/RangeLinks/range-links.phtml.
+     */
+    private function renderRangeLinks(RangeLinks $rangeLinks, RenderPass $renderPass): string
+    {
+        $renderPass->open($rangeLinks);
+        require __DIR__ . '/templates/themes/lotline/components/RangeLinks/range-links.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param SearchField $searchField The component; its template reads it.
      * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/StoreFooter/store-footer.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/SearchField/search-field.phtml.
      */
-    private function renderStoreFooter(StoreFooter $storeFooter, RenderPass $renderPass): string
+    private function renderSearchField(SearchField $searchField, RenderPass $renderPass): string
     {
-        $renderPass->open($storeFooter);
-        require __DIR__ . '/templates/themes/lotline/components/StoreFooter/store-footer.phtml';
+        $renderPass->open($searchField);
+        require __DIR__ . '/templates/themes/lotline/components/SearchField/search-field.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param StoreHeader $storeHeader The component; its template reads it.
+     * @param SelectField $selectField The component; its template reads it.
      * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/StoreHeader/store-header.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/SelectField/select-field.phtml.
      */
-    private function renderStoreHeader(StoreHeader $storeHeader, RenderPass $renderPass): string
+    private function renderSelectField(SelectField $selectField, RenderPass $renderPass): string
     {
-        $renderPass->open($storeHeader);
-        require __DIR__ . '/templates/themes/lotline/components/StoreHeader/store-header.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param StoreHeading $storeHeading The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/StoreHeading/store-heading.phtml.
-     */
-    private function renderStoreHeading(StoreHeading $storeHeading, RenderPass $renderPass): string
-    {
-        $renderPass->open($storeHeading);
-        require __DIR__ . '/templates/themes/lotline/components/StoreHeading/store-heading.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param SubmitButton $submitButton The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/SubmitButton/submit-button.phtml.
-     */
-    private function renderSubmitButton(SubmitButton $submitButton, RenderPass $renderPass): string
-    {
-        $renderPass->open($submitButton);
-        require __DIR__ . '/templates/themes/lotline/components/SubmitButton/submit-button.phtml';
+        $renderPass->open($selectField);
+        require __DIR__ . '/templates/themes/lotline/components/SelectField/select-field.phtml';
 
         return $renderPass->close();
     }

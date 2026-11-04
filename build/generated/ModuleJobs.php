@@ -32,8 +32,9 @@ final readonly class ModuleJobs
     public function byName(): array
     {
         return array_merge(
-            (new HoldsJobs($this->consoleContext))->byName(),
             (new LeadsJobs($this->consoleContext))->byName(),
+            (new ChatJobs($this->consoleContext))->byName(),
+            (new HoldsJobs($this->consoleContext))->byName(),
             (new ReportsJobs($this->consoleContext))->byName(),
         );
     }

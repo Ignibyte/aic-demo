@@ -48,3 +48,7 @@ Below the car sit two lead forms (#18), "Ask about this car" and "Book a test dr
 | `photos` | Each photo's path, the main one first |
 
 Paths are relative to the site, so both of gate:23's sites answer the same bytes. The list's page and the feed read their cars' photos in one statement, `CarFinder::photosOf()` over photos' `VehiclePhotos::photosOf()` (#25: the profiler showed `/cars` reading them once a car, 12 statements a page).
+
+## The chat's dock
+
+Every store page carries the chat's dock (#32) after the footer in `colophon`, built by chat's exported `ChatDesk` (`dock()` for a car's page and `/chat`, `pageDock()` for any other store page) and handed to `StorePages`: the visitor's open chat on every page, which a Tessera visit keeps as the same node; else, on a car's page, the start form, posting to `POST /cars/{slug}/chat` (`CarChatPost`), which `CarPages::chat()` answers with the car's page and the dock open (200) or the start refused (422). `StorePages::page()`, `missing()` and `framed()` take the dock as a `?KeyedComponent`; `CarListPage` and `CarPages` build it. The visitor's framed chat pages sit here too, in `Form/ChatAnswers.php`, since `src/Service/` is at its cap: `GET /chat` (`ChatPage`), the chat on a page of its own; `POST /chat/messages` (`ChatMessagePost`), 303 back to the store page it came from, or the send form's fragment with the `chatSent` patch for Tessera, 422 refused, 409 with no chat open; and `POST /chat/end` (`ChatEndPost`), 303 back. The chat module's README says the rest.

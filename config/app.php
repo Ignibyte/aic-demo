@@ -15,6 +15,10 @@ declare(strict_types=1);
  * sends one request (Tessera #43); a keyboard focus prefetches as a hover
  * does; a `data-on:dragstart` drag starts in Firefox; and Back to a page whose
  * recorded target is gone loads the whole page (Tessera #39).
+ * 0.4.5 (#32): an element with `data-ignore-morph` that the incoming markup
+ * drops goes with its parent, with no error, and one it keeps stays the same
+ * node with its typed text (Tessera #44), so the chat's box survives a
+ * stream patch and goes cleanly when a chat is closed or ended.
  *
  * The body cap (AIC #196): 12 MiB, above one vehicle photo's 8,000,000 bytes
  * (#16), so an oversized photo reaches UploadCheck and is refused in place
@@ -27,9 +31,9 @@ use AIC\Tessera\Domain\TesseraRelease;
 return new AppConfig(
     name: 'Lotline',
     theme: 'lotline',
-    tessera: new TesseraRelease('0.4.4', [
-        'tessera.csp.iife.js' => 'e2bdd4b39638468f498cd97d4a1865f250960e9dd5be3c339ceb0c40db7560c5',
-        'tessera.csp.iife.js.map' => '6ee44d291c9007b18aadd05155b2f21f8df0340be9e42a9460f972cc036afb72',
+    tessera: new TesseraRelease('0.4.5', [
+        'tessera.csp.iife.js' => 'ff621fedc866371ea624e4a4d71fee0f142a716a50f981ddc39727c0c44c786c',
+        'tessera.csp.iife.js.map' => '1ac9c90a2bc95c7df2252f99b3b5a4148d7c3bbe5572baaf1f2a2ff53f2844e0',
     ]),
     maxBodyBytes: 12_582_912,
 );

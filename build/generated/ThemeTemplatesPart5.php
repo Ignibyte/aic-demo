@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\DataTable\DataTable;
-use App\Theme\Components\DetailCard\DetailCard;
-use App\Theme\Components\DownloadLink\DownloadLink;
-use App\Theme\Components\EditRow\EditRow;
+use App\Theme\Components\ChatList\ChatList;
+use App\Theme\Components\ChatLog\ChatLog;
+use App\Theme\Components\ChatSendForm\ChatSendForm;
+use App\Theme\Components\ChatStart\ChatStart;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
-            $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
-            $component instanceof DownloadLink => $this->renderDownloadLink($component, $renderPass),
-            $component instanceof EditRow => $this->renderEditRow($component, $renderPass),
+            $component instanceof ChatList => $this->renderChatList($component, $renderPass),
+            $component instanceof ChatLog => $this->renderChatLog($component, $renderPass),
+            $component instanceof ChatSendForm => $this->renderChatSendForm($component, $renderPass),
+            $component instanceof ChatStart => $this->renderChatStart($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param DataTable  $dataTable  The component; its template reads it.
+     * @param ChatList   $chatList   The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/DataTable/data-table.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatList/chat-list.phtml.
      */
-    private function renderDataTable(DataTable $dataTable, RenderPass $renderPass): string
+    private function renderChatList(ChatList $chatList, RenderPass $renderPass): string
     {
-        $renderPass->open($dataTable);
-        require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
+        $renderPass->open($chatList);
+        require __DIR__ . '/templates/themes/lotline/components/ChatList/chat-list.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param DetailCard $detailCard The component; its template reads it.
+     * @param ChatLog    $chatLog    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/DetailCard/detail-card.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatLog/chat-log.phtml.
      */
-    private function renderDetailCard(DetailCard $detailCard, RenderPass $renderPass): string
+    private function renderChatLog(ChatLog $chatLog, RenderPass $renderPass): string
     {
-        $renderPass->open($detailCard);
-        require __DIR__ . '/templates/themes/lotline/components/DetailCard/detail-card.phtml';
+        $renderPass->open($chatLog);
+        require __DIR__ . '/templates/themes/lotline/components/ChatLog/chat-log.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param DownloadLink $downloadLink The component; its template reads it.
+     * @param ChatSendForm $chatSendForm The component; its template reads it.
      * @param RenderPass   $renderPass   The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/DownloadLink/download-link.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml.
      */
-    private function renderDownloadLink(DownloadLink $downloadLink, RenderPass $renderPass): string
+    private function renderChatSendForm(ChatSendForm $chatSendForm, RenderPass $renderPass): string
     {
-        $renderPass->open($downloadLink);
-        require __DIR__ . '/templates/themes/lotline/components/DownloadLink/download-link.phtml';
+        $renderPass->open($chatSendForm);
+        require __DIR__ . '/templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param EditRow    $editRow    The component; its template reads it.
+     * @param ChatStart  $chatStart  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/EditRow/edit-row.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatStart/chat-start.phtml.
      */
-    private function renderEditRow(EditRow $editRow, RenderPass $renderPass): string
+    private function renderChatStart(ChatStart $chatStart, RenderPass $renderPass): string
     {
-        $renderPass->open($editRow);
-        require __DIR__ . '/templates/themes/lotline/components/EditRow/edit-row.phtml';
+        $renderPass->open($chatStart);
+        require __DIR__ . '/templates/themes/lotline/components/ChatStart/chat-start.phtml';
 
         return $renderPass->close();
     }

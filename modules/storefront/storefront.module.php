@@ -15,18 +15,24 @@ declare(strict_types=1);
  * theme's store layout, whose regions no staff block fills; its header and
  * footer show the dealership's profile, which it requires settings for (#22);
  * a car's page shows finance's payment calculator at the profile's APR (#26).
- * The list's route
+ * Every store page carries the chat's dock, which chat's exported ChatDesk
+ * builds (#32), and the visitor's framed chat pages sit here: a start below
+ * a car, /chat, a message and the end. The list's route
  * comes last, after the routes below it. The build reads it; nothing reads it
  * at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
 use AIC\Module\Contracts\RouteMethod;
+use App\Storefront\Controller\CarChatPost;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarListPage;
 use App\Storefront\Controller\CarPage;
 use App\Storefront\Controller\CarPhotoStream;
 use App\Storefront\Controller\CarTestDrivePost;
+use App\Storefront\Controller\ChatEndPost;
+use App\Storefront\Controller\ChatMessagePost;
+use App\Storefront\Controller\ChatPage;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
 use App\Storefront\Service\StoreServices;
@@ -38,11 +44,16 @@ return (new ModuleManifest('storefront'))
     ->requires('leads')
     ->requires('settings')
     ->requires('finance')
+    ->requires('chat')
     ->route(RouteMethod::Get, '/cars/{slug}', CarPage::class)
     ->route(RouteMethod::Post, '/cars/{slug}/inquiry', CarInquiryPost::class)
     ->route(RouteMethod::Post, '/cars/{slug}/test-drive', CarTestDrivePost::class)
+    ->route(RouteMethod::Post, '/cars/{slug}/chat', CarChatPost::class)
     ->route(RouteMethod::Get, '/cars/{slug}/photos/{position:int}', CarPhotoStream::class)
     ->route(RouteMethod::Get, '/api/vehicles/{slug}', VehicleFeedItemApi::class)
     ->route(RouteMethod::Get, '/api/vehicles', VehicleFeedApi::class)
     ->route(RouteMethod::Get, '/cars', CarListPage::class)
+    ->route(RouteMethod::Get, '/chat', ChatPage::class)
+    ->route(RouteMethod::Post, '/chat/messages', ChatMessagePost::class)
+    ->route(RouteMethod::Post, '/chat/end', ChatEndPost::class)
     ->factory(StoreServices::class);

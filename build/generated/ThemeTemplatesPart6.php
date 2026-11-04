@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\FilterBar\FilterBar;
-use App\Theme\Components\FinanceCalculator\FinanceCalculator;
-use App\Theme\Components\FormActions\FormActions;
-use App\Theme\Components\FormField\FormField;
+use App\Theme\Components\ChatThread\ChatThread;
+use App\Theme\Components\CheckGroup\CheckGroup;
+use App\Theme\Components\ColumnChart\ColumnChart;
+use App\Theme\Components\ConfirmCard\ConfirmCard;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
-            $component instanceof FinanceCalculator => $this->renderFinanceCalculator($component, $renderPass),
-            $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
-            $component instanceof FormField => $this->renderFormField($component, $renderPass),
+            $component instanceof ChatThread => $this->renderChatThread($component, $renderPass),
+            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
+            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
+            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param FilterBar  $filterBar  The component; its template reads it.
+     * @param ChatThread $chatThread The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/FilterBar/filter-bar.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatThread/chat-thread.phtml.
      */
-    private function renderFilterBar(FilterBar $filterBar, RenderPass $renderPass): string
+    private function renderChatThread(ChatThread $chatThread, RenderPass $renderPass): string
     {
-        $renderPass->open($filterBar);
-        require __DIR__ . '/templates/themes/lotline/components/FilterBar/filter-bar.phtml';
+        $renderPass->open($chatThread);
+        require __DIR__ . '/templates/themes/lotline/components/ChatThread/chat-thread.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param FinanceCalculator $financeCalculator The component; its template reads it.
-     * @param RenderPass        $renderPass        The pass its template writes through.
+     * @param CheckGroup $checkGroup The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/FinanceCalculator/finance-calculator.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
      */
-    private function renderFinanceCalculator(FinanceCalculator $financeCalculator, RenderPass $renderPass): string
+    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
     {
-        $renderPass->open($financeCalculator);
-        require __DIR__ . '/templates/themes/lotline/components/FinanceCalculator/finance-calculator.phtml';
+        $renderPass->open($checkGroup);
+        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param FormActions $formActions The component; its template reads it.
+     * @param ColumnChart $columnChart The component; its template reads it.
      * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/FormActions/form-actions.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
      */
-    private function renderFormActions(FormActions $formActions, RenderPass $renderPass): string
+    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
     {
-        $renderPass->open($formActions);
-        require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
+        $renderPass->open($columnChart);
+        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param FormField  $formField  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param ConfirmCard $confirmCard The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/FormField/form-field.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
      */
-    private function renderFormField(FormField $formField, RenderPass $renderPass): string
+    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
     {
-        $renderPass->open($formField);
-        require __DIR__ . '/templates/themes/lotline/components/FormField/form-field.phtml';
+        $renderPass->open($confirmCard);
+        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
 
         return $renderPass->close();
     }
