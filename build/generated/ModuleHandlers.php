@@ -36,13 +36,13 @@ final readonly class ModuleHandlers
             (new InventoryHandlers($this->handlerContext))->byId(),
             (new InventoryHandlersPart2($this->handlerContext))->byId(),
             (new InventoryHandlersPart3($this->handlerContext))->byId(),
+            (new InventoryHandlersPart4($this->handlerContext))->byId(),
             (new CustomersHandlers($this->handlerContext))->byId(),
             (new CustomersHandlersPart2($this->handlerContext))->byId(),
             (new CustomersHandlersPart3($this->handlerContext))->byId(),
             (new SettingsHandlers($this->handlerContext))->byId(),
             (new LeadsHandlers($this->handlerContext))->byId(),
             (new ChatHandlers($this->handlerContext))->byId(),
-            (new StorefrontHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart2($this->handlerContext))->byId(),
         );
     }

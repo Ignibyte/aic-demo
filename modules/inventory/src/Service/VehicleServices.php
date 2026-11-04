@@ -47,13 +47,14 @@ final readonly class VehicleServices
     private VehiclePhotos $vehiclePhotos;
 
     /**
-     * @param EntityStore   $entityStore   The entity store.
-     * @param PageDocuments $pageDocuments The theme's documents.
-     * @param StaffSeals    $staffSeals    Seals and checks a record's path in its forms' envelopes.
-     * @param list<object>  $vehicleSales  The `VehicleSales` plugins, in tag order (`#[Tagged]`).
-     * @param PublicFiles   $publicFiles   AIC's public files, where the photos are kept.
-     * @param list<object>  $financeRates  The `FinanceRates` plugins, in tag order (`#[Tagged]`).
-     * @param list<object>  $vehiclePanels The `VehiclePanel` plugins, in tag order (`#[Tagged]`).
+     * @param EntityStore    $entityStore    The entity store.
+     * @param PageDocuments  $pageDocuments  The theme's documents.
+     * @param StaffSeals     $staffSeals     Seals and checks a record's path in its forms' envelopes.
+     * @param list<object>   $vehicleSales   The `VehicleSales` plugins, in tag order (`#[Tagged]`).
+     * @param PublicFiles    $publicFiles    AIC's public files, where the photos are kept.
+     * @param list<object>   $financeRates   The `FinanceRates` plugins, in tag order (`#[Tagged]`).
+     * @param list<object>   $vehiclePanels  The `VehiclePanel` plugins, in tag order (`#[Tagged]`).
+     * @param PhotoGalleries $photoGalleries The vehicle's photo gallery, with its ZIP's link (#36).
      */
     public function __construct(
         private EntityStore $entityStore,
@@ -66,6 +67,7 @@ final readonly class VehicleServices
         private array $financeRates,
         #[Tagged(VehiclePanel::class)]
         private array $vehiclePanels,
+        private PhotoGalleries $photoGalleries,
     ) {
         $this->staffPages = new StaffPages($pageDocuments);
         $this->vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
@@ -106,10 +108,9 @@ final readonly class VehicleServices
     public function vehicleCards(): VehicleCards
     {
         $vehicleRecords = $this->vehicleRecords();
-        $photoGalleries = new PhotoGalleries($this->vehiclePhotos, $this->staffSeals);
         $dealershipRates = new DealershipRates($this->entityStore, $this->financeRates);
 
-        return new VehicleCards($vehicleRecords, $this->soldVehicles(), $photoGalleries, $dealershipRates);
+        return new VehicleCards($vehicleRecords, $this->soldVehicles(), $this->photoGalleries, $dealershipRates);
     }
 
     /**

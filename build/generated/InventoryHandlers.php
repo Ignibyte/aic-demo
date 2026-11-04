@@ -7,12 +7,9 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Controller\VehicleCreatePost;
-use App\Inventory\Controller\VehicleDeletePage;
-use App\Inventory\Controller\VehicleDeletePost;
 use App\Inventory\Controller\VehicleEditPage;
 use App\Inventory\Controller\VehicleNewPage;
 use App\Inventory\Controller\VehiclePage;
-use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehiclePhotoPost;
 use App\Inventory\Controller\VehiclePhotoStream;
 use App\Inventory\Controller\VehicleUpdatePost;
@@ -40,22 +37,20 @@ final readonly class InventoryHandlers
     public function byId(): array
     {
         $inventoryHandlerServices = new InventoryHandlerServices($this->handlerContext);
+        $inventoryHandlerServicesPart2 = new InventoryHandlerServicesPart2($this->handlerContext);
 
         return [
             VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($inventoryHandlerServices->vehicleSaves())),
-            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($inventoryHandlerServices->vehicleServices())),
-            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($inventoryHandlerServices->vehicleServices())),
             VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($inventoryHandlerServices->vehicleSaves())),
             VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($inventoryHandlerServices->vehicleSaves())),
             VehiclePage::class => $this->handlerContext->page(
                 new VehiclePage($inventoryHandlerServices->vehicleServices()->vehicleCards()),
             ),
-            VehiclePhotoDeletePost::class => $this->handlerContext->page(
-                new VehiclePhotoDeletePost($inventoryHandlerServices->vehiclePhotoForms()),
+            VehiclePhotoPost::class => $this->handlerContext->page(
+                new VehiclePhotoPost($inventoryHandlerServicesPart2->vehiclePhotoForms()),
             ),
-            VehiclePhotoPost::class => $this->handlerContext->page(new VehiclePhotoPost($inventoryHandlerServices->vehiclePhotoForms())),
             VehiclePhotoStream::class => $this->handlerContext->stream(
-                new VehiclePhotoStream($inventoryHandlerServices->vehiclePhotoForms()),
+                new VehiclePhotoStream($inventoryHandlerServicesPart2->vehiclePhotoForms()),
             ),
             VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($inventoryHandlerServices->vehicleSaves())),
         ];

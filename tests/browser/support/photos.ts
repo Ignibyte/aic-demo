@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import { rmSync } from 'node:fs';
+import { existsSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { crc32 } from 'node:zlib';
 import { expect, type Page } from '@playwright/test';
 import { checkDigitHolds, literal, sql } from './inventory';
 import { insertVehicle, testVehicle } from './vehicles';
@@ -22,6 +23,9 @@ export const VINS = {
     refused: photoVin(2),
     salesperson: photoVin(3),
     bytes: photoVin(4),
+    bundle: photoVin(5),
+    noScript: photoVin(6),
+    unknown: photoVin(7),
 };
 
 // What staff call every photo look's vehicle: `testVehicle()`'s year, make, model and trim.
@@ -57,10 +61,28 @@ export function photoFile(key: string): string {
     return resolve('var/storage/public', key);
 }
 
+// Where this checkout keeps a vehicle's photo bundle (#36), `bundles/{vehicle id}.zip` in AIC's private files.
+function bundleFile(vehicleId: string): string {
+    return resolve('var/storage/private/bundles', `${vehicleId}.zip`);
+}
+
+// Whether the vehicle with this VIN has its photo bundle written.
+export function bundleWritten(vin: string): boolean {
+    const [vehicleId] = sql(`SELECT id FROM vehicles WHERE vin = ${literal(vin)}`);
+
+    return vehicleId !== undefined && existsSync(bundleFile(vehicleId));
+}
+
 // Deletes the photo looks' vehicles, their photos' rows going with them, and the salesperson. A photo file no other
-// row holds is removed too, from this checkout's public files, where DDEV's site keeps it.
+// row holds is removed too, from this checkout's public files, where DDEV's site keeps it, and each vehicle's photo
+// bundle from its private files.
 export function removePhotoLooks(): void {
     const keys = sql(`SELECT DISTINCT ${KEY} FROM vehicle_photos p JOIN vehicles v ON v.id = p.vehicle_id WHERE v.vin LIKE '${STEM}%'`);
+
+    for (const vehicleId of sql(`SELECT id FROM vehicles WHERE vin LIKE '${STEM}%'`)) {
+        rmSync(bundleFile(vehicleId), { force: true });
+    }
+
     sql(`DELETE FROM vehicles WHERE vin LIKE '${STEM}%'`);
     sql(`DELETE FROM users WHERE email = ${literal(SALESPERSON)}`);
     const held = new Set(sql(`SELECT DISTINCT ${KEY} FROM vehicle_photos p`));
@@ -160,6 +182,45 @@ export async function fetchInPage(
     }, { path, init });
 
     return { status: answer.status, headers: answer.headers, body: Buffer.from(answer.body) };
+}
+
+// One file in a ZIP as its central directory and local header give it.
+export interface ZipFile {
+    name: string;
+    method: number;
+    crc: number;
+    size: number;
+    bytes: Buffer;
+}
+
+// Reads a ZIP from its end record, through its central directory to each local header, checking that both records
+// agree and that each entry's CRC-32 is its bytes'; throws on anything else.
+export function zipFiles(zip: Buffer): ZipFile[] {
+    const end = zip.length - 22;
+    expect(zip.readUInt32LE(end)).toBe(0x06054b50);
+    const count = zip.readUInt16LE(end + 10);
+    let at = zip.readUInt32LE(end + 16);
+    const files: ZipFile[] = [];
+
+    for (let index = 0; index < count; index += 1) {
+        expect(zip.readUInt32LE(at)).toBe(0x02014b50);
+        const method = zip.readUInt16LE(at + 10);
+        const crc = zip.readUInt32LE(at + 16);
+        const size = zip.readUInt32LE(at + 24);
+        const nameLength = zip.readUInt16LE(at + 28);
+        const local = zip.readUInt32LE(at + 42);
+        const name = zip.toString('latin1', at + 46, at + 46 + nameLength);
+        expect(zip.readUInt32LE(local)).toBe(0x04034b50);
+        expect(zip.readUInt32LE(local + 14)).toBe(crc);
+        expect(zip.toString('latin1', local + 30, local + 30 + nameLength)).toBe(name);
+        const start = local + 30 + nameLength + zip.readUInt16LE(local + 28);
+        const bytes = zip.subarray(start, start + size);
+        expect(crc32(bytes)).toBe(crc);
+        files.push({ name, method, crc, size, bytes });
+        at += 46 + nameLength + zip.readUInt16LE(at + 30) + zip.readUInt16LE(at + 32);
+    }
+
+    return files;
 }
 
 // The page's CSRF token, as its forms and Tessera send it.

@@ -533,6 +533,13 @@
             "path": "/app"
         },
         {
+            "handler": "App\\Downloads\\Controller\\PhotoBundleStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "downloads",
+            "path": "/app/inventory/{vin}/photos.zip"
+        },
+        {
             "handler": "App\\Inbox\\Controller\\InboxPage",
             "kind": "Page",
             "method": "GET",
@@ -844,6 +851,12 @@
             "name": "notify"
         },
         {
+            "class": "App\\Photos\\Job\\WritePhotoBundle",
+            "kind": "Job",
+            "module": "photos",
+            "name": "photo-bundle"
+        },
+        {
             "class": "App\\Reports\\Job\\PruneReportExports",
             "kind": "Job",
             "module": "reports",
@@ -953,7 +966,8 @@
             "exports": [
                 "App\\Photos\\Service\\VehiclePhotos",
                 "App\\Photos\\Service\\PhotoGalleries",
-                "App\\Photos\\Entity\\VehiclePhoto"
+                "App\\Photos\\Entity\\VehiclePhoto",
+                "App\\Photos\\Service\\PhotoBundles"
             ],
             "factories": [],
             "middleware": [],
@@ -1276,6 +1290,23 @@
                 "inventory",
                 "sales",
                 "staff"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "downloads",
+            "namespace": "App\\Downloads\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "staff",
+                "inventory",
+                "photos"
             ]
         },
         {

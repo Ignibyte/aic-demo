@@ -25,6 +25,16 @@ The files are kept in AIC's public files (#23), under `var/storage/public/`, whi
 
 The request body's cap is `AppConfig::$maxBodyBytes`, 12 MiB in `config/app.php`: above one photo's limit, so an oversized photo reaches `UploadCheck` and is refused with its reason, while a body over the cap answers 413 from AIC before the session.
 
+## The bundle
+
+A vehicle's photos as one ZIP for staff (#36). `PhotoBundles`, exported, keeps it in AIC's private files at `bundles/{vehicle id}.zip`, out of any URL:
+
+- `queue()` dispatches the `photo-bundle` job (`WritePhotoBundle`) with the vehicle's id, through AIC's `PostgresQueue`; inventory's photo routes call it after a kept upload and a done delete.
+- `write()`, which the job calls, reads the vehicle's photos as they are when it runs and puts the whole ZIP through `PrivateFiles::put()`, a write to a temporary file renamed over the old one, so a download never reads half a bundle; with no photos left it deletes the bundle. A photo file it cannot read throws, and the queue retries. A payload that names no vehicle fails at once.
+- `exists()` says whether the bundle is written; `download()` answers `PrivateFiles::download()` as `application/zip`, saved as `{VIN}-photos.zip`, so AIC's `FileDownload` sends the strong ETag and `Last-Modified` and answers ranges (206, 416), `If-Range` and conditions (304, 412). No bundle throws `RouteNotFoundException`, which AIC answers 404. `downloads` routes it.
+
+`StoredZip` writes the archive by hand, since elephc compiles no `ZipArchive` and no `pack()`: per photo a local file header and its bytes, then the central directory and its end record (APPNOTE 6.3.x), every integer little-endian through `chr()`, each CRC-32 from `crc32()`. The entries are stored, not compressed: JPEG, PNG and WebP are compressed already. Each is a `ZipEntry` named `photo-{position}.{extension}`, in position order, and dated 1980-01-01 00:00, so the same photos give the same bytes, on both of gate:23's passes too. Twelve photos of at most 8,000,000 bytes stay far below zip64's limits.
+
 ## The gallery
 
-`PhotoGalleries`, exported, builds the theme's `PhotoGallery` for a vehicle's page: the photos, the first as the main one, larger and captioned, each `alt` naming the vehicle and the photo's number (`2023 Probe Hatch SE, photo 1 of 2`). For a sales manager or an admin it adds, from `PhotoForms` in `Form/`, a delete form under each photo, its envelope sealing that photo's position and id (`StaffSeals`), and the multipart upload form, with the refusal as its error alert when an upload was refused. A salesperson gets the photos alone.
+`PhotoGalleries`, exported, builds the theme's `PhotoGallery` for a vehicle's page: the photos, the first as the main one, larger and captioned, each `alt` naming the vehicle and the photo's number (`2023 Probe Hatch SE, photo 1 of 2`). For a sales manager or an admin it adds, from `PhotoForms` in `Form/`, a delete form under each photo, its envelope sealing that photo's position and id (`StaffSeals`), and the multipart upload form, with the refusal as its error alert when an upload was refused. A salesperson gets the photos alone. Every member of staff gets, once the bundle is written, the theme's `DownloadLink` "Download all photos (ZIP)" (`#vehicle-photo-bundle`, keyed `bundle`) to `{vehicle page}/photos.zip`, before the forms.

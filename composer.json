@@ -54,6 +54,7 @@
             "App\\Compare\\": "modules/compare/src/",
             "App\\Customers\\": "modules/customers/src/",
             "App\\Dashboard\\": "modules/dashboard/src/",
+            "App\\Downloads\\": "modules/downloads/src/",
             "App\\Finance\\": "modules/finance/src/",
             "App\\Generated\\": "build/generated/",
             "App\\Holds\\": "modules/holds/src/",

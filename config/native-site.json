@@ -2125,6 +2125,79 @@
             "captures": false
         },
         {
+            "name": "photo bundle, before the worker",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "health, once the worker has written the photo bundle",
+            "method": "GET",
+            "path": "/health",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false,
+            "work": true
+        },
+        {
+            "name": "vehicle page, with the photo bundle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "photo bundle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "photo bundle, a byte range",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
+            "form": "",
+            "header": "Range: bytes=0-29",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "photo bundle, a range past its end",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
+            "form": "",
+            "header": "Range: bytes=999999999-",
+            "status": 416,
+            "captures": false
+        },
+        {
+            "name": "photo bundle, unchanged",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
+            "form": "",
+            "header": "If-None-Match: *",
+            "status": 304,
+            "captures": false
+        },
+        {
+            "name": "photo bundle, unknown vehicle",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999999/photos.zip",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "vehicle photo delete, altered envelope",
             "method": "POST",
             "path": "/app/inventory/0LTGATE19SR999001/photos/1/delete",
@@ -3643,6 +3716,15 @@
             "name": "report export download, signed out",
             "method": "GET",
             "path": "/app/reports/exports/1",
+            "form": "",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "photo bundle, signed out",
+            "method": "GET",
+            "path": "/app/inventory/0LTGATE19SR999001/photos.zip",
             "form": "",
             "header": "",
             "status": 303,

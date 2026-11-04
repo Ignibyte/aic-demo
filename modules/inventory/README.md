@@ -110,11 +110,12 @@ A vehicle's photos (#16) are the `photos` module's: its table, its files in AIC'
 
 - an upload from a sales manager or an admin goes to `VehiclePhotos::add()`; its refusal (no file, a file AIC's `UploadCheck` refuses by its content or its size, a thirteenth photo) answers `VehicleCards::page()` with the reason and 422, and Tessera puts it in place; a kept photo answers 303 to the vehicle with "Added a photo of the {title}.";
 - a delete names the photo by its position, and its form seals that photo's id (`VehiclePhoto::sealed()`), so a form from a page that is out of date answers 400 instead of deleting the photo now at that position;
+- a kept upload and a done delete each queue the vehicle's photo bundle through photos' `PhotoBundles::queue()` (#36), so the `photo-bundle` job rewrites its ZIP; a refused one queues nothing;
 - the Stream answers `VehiclePhotos::download()`: AIC's `FileDownload` of the photo's file in the public files, with the request, which sends the ETag, `Last-Modified` and `Cache-Control: private, no-cache` and answers ranges (206, 416) and conditions (304, 412). The gallery itself shows each photo from its `/files/` URL.
 
 `VehicleServices` builds `VehiclePhotoForms` with the photos' service from the public files, so the photo routes' generated part is one short method.
 
-A salesperson's upload or delete answers 403 (AIC #197) and changes nothing; their page shows the photos with no form. The vehicle's page shows the gallery under its card, keyed `photos`. Deleting a vehicle deletes its photo rows by their foreign key, and `VehicleDeletes` then hands `VehiclePhotos::forget()` the photos it read before the delete, which removes each file no other photo holds.
+A salesperson's upload or delete answers 403 (AIC #197) and changes nothing; their page shows the photos with no form. The vehicle's page shows the gallery under its card, keyed `photos`, with the ZIP's link once its bundle is written; `VehicleServices` takes photos' `PhotoBundles` and hands it to the gallery. The ZIP's own route, `/app/inventory/{vin}/photos.zip`, is the `downloads` module's (#36). Deleting a vehicle deletes its photo rows by their foreign key, and `VehicleDeletes` then hands `VehiclePhotos::forget()` the photos it read before the delete, which removes each file no other photo holds. A deleted vehicle's photo bundle stays in the private files, out of reach: its route answers 404 once the vehicle is gone.
 
 ## Sales
 

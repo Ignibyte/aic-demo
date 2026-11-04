@@ -28,6 +28,7 @@
                 <element key="modules/compare/src" value="App\Compare"/>
                 <element key="modules/customers/src" value="App\Customers"/>
                 <element key="modules/dashboard/src" value="App\Dashboard"/>
+                <element key="modules/downloads/src" value="App\Downloads"/>
                 <element key="modules/finance/src" value="App\Finance"/>
                 <element key="modules/holds/src" value="App\Holds"/>
                 <element key="modules/inbox/src" value="App\Inbox"/>
