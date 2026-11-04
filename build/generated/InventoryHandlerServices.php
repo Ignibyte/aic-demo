@@ -7,15 +7,16 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Queue\Application\PostgresQueue;
+use AIC\Storage\Application\PrivateFiles;
 use AIC\Storage\Application\PublicFiles;
 use App\Finance\Service\FinanceRates;
 use App\Inventory\Entity\VehiclePanel;
-use App\Inventory\Form\VehiclePhotoForms;
-use App\Inventory\Form\VehicleRowEdits;
-use App\Inventory\Form\VehicleRowPages;
 use App\Inventory\Form\VehicleSaves;
 use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
+use App\Photos\Service\PhotoBundles;
+use App\Photos\Service\PhotoGalleries;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Form\StaffSeals;
 
@@ -34,6 +35,35 @@ final readonly class InventoryHandlerServices
     }
 
     /**
+     * @return VehiclePhotos A new one, for the part that asked.
+     */
+    public function vehiclePhotos(): VehiclePhotos
+    {
+        return new VehiclePhotos(new EntityStore($this->handlerContext->database()), new PublicFiles($this->handlerContext->root()));
+    }
+
+    /**
+     * @return PhotoBundles A new one, for the part that asked.
+     */
+    public function photoBundles(): PhotoBundles
+    {
+        return new PhotoBundles(
+            new EntityStore($this->handlerContext->database()),
+            new PublicFiles($this->handlerContext->root()),
+            new PrivateFiles($this->handlerContext->root()),
+            new PostgresQueue($this->handlerContext->database()),
+        );
+    }
+
+    /**
+     * @return PhotoGalleries A new one, for the part that asked.
+     */
+    public function photoGalleries(): PhotoGalleries
+    {
+        return new PhotoGalleries($this->vehiclePhotos(), new StaffSeals($this->handlerContext->envelopeCodec()), $this->photoBundles());
+    }
+
+    /**
      * @throws ContainerException When a called constructor or service fails.
      *
      * @return VehicleServices A new one, for the part that asked.
@@ -48,6 +78,7 @@ final readonly class InventoryHandlerServices
             new PublicFiles($this->handlerContext->root()),
             $this->handlerContext->tagged(FinanceRates::class),
             $this->handlerContext->tagged(VehiclePanel::class),
+            $this->photoGalleries(),
         );
     }
 
@@ -59,42 +90,5 @@ final readonly class InventoryHandlerServices
     public function vehicleSaves(): VehicleSaves
     {
         return $this->vehicleServices()->vehicleSaves();
-    }
-
-    /**
-     * @return VehiclePhotos A new one, for the part that asked.
-     */
-    public function vehiclePhotos(): VehiclePhotos
-    {
-        return new VehiclePhotos(new EntityStore($this->handlerContext->database()), new PublicFiles($this->handlerContext->root()));
-    }
-
-    /**
-     * @throws ContainerException When a called constructor or service fails.
-     *
-     * @return VehiclePhotoForms A new one, for the part that asked.
-     */
-    public function vehiclePhotoForms(): VehiclePhotoForms
-    {
-        return new VehiclePhotoForms(
-            new StaffSeals($this->handlerContext->envelopeCodec()),
-            $this->vehiclePhotos(),
-            $this->vehicleServices(),
-        );
-    }
-
-    /**
-     * @throws ContainerException When a called constructor or service fails.
-     *
-     * @return VehicleRowEdits A new one, for the part that asked.
-     */
-    public function vehicleRowEdits(): VehicleRowEdits
-    {
-        return new VehicleRowEdits(
-            new VehicleRowPages($this->handlerContext->documents()),
-            new EntityStore($this->handlerContext->database()),
-            $this->handlerContext->envelopeCodec(),
-            $this->handlerContext->tagged(VehicleSales::class),
-        );
     }
 }

@@ -10,6 +10,7 @@ use AIC\Form\Application\FormTokens;
 use App\Photos\Entity\VehiclePhoto;
 use App\Photos\Form\PhotoForms;
 use App\Staff\Form\StaffSeals;
+use App\Theme\Components\DownloadLink\DownloadLink;
 use App\Theme\Components\PhotoGallery\GalleryPhoto;
 use App\Theme\Components\PhotoGallery\PhotoGallery;
 use LogicException;
@@ -23,7 +24,8 @@ use function substr;
 /**
  * A vehicle's photos as the theme's `PhotoGallery`, for its page: every photo, the first as the main one, each with
  * an `alt` that names the vehicle; and, for a sales manager or an admin, `PhotoForms`' delete form under each photo and
- * its upload form after them. A salesperson gets the photos alone. Its strip (#31) is named by the vehicle's VIN, the
+ * its upload form after them. A salesperson gets the photos alone. Once the vehicle's photo bundle (#36) is written,
+ * every member of staff gets its download link before the forms. Its strip (#31) is named by the vehicle's VIN, the
  * number of photos and the newest photo's bytes, so Tessera keeps it across a redraw with the same photos.
  */
 final readonly class PhotoGalleries
@@ -36,11 +38,13 @@ final readonly class PhotoGalleries
     /**
      * @param VehiclePhotos $vehiclePhotos The vehicle's photos, and who may change them.
      * @param StaffSeals    $staffSeals    Seals the photo a delete form is for.
+     * @param PhotoBundles  $photoBundles  Whether the vehicle's photos are bundled as a ZIP.
      * @param FormTokens    $formTokens    Issues the visitor's guard fields.
      */
     public function __construct(
         private VehiclePhotos $vehiclePhotos,
         StaffSeals $staffSeals,
+        private PhotoBundles $photoBundles,
         private FormTokens $formTokens = new FormTokens(),
     ) {
         $this->photoForms = new PhotoForms($staffSeals);
@@ -76,13 +80,39 @@ final readonly class PhotoGalleries
             $photos[] = $this->galleryPhoto($vehiclePhoto, $vehiclePath, $alt, $guardFields);
         }
 
-        $controls = $guardFields instanceof GuardFields
-            ? [new KeyedComponent('upload', $this->photoForms->upload($vehiclePath, $refusal, $guardFields))]
-            : [];
-
+        $controls = $this->controls($vehicleId, $vehiclePath, $refusal, $guardFields);
         $strip = $this->strip($vehiclePath, $vehiclePhotos);
 
         return new PhotoGallery('vehicle-photos', 'Photos', 'No photos of this vehicle yet.', $photos, $controls, $strip);
+    }
+
+    /**
+     * @param int          $vehicleId   The vehicle's id.
+     * @param string       $vehiclePath Its page, `/app/inventory/{VIN}`.
+     * @param string       $refusal     Why an upload was refused; empty when none was.
+     * @param ?GuardFields $guardFields The visitor's CSRF token and the honeypot; null for one who may not change the
+     *                                  photos.
+     *
+     * @throws LogicException When a key does not fit the theme, or the bundle's key is not a storage key.
+     *
+     * @return list<KeyedComponent> The ZIP's link once the vehicle's bundle is written (#36), for every member of
+     *                              staff; then the upload form, for one who may change the photos.
+     */
+    private function controls(int $vehicleId, string $vehiclePath, string $refusal, ?GuardFields $guardFields): array
+    {
+        $controls = [];
+
+        if ($this->photoBundles->exists($vehicleId)) {
+            $downloadLink = new DownloadLink('vehicle-photo-bundle', 'Download all photos (ZIP)', $vehiclePath . '/photos.zip');
+            $controls[] = new KeyedComponent('bundle', $downloadLink);
+        }
+
+        if ($guardFields instanceof GuardFields) {
+            $keyedComponent = new KeyedComponent('upload', $this->photoForms->upload($vehiclePath, $refusal, $guardFields));
+            $controls[] = $keyedComponent;
+        }
+
+        return $controls;
     }
 
     /**

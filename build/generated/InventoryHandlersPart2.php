@@ -8,9 +8,10 @@ use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Controller\InventoryListPage;
-use App\Inventory\Controller\VehicleRowEditPage;
+use App\Inventory\Controller\VehicleDeletePage;
+use App\Inventory\Controller\VehicleDeletePost;
+use App\Inventory\Controller\VehiclePhotoDeletePost;
 use App\Inventory\Controller\VehicleRowPage;
-use App\Inventory\Controller\VehicleRowPut;
 use App\Inventory\Form\VehicleRowForm;
 use App\Inventory\Repository\VehicleRepository;
 use App\Inventory\Service\InventoryList;
@@ -39,6 +40,7 @@ final readonly class InventoryHandlersPart2
     public function byId(): array
     {
         $inventoryHandlerServices = new InventoryHandlerServices($this->handlerContext);
+        $inventoryHandlerServicesPart2 = new InventoryHandlerServicesPart2($this->handlerContext);
         $entityStore = new EntityStore($this->handlerContext->database());
         $inventoryList = new InventoryList(new VehicleRepository($entityStore), new VehicleRowForm($this->handlerContext->envelopeCodec()));
 
@@ -46,9 +48,12 @@ final readonly class InventoryHandlersPart2
             InventoryListPage::class => $this->handlerContext->page(
                 new InventoryListPage(new StaffPages($this->handlerContext->documents()), $inventoryList),
             ),
-            VehicleRowEditPage::class => $this->handlerContext->page(new VehicleRowEditPage($inventoryHandlerServices->vehicleRowEdits())),
-            VehicleRowPage::class => $this->handlerContext->page(new VehicleRowPage($inventoryHandlerServices->vehicleRowEdits())),
-            VehicleRowPut::class => $this->handlerContext->page(new VehicleRowPut($inventoryHandlerServices->vehicleRowEdits())),
+            VehicleDeletePage::class => $this->handlerContext->page(new VehicleDeletePage($inventoryHandlerServices->vehicleServices())),
+            VehicleDeletePost::class => $this->handlerContext->page(new VehicleDeletePost($inventoryHandlerServices->vehicleServices())),
+            VehiclePhotoDeletePost::class => $this->handlerContext->page(
+                new VehiclePhotoDeletePost($inventoryHandlerServicesPart2->vehiclePhotoForms()),
+            ),
+            VehicleRowPage::class => $this->handlerContext->page(new VehicleRowPage($inventoryHandlerServicesPart2->vehicleRowEdits())),
         ];
     }
 }

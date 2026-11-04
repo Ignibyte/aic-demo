@@ -5,19 +5,9 @@ declare(strict_types=1);
 namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
-use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
-use AIC\Notification\Application\Notifier;
-use AIC\Queue\Application\PostgresQueue;
-use AIC\Storage\Application\PublicFiles;
-use App\Inventory\Controller\VehicleBulkPost;
-use App\Inventory\Form\VehicleBulkEdits;
-use App\Inventory\Form\VehicleBulkPages;
-use App\Inventory\Form\VehicleRowForm;
-use App\Inventory\Form\VehicleRowPages;
-use App\Inventory\Repository\BulkAuditRepository;
-use App\Inventory\Repository\VehicleBatchRepository;
-use App\Inventory\Service\VehicleSales;
+use App\Inventory\Controller\VehicleRowEditPage;
+use App\Inventory\Controller\VehicleRowPut;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -41,24 +31,13 @@ final readonly class InventoryHandlersPart3
      */
     public function byId(): array
     {
-        $entityStore = new EntityStore($this->handlerContext->database());
-        $vehicleBulkPages = new VehicleBulkPages(
-            new VehicleRowPages($this->handlerContext->documents()),
-            $entityStore,
-            new VehicleRowForm($this->handlerContext->envelopeCodec()),
-        );
-        $vehicleBatchRepository = new VehicleBatchRepository($entityStore, new PublicFiles($this->handlerContext->root()));
-        $notifier = new Notifier(new PostgresQueue($this->handlerContext->database()));
-        $vehicleBulkEdits = new VehicleBulkEdits(
-            $vehicleBulkPages,
-            $vehicleBatchRepository,
-            new BulkAuditRepository($notifier, $entityStore),
-            $entityStore,
-            $this->handlerContext->tagged(VehicleSales::class),
-        );
+        $inventoryHandlerServicesPart2 = new InventoryHandlerServicesPart2($this->handlerContext);
 
         return [
-            VehicleBulkPost::class => $this->handlerContext->page(new VehicleBulkPost($vehicleBulkEdits)),
+            VehicleRowEditPage::class => $this->handlerContext->page(
+                new VehicleRowEditPage($inventoryHandlerServicesPart2->vehicleRowEdits()),
+            ),
+            VehicleRowPut::class => $this->handlerContext->page(new VehicleRowPut($inventoryHandlerServicesPart2->vehicleRowEdits())),
         ];
     }
 }

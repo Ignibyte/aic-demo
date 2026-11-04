@@ -11,6 +11,7 @@ use App\Inventory\Entity\Vehicle;
 use App\Inventory\Service\VehicleCards;
 use App\Inventory\Service\VehicleRecords;
 use App\Inventory\Service\VehicleServices;
+use App\Photos\Service\PhotoBundles;
 use App\Photos\Service\VehiclePhotos;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
@@ -24,7 +25,8 @@ use function preg_match;
 /**
  * A vehicle's photos (#16) through its routes: adding one from the page's upload form, deleting one by its position,
  * and serving one. Only a sales manager or an admin adds or deletes (403 otherwise); a refused upload answers the
- * vehicle's page as 422 with the reason, and a done change goes back to it (303) with a notice. It takes the vehicle's
+ * vehicle's page as 422 with the reason, and a done change goes back to it (303) with a notice and queues the
+ * vehicle's photo bundle (#36), so the ZIP follows the photos. It takes the vehicle's
  * records and cards from `VehicleServices`, so the photo routes' generated part stays one short method.
  */
 final readonly class VehiclePhotoForms
@@ -59,6 +61,7 @@ final readonly class VehiclePhotoForms
      * @param StaffSeals      $staffSeals      Checks a delete form's envelope.
      * @param VehiclePhotos   $vehiclePhotos   The vehicle's photos.
      * @param VehicleServices $vehicleServices The vehicle's records and cards.
+     * @param PhotoBundles    $photoBundles    Queues the vehicle's ZIP after a change.
      * @param StaffNotices    $staffNotices    Leaves a change's notice for the vehicle's page.
      * @param StaffRequests   $staffRequests   Reads the route's position.
      */
@@ -66,6 +69,7 @@ final readonly class VehiclePhotoForms
         private StaffSeals $staffSeals,
         private VehiclePhotos $vehiclePhotos,
         VehicleServices $vehicleServices,
+        private PhotoBundles $photoBundles,
         private StaffNotices $staffNotices = new StaffNotices(),
         private StaffRequests $staffRequests = new StaffRequests(),
     ) {
@@ -78,7 +82,8 @@ final readonly class VehiclePhotoForms
      *
      * @throws LogicException   When the request has no session, or a key does not fit the theme.
      * @throws RuntimeException When the vehicle or its photos cannot be read or written, a stored status or the
-     *                          member's role is not one, or the upload cannot be read or moved.
+     *                          member's role is not one, the upload cannot be read or moved, or the bundle's job
+     *                          cannot be queued.
      *
      * @return PageResponse 303 to the vehicle's page; the page as 422 with the reason; 403; or 404.
      */
@@ -86,27 +91,17 @@ final readonly class VehiclePhotoForms
     {
         $vehicle = $this->changeable($serverRequest);
 
-        if (!$vehicle instanceof Vehicle) {
-            return $this->refusal($serverRequest);
-        }
-
-        $refusal = $this->vehiclePhotos->add($serverRequest, $this->vehicleRecords->vehicleId($serverRequest));
-
-        if ($refusal !== '') {
-            return $this->vehicleCards->page($serverRequest, $refusal, 422);
-        }
-
-        $this->staffNotices->keep($serverRequest, 'Added a photo of the ' . $vehicle->title() . '.');
-
-        return new PageRedirect($vehicle->path());
+        return $vehicle instanceof Vehicle
+            ? $this->keep($serverRequest, $vehicle)
+            : $this->refusal($serverRequest);
     }
 
     /**
      * @param ServerRequestInterface $serverRequest A posted delete form, with its session.
      *
      * @throws LogicException   When the request has no session, or a status does not fit the theme.
-     * @throws RuntimeException When the vehicle or its photos cannot be read or deleted, or a stored status or the
-     *                          member's role is not one.
+     * @throws RuntimeException When the vehicle or its photos cannot be read or deleted, a stored status or the
+     *                          member's role is not one, or the bundle's job cannot be queued.
      *
      * @return PageResponse 303 to the vehicle's page; 400 for an envelope that does not seal the photo now at that
      *                      position; 403; or 404 for no vehicle or no photo there.
@@ -131,6 +126,7 @@ final readonly class VehiclePhotoForms
         }
 
         if ($this->vehiclePhotos->remove($vehicleId, $vehiclePhoto)) {
+            $this->photoBundles->queue($vehicleId);
             $this->staffNotices->keep($serverRequest, 'Deleted photo ' . $vehiclePhoto->position . ' of the ' . $vehicle->title() . '.');
         }
 
@@ -151,6 +147,33 @@ final readonly class VehiclePhotoForms
         $vehicleId = $this->vehicleRecords->vehicleId($serverRequest);
 
         return $this->vehiclePhotos->download($serverRequest, $vehicleId, $this->position($serverRequest));
+    }
+
+    /**
+     * Keeps the posted photo and queues the vehicle's bundle; a refused upload answers the page with its reason.
+     *
+     * @param ServerRequestInterface $serverRequest A posted upload form, with its session.
+     * @param Vehicle                $vehicle       The route's vehicle, whose photos the member may change.
+     *
+     * @throws LogicException   When the request has no session, or a key does not fit the theme.
+     * @throws RuntimeException When the photos cannot be read or written, a stored status is not one, the upload
+     *                          cannot be read or moved, or the bundle's job cannot be queued.
+     *
+     * @return PageResponse 303 to the vehicle's page with a notice; or the page as 422 with the reason.
+     */
+    private function keep(ServerRequestInterface $serverRequest, Vehicle $vehicle): PageResponse
+    {
+        $vehicleId = $this->vehicleRecords->vehicleId($serverRequest);
+        $refusal = $this->vehiclePhotos->add($serverRequest, $vehicleId);
+
+        if ($refusal !== '') {
+            return $this->vehicleCards->page($serverRequest, $refusal, 422);
+        }
+
+        $this->photoBundles->queue($vehicleId);
+        $this->staffNotices->keep($serverRequest, 'Added a photo of the ' . $vehicle->title() . '.');
+
+        return new PageRedirect($vehicle->path());
     }
 
     /**
