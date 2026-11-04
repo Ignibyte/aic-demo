@@ -42,7 +42,7 @@ final readonly class ModuleHandlers
             (new SettingsHandlers($this->handlerContext))->byId(),
             (new LeadsHandlers($this->handlerContext))->byId(),
             (new ChatHandlers($this->handlerContext))->byId(),
-            (new HoldsHandlers($this->handlerContext))->byId(),
+            (new StorefrontHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart2($this->handlerContext))->byId(),
         );
     }

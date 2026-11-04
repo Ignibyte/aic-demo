@@ -11,25 +11,23 @@ use AIC\Entity\Application\EntityStore;
 use AIC\Entity\Domain\Comparison;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Entity\ListingQuery;
-use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Service\VehicleRows;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
-use function hash;
-use function substr;
-
 /**
  * The vehicles for sale, for the public side (#17): only the rows in stock, never one sold or on hold. The makes and
- * years for sale, a page of what a `ListingQuery` keeps and its count, every one of a make for the feed, and the one a
- * year and a key name. Each row is read as a `ListedVehicle`, so the VIN and the cost stay here.
+ * years for sale, a page of what a `ListingQuery` keeps and its count, every one of a make for the feed, the one a
+ * year and a key name, and those a comparison names by key (#33). Every read goes through the `vehicle_listings` view
+ * (#33), which holds the cars in stock and works out each one's key in SQL, so the key has that one source. Each row
+ * is read as a `ListedVehicle`, so the VIN and the cost stay here.
  */
 final readonly class ListedVehicleRepository
 {
     /**
      * @param EntityStore  $entityStore  The entity store.
-     * @param VehicleTable $vehicleTable The `vehicles` entity type.
+     * @param VehicleTable $vehicleTable The `vehicle_listings` view's entity type.
      * @param VehicleRows  $vehicleRows  Reads a row into a vehicle.
      */
     public function __construct(
@@ -129,13 +127,30 @@ final readonly class ListedVehicleRepository
      */
     public function find(int $year, string $key): ?ListedVehicle
     {
-        foreach ($this->listed($this->inStock()->where('year', $year)->orderBy('vin')) as $listedVehicle) {
-            if ($listedVehicle->key === $key) {
-                return $listedVehicle;
-            }
+        $entityQuery = $this->inStock()->where('year', $year)->where('listing_key', $key);
+
+        return $this->listed($entityQuery->orderBy('vin')->limit(1))[0] ?? null;
+    }
+
+    /**
+     * The cars a comparison asks for (#33), in one read of `vehicle_listings` by key. A key may be shared by two cars,
+     * so the caller keeps only those whose whole slug is the one it was asked for.
+     *
+     * @param list<string> $keys Keys, each the first 6 hex digits of the SHA-256 of a VIN; empty for none.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     * @throws UnexpectedValueException When a stored status is no status.
+     *
+     * @return list<ListedVehicle> The vehicles for sale with one of those keys, by VIN; none for no key.
+     */
+    public function compared(array $keys): array
+    {
+        if ($keys === []) {
+            return [];
         }
 
-        return null;
+        return $this->listed($this->inStock()->whereIn('listing_key', $keys)->orderBy('vin'));
     }
 
     /**
@@ -166,11 +181,11 @@ final readonly class ListedVehicleRepository
     /**
      * @throws InvalidArgumentException When the entity type is malformed.
      *
-     * @return EntityQuery The vehicles in stock.
+     * @return EntityQuery The vehicles in stock: the `vehicle_listings` view, which holds no other.
      */
     private function inStock(): EntityQuery
     {
-        return $this->entityStore->query($this->vehicleTable->type())->where('status', VehicleStatus::InStock->value);
+        return $this->entityStore->query($this->vehicleTable->listings());
     }
 
     /**
@@ -195,12 +210,12 @@ final readonly class ListedVehicleRepository
     /**
      * Reads the row through `VehicleRows`, as the staff list does, then keeps what the public may see.
      *
-     * @param Row $row A row of the `vehicles` entity type.
+     * @param Row $row A row of the `vehicle_listings` view.
      *
      * @throws QueryException           When a column is missing or of another type.
      * @throws UnexpectedValueException When its status is no status.
      *
-     * @return ListedVehicle The vehicle, its key worked out from its VIN, which goes no further.
+     * @return ListedVehicle The vehicle, its key the one the view worked out; its VIN goes no further.
      */
     private function vehicle(Row $row): ListedVehicle
     {
@@ -208,7 +223,7 @@ final readonly class ListedVehicleRepository
 
         return new ListedVehicle(
             $row->int('id'),
-            substr(hash('sha256', $vehicle->vin), 0, 6),
+            $row->string('listing_key'),
             $vehicle->year,
             $vehicle->make,
             $vehicle->model,

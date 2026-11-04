@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\FormValue\FormValue;
+use App\Theme\Components\Icon\Icon;
+use App\Theme\Components\IconEntry\IconEntry;
 use App\Theme\Components\IconLegend\IconLegend;
-use App\Theme\Components\LazyPanel\LazyPanel;
-use App\Theme\Components\LeadBoard\LeadBoard;
-use App\Theme\Components\LeadCard\LeadCard;
 use Override;
 
 /**
@@ -40,12 +40,60 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof FormValue => $this->renderFormValue($component, $renderPass),
+            $component instanceof Icon => $this->renderIcon($component, $renderPass),
+            $component instanceof IconEntry => $this->renderIconEntry($component, $renderPass),
             $component instanceof IconLegend => $this->renderIconLegend($component, $renderPass),
-            $component instanceof LazyPanel => $this->renderLazyPanel($component, $renderPass),
-            $component instanceof LeadBoard => $this->renderLeadBoard($component, $renderPass),
-            $component instanceof LeadCard => $this->renderLeadCard($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param FormValue  $formValue  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FormValue/form-value.phtml.
+     */
+    private function renderFormValue(FormValue $formValue, RenderPass $renderPass): string
+    {
+        $renderPass->open($formValue);
+        require __DIR__ . '/templates/themes/lotline/components/FormValue/form-value.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param Icon       $icon       The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/Icon/icon.phtml.
+     */
+    private function renderIcon(Icon $icon, RenderPass $renderPass): string
+    {
+        $renderPass->open($icon);
+        require __DIR__ . '/templates/themes/lotline/components/Icon/icon.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param IconEntry  $iconEntry  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/IconEntry/icon-entry.phtml.
+     */
+    private function renderIconEntry(IconEntry $iconEntry, RenderPass $renderPass): string
+    {
+        $renderPass->open($iconEntry);
+        require __DIR__ . '/templates/themes/lotline/components/IconEntry/icon-entry.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -60,54 +108,6 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     {
         $renderPass->open($iconLegend);
         require __DIR__ . '/templates/themes/lotline/components/IconLegend/icon-legend.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LazyPanel  $lazyPanel  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LazyPanel/lazy-panel.phtml.
-     */
-    private function renderLazyPanel(LazyPanel $lazyPanel, RenderPass $renderPass): string
-    {
-        $renderPass->open($lazyPanel);
-        require __DIR__ . '/templates/themes/lotline/components/LazyPanel/lazy-panel.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LeadBoard  $leadBoard  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LeadBoard/lead-board.phtml.
-     */
-    private function renderLeadBoard(LeadBoard $leadBoard, RenderPass $renderPass): string
-    {
-        $renderPass->open($leadBoard);
-        require __DIR__ . '/templates/themes/lotline/components/LeadBoard/lead-board.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LeadCard   $leadCard   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LeadCard/lead-card.phtml.
-     */
-    private function renderLeadCard(LeadCard $leadCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($leadCard);
-        require __DIR__ . '/templates/themes/lotline/components/LeadCard/lead-card.phtml';
 
         return $renderPass->close();
     }

@@ -236,6 +236,69 @@
             "captures": false
         },
         {
+            "name": "compare, two cars",
+            "method": "GET",
+            "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2018-toyota-rav4-adc48d",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "compare, no car",
+            "method": "GET",
+            "path": "/compare",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "compare, an unknown and a malformed slug dropped",
+            "method": "GET",
+            "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2023-volkswagen-tiguan-000000&car=nope",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "compare, a slug with another car's key dropped",
+            "method": "GET",
+            "path": "/compare?car=2023-ford-tiguan-9f381a&car=2020-nissan-frontier-a92c27",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "compare, four cars",
+            "method": "GET",
+            "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2018-toyota-rav4-adc48d&car=2020-nissan-frontier-a92c27&car=2022-ford-mustang-f2f0c1",
+            "form": "",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "compare, the drawer as a Tessera visit by its anchor",
+            "method": "GET",
+            "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2018-toyota-rav4-adc48d",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline-store\r\nTessera-Targets: @compare-drawer",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "compare, four cars for the drawer",
+            "method": "GET",
+            "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2018-toyota-rav4-adc48d&car=2020-nissan-frontier-a92c27&car=2022-ford-mustang-f2f0c1",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline-store\r\nTessera-Targets: @compare-drawer",
+            "status": 422,
+            "captures": false
+        },
+        {
             "name": "storefront car photo, none",
             "method": "GET",
             "path": "/cars/2023-volkswagen-tiguan-9f381a/photos/1",

@@ -11,7 +11,8 @@ use App\Theme\Components\PhotoGallery\PhotoGallery;
 
 /**
  * One car for sale, from car-profile.phtml (#17): its photos in the theme's `PhotoGallery`, with no controls; then its
- * title and price, its payment calculator under the price (#26), its facts, and a link back to every car.
+ * title and price, its Compare tick (#33) and its payment calculator under the price (#26), its facts, and a link
+ * back to every car.
  */
 final readonly class CarProfile implements Component
 {
@@ -24,6 +25,7 @@ final readonly class CarProfile implements Component
      * @param PhotoGallery      $gallery  Its photos, the main one first.
      * @param FinanceCalculator $finance  Its payment calculator, under its price.
      * @param string            $backHref The cars for sale.
+     * @param string            $slug     Its slug, the value of its Compare tick under the price (#33).
      */
     public function __construct(
         public string $id,
@@ -34,6 +36,7 @@ final readonly class CarProfile implements Component
         public PhotoGallery $gallery,
         public FinanceCalculator $finance,
         public string $backHref,
+        public string $slug,
     ) {
     }
 }

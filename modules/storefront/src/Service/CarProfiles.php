@@ -28,11 +28,13 @@ final readonly class CarProfiles
      * @param VehiclePhotos      $vehiclePhotos      The car's photos.
      * @param CarFigures         $carFigures         Its price and mileage as written.
      * @param FinanceCalculators $financeCalculators Builds its payment calculator.
+     * @param CarSlugs           $carSlugs           Its slug, for its Compare tick (#33).
      */
     public function __construct(
         private VehiclePhotos $vehiclePhotos,
         private CarFigures $carFigures = new CarFigures(),
         private FinanceCalculators $financeCalculators = new FinanceCalculators(),
+        private CarSlugs $carSlugs = new CarSlugs(),
     ) {
     }
 
@@ -47,8 +49,29 @@ final readonly class CarProfiles
      */
     public function profile(ListedVehicle $listedVehicle, int $aprBasisPoints): CarProfile
     {
-        $title = $listedVehicle->title();
-        $facts = [
+        $photoGallery = new PhotoGallery('car-photos', 'Photos', 'No photos yet.', $this->photos($listedVehicle), []);
+
+        return new CarProfile(
+            'car',
+            $listedVehicle->title(),
+            $listedVehicle->trim,
+            $this->carFigures->price($listedVehicle->price),
+            $this->facts($listedVehicle),
+            $photoGallery,
+            $this->financeCalculators->calculator($listedVehicle->price, $aprBasisPoints),
+            CarSlugs::PAGES,
+            $this->carSlugs->slug($listedVehicle),
+        );
+    }
+
+    /**
+     * @param ListedVehicle $listedVehicle A car for sale.
+     *
+     * @return list<Fact> Its year, make, model, trim, body style, mileage and colour.
+     */
+    private function facts(ListedVehicle $listedVehicle): array
+    {
+        return [
             new Fact('Year', (string) $listedVehicle->year, false),
             new Fact('Make', $listedVehicle->make, false),
             new Fact('Model', $listedVehicle->model, false),
@@ -57,12 +80,6 @@ final readonly class CarProfiles
             new Fact('Mileage', $this->carFigures->mileage($listedVehicle->mileage), false),
             new Fact('Colour', $listedVehicle->exteriorColour, false),
         ];
-        $price = $this->carFigures->price($listedVehicle->price);
-        $photoGallery = new PhotoGallery('car-photos', 'Photos', 'No photos yet.', $this->photos($listedVehicle), []);
-
-        $financeCalculator = $this->financeCalculators->calculator($listedVehicle->price, $aprBasisPoints);
-
-        return new CarProfile('car', $title, $listedVehicle->trim, $price, $facts, $photoGallery, $financeCalculator, CarSlugs::PAGES);
     }
 
     /**

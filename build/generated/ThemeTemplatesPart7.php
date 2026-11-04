@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\CompareDrawer\CompareDrawer;
+use App\Theme\Components\CompareTable\CompareTable;
+use App\Theme\Components\ConfirmCard\ConfirmCard;
 use App\Theme\Components\DataTable\DataTable;
-use App\Theme\Components\DetailCard\DetailCard;
-use App\Theme\Components\DownloadLink\DownloadLink;
-use App\Theme\Components\EditRow\EditRow;
 use Override;
 
 /**
@@ -40,12 +40,60 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof CompareDrawer => $this->renderCompareDrawer($component, $renderPass),
+            $component instanceof CompareTable => $this->renderCompareTable($component, $renderPass),
+            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
             $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
-            $component instanceof DetailCard => $this->renderDetailCard($component, $renderPass),
-            $component instanceof DownloadLink => $this->renderDownloadLink($component, $renderPass),
-            $component instanceof EditRow => $this->renderEditRow($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param CompareDrawer $compareDrawer The component; its template reads it.
+     * @param RenderPass    $renderPass    The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CompareDrawer/compare-drawer.phtml.
+     */
+    private function renderCompareDrawer(CompareDrawer $compareDrawer, RenderPass $renderPass): string
+    {
+        $renderPass->open($compareDrawer);
+        require __DIR__ . '/templates/themes/lotline/components/CompareDrawer/compare-drawer.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param CompareTable $compareTable The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CompareTable/compare-table.phtml.
+     */
+    private function renderCompareTable(CompareTable $compareTable, RenderPass $renderPass): string
+    {
+        $renderPass->open($compareTable);
+        require __DIR__ . '/templates/themes/lotline/components/CompareTable/compare-table.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param ConfirmCard $confirmCard The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
+     */
+    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
+    {
+        $renderPass->open($confirmCard);
+        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -60,54 +108,6 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     {
         $renderPass->open($dataTable);
         require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DetailCard $detailCard The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DetailCard/detail-card.phtml.
-     */
-    private function renderDetailCard(DetailCard $detailCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($detailCard);
-        require __DIR__ . '/templates/themes/lotline/components/DetailCard/detail-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DownloadLink $downloadLink The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DownloadLink/download-link.phtml.
-     */
-    private function renderDownloadLink(DownloadLink $downloadLink, RenderPass $renderPass): string
-    {
-        $renderPass->open($downloadLink);
-        require __DIR__ . '/templates/themes/lotline/components/DownloadLink/download-link.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param EditRow    $editRow    The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/EditRow/edit-row.phtml.
-     */
-    private function renderEditRow(EditRow $editRow, RenderPass $renderPass): string
-    {
-        $renderPass->open($editRow);
-        require __DIR__ . '/templates/themes/lotline/components/EditRow/edit-row.phtml';
 
         return $renderPass->close();
     }

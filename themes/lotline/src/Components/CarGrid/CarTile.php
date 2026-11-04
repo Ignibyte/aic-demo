@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Theme\Components\CarGrid;
 
 /**
- * One car in a `CarGrid`: its card's link, title, mileage and price, and its main photo when it has one.
+ * One car in a `CarGrid`: its card's link, title, mileage and price, its main photo when it has one, and its slug for
+ * the Compare tick under the card's link (#33).
  */
 final readonly class CarTile
 {
@@ -17,6 +18,7 @@ final readonly class CarTile
      * @param string $price    Its price, as written (`$28,995`).
      * @param string $photoSrc Where its main photo is served; empty when it has none.
      * @param string $photoAlt What the photo shows.
+     * @param string $slug     Its slug, the value of its Compare tick (#33).
      */
     public function __construct(
         public string $id,
@@ -26,6 +28,7 @@ final readonly class CarTile
         public string $price,
         public string $photoSrc,
         public string $photoAlt,
+        public string $slug,
     ) {
     }
 }
