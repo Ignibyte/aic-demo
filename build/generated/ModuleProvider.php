@@ -20,8 +20,8 @@ final readonly class ModuleProvider implements ServiceProvider
     #[Override]
     public function register(ServiceRegistry $serviceRegistry): void
     {
-        (new SalesProvider())->register($serviceRegistry);
         (new SettingsProvider())->register($serviceRegistry);
+        (new SalesProvider())->register($serviceRegistry);
         (new PanelsProvider())->register($serviceRegistry);
     }
 }

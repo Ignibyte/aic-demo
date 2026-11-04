@@ -100,6 +100,7 @@ final readonly class NavigationBlock implements Block
             self::link('customers', '/app/customers', 'Customers', $heroicons->users(), $path),
             self::link('sales', '/app/sales', 'Sales', $heroicons->banknotes(), $path),
             self::link('leads', '/app/leads', 'Leads', $heroicons->inbox(), $path),
+            self::link('chats', '/app/chats', 'Chats', $heroicons->chatBubble(), $path),
             self::link('holds', '/app/holds', 'Holds', $heroicons->clock(), $path),
         ];
 

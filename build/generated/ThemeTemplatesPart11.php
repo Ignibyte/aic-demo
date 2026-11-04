@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\PriceLine\PriceLine;
-use App\Theme\Components\RangeLinks\RangeLinks;
-use App\Theme\Components\SearchField\SearchField;
-use App\Theme\Components\SelectField\SelectField;
+use App\Theme\Components\LiveParts\LiveParts;
+use App\Theme\Components\Navigation\Navigation;
+use App\Theme\Components\NavLink\NavLink;
+use App\Theme\Components\Notice\Notice;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof PriceLine => $this->renderPriceLine($component, $renderPass),
-            $component instanceof RangeLinks => $this->renderRangeLinks($component, $renderPass),
-            $component instanceof SearchField => $this->renderSearchField($component, $renderPass),
-            $component instanceof SelectField => $this->renderSelectField($component, $renderPass),
+            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
+            $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
+            $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
+            $component instanceof Notice => $this->renderNotice($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param PriceLine  $priceLine  The component; its template reads it.
+     * @param LiveParts  $liveParts  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/PriceLine/price-line.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
      */
-    private function renderPriceLine(PriceLine $priceLine, RenderPass $renderPass): string
+    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
     {
-        $renderPass->open($priceLine);
-        require __DIR__ . '/templates/themes/lotline/components/PriceLine/price-line.phtml';
+        $renderPass->open($liveParts);
+        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param RangeLinks $rangeLinks The component; its template reads it.
+     * @param NavLink    $navLink    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/RangeLinks/range-links.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/NavLink/nav-link.phtml.
      */
-    private function renderRangeLinks(RangeLinks $rangeLinks, RenderPass $renderPass): string
+    private function renderNavLink(NavLink $navLink, RenderPass $renderPass): string
     {
-        $renderPass->open($rangeLinks);
-        require __DIR__ . '/templates/themes/lotline/components/RangeLinks/range-links.phtml';
+        $renderPass->open($navLink);
+        require __DIR__ . '/templates/themes/lotline/components/NavLink/nav-link.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param SearchField $searchField The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
+     * @param Navigation $navigation The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/SearchField/search-field.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/Navigation/navigation.phtml.
      */
-    private function renderSearchField(SearchField $searchField, RenderPass $renderPass): string
+    private function renderNavigation(Navigation $navigation, RenderPass $renderPass): string
     {
-        $renderPass->open($searchField);
-        require __DIR__ . '/templates/themes/lotline/components/SearchField/search-field.phtml';
+        $renderPass->open($navigation);
+        require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param SelectField $selectField The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
+     * @param Notice     $notice     The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/SelectField/select-field.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/Notice/notice.phtml.
      */
-    private function renderSelectField(SelectField $selectField, RenderPass $renderPass): string
+    private function renderNotice(Notice $notice, RenderPass $renderPass): string
     {
-        $renderPass->open($selectField);
-        require __DIR__ . '/templates/themes/lotline/components/SelectField/select-field.phtml';
+        $renderPass->open($notice);
+        require __DIR__ . '/templates/themes/lotline/components/Notice/notice.phtml';
 
         return $renderPass->close();
     }

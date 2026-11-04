@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Component\Application\AtomTemplates;
 use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\TableResults\TableResults;
-use App\Theme\Components\TableRow\TableRow;
-use App\Theme\Components\TableTotals\TableTotals;
-use App\Theme\Components\TopBar\TopBar;
+use App\Theme\Components\SignedInMenu\SignedInMenu;
+use App\Theme\Components\SiteFooter\SiteFooter;
+use App\Theme\Components\StatTiles\StatTiles;
+use App\Theme\Components\StatusBadge\StatusBadge;
 use Override;
 
 /**
@@ -25,7 +24,7 @@ final readonly class ThemeTemplatesPart14 implements ComponentTemplates
      * @param ComponentTemplates $componentTemplates The templates after these.
      */
     public function __construct(
-        private ComponentTemplates $componentTemplates = new AtomTemplates(),
+        private ComponentTemplates $componentTemplates = new ThemeTemplatesPart15(),
     ) {
     }
 
@@ -41,74 +40,74 @@ final readonly class ThemeTemplatesPart14 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof TableResults => $this->renderTableResults($component, $renderPass),
-            $component instanceof TableRow => $this->renderTableRow($component, $renderPass),
-            $component instanceof TableTotals => $this->renderTableTotals($component, $renderPass),
-            $component instanceof TopBar => $this->renderTopBar($component, $renderPass),
+            $component instanceof SignedInMenu => $this->renderSignedInMenu($component, $renderPass),
+            $component instanceof SiteFooter => $this->renderSiteFooter($component, $renderPass),
+            $component instanceof StatTiles => $this->renderStatTiles($component, $renderPass),
+            $component instanceof StatusBadge => $this->renderStatusBadge($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param TableResults $tableResults The component; its template reads it.
+     * @param SignedInMenu $signedInMenu The component; its template reads it.
      * @param RenderPass   $renderPass   The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TableResults/table-results.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml.
      */
-    private function renderTableResults(TableResults $tableResults, RenderPass $renderPass): string
+    private function renderSignedInMenu(SignedInMenu $signedInMenu, RenderPass $renderPass): string
     {
-        $renderPass->open($tableResults);
-        require __DIR__ . '/templates/themes/lotline/components/TableResults/table-results.phtml';
+        $renderPass->open($signedInMenu);
+        require __DIR__ . '/templates/themes/lotline/components/SignedInMenu/signed-in-menu.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param TableRow   $tableRow   The component; its template reads it.
+     * @param SiteFooter $siteFooter The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TableRow/table-row.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/SiteFooter/site-footer.phtml.
      */
-    private function renderTableRow(TableRow $tableRow, RenderPass $renderPass): string
+    private function renderSiteFooter(SiteFooter $siteFooter, RenderPass $renderPass): string
     {
-        $renderPass->open($tableRow);
-        require __DIR__ . '/templates/themes/lotline/components/TableRow/table-row.phtml';
+        $renderPass->open($siteFooter);
+        require __DIR__ . '/templates/themes/lotline/components/SiteFooter/site-footer.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param TableTotals $tableTotals The component; its template reads it.
+     * @param StatTiles  $statTiles  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/StatTiles/stat-tiles.phtml.
+     */
+    private function renderStatTiles(StatTiles $statTiles, RenderPass $renderPass): string
+    {
+        $renderPass->open($statTiles);
+        require __DIR__ . '/templates/themes/lotline/components/StatTiles/stat-tiles.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param StatusBadge $statusBadge The component; its template reads it.
      * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/TableTotals/table-totals.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/StatusBadge/status-badge.phtml.
      */
-    private function renderTableTotals(TableTotals $tableTotals, RenderPass $renderPass): string
+    private function renderStatusBadge(StatusBadge $statusBadge, RenderPass $renderPass): string
     {
-        $renderPass->open($tableTotals);
-        require __DIR__ . '/templates/themes/lotline/components/TableTotals/table-totals.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param TopBar     $topBar     The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/TopBar/top-bar.phtml.
-     */
-    private function renderTopBar(TopBar $topBar, RenderPass $renderPass): string
-    {
-        $renderPass->open($topBar);
-        require __DIR__ . '/templates/themes/lotline/components/TopBar/top-bar.phtml';
+        $renderPass->open($statusBadge);
+        require __DIR__ . '/templates/themes/lotline/components/StatusBadge/status-badge.phtml';
 
         return $renderPass->close();
     }

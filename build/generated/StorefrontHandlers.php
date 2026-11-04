@@ -6,15 +6,13 @@ namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
+use App\Storefront\Controller\CarChatPost;
 use App\Storefront\Controller\CarInquiryPost;
-use App\Storefront\Controller\CarListPage;
 use App\Storefront\Controller\CarPage;
 use App\Storefront\Controller\CarPhotoStream;
 use App\Storefront\Controller\CarTestDrivePost;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
-use App\Storefront\Service\CarListing;
-use App\Storefront\Service\CarTiles;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -38,22 +36,17 @@ final readonly class StorefrontHandlers
      */
     public function byId(): array
     {
-        $storefrontHandlerServices = new StorefrontHandlerServices($this->handlerContext);
         $storefrontHandlerServicesPart2 = new StorefrontHandlerServicesPart2($this->handlerContext);
-        $carListing = new CarListing(
-            $storefrontHandlerServices->listedVehicleRepository(),
-            new CarTiles($storefrontHandlerServices->carFinder()),
-        );
 
         return [
-            CarInquiryPost::class => $this->handlerContext->page(new CarInquiryPost($storefrontHandlerServices->carPages())),
-            CarListPage::class => $this->handlerContext->page(new CarListPage($storefrontHandlerServices->storePages(), $carListing)),
-            CarPage::class => $this->handlerContext->page(new CarPage($storefrontHandlerServices->carPages())),
-            CarPhotoStream::class => $this->handlerContext->stream(new CarPhotoStream($storefrontHandlerServices->carFinder())),
-            CarTestDrivePost::class => $this->handlerContext->page(new CarTestDrivePost($storefrontHandlerServices->carPages())),
+            CarChatPost::class => $this->handlerContext->page(new CarChatPost($storefrontHandlerServicesPart2->carPages())),
+            CarInquiryPost::class => $this->handlerContext->page(new CarInquiryPost($storefrontHandlerServicesPart2->carPages())),
+            CarPage::class => $this->handlerContext->page(new CarPage($storefrontHandlerServicesPart2->carPages())),
+            CarPhotoStream::class => $this->handlerContext->stream(new CarPhotoStream($storefrontHandlerServicesPart2->carFinder())),
+            CarTestDrivePost::class => $this->handlerContext->page(new CarTestDrivePost($storefrontHandlerServicesPart2->carPages())),
             VehicleFeedApi::class => $this->handlerContext->api(new VehicleFeedApi($storefrontHandlerServicesPart2->feedVehicles())),
             VehicleFeedItemApi::class => $this->handlerContext->api(
-                new VehicleFeedItemApi($storefrontHandlerServices->carFinder(), $storefrontHandlerServicesPart2->feedVehicles()),
+                new VehicleFeedItemApi($storefrontHandlerServicesPart2->carFinder(), $storefrontHandlerServicesPart2->feedVehicles()),
             ),
         ];
     }

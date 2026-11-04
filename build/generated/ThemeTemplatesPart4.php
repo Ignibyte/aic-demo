@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\CardMove\CardMove;
-use App\Theme\Components\CheckGroup\CheckGroup;
-use App\Theme\Components\ColumnChart\ColumnChart;
-use App\Theme\Components\ConfirmCard\ConfirmCard;
+use App\Theme\Components\ChatConversation\ChatConversation;
+use App\Theme\Components\ChatDock\ChatDock;
+use App\Theme\Components\ChatLine\ChatLine;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof CardMove => $this->renderCardMove($component, $renderPass),
-            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
-            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
-            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
+            $component instanceof ChatConversation => $this->renderChatConversation($component, $renderPass),
+            $component instanceof ChatDock => $this->renderChatDock($component, $renderPass),
+            $component instanceof ChatLine => $this->renderChatLine($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -65,49 +65,49 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     }
 
     /**
-     * @param CheckGroup $checkGroup The component; its template reads it.
+     * @param ChatConversation $chatConversation The component; its template reads it.
+     * @param RenderPass       $renderPass       The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ChatConversation/chat-conversation.phtml.
+     */
+    private function renderChatConversation(ChatConversation $chatConversation, RenderPass $renderPass): string
+    {
+        $renderPass->open($chatConversation);
+        require __DIR__ . '/templates/themes/lotline/components/ChatConversation/chat-conversation.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param ChatDock   $chatDock   The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatDock/chat-dock.phtml.
      */
-    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
+    private function renderChatDock(ChatDock $chatDock, RenderPass $renderPass): string
     {
-        $renderPass->open($checkGroup);
-        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
+        $renderPass->open($chatDock);
+        require __DIR__ . '/templates/themes/lotline/components/ChatDock/chat-dock.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param ColumnChart $columnChart The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
+     * @param ChatLine   $chatLine   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/ChatLine/chat-line.phtml.
      */
-    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
+    private function renderChatLine(ChatLine $chatLine, RenderPass $renderPass): string
     {
-        $renderPass->open($columnChart);
-        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ConfirmCard $confirmCard The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
-     */
-    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($confirmCard);
-        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
+        $renderPass->open($chatLine);
+        require __DIR__ . '/templates/themes/lotline/components/ChatLine/chat-line.phtml';
 
         return $renderPass->close();
     }

@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\Pagination\Pagination;
-use App\Theme\Components\Panel\Panel;
-use App\Theme\Components\PanelGrid\PanelGrid;
-use App\Theme\Components\PhotoGallery\PhotoGallery;
+use App\Theme\Components\IconLegend\IconLegend;
+use App\Theme\Components\LazyPanel\LazyPanel;
+use App\Theme\Components\LeadBoard\LeadBoard;
+use App\Theme\Components\LeadCard\LeadCard;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart10 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof Pagination => $this->renderPagination($component, $renderPass),
-            $component instanceof Panel => $this->renderPanel($component, $renderPass),
-            $component instanceof PanelGrid => $this->renderPanelGrid($component, $renderPass),
-            $component instanceof PhotoGallery => $this->renderPhotoGallery($component, $renderPass),
+            $component instanceof IconLegend => $this->renderIconLegend($component, $renderPass),
+            $component instanceof LazyPanel => $this->renderLazyPanel($component, $renderPass),
+            $component instanceof LeadBoard => $this->renderLeadBoard($component, $renderPass),
+            $component instanceof LeadCard => $this->renderLeadCard($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param Pagination $pagination The component; its template reads it.
+     * @param IconLegend $iconLegend The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Pagination/pagination.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/IconLegend/icon-legend.phtml.
      */
-    private function renderPagination(Pagination $pagination, RenderPass $renderPass): string
+    private function renderIconLegend(IconLegend $iconLegend, RenderPass $renderPass): string
     {
-        $renderPass->open($pagination);
-        require __DIR__ . '/templates/themes/lotline/components/Pagination/pagination.phtml';
+        $renderPass->open($iconLegend);
+        require __DIR__ . '/templates/themes/lotline/components/IconLegend/icon-legend.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param Panel      $panel      The component; its template reads it.
+     * @param LazyPanel  $lazyPanel  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Panel/panel.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/LazyPanel/lazy-panel.phtml.
      */
-    private function renderPanel(Panel $panel, RenderPass $renderPass): string
+    private function renderLazyPanel(LazyPanel $lazyPanel, RenderPass $renderPass): string
     {
-        $renderPass->open($panel);
-        require __DIR__ . '/templates/themes/lotline/components/Panel/panel.phtml';
+        $renderPass->open($lazyPanel);
+        require __DIR__ . '/templates/themes/lotline/components/LazyPanel/lazy-panel.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param PanelGrid  $panelGrid  The component; its template reads it.
+     * @param LeadBoard  $leadBoard  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/PanelGrid/panel-grid.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/LeadBoard/lead-board.phtml.
      */
-    private function renderPanelGrid(PanelGrid $panelGrid, RenderPass $renderPass): string
+    private function renderLeadBoard(LeadBoard $leadBoard, RenderPass $renderPass): string
     {
-        $renderPass->open($panelGrid);
-        require __DIR__ . '/templates/themes/lotline/components/PanelGrid/panel-grid.phtml';
+        $renderPass->open($leadBoard);
+        require __DIR__ . '/templates/themes/lotline/components/LeadBoard/lead-board.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param PhotoGallery $photoGallery The component; its template reads it.
-     * @param RenderPass   $renderPass   The pass its template writes through.
+     * @param LeadCard   $leadCard   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/LeadCard/lead-card.phtml.
      */
-    private function renderPhotoGallery(PhotoGallery $photoGallery, RenderPass $renderPass): string
+    private function renderLeadCard(LeadCard $leadCard, RenderPass $renderPass): string
     {
-        $renderPass->open($photoGallery);
-        require __DIR__ . '/templates/themes/lotline/components/PhotoGallery/photo-gallery.phtml';
+        $renderPass->open($leadCard);
+        require __DIR__ . '/templates/themes/lotline/components/LeadCard/lead-card.phtml';
 
         return $renderPass->close();
     }

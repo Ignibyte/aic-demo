@@ -6,6 +6,7 @@ namespace App\Storefront\Service;
 
 use AIC\Entity\Application\EntityStore;
 use AIC\Storage\Application\PublicFiles;
+use App\Chat\Service\ChatDesk;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Leads\Service\LeadDesk;
 use App\Photos\Service\VehiclePhotos;
@@ -22,12 +23,14 @@ final readonly class StoreServices
      * @param StorePages  $storePages  The public pages' frame, the dealership's profile in its header and footer.
      * @param LeadDesk    $leadDesk    The lead forms, and a sent one recorded.
      * @param PublicFiles $publicFiles AIC's public files, where the photos are kept.
+     * @param ChatDesk    $chatDesk    A chat started on a car's page (#32).
      */
     public function __construct(
         private EntityStore $entityStore,
         private StorePages $storePages,
         private LeadDesk $leadDesk,
         private PublicFiles $publicFiles,
+        private ChatDesk $chatDesk,
     ) {
     }
 
@@ -39,6 +42,6 @@ final readonly class StoreServices
         $vehiclePhotos = new VehiclePhotos($this->entityStore, $this->publicFiles);
         $carFinder = new CarFinder(new ListedVehicleRepository($this->entityStore), $vehiclePhotos);
 
-        return new CarPages($this->storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk);
+        return new CarPages($this->storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk, $this->chatDesk);
     }
 }

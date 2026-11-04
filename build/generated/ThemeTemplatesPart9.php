@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
-use App\Theme\Components\LiveParts\LiveParts;
-use App\Theme\Components\Navigation\Navigation;
-use App\Theme\Components\NavLink\NavLink;
-use App\Theme\Components\Notice\Notice;
+use App\Theme\Components\FormGrid\FormGrid;
+use App\Theme\Components\FormValue\FormValue;
+use App\Theme\Components\Icon\Icon;
+use App\Theme\Components\IconEntry\IconEntry;
 use Override;
 
 /**
@@ -40,74 +40,74 @@ final readonly class ThemeTemplatesPart9 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
-            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
-            $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
-            $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
-            $component instanceof Notice => $this->renderNotice($component, $renderPass),
+            $component instanceof FormGrid => $this->renderFormGrid($component, $renderPass),
+            $component instanceof FormValue => $this->renderFormValue($component, $renderPass),
+            $component instanceof Icon => $this->renderIcon($component, $renderPass),
+            $component instanceof IconEntry => $this->renderIconEntry($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
 
     /**
-     * @param LiveParts  $liveParts  The component; its template reads it.
+     * @param FormGrid   $formGrid   The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/FormGrid/form-grid.phtml.
      */
-    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
+    private function renderFormGrid(FormGrid $formGrid, RenderPass $renderPass): string
     {
-        $renderPass->open($liveParts);
-        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
+        $renderPass->open($formGrid);
+        require __DIR__ . '/templates/themes/lotline/components/FormGrid/form-grid.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param NavLink    $navLink    The component; its template reads it.
+     * @param FormValue  $formValue  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/NavLink/nav-link.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/FormValue/form-value.phtml.
      */
-    private function renderNavLink(NavLink $navLink, RenderPass $renderPass): string
+    private function renderFormValue(FormValue $formValue, RenderPass $renderPass): string
     {
-        $renderPass->open($navLink);
-        require __DIR__ . '/templates/themes/lotline/components/NavLink/nav-link.phtml';
+        $renderPass->open($formValue);
+        require __DIR__ . '/templates/themes/lotline/components/FormValue/form-value.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param Navigation $navigation The component; its template reads it.
+     * @param Icon       $icon       The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Navigation/navigation.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/Icon/icon.phtml.
      */
-    private function renderNavigation(Navigation $navigation, RenderPass $renderPass): string
+    private function renderIcon(Icon $icon, RenderPass $renderPass): string
     {
-        $renderPass->open($navigation);
-        require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
+        $renderPass->open($icon);
+        require __DIR__ . '/templates/themes/lotline/components/Icon/icon.phtml';
 
         return $renderPass->close();
     }
 
     /**
-     * @param Notice     $notice     The component; its template reads it.
+     * @param IconEntry  $iconEntry  The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/Notice/notice.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/IconEntry/icon-entry.phtml.
      */
-    private function renderNotice(Notice $notice, RenderPass $renderPass): string
+    private function renderIconEntry(IconEntry $iconEntry, RenderPass $renderPass): string
     {
-        $renderPass->open($notice);
-        require __DIR__ . '/templates/themes/lotline/components/Notice/notice.phtml';
+        $renderPass->open($iconEntry);
+        require __DIR__ . '/templates/themes/lotline/components/IconEntry/icon-entry.phtml';
 
         return $renderPass->close();
     }

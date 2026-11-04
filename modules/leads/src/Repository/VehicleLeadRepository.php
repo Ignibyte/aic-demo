@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Leads\Repository;
 
 use AIC\Database\Contracts\QueryException;
+use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityQuery;
 use AIC\Entity\Application\EntityStore;
 use App\Leads\Entity\LeadKind;
@@ -20,8 +21,8 @@ use function substr;
 
 /**
  * A vehicle's leads for its page (#31), by its VIN: the newest, with their kind, stage and salesperson, and their
- * version, which the page's leads and holds panel polls. Exported, so the panels module reads them while the leads and
- * their moves stay this module's tables.
+ * version, which the page's leads and holds panel polls; and the salesperson a chat about the car goes to (#32).
+ * Exported, so the panels and chat modules read them while the leads and their moves stay this module's tables.
  */
 final readonly class VehicleLeadRepository
 {
@@ -72,6 +73,31 @@ final readonly class VehicleLeadRepository
         }
 
         return $leads;
+    }
+
+    /**
+     * Who a car's newest lead with a salesperson went to, for a chat started on the car's page (#32).
+     *
+     * @param int $vehicleId A vehicle's row id.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When a type is malformed.
+     *
+     * @return int The salesperson's user id on its newest lead that has one, while they are not deactivated; 0 when no
+     *             lead has one, or that member is deactivated.
+     */
+    public function sellerOf(int $vehicleId): int
+    {
+        $row = $this->entityStore->query($this->leadTable->type())
+            ->with('salesperson_id', 'u')
+            ->where('vehicle_id', $vehicleId)
+            ->orderByDescending('id')
+            ->limit(1)
+            ->first();
+
+        return $row instanceof Row && $row->stringOrNull('u_deactivated_on') === null
+            ? $row->int('salesperson_id')
+            : 0;
     }
 
     /**

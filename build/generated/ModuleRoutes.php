@@ -23,17 +23,17 @@ final readonly class ModuleRoutes
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         $routeCollector = (new StaffRoutes())->add($routeCollector);
-        $routeCollector = (new CustomersRoutes())->add($routeCollector);
         $routeCollector = (new InventoryRoutes())->add($routeCollector);
         $routeCollector = (new InventoryRoutesPart2())->add($routeCollector);
+        $routeCollector = (new CustomersRoutes())->add($routeCollector);
+        $routeCollector = (new SettingsRoutes())->add($routeCollector);
+        $routeCollector = (new LeadsRoutes())->add($routeCollector);
+        $routeCollector = (new ChatRoutes())->add($routeCollector);
         $routeCollector = (new HoldsRoutes())->add($routeCollector);
         $routeCollector = (new SalesRoutes())->add($routeCollector);
         $routeCollector = (new DashboardRoutes())->add($routeCollector);
         $routeCollector = (new InboxRoutes())->add($routeCollector);
-        $routeCollector = (new SettingsRoutes())->add($routeCollector);
-        $routeCollector = (new LeadsRoutes())->add($routeCollector);
         $routeCollector = (new PanelsRoutes())->add($routeCollector);
-        $routeCollector = (new ReportsRoutes())->add($routeCollector);
 
         return (new ModuleRoutesPart2())->add($routeCollector);
     }
