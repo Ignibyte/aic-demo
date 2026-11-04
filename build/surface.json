@@ -636,6 +636,76 @@
             "method": "POST",
             "module": "site",
             "path": "/theme"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceExpiredPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/expired"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceExpiredPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme/resilience/expired"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceGatewayPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/gateway"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceRefusedPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/refused"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceRefusedPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme/resilience/refused"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceFeedPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/feed"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceFeedPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme/resilience/feed"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceProtocolPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/protocol"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceFullVisitPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/resilience/full-visit"
+        },
+        {
+            "handler": "App\\Site\\Controller\\ResilienceFullVisitPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "site",
+            "path": "/theme/resilience/full-visit"
         }
     ],
     "commands": [
@@ -1294,7 +1364,12 @@
             ],
             "exports": [],
             "factories": [],
-            "middleware": [],
+            "middleware": [
+                {
+                    "class": "App\\Site\\Middleware\\ResilienceFaults",
+                    "position": "AfterSession"
+                }
+            ],
             "migrations": [],
             "name": "site",
             "namespace": "App\\Site\\",
@@ -1381,6 +1456,11 @@
                 "component": "App\\Theme\\Components\\CardMove\\CardMove",
                 "generated": "build/generated/templates/themes/lotline/components/CardMove/card-move.phtml",
                 "source": "themes/lotline/components/CardMove/card-move.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CaseWatch\\CaseWatch",
+                "generated": "build/generated/templates/themes/lotline/components/CaseWatch/case-watch.phtml",
+                "source": "themes/lotline/components/CaseWatch/case-watch.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\ChatConversation\\ChatConversation",
@@ -1471,6 +1551,11 @@
                 "component": "App\\Theme\\Components\\EditRow\\EditRow",
                 "generated": "build/generated/templates/themes/lotline/components/EditRow/edit-row.phtml",
                 "source": "themes/lotline/components/EditRow/edit-row.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\FeedStatus\\FeedStatus",
+                "generated": "build/generated/templates/themes/lotline/components/FeedStatus/feed-status.phtml",
+                "source": "themes/lotline/components/FeedStatus/feed-status.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\FilterBar\\FilterBar",

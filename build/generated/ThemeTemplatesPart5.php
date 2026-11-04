@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\ChatLine\ChatLine;
 use App\Theme\Components\ChatList\ChatList;
 use App\Theme\Components\ChatLog\ChatLog;
 use App\Theme\Components\ChatSendForm\ChatSendForm;
-use App\Theme\Components\ChatStart\ChatStart;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof ChatLine => $this->renderChatLine($component, $renderPass),
             $component instanceof ChatList => $this->renderChatList($component, $renderPass),
             $component instanceof ChatLog => $this->renderChatLog($component, $renderPass),
             $component instanceof ChatSendForm => $this->renderChatSendForm($component, $renderPass),
-            $component instanceof ChatStart => $this->renderChatStart($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param ChatLine   $chatLine   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ChatLine/chat-line.phtml.
+     */
+    private function renderChatLine(ChatLine $chatLine, RenderPass $renderPass): string
+    {
+        $renderPass->open($chatLine);
+        require __DIR__ . '/templates/themes/lotline/components/ChatLine/chat-line.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart5 implements ComponentTemplates
     {
         $renderPass->open($chatSendForm);
         require __DIR__ . '/templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ChatStart  $chatStart  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ChatStart/chat-start.phtml.
-     */
-    private function renderChatStart(ChatStart $chatStart, RenderPass $renderPass): string
-    {
-        $renderPass->open($chatStart);
-        require __DIR__ . '/templates/themes/lotline/components/ChatStart/chat-start.phtml';
 
         return $renderPass->close();
     }

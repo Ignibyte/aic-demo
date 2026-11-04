@@ -8,6 +8,15 @@ use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
 use App\Site\Controller\BootstrapPage;
 use App\Site\Controller\HealthApi;
+use App\Site\Controller\ResilienceExpiredPage;
+use App\Site\Controller\ResilienceExpiredPost;
+use App\Site\Controller\ResilienceFeedPage;
+use App\Site\Controller\ResilienceFeedPost;
+use App\Site\Controller\ResilienceFullVisitPage;
+use App\Site\Controller\ResilienceGatewayPage;
+use App\Site\Controller\ResilienceProtocolPage;
+use App\Site\Controller\ResilienceRefusedPage;
+use App\Site\Controller\ResilienceRefusedPost;
 use App\Site\Controller\ThemeGuidePage;
 use App\Site\Controller\ThemeGuidePost;
 
@@ -30,6 +39,15 @@ final readonly class SiteRoutes
             ->get('/health', HealthApi::class)
             ->get('/', BootstrapPage::class)
             ->get('/theme', ThemeGuidePage::class)
-            ->post('/theme', ThemeGuidePost::class);
+            ->post('/theme', ThemeGuidePost::class)
+            ->get('/theme/resilience/expired', ResilienceExpiredPage::class)
+            ->post('/theme/resilience/expired', ResilienceExpiredPost::class)
+            ->get('/theme/resilience/gateway', ResilienceGatewayPage::class)
+            ->get('/theme/resilience/refused', ResilienceRefusedPage::class)
+            ->post('/theme/resilience/refused', ResilienceRefusedPost::class)
+            ->get('/theme/resilience/feed', ResilienceFeedPage::class)
+            ->post('/theme/resilience/feed', ResilienceFeedPost::class)
+            ->get('/theme/resilience/protocol', ResilienceProtocolPage::class)
+            ->get('/theme/resilience/full-visit', ResilienceFullVisitPage::class);
     }
 }

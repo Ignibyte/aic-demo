@@ -17,7 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * The style guide's content: a line saying what it is, then every part of Lotline's theme with sample data in a
- * dashboard grid, from the figures and charts down to the forms, the notices, the account menu and the icons.
+ * dashboard grid, from the figures and charts down to the forms, the notices, the account menu and the icons, and the
+ * links to the resilience cases (#34).
  */
 final readonly class ThemeSamples
 {
@@ -27,6 +28,7 @@ final readonly class ThemeSamples
     private const string INTRO = "Every part of Lotline's theme, with sample Ridgeway Motors data.";
 
     /**
+     * @param ResilienceCases    $resilienceCases    The resilience cases' links (#34).
      * @param ThemeSampleCharts  $themeSampleCharts  The figures and charts.
      * @param ThemeSampleRecords $themeSampleRecords The list.
      * @param ThemeSampleForms   $themeSampleForms   The vehicle form.
@@ -34,6 +36,7 @@ final readonly class ThemeSamples
      * @param ThemeSampleParts   $themeSampleParts   The card, badges, notices and icons.
      */
     public function __construct(
+        private ResilienceCases $resilienceCases,
         private ThemeSampleCharts $themeSampleCharts = new ThemeSampleCharts(),
         private ThemeSampleRecords $themeSampleRecords = new ThemeSampleRecords(),
         private ThemeSampleForms $themeSampleForms = new ThemeSampleForms(),
@@ -73,7 +76,7 @@ final readonly class ThemeSamples
      */
     private function panels(ServerRequestInterface $serverRequest, ThemeEntry $themeEntry, array $problems): array
     {
-        $vehicleForm = $this->themeSampleForms->vehicle($serverRequest, $themeEntry, $problems);
+        $vehicleForm = $this->themeSampleForms->vehicle($serverRequest, $themeEntry, $problems, '/theme');
 
         return [
             $this->panel('inventory', 'Inventory', 'A list: filters, sortable heads, badges and pages', true, [
@@ -97,7 +100,7 @@ final readonly class ThemeSamples
      *
      * @throws LogicException When a key is malformed, or the request carries no session.
      *
-     * @return list<KeyedComponent> The badge, notice, account and icon panels.
+     * @return list<KeyedComponent> The badge, notice, account, icon and resilience panels.
      */
     private function small(ServerRequestInterface $serverRequest): array
     {
@@ -110,6 +113,13 @@ final readonly class ThemeSamples
                 new KeyedComponent('menu', $this->themeSampleActions->account($serverRequest)),
             ]),
             $this->panel('icons', 'Icons', 'Heroicons, 20 solid', false, [$keyedComponent]),
+            $this->panel(
+                'resilience',
+                'Resilience',
+                'What Tessera does when something goes wrong, one case a page',
+                false,
+                $this->resilienceCases->links(),
+            ),
         ];
     }
 

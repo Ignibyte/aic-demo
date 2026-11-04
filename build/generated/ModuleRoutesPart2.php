@@ -25,7 +25,8 @@ final readonly class ModuleRoutesPart2
         $routeCollector = (new InboxRoutes())->add($routeCollector);
         $routeCollector = (new PanelsRoutes())->add($routeCollector);
         $routeCollector = (new ReportsRoutes())->add($routeCollector);
+        $routeCollector = (new SiteRoutes())->add($routeCollector);
 
-        return (new SiteRoutes())->add($routeCollector);
+        return (new SiteRoutesPart2())->add($routeCollector);
     }
 }

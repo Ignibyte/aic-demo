@@ -42,6 +42,8 @@ final readonly class ModuleHandlersPart2
             (new PanelsHandlers($this->handlerContext))->byId(),
             (new ReportsHandlers($this->handlerContext))->byId(),
             (new SiteHandlers($this->handlerContext))->byId(),
+            (new SiteHandlersPart2($this->handlerContext))->byId(),
+            (new ModuleHandlersPart3($this->handlerContext))->byId(),
         );
     }
 }

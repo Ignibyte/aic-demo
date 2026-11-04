@@ -11,7 +11,7 @@ use AIC\Controller\Contracts\Page;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Form\Application\PostedFields;
-use App\Site\Form\ThemeEntry;
+use App\Site\Service\ThemeSampleForms;
 use App\Site\Service\ThemeSamples;
 use App\Theme\Components\TopBar\TopBar;
 use LogicException;
@@ -26,14 +26,16 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class ThemeGuidePost implements Page
 {
     /**
-     * @param PageDocuments $pageDocuments The theme's document around the page.
-     * @param ThemeSamples  $themeSamples  The guide's content.
-     * @param PostedFields  $postedFields  Reads the posted fields.
+     * @param PageDocuments    $pageDocuments    The theme's document around the page.
+     * @param ThemeSamples     $themeSamples     The guide's content.
+     * @param PostedFields     $postedFields     Reads the intent.
+     * @param ThemeSampleForms $themeSampleForms Reads the posted vehicle form.
      */
     public function __construct(
         private PageDocuments $pageDocuments,
         private ThemeSamples $themeSamples,
         private PostedFields $postedFields,
+        private ThemeSampleForms $themeSampleForms = new ThemeSampleForms(),
     ) {
     }
 
@@ -51,12 +53,7 @@ final readonly class ThemeGuidePost implements Page
             return new PageRedirect('/theme');
         }
 
-        $themeEntry = new ThemeEntry(
-            $this->postedFields->value($serverRequest, 'name'),
-            $this->postedFields->value($serverRequest, 'price'),
-            $this->postedFields->value($serverRequest, 'body_style'),
-            $this->postedFields->value($serverRequest, 'notes'),
-        );
+        $themeEntry = $this->themeSampleForms->posted($serverRequest);
         $problems = $themeEntry->problems();
 
         if ($problems === []) {
