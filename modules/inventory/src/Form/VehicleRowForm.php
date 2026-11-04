@@ -80,8 +80,9 @@ final readonly class VehicleRowForm
      *
      * @throws LogicException When the VIN does not fit a key, which a stored VIN always does; or its path cannot be sealed.
      *
-     * @return KeyedComponent Its row: its box and the VIN, linked to its page, what it is, its mileage, its price and its
-     *                        status as a badge, both editable, its location and the day it came.
+     * @return KeyedComponent Its row: its box and the VIN, linked to its page and prefetching it on hover (#43), what it
+     *                        is, its mileage, its price and its status as a badge, both editable, its location and the
+     *                        day it came.
      */
     public function shown(Vehicle $vehicle): KeyedComponent
     {
@@ -105,7 +106,7 @@ final readonly class VehicleRowForm
         $box = $this->box($vehicle, $checked, $refusal);
 
         return $this->keyed($vehicle, new TableRow([
-            new TableCell($vehicle->vin, $vehicle->path(), true, false, null, '', [$box]),
+            new TableCell($vehicle->vin, $vehicle->path(), true, false, null, '', [$box], 'hover'),
             new TableCell((string) $vehicle->year, '', false, false, null),
             new TableCell($vehicle->make, '', false, false, null),
             new TableCell($vehicle->model . ' ' . $vehicle->trim, '', false, false, null),

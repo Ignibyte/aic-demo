@@ -27,6 +27,9 @@ use function number_format;
  * panels the `VehiclePanel` plugins give (#31). A Tessera visit (a link, a prefetch, Back and Forward, a redirect
  * followed) gets each panel as a skeleton that Tessera loads from the panel's own route, so the page reads none of
  * their data; any other request, a plain one with JavaScript off or a submit answered in place, gets them inline.
+ * The page itself answers `private, no-cache` (AIC #254, #43), so Tessera paints a click from the answer a hover on the
+ * list's VIN link prefetched: it shows no cost, and what changes on it, the panels, arrives from their own routes,
+ * which stay `no-store`. A refused upload's 422 and the 404 stay `no-store`.
  */
 final readonly class VehicleCards
 {
@@ -58,7 +61,7 @@ final readonly class VehicleCards
      * @throws RuntimeException When the vehicle, its photos or its sale cannot be read, or its stored status or the
      *                          member's role is not one.
      *
-     * @return PageResponse The vehicle's page, or 404.
+     * @return PageResponse The vehicle's page, prefetchable when it answers 200; or 404.
      */
     public function page(ServerRequestInterface $serverRequest, string $refusal = '', int $status = 200): PageResponse
     {
@@ -83,7 +86,12 @@ final readonly class VehicleCards
         $staffPanels = $this->vehicleRecords->panels();
         $parts = $this->vehicleRecords->parts($serverRequest, $vehicle);
 
-        return $staffPanels->page($vehicle->title(), 'Vehicle record', 'What the lot keeps on this vehicle.', $body, $status, $parts);
+        $heading = 'Vehicle record';
+        $pageDocument = $staffPanels->page($vehicle->title(), $heading, 'What the lot keeps on this vehicle.', $body, $status, $parts);
+
+        return $status === 200
+            ? $pageDocument->prefetchable()
+            : $pageDocument;
     }
 
     /**
