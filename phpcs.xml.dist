@@ -25,6 +25,7 @@
         <properties>
             <property name="rootNamespaces" type="array">
                 <element key="modules/chat/src" value="App\Chat"/>
+                <element key="modules/compare/src" value="App\Compare"/>
                 <element key="modules/customers/src" value="App\Customers"/>
                 <element key="modules/dashboard/src" value="App\Dashboard"/>
                 <element key="modules/finance/src" value="App\Finance"/>

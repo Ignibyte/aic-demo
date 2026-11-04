@@ -70,7 +70,8 @@ final readonly class CarTiles
      * @param ListedVehicle      $listedVehicle A car for sale.
      * @param list<VehiclePhoto> $photos        Its photos, the first added first.
      *
-     * @return CarTile Its card: its title, mileage and price, linked to its page, with its first photo when it has one.
+     * @return CarTile Its card: its title, mileage and price, linked to its page, with its first photo when it has one,
+     *                 and its slug for its Compare tick (#33).
      */
     private function tile(ListedVehicle $listedVehicle, array $photos): CarTile
     {
@@ -80,14 +81,17 @@ final readonly class CarTiles
             ? ''
             : $photos[0]->source();
 
+        $slug = $this->carSlugs->slug($listedVehicle);
+
         return new CarTile(
-            'car-' . $this->carSlugs->slug($listedVehicle),
+            'car-' . $slug,
             $path,
             $title,
             $this->carFigures->mileage($listedVehicle->mileage),
             $this->carFigures->price($listedVehicle->price),
             $source,
             $title . ', main photo',
+            $slug,
         );
     }
 

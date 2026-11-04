@@ -4,6 +4,7 @@
 <h1 class="card-title text-2xl" id="<?= $renderPass->text($carProfile->id) ?>"><?= $renderPass->text($carProfile->title) ?></h1>
 <p class="opacity-70"><?= $renderPass->text($carProfile->subtitle) ?></p>
 <p class="text-3xl font-semibold" id="<?= $renderPass->text($carProfile->id) ?>-price"><?= $renderPass->text($carProfile->price) ?></p>
+<p><label class="label cursor-pointer gap-2 text-sm" for="compare-<?= $renderPass->text($carProfile->slug) ?>"><input class="checkbox checkbox-sm" id="compare-<?= $renderPass->text($carProfile->slug) ?>" type="checkbox" name="car" value="<?= $renderPass->text($carProfile->slug) ?>" form="compare-form" data-bind:compare="" data-on:change="$compareFull = $compare.length &gt; 3; $compare = $compare.slice(0, 3)">Compare</label></p>
 <?= $renderPass->child($carProfile->finance, 'CarProfile.2') ?><dl class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2 text-sm"><?php foreach ($carProfile->facts as $fact): ?><dt class="opacity-70"><?= $renderPass->text($fact->term) ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $renderPass->text($fact->detail) ?></dd><?php endforeach; ?></dl>
 <div class="card-actions mt-4"><a class="btn btn-sm btn-ghost" href="<?= $renderPass->text($carProfile->backHref) ?>">All cars for sale</a></div>
 </div></div>

@@ -11,7 +11,7 @@ use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\ChatThread\ChatThread;
 use App\Theme\Components\CheckGroup\CheckGroup;
 use App\Theme\Components\ColumnChart\ColumnChart;
-use App\Theme\Components\ConfirmCard\ConfirmCard;
+use App\Theme\Components\CompareDock\CompareDock;
 use Override;
 
 /**
@@ -43,7 +43,7 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
             $component instanceof ChatThread => $this->renderChatThread($component, $renderPass),
             $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
             $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
-            $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
+            $component instanceof CompareDock => $this->renderCompareDock($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -97,17 +97,17 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     }
 
     /**
-     * @param ConfirmCard $confirmCard The component; its template reads it.
+     * @param CompareDock $compareDock The component; its template reads it.
      * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/ConfirmCard/confirm-card.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/CompareDock/compare-dock.phtml.
      */
-    private function renderConfirmCard(ConfirmCard $confirmCard, RenderPass $renderPass): string
+    private function renderCompareDock(CompareDock $compareDock, RenderPass $renderPass): string
     {
-        $renderPass->open($confirmCard);
-        require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
+        $renderPass->open($compareDock);
+        require __DIR__ . '/templates/themes/lotline/components/CompareDock/compare-dock.phtml';
 
         return $renderPass->close();
     }

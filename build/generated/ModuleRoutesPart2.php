@@ -22,9 +22,10 @@ final readonly class ModuleRoutesPart2
      */
     public function add(RouteCollector $routeCollector): RouteCollector
     {
+        $routeCollector = (new InboxRoutes())->add($routeCollector);
+        $routeCollector = (new PanelsRoutes())->add($routeCollector);
         $routeCollector = (new ReportsRoutes())->add($routeCollector);
-        $routeCollector = (new SiteRoutes())->add($routeCollector);
 
-        return (new StorefrontRoutes())->add($routeCollector);
+        return (new SiteRoutes())->add($routeCollector);
     }
 }

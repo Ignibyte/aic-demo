@@ -379,6 +379,90 @@
             "path": "/app/chats"
         },
         {
+            "handler": "App\\Storefront\\Controller\\CarPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarInquiryPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/inquiry"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarTestDrivePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/test-drive"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarChatPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/cars/{slug}/chat"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarPhotoStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}/photos/{position:int}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\VehicleFeedItemApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/api/vehicles/{slug}"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\VehicleFeedApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/api/vehicles"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarListPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatPage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/chat"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatMessagePost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/chat/messages"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\ChatEndPost",
+            "kind": "Page",
+            "method": "POST",
+            "module": "storefront",
+            "path": "/chat/end"
+        },
+        {
+            "handler": "App\\Compare\\Controller\\ComparePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "compare",
+            "path": "/compare"
+        },
+        {
             "handler": "App\\Holds\\Controller\\HoldNewPage",
             "kind": "Page",
             "method": "GET",
@@ -552,83 +636,6 @@
             "method": "POST",
             "module": "site",
             "path": "/theme"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/cars/{slug}"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarInquiryPost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "storefront",
-            "path": "/cars/{slug}/inquiry"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarTestDrivePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "storefront",
-            "path": "/cars/{slug}/test-drive"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarChatPost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "storefront",
-            "path": "/cars/{slug}/chat"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarPhotoStream",
-            "kind": "Stream",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/cars/{slug}/photos/{position:int}"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\VehicleFeedItemApi",
-            "kind": "Api",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/api/vehicles/{slug}"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\VehicleFeedApi",
-            "kind": "Api",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/api/vehicles"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\CarListPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/cars"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\ChatPage",
-            "kind": "Page",
-            "method": "GET",
-            "module": "storefront",
-            "path": "/chat"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\ChatMessagePost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "storefront",
-            "path": "/chat/messages"
-        },
-        {
-            "handler": "App\\Storefront\\Controller\\ChatEndPost",
-            "kind": "Page",
-            "method": "POST",
-            "module": "storefront",
-            "path": "/chat/end"
         }
     ],
     "commands": [
@@ -941,7 +948,8 @@
                 "App\\Inventory\\Migration\\CreateVehiclesTable",
                 "App\\Inventory\\Migration\\CreateTodayView",
                 "App\\Inventory\\Migration\\AddVehicleLocation",
-                "App\\Inventory\\Migration\\CreateVehiclePricesTable"
+                "App\\Inventory\\Migration\\CreateVehiclePricesTable",
+                "App\\Inventory\\Migration\\CreateVehicleListingsView"
             ],
             "name": "inventory",
             "namespace": "App\\Inventory\\",
@@ -1068,6 +1076,55 @@
                 "staff",
                 "inventory",
                 "leads",
+                "settings"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Storefront\\Service\\StorePages",
+                "App\\Storefront\\Service\\CarSlugs",
+                "App\\Storefront\\Service\\CarFigures"
+            ],
+            "factories": [
+                "App\\Storefront\\Service\\StoreServices"
+            ],
+            "middleware": [],
+            "migrations": [],
+            "name": "storefront",
+            "namespace": "App\\Storefront\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "inventory",
+                "photos",
+                "staff",
+                "leads",
+                "settings",
+                "finance",
+                "chat"
+            ]
+        },
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [],
+            "factories": [
+                "App\\Compare\\Service\\CompareServices"
+            ],
+            "middleware": [],
+            "migrations": [],
+            "name": "compare",
+            "namespace": "App\\Compare\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": [
+                "storefront",
+                "inventory",
+                "photos",
+                "finance",
+                "chat",
                 "settings"
             ]
         },
@@ -1246,29 +1303,6 @@
             "requires": [
                 "staff"
             ]
-        },
-        {
-            "bindings": [],
-            "blocks": [],
-            "exports": [],
-            "factories": [
-                "App\\Storefront\\Service\\StoreServices"
-            ],
-            "middleware": [],
-            "migrations": [],
-            "name": "storefront",
-            "namespace": "App\\Storefront\\",
-            "plugins": [],
-            "prefixes": [],
-            "requires": [
-                "inventory",
-                "photos",
-                "staff",
-                "leads",
-                "settings",
-                "finance",
-                "chat"
-            ]
         }
     ],
     "theme": {
@@ -1397,6 +1431,21 @@
                 "component": "App\\Theme\\Components\\ColumnChart\\ColumnChart",
                 "generated": "build/generated/templates/themes/lotline/components/ColumnChart/column-chart.phtml",
                 "source": "themes/lotline/components/ColumnChart/column-chart.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CompareDock\\CompareDock",
+                "generated": "build/generated/templates/themes/lotline/components/CompareDock/compare-dock.phtml",
+                "source": "themes/lotline/components/CompareDock/compare-dock.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CompareDrawer\\CompareDrawer",
+                "generated": "build/generated/templates/themes/lotline/components/CompareDrawer/compare-drawer.phtml",
+                "source": "themes/lotline/components/CompareDrawer/compare-drawer.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CompareTable\\CompareTable",
+                "generated": "build/generated/templates/themes/lotline/components/CompareTable/compare-table.phtml",
+                "source": "themes/lotline/components/CompareTable/compare-table.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\ConfirmCard\\ConfirmCard",

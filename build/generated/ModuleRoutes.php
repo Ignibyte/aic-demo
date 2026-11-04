@@ -29,11 +29,11 @@ final readonly class ModuleRoutes
         $routeCollector = (new SettingsRoutes())->add($routeCollector);
         $routeCollector = (new LeadsRoutes())->add($routeCollector);
         $routeCollector = (new ChatRoutes())->add($routeCollector);
+        $routeCollector = (new StorefrontRoutes())->add($routeCollector);
+        $routeCollector = (new CompareRoutes())->add($routeCollector);
         $routeCollector = (new HoldsRoutes())->add($routeCollector);
         $routeCollector = (new SalesRoutes())->add($routeCollector);
         $routeCollector = (new DashboardRoutes())->add($routeCollector);
-        $routeCollector = (new InboxRoutes())->add($routeCollector);
-        $routeCollector = (new PanelsRoutes())->add($routeCollector);
 
         return (new ModuleRoutesPart2())->add($routeCollector);
     }

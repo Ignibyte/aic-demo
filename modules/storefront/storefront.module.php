@@ -17,7 +17,10 @@ declare(strict_types=1);
  * a car's page shows finance's payment calculator at the profile's APR (#26).
  * Every store page carries the chat's dock, which chat's exported ChatDesk
  * builds (#32), and the visitor's framed chat pages sit here: a start below
- * a car, /chat, a message and the end. The list's route
+ * a car, /chat, a message and the end. Every store page also carries the
+ * comparison's dock (#33); the compare module builds its /compare page in the
+ * same frame, with the slugs and the figures as written, so the module
+ * exports StorePages, CarSlugs and CarFigures. The list's route
  * comes last, after the routes below it. The build reads it; nothing reads it
  * at run time.
  */
@@ -35,6 +38,9 @@ use App\Storefront\Controller\ChatMessagePost;
 use App\Storefront\Controller\ChatPage;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
+use App\Storefront\Service\CarFigures;
+use App\Storefront\Service\CarSlugs;
+use App\Storefront\Service\StorePages;
 use App\Storefront\Service\StoreServices;
 
 return (new ModuleManifest('storefront'))
@@ -56,4 +62,7 @@ return (new ModuleManifest('storefront'))
     ->route(RouteMethod::Get, '/chat', ChatPage::class)
     ->route(RouteMethod::Post, '/chat/messages', ChatMessagePost::class)
     ->route(RouteMethod::Post, '/chat/end', ChatEndPost::class)
-    ->factory(StoreServices::class);
+    ->factory(StoreServices::class)
+    ->export(StorePages::class)
+    ->export(CarSlugs::class)
+    ->export(CarFigures::class);

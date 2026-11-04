@@ -56,7 +56,7 @@ final readonly class FinanceCalculators
     {
         $price = max(0, $price);
         $apr = max(0, $aprBasisPoints);
-        $down = intdiv($price, 1_000) * 100;
+        $down = $this->down($price);
         $financed = $price - $down;
 
         return new FinanceCalculator(
@@ -65,11 +65,38 @@ final readonly class FinanceCalculators
             self::TERM,
             $apr,
             self::WARN_PERCENT,
-            $this->payment($financed, $apr, self::TERM),
+            $this->monthly($price, $apr),
             $this->payments->dollars($financed * 100),
             $this->interest($financed, $apr, self::TERM),
             $this->examples($financed, $apr, $down),
         );
+    }
+
+    /**
+     * The payment the calculator first shows, at its own defaults (10% down rounded down to $100, 60 months), for a
+     * comparison of cars (#33), so a car's column and its page agree.
+     *
+     * @param int $price          The car's price, in whole dollars.
+     * @param int $aprBasisPoints The dealership's default APR, in basis points.
+     *
+     * @return string The monthly payment, as written (`$312.45`).
+     */
+    public function monthly(int $price, int $aprBasisPoints): string
+    {
+        $price = max(0, $price);
+
+        return $this->payment($price - $this->down($price), max(0, $aprBasisPoints), self::TERM);
+    }
+
+    /**
+     * @param int $aprBasisPoints The dealership's default APR, in basis points.
+     *
+     * @return string What `monthly()` assumes, for a comparison's caption (#33), from the calculator's own defaults.
+     */
+    public function assumption(int $aprBasisPoints): string
+    {
+        return 'Monthly payments assume 10% down over ' . self::TERM . ' months at '
+            . $this->payments->percent(max(0, $aprBasisPoints)) . '% APR, before tax and fees.';
     }
 
     /**
@@ -123,6 +150,16 @@ final readonly class FinanceCalculators
     private function interest(int $financed, int $aprBasisPoints, int $months): string
     {
         return $this->payments->dollars($this->payments->interest($financed, $aprBasisPoints, $months));
+    }
+
+    /**
+     * @param int $price The car's price, in whole dollars, not below 0.
+     *
+     * @return int The default down payment: 10% of the price, rounded down to $100.
+     */
+    private function down(int $price): int
+    {
+        return intdiv($price, 1_000) * 100;
     }
 
     /**

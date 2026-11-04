@@ -2,9 +2,10 @@
 number: 33
 title: "Compare vehicles on the storefront"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-04T14:13:13Z
+phase: "docs"
 ---
 
 A visitor ticks "Compare" on up to three cars anywhere on the storefront; a compare bar at the
@@ -24,3 +25,13 @@ plain compare page.
 Every new behaviour gets a kept browser test in `tests/browser/` (also run with JavaScript off where the feature has a no-script path), and every new GET route a step in `config/native-site.json`, so gate:23 holds it on the compiled site. A defect in AIC or Tessera goes to the operator as an AIC or Tessera ticket, not a workaround here.
 
 ## Comments
+
+### 2026-11-04T12:30:00Z
+
+The operator checked the API before the run (AIC b874d98, Tessera 0.4.5, as #32 left them):
+
+- Every directive the description names is in Tessera 0.4.5: `data-signals__document`,
+  `data-push="off"`, `data-track` and the `outside` flag.
+- `data-on__outside` is written `data-on:click__outside`: the event name follows a colon, as
+  with `data-on:keydown` in #32.
+- AIC has `EntityQuery::whereIn()`.

@@ -22,7 +22,8 @@ declare(strict_types=1);
  * open as the record's forms' part does (gate:14). The list's ticked rows are edited at once (#29): a POST, last, that
  * sets their status, moves them to a lot location (a column its own migration adds) or deletes them. A vehicle's page
  * places the panels the `VehiclePanel` plugins give (#31), which the panels module registers, and its exported price
- * changes (`vehicle_prices`, their own migration) are what one of them draws. The build reads it;
+ * changes (`vehicle_prices`, their own migration) are what one of them draws. The cars in stock with their listing
+ * key (`vehicle_listings`, a view, #33) are what the storefront's comparison reads by key. The build reads it;
  * nothing reads it at run time.
  */
 
@@ -56,6 +57,7 @@ use App\Inventory\Entity\VehicleStatus;
 use App\Inventory\Entity\VehicleTable;
 use App\Inventory\Migration\AddVehicleLocation;
 use App\Inventory\Migration\CreateTodayView;
+use App\Inventory\Migration\CreateVehicleListingsView;
 use App\Inventory\Migration\CreateVehiclePricesTable;
 use App\Inventory\Migration\CreateVehiclesTable;
 use App\Inventory\Repository\ListedVehicleRepository;
@@ -94,6 +96,7 @@ return (new ModuleManifest('inventory'))
     ->migration(CreateTodayView::class)
     ->migration(AddVehicleLocation::class)
     ->migration(CreateVehiclePricesTable::class)
+    ->migration(CreateVehicleListingsView::class)
     ->export(VehicleSales::class)
     ->export(VehicleSale::class)
     ->export(Vehicle::class)

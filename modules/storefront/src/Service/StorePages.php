@@ -13,6 +13,8 @@ use AIC\Database\Contracts\QueryException;
 use App\Generated\ThemeLayoutName;
 use App\Settings\Entity\DealershipProfile;
 use App\Settings\Service\DealershipProfiles;
+use App\Theme\Components\CompareDock\CompareDock;
+use App\Theme\Components\CompareDrawer\CompareDrawer;
 use App\Theme\Components\StoreFooter\StoreFooter;
 use App\Theme\Components\StoreHeader\StoreHeader;
 use App\Theme\Components\StoreHeading\StoreHeading;
@@ -27,7 +29,9 @@ use InvalidArgumentException;
  * so none of them shows here, whoever is signed in; and only this class builds the public header, so no staff page
  * shows it. After the footer, `colophon` holds the chat's dock (#32), which each page has chat's exported `ChatDesk`
  * build and hands in: the visitor's open chat on every store page, else the start form on a car's page, else nothing;
- * so it renders at `colophon/chat` on every page, which a Tessera visit keeps as the same node.
+ * so it renders at `colophon/chat` on every page, which a Tessera visit keeps as the same node. Last in `colophon`
+ * comes the comparison's dock (#33), at `colophon/compare` on every page: the compare bar and its drawer, keyed
+ * `drawer` and anchored `compare-drawer`, empty unless the page hands one in (the compare module's Tessera answer).
  */
 final readonly class StorePages
 {
@@ -35,6 +39,12 @@ final readonly class StorePages
      * The footer's first line, before the dealership's address, phone and hours.
      */
     private const string LOT = 'Every car here is on our lot today.';
+
+    /**
+     * The list of cars for sale, which the header and the 404 link to: the same path as `CarSlugs::PAGES`, which the
+     * frame does not name, so it keeps within PHPMD's coupling limit once it places the comparison's dock (#33).
+     */
+    private const string CARS = '/cars';
 
     /**
      * @param PageDocuments      $pageDocuments      The theme's document around the page.
@@ -84,6 +94,8 @@ final readonly class StorePages
      * @param list<KeyedComponent> $parts             The page's parts, each keyed.
      * @param int                  $status            200, or 422 after a refused lead form.
      * @param KeyedComponent|null  $keyedComponent    The chat's dock, after the footer; null for none.
+     * @param CompareDrawer|null   $compareDrawer     The comparison's drawer, filled (#33); null for the empty one every
+     *                                                other page carries.
      *
      * @throws InvalidArgumentException When the status or a region does not fit the theme, or the page has no title.
      *
@@ -95,16 +107,21 @@ final readonly class StorePages
         array $parts,
         int $status,
         ?KeyedComponent $keyedComponent,
+        ?CompareDrawer $compareDrawer = null,
     ): PageDocument {
         if ($title === '') {
             throw new InvalidArgumentException('A public page names its title (AIC #187).');
         }
 
         $storeFooter = new StoreFooter($dealershipProfile->name, self::LOT . ' ' . $dealershipProfile->facts() . '.');
+        $colophon = $keyedComponent instanceof KeyedComponent
+            ? [$storeFooter, $keyedComponent]
+            : [$storeFooter];
+        $colophon[] = $this->compareDock($compareDrawer);
         $regions = new Regions([
-            new Region('masthead', [new StoreHeader($dealershipProfile->name, CarSlugs::PAGES, 'Used cars, checked and fairly priced')]),
+            new Region('masthead', [new StoreHeader($dealershipProfile->name, self::CARS, 'Used cars, checked and fairly priced')]),
             new Region('content', $parts),
-            new Region('colophon', $keyedComponent instanceof KeyedComponent ? [$storeFooter, $keyedComponent] : [$storeFooter]),
+            new Region('colophon', $colophon),
         ]);
 
         return $this->pageDocuments->page($regions, $status, $title, ThemeLayoutName::Store);
@@ -121,8 +138,25 @@ final readonly class StorePages
     public function missing(?KeyedComponent $keyedComponent): PageDocument
     {
         $lead = 'That car is not for sale. It may have been sold, or the link may be wrong.';
-        $storeHeading = new StoreHeading('car-missing', 'Car not found', $lead, CarSlugs::PAGES, 'See every car for sale');
+        $storeHeading = new StoreHeading('car-missing', 'Car not found', $lead, self::CARS, 'See every car for sale');
 
         return $this->page('Car not found', [new KeyedComponent('heading', $storeHeading)], 404, $keyedComponent);
+    }
+
+    /**
+     * @param CompareDrawer|null $compareDrawer The drawer the page fills; null for an empty one.
+     *
+     * @throws InvalidArgumentException When a key or an anchor is malformed.
+     *
+     * @return KeyedComponent The comparison's dock, keyed `compare`, its drawer keyed `drawer` and anchored
+     *                        `compare-drawer`, which the bar's Compare link targets.
+     */
+    private function compareDock(?CompareDrawer $compareDrawer): KeyedComponent
+    {
+        $drawer = $compareDrawer instanceof CompareDrawer
+            ? $compareDrawer
+            : new CompareDrawer('', []);
+
+        return new KeyedComponent('compare', new CompareDock(new KeyedComponent('drawer', $drawer, '', 'compare-drawer')));
     }
 }
