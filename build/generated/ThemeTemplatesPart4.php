@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\CardMove\CardMove;
+use App\Theme\Components\CaseWatch\CaseWatch;
 use App\Theme\Components\ChatConversation\ChatConversation;
 use App\Theme\Components\ChatDock\ChatDock;
-use App\Theme\Components\ChatLine\ChatLine;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof CardMove => $this->renderCardMove($component, $renderPass),
+            $component instanceof CaseWatch => $this->renderCaseWatch($component, $renderPass),
             $component instanceof ChatConversation => $this->renderChatConversation($component, $renderPass),
             $component instanceof ChatDock => $this->renderChatDock($component, $renderPass),
-            $component instanceof ChatLine => $this->renderChatLine($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -60,6 +60,22 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($cardMove);
         require __DIR__ . '/templates/themes/lotline/components/CardMove/card-move.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param CaseWatch  $caseWatch  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CaseWatch/case-watch.phtml.
+     */
+    private function renderCaseWatch(CaseWatch $caseWatch, RenderPass $renderPass): string
+    {
+        $renderPass->open($caseWatch);
+        require __DIR__ . '/templates/themes/lotline/components/CaseWatch/case-watch.phtml';
 
         return $renderPass->close();
     }
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($chatDock);
         require __DIR__ . '/templates/themes/lotline/components/ChatDock/chat-dock.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ChatLine   $chatLine   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ChatLine/chat-line.phtml.
-     */
-    private function renderChatLine(ChatLine $chatLine, RenderPass $renderPass): string
-    {
-        $renderPass->open($chatLine);
-        require __DIR__ . '/templates/themes/lotline/components/ChatLine/chat-line.phtml';
 
         return $renderPass->close();
     }

@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\IconEntry\IconEntry;
+use App\Theme\Components\IconLegend\IconLegend;
 use App\Theme\Components\LazyPanel\LazyPanel;
 use App\Theme\Components\LeadBoard\LeadBoard;
-use App\Theme\Components\LeadCard\LeadCard;
-use App\Theme\Components\LiveParts\LiveParts;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof IconEntry => $this->renderIconEntry($component, $renderPass),
+            $component instanceof IconLegend => $this->renderIconLegend($component, $renderPass),
             $component instanceof LazyPanel => $this->renderLazyPanel($component, $renderPass),
             $component instanceof LeadBoard => $this->renderLeadBoard($component, $renderPass),
-            $component instanceof LeadCard => $this->renderLeadCard($component, $renderPass),
-            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param IconEntry  $iconEntry  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/IconEntry/icon-entry.phtml.
+     */
+    private function renderIconEntry(IconEntry $iconEntry, RenderPass $renderPass): string
+    {
+        $renderPass->open($iconEntry);
+        require __DIR__ . '/templates/themes/lotline/components/IconEntry/icon-entry.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param IconLegend $iconLegend The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/IconLegend/icon-legend.phtml.
+     */
+    private function renderIconLegend(IconLegend $iconLegend, RenderPass $renderPass): string
+    {
+        $renderPass->open($iconLegend);
+        require __DIR__ . '/templates/themes/lotline/components/IconLegend/icon-legend.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart11 implements ComponentTemplates
     {
         $renderPass->open($leadBoard);
         require __DIR__ . '/templates/themes/lotline/components/LeadBoard/lead-board.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LeadCard   $leadCard   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LeadCard/lead-card.phtml.
-     */
-    private function renderLeadCard(LeadCard $leadCard, RenderPass $renderPass): string
-    {
-        $renderPass->open($leadCard);
-        require __DIR__ . '/templates/themes/lotline/components/LeadCard/lead-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param LiveParts  $liveParts  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
-     */
-    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
-    {
-        $renderPass->open($liveParts);
-        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
 
         return $renderPass->close();
     }

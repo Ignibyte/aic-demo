@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\LeadCard\LeadCard;
+use App\Theme\Components\LiveParts\LiveParts;
 use App\Theme\Components\Navigation\Navigation;
 use App\Theme\Components\NavLink\NavLink;
-use App\Theme\Components\Notice\Notice;
-use App\Theme\Components\Pagination\Pagination;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart12 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof LeadCard => $this->renderLeadCard($component, $renderPass),
+            $component instanceof LiveParts => $this->renderLiveParts($component, $renderPass),
             $component instanceof NavLink => $this->renderNavLink($component, $renderPass),
             $component instanceof Navigation => $this->renderNavigation($component, $renderPass),
-            $component instanceof Notice => $this->renderNotice($component, $renderPass),
-            $component instanceof Pagination => $this->renderPagination($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param LeadCard   $leadCard   The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/LeadCard/lead-card.phtml.
+     */
+    private function renderLeadCard(LeadCard $leadCard, RenderPass $renderPass): string
+    {
+        $renderPass->open($leadCard);
+        require __DIR__ . '/templates/themes/lotline/components/LeadCard/lead-card.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param LiveParts  $liveParts  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/LiveParts/live-parts.phtml.
+     */
+    private function renderLiveParts(LiveParts $liveParts, RenderPass $renderPass): string
+    {
+        $renderPass->open($liveParts);
+        require __DIR__ . '/templates/themes/lotline/components/LiveParts/live-parts.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart12 implements ComponentTemplates
     {
         $renderPass->open($navigation);
         require __DIR__ . '/templates/themes/lotline/components/Navigation/navigation.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param Notice     $notice     The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/Notice/notice.phtml.
-     */
-    private function renderNotice(Notice $notice, RenderPass $renderPass): string
-    {
-        $renderPass->open($notice);
-        require __DIR__ . '/templates/themes/lotline/components/Notice/notice.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param Pagination $pagination The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/Pagination/pagination.phtml.
-     */
-    private function renderPagination(Pagination $pagination, RenderPass $renderPass): string
-    {
-        $renderPass->open($pagination);
-        require __DIR__ . '/templates/themes/lotline/components/Pagination/pagination.phtml';
 
         return $renderPass->close();
     }

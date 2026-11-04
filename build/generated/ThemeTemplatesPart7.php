@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\CompareDock\CompareDock;
 use App\Theme\Components\CompareDrawer\CompareDrawer;
 use App\Theme\Components\CompareTable\CompareTable;
 use App\Theme\Components\ConfirmCard\ConfirmCard;
-use App\Theme\Components\DataTable\DataTable;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof CompareDock => $this->renderCompareDock($component, $renderPass),
             $component instanceof CompareDrawer => $this->renderCompareDrawer($component, $renderPass),
             $component instanceof CompareTable => $this->renderCompareTable($component, $renderPass),
             $component instanceof ConfirmCard => $this->renderConfirmCard($component, $renderPass),
-            $component instanceof DataTable => $this->renderDataTable($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param CompareDock $compareDock The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CompareDock/compare-dock.phtml.
+     */
+    private function renderCompareDock(CompareDock $compareDock, RenderPass $renderPass): string
+    {
+        $renderPass->open($compareDock);
+        require __DIR__ . '/templates/themes/lotline/components/CompareDock/compare-dock.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart7 implements ComponentTemplates
     {
         $renderPass->open($confirmCard);
         require __DIR__ . '/templates/themes/lotline/components/ConfirmCard/confirm-card.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param DataTable  $dataTable  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/DataTable/data-table.phtml.
-     */
-    private function renderDataTable(DataTable $dataTable, RenderPass $renderPass): string
-    {
-        $renderPass->open($dataTable);
-        require __DIR__ . '/templates/themes/lotline/components/DataTable/data-table.phtml';
 
         return $renderPass->close();
     }

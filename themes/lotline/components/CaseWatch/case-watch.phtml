@@ -1,0 +1,4 @@
+<?php /** @var \App\Theme\Components\CaseWatch\CaseWatch $caseWatch */ ?>
+<section class="flex flex-col gap-4" id="<?= $caseWatch->id ?>" data-signals="{seen: 0}"<?php if ($caseWatch->watchedEvent === \App\Theme\Components\CaseWatch\WatchedEvent::Expired): ?> data-on:tessera:expired__document="$seen = $seen + 1"<?php elseif ($caseWatch->watchedEvent === \App\Theme\Components\CaseWatch\WatchedEvent::Indeterminate): ?> data-on:tessera:indeterminate="$seen = $seen + 1" data-on:tessera:error="evt.preventDefault()"<?php else: ?> data-on:tessera:error="evt.preventDefault(); $seen = $seen + 1"<?php endif; ?>><p class="text-sm"><code><?= $caseWatch->watchedEvent->value ?></code> raised <span class="font-semibold tabular-nums" id="<?= $caseWatch->id ?>-count" data-text="$seen">0</span> times</p>
+<?php foreach ($caseWatch->body as $keyedComponent): ?><?= $keyedComponent ?><?php endforeach ?>
+</section>

@@ -137,6 +137,222 @@
             "captures": false
         },
         {
+            "name": "resilience, expired page",
+            "method": "GET",
+            "path": "/theme/resilience/expired",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, expired page, sent with its token",
+            "method": "POST",
+            "path": "/theme/resilience/expired",
+            "form": "intent=send&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "resilience, expired page, its token expired",
+            "method": "POST",
+            "path": "/theme/resilience/expired",
+            "form": "intent=lapse&aic_csrf={csrf}",
+            "header": "",
+            "status": 204,
+            "captures": false
+        },
+        {
+            "name": "resilience, expired page, sent after the lapse from Tessera",
+            "method": "POST",
+            "path": "/theme/resilience/expired",
+            "form": "intent=send&aic_csrf={csrf}",
+            "header": "Tessera-Request: submit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 419,
+            "captures": false
+        },
+        {
+            "name": "resilience, expired page, sent after the lapse plainly",
+            "method": "POST",
+            "path": "/theme/resilience/expired",
+            "form": "intent=send&aic_csrf={csrf}",
+            "header": "",
+            "status": 403,
+            "captures": false
+        },
+        {
+            "name": "resilience, expired page again, a fresh token",
+            "method": "GET",
+            "path": "/theme/resilience/expired",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, gateway page",
+            "method": "GET",
+            "path": "/theme/resilience/gateway",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, gateway write from Tessera, the gateway times out",
+            "method": "POST",
+            "path": "/theme/resilience/gateway",
+            "form": "note=Hello&aic_csrf={csrf}",
+            "header": "Tessera-Request: submit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 504,
+            "captures": false
+        },
+        {
+            "name": "resilience, refused form page",
+            "method": "GET",
+            "path": "/theme/resilience/refused",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, refused form, blank",
+            "method": "POST",
+            "path": "/theme/resilience/refused",
+            "form": "intent=save&name=&price=&body_style=&notes=&aic_csrf={csrf}",
+            "header": "",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "resilience, refused form, blank from Tessera",
+            "method": "POST",
+            "path": "/theme/resilience/refused",
+            "form": "intent=save&name=&price=&body_style=&notes=&aic_csrf={csrf}",
+            "header": "Tessera-Request: submit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 422,
+            "captures": false
+        },
+        {
+            "name": "resilience, refused form, valid",
+            "method": "POST",
+            "path": "/theme/resilience/refused",
+            "form": "intent=save&name=Demo%20truck&price=24500&body_style=truck&notes=&aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed page",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed polled from Tessera while up",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @resilience-feed",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed taken down",
+            "method": "POST",
+            "path": "/theme/resilience/feed",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed polled while down, first",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @resilience-feed",
+            "status": 503,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed polled while down, second",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @resilience-feed",
+            "status": 503,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed polled while down, third",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @resilience-feed",
+            "status": 503,
+            "captures": false
+        },
+        {
+            "name": "resilience, feed polled after the outage, answering again",
+            "method": "GET",
+            "path": "/theme/resilience/feed",
+            "form": "",
+            "header": "Tessera-Request: refresh\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: @resilience-feed",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, protocol page",
+            "method": "GET",
+            "path": "/theme/resilience/protocol",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, protocol page from Tessera, protocol 1 only",
+            "method": "GET",
+            "path": "/theme/resilience/protocol",
+            "form": "",
+            "header": "Tessera-Request: visit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 400,
+            "captures": false
+        },
+        {
+            "name": "resilience, full-visit page",
+            "method": "GET",
+            "path": "/theme/resilience/full-visit",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "resilience, full visit posted plainly",
+            "method": "POST",
+            "path": "/theme/resilience/full-visit",
+            "form": "aic_csrf={csrf}",
+            "header": "",
+            "status": 303,
+            "captures": false
+        },
+        {
+            "name": "resilience, full visit posted from Tessera",
+            "method": "POST",
+            "path": "/theme/resilience/full-visit",
+            "form": "aic_csrf={csrf}",
+            "header": "Tessera-Request: submit\r\nTessera-Protocol: 2\r\nTessera-Layout: lotline\r\nTessera-Targets: content",
+            "status": 200,
+            "captures": false
+        },
+        {
             "name": "storefront list",
             "method": "GET",
             "path": "/cars",

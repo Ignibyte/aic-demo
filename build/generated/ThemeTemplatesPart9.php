@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\FeedStatus\FeedStatus;
+use App\Theme\Components\FilterBar\FilterBar;
 use App\Theme\Components\FinanceCalculator\FinanceCalculator;
 use App\Theme\Components\FormActions\FormActions;
-use App\Theme\Components\FormField\FormField;
-use App\Theme\Components\FormGrid\FormGrid;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart9 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof FeedStatus => $this->renderFeedStatus($component, $renderPass),
+            $component instanceof FilterBar => $this->renderFilterBar($component, $renderPass),
             $component instanceof FinanceCalculator => $this->renderFinanceCalculator($component, $renderPass),
             $component instanceof FormActions => $this->renderFormActions($component, $renderPass),
-            $component instanceof FormField => $this->renderFormField($component, $renderPass),
-            $component instanceof FormGrid => $this->renderFormGrid($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param FeedStatus $feedStatus The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FeedStatus/feed-status.phtml.
+     */
+    private function renderFeedStatus(FeedStatus $feedStatus, RenderPass $renderPass): string
+    {
+        $renderPass->open($feedStatus);
+        require __DIR__ . '/templates/themes/lotline/components/FeedStatus/feed-status.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param FilterBar  $filterBar  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/FilterBar/filter-bar.phtml.
+     */
+    private function renderFilterBar(FilterBar $filterBar, RenderPass $renderPass): string
+    {
+        $renderPass->open($filterBar);
+        require __DIR__ . '/templates/themes/lotline/components/FilterBar/filter-bar.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart9 implements ComponentTemplates
     {
         $renderPass->open($formActions);
         require __DIR__ . '/templates/themes/lotline/components/FormActions/form-actions.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param FormField  $formField  The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/FormField/form-field.phtml.
-     */
-    private function renderFormField(FormField $formField, RenderPass $renderPass): string
-    {
-        $renderPass->open($formField);
-        require __DIR__ . '/templates/themes/lotline/components/FormField/form-field.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param FormGrid   $formGrid   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/FormGrid/form-grid.phtml.
-     */
-    private function renderFormGrid(FormGrid $formGrid, RenderPass $renderPass): string
-    {
-        $renderPass->open($formGrid);
-        require __DIR__ . '/templates/themes/lotline/components/FormGrid/form-grid.phtml';
 
         return $renderPass->close();
     }

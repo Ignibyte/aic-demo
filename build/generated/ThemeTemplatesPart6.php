@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\ChatStart\ChatStart;
 use App\Theme\Components\ChatThread\ChatThread;
 use App\Theme\Components\CheckGroup\CheckGroup;
 use App\Theme\Components\ColumnChart\ColumnChart;
-use App\Theme\Components\CompareDock\CompareDock;
 use Override;
 
 /**
@@ -40,12 +40,28 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof ChatStart => $this->renderChatStart($component, $renderPass),
             $component instanceof ChatThread => $this->renderChatThread($component, $renderPass),
             $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
             $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
-            $component instanceof CompareDock => $this->renderCompareDock($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param ChatStart  $chatStart  The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ChatStart/chat-start.phtml.
+     */
+    private function renderChatStart(ChatStart $chatStart, RenderPass $renderPass): string
+    {
+        $renderPass->open($chatStart);
+        require __DIR__ . '/templates/themes/lotline/components/ChatStart/chat-start.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -92,22 +108,6 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         $renderPass->open($columnChart);
         require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param CompareDock $compareDock The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/CompareDock/compare-dock.phtml.
-     */
-    private function renderCompareDock(CompareDock $compareDock, RenderPass $renderPass): string
-    {
-        $renderPass->open($compareDock);
-        require __DIR__ . '/templates/themes/lotline/components/CompareDock/compare-dock.phtml';
 
         return $renderPass->close();
     }
