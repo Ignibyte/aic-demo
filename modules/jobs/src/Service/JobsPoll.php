@@ -8,7 +8,7 @@ use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageUnchanged;
 use AIC\Form\Exception\InvalidEnvelope;
 use AIC\Tessera\Application\TesseraProps;
-use AIC\Tessera\Domain\TesseraRequest;
+use AIC\Tessera\Application\TesseraRequests;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,12 +21,14 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class JobsPoll
 {
     /**
-     * @param JobsAccess   $jobsAccess   The 400 page.
-     * @param TesseraProps $tesseraProps Opens a refresh's props.
+     * @param JobsAccess      $jobsAccess      The 400 page.
+     * @param TesseraProps    $tesseraProps    Opens a refresh's props.
+     * @param TesseraRequests $tesseraRequests Reads what a request refreshes (AIC #268).
      */
     public function __construct(
         private JobsAccess $jobsAccess,
         private TesseraProps $tesseraProps,
+        private TesseraRequests $tesseraRequests = new TesseraRequests(),
     ) {
     }
 
@@ -67,13 +69,6 @@ final readonly class JobsPoll
      */
     public function partAlone(ServerRequestInterface $serverRequest): bool
     {
-        $tesseraRequest = new TesseraRequest(
-            $serverRequest->getHeaderLine(TesseraRequest::REQUEST),
-            $serverRequest->getHeaderLine(TesseraRequest::PROTOCOL),
-            $serverRequest->getHeaderLine(TesseraRequest::TARGETS),
-            $serverRequest->getHeaderLine(TesseraRequest::LAYOUT),
-        );
-
-        return $tesseraRequest->refreshesOnly('@' . JobsLive::ANCHOR);
+        return $this->tesseraRequests->read($serverRequest)->refreshesOnly('@' . JobsLive::ANCHOR);
     }
 }
