@@ -11,7 +11,7 @@ use AIC\Component\Domain\GuardFields;
  * A chat's send form (#32), from chat-send-form.phtml, for either side, keyed `send` and anchored `chat-send`. Its box
  * keeps what is typed through every morph and stream patch (`data-ignore-morph`); Enter sends, Shift+Enter breaks the
  * line; typing posts the side's typing route at most every two seconds; and the box clears when an answer patches the
- * `chatSent` signal, which the form declares in its region's scope, with the seq it took. With no script it is a plain
+ * `chatSent` signal, which the form declares in its own scope, with the seq it took. With no script it is a plain
  * form that posts and reloads. A chat that has ended shows that it has in place of the form's fields. The staff side's
  * box takes focus (`autofocus`, #38): staff open a chat to answer it.
  */

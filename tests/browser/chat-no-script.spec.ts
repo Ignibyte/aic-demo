@@ -33,6 +33,7 @@ test('with JavaScript off every part of the chat is a form that posts and reload
     await expect(page).toHaveURL(new RegExp(`${car.path}$`));
     await dock(page).locator('summary').click();
     await expect(lines(page)).toHaveText(['No script here', 'Still no script']);
+    await expect(page.locator('#chat-send-form-message')).toHaveValue('');
 
     // Ann, with no script either, replies and closes from the conversation; each posts and reloads.
     const annContext = await browser.newContext({ javaScriptEnabled: false });
@@ -44,6 +45,7 @@ test('with JavaScript off every part of the chat is a form that posts and reload
     await annPage.locator('#chat-send-form-go').press('Enter');
     await expect(annPage).toHaveURL(new RegExp(`/app/chats/${chat.id}$`));
     await expect(lines(annPage)).toHaveText(['No script here', 'Still no script', 'Hello from Ann']);
+    await expect(annPage.locator('#chat-send-form-message')).toHaveValue('');
     expect(messagesOf(chat.id)).toHaveLength(3);
 
     // The visitor ends the chat: the page reloads with no dock and the start offered again.

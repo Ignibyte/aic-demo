@@ -2,9 +2,10 @@
 number: 46
 title: "The chat's sent patch names @chat-send again"
 type: chore
-status: open
+status: closed
 created: 2026-11-05T10:00:00Z
-updated: 2026-11-05T10:00:00Z
+updated: 2026-11-05T12:28:33Z
+phase: "docs"
 ---
 
 `modules/chat/README.md` says the send answer scopes its `chatSent` patch to the region

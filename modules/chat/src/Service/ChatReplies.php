@@ -18,9 +18,9 @@ use Throwable;
 
 /**
  * The member's writes in a chat (#32): a reply, taken (303 to the chat, or the conversation's fragments with the
- * `chatSent` patch for Tessera, scoped to `content`, the region the form declares it in, since Tessera reads a fragment
- * answer's scope only as a path, AIC #260), refused (422) or too late (409); and the close, which queues the
- * transcript and answers 303 to the list with its notice. Each answers 404 or 403 first, as `ChatInbox` checks.
+ * `chatSent` patch for Tessera, scoped to `@chat-send`, which AIC writes as the send form's path, AIC #260), refused
+ * (422) or too late (409); and the close, which queues the transcript and answers 303 to the list with its notice.
+ * Each answers 404 or 403 first, as `ChatInbox` checks.
  */
 final readonly class ChatReplies
 {
@@ -113,6 +113,6 @@ final readonly class ChatReplies
 
         $pageDocument = $this->chatConversations->page($serverRequest, $chat, null, 200);
 
-        return $pageDocument->withSignalPatch(new SignalPatch('content', '{"chatSent": ' . $chatReply->sent . '}', false));
+        return $pageDocument->withSignalPatch(new SignalPatch('@chat-send', '{"chatSent": ' . $chatReply->sent . '}', false));
     }
 }

@@ -32,10 +32,11 @@ test("the member's reply box takes focus on an open chat, and the visitor's box 
     await expect(box(page)).toHaveAttribute('autofocus', '');
     await expect(box(page)).toBeFocused();
 
-    // Her reply's answer redraws the form, and the box keeps the focus for the next line.
+    // Her reply's answer redraws the form and patches `chatSent` at `@chat-send`: the box empties and keeps the focus.
     await box(page).fill('It is.');
     await box(page).press('Enter');
     await expect(lines(page)).toHaveText(['Is it still for sale?', 'It is.']);
+    await expect(box(page)).toHaveValue('');
     await expect(box(page)).toBeFocused();
 
     // Opened whole, as a link from elsewhere would open it, the box has the focus too.
