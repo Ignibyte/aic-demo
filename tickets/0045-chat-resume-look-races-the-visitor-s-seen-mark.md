@@ -2,9 +2,10 @@
 number: 45
 title: "The chat-resume look races the visitor's seen mark"
 type: bug
-status: open
+status: closed
 created: 2026-11-05T02:40:00Z
-updated: 2026-11-05T02:40:00Z
+updated: 2026-11-05T11:22:27Z
+phase: "docs"
 ---
 
 `tests/browser/chat-resume.spec.ts` failed once in gate:23 on 2026-11-05 with no difference

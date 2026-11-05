@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { collectFormErrors, pathOf } from './support/forms';
 import { literal, sql } from './support/inventory';
-import { EVENTS, carFor, chatsOf, insertMember, lines, readStream, removeChatLooks, startChat } from './support/chat';
+import { EVENTS, carFor, chatsOf, dock, insertMember, lines, readStream, removeChatLooks, startChat } from './support/chat';
 
 test.beforeEach(() => removeChatLooks());
 test.afterEach(() => removeChatLooks());
@@ -22,6 +22,12 @@ test('a fresh read sends the thread then the signals; a resumed one only later m
     const car = carFor(ann);
     await startChat(page, car, { name: 'Chat Look Resume', email: '', message: 'One' });
     const [chat] = chatsOf('Chat Look Resume');
+
+    // The open dock posts the visitor's read when its own stream brings a message, so it would see "Two" whenever it
+    // got there before the reads below. Closed, it posts nothing, and the seen mark stays at 1.
+    await expect(dock(page)).toHaveAttribute('open', '');
+    await page.locator('#chat-dock-summary').click();
+    await expect(dock(page)).not.toHaveAttribute('open');
     reply(chat.id, ann.id, 'Two');
 
     // Fresh: the whole thread as the log's inner markup, its id the newest seq, then the signals with no id.
@@ -33,6 +39,7 @@ test('a fresh read sends the thread then the signals; a resumed one only later m
     expect(fresh[0].elements).toContain('>One</div>');
     expect(fresh[0].elements).toContain('>Two</div>');
     expect(JSON.parse(fresh[1].signals)).toEqual({ chatTyping: false, chatUnread: 1 });
+    expect(chatsOf('Chat Look Resume')[0].visitorSeen).toBe(1);
 
     // Resumed from seq 1: the later message alone, as an append with its seq; from the newest, no message.
     const resumed = await readStream(page, EVENTS, '1', 2);
@@ -42,13 +49,15 @@ test('a fresh read sends the thread then the signals; a resumed one only later m
     ]);
     expect(resumed[0].elements).toContain('>Two</div>');
     expect(resumed[0].elements).not.toContain('>One</div>');
-    // From the newest, signals alone (a second when the page's own open dock posts its read meanwhile), no message.
+    // From the newest, signals alone (a second when the signals change meanwhile), no message.
     const newest = await readStream(page, EVENTS, '2', 2);
     expect(newest.length).toBeGreaterThan(0);
     expect(newest.every((event) => event.event === 'tessera-patch-signals' && event.target === '@chat')).toBe(true);
 
     // The page's own connection drops while Ann sends two messages; Tessera reconnects with its last id, and each
-    // lands once, in order.
+    // lands once, in order. The dock is open again for it, as a visitor reading the chat has it.
+    await page.locator('#chat-dock-summary').click();
+    await expect(dock(page)).toHaveAttribute('open', '');
     await expect(lines(page)).toHaveText(['One', 'Two'], { timeout: 10_000 });
     let dropped = false;
     await page.route((url) => url.pathname === EVENTS, async (route) => {
