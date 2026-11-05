@@ -7,6 +7,8 @@ namespace App\Storefront\Service;
 use App\Finance\Service\FinanceCalculators;
 use App\Inventory\Entity\ListedVehicle;
 use App\Photos\Service\VehiclePhotos;
+use App\Settings\Entity\DealershipProfile;
+use App\Theme\Components\CarBrochure\CarBrochure;
 use App\Theme\Components\CarProfile\CarProfile;
 use App\Theme\Components\DetailCard\Fact;
 use App\Theme\Components\PhotoGallery\GalleryPhoto;
@@ -14,16 +16,22 @@ use App\Theme\Components\PhotoGallery\PhotoGallery;
 use LogicException;
 use RuntimeException;
 
+use function array_slice;
 use function count;
 
 /**
  * One car's public page: its photos in the order they were added, in the theme's `PhotoGallery` with no controls, the
  * first the main one, each image's `alt` naming the car and the photo's number; its title, trim and price; finance's
- * payment calculator at its price (#26); and its details, as the theme's `Fact`s. Nothing here knows its VIN or its
- * cost.
+ * payment calculator at its price (#26); and its details, as the theme's `Fact`s. Its brochure (#44) is built from the
+ * same facts and photos, so the two say the same. Nothing here knows its VIN or its cost.
  */
 final readonly class CarProfiles
 {
+    /**
+     * The most photos a brochure shows, so a car with 12 still prints on one page.
+     */
+    private const int BROCHURE_PHOTOS = 5;
+
     /**
      * @param VehiclePhotos      $vehiclePhotos      The car's photos.
      * @param CarFigures         $carFigures         Its price and mileage as written.
@@ -61,6 +69,30 @@ final readonly class CarProfiles
             $this->financeCalculators->calculator($listedVehicle->price, $aprBasisPoints),
             CarSlugs::PAGES,
             $this->carSlugs->slug($listedVehicle),
+        );
+    }
+
+    /**
+     * @param ListedVehicle     $listedVehicle     A car for sale.
+     * @param DealershipProfile $dealershipProfile The dealership's profile: its name, address, phone and hours.
+     *
+     * @throws LogicException   When the photos' entity type is malformed.
+     * @throws RuntimeException When its photos cannot be read.
+     *
+     * @return CarBrochure Its one-page brochure: the car page's title, trim, price and facts, its first 5 photos, and the
+     *                     dealership's name and contact line.
+     */
+    public function brochure(ListedVehicle $listedVehicle, DealershipProfile $dealershipProfile): CarBrochure
+    {
+        return new CarBrochure(
+            'brochure',
+            $dealershipProfile->name,
+            $listedVehicle->title(),
+            $listedVehicle->trim,
+            $this->carFigures->price($listedVehicle->price),
+            $this->facts($listedVehicle),
+            array_slice($this->photos($listedVehicle), 0, self::BROCHURE_PHOTOS),
+            $dealershipProfile->facts(),
         );
     }
 

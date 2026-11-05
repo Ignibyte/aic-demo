@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
+use AIC\Container\Exception\ContainerException;
 use AIC\Controller\Contracts\Job;
 use AIC\Module\Application\ConsoleContext;
 use LogicException;
@@ -25,7 +26,8 @@ final readonly class ModuleJobs
     }
 
     /**
-     * @throws LogicException When a called constructor or service fails.
+     * @throws LogicException     When a called constructor or service fails.
+     * @throws ContainerException When a called constructor or service fails.
      *
      * @return array<string, Job> The modules' jobs by name.
      */
@@ -35,6 +37,7 @@ final readonly class ModuleJobs
             (new PhotosJobs($this->consoleContext))->byName(),
             (new LeadsJobs($this->consoleContext))->byName(),
             (new ChatJobs($this->consoleContext))->byName(),
+            (new StorefrontJobs($this->consoleContext))->byName(),
             (new HoldsJobs($this->consoleContext))->byName(),
             (new ReportsJobs($this->consoleContext))->byName(),
         );

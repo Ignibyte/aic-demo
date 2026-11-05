@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\BootstrapIntro\BootstrapIntro;
+use App\Theme\Components\BrochureLinks\BrochureLinks;
 use App\Theme\Components\BulkBar\BulkBar;
-use App\Theme\Components\CarGrid\CarGrid;
-use App\Theme\Components\CarProfile\CarProfile;
+use App\Theme\Components\CarBrochure\CarBrochure;
 use Override;
 
 /**
@@ -41,9 +41,9 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     {
         return match (true) {
             $component instanceof BootstrapIntro => $this->renderBootstrapIntro($component, $renderPass),
+            $component instanceof BrochureLinks => $this->renderBrochureLinks($component, $renderPass),
             $component instanceof BulkBar => $this->renderBulkBar($component, $renderPass),
-            $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
-            $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
+            $component instanceof CarBrochure => $this->renderCarBrochure($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
     }
@@ -65,6 +65,22 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     }
 
     /**
+     * @param BrochureLinks $brochureLinks The component; its template reads it.
+     * @param RenderPass    $renderPass    The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/BrochureLinks/brochure-links.phtml.
+     */
+    private function renderBrochureLinks(BrochureLinks $brochureLinks, RenderPass $renderPass): string
+    {
+        $renderPass->open($brochureLinks);
+        require __DIR__ . '/templates/themes/lotline/components/BrochureLinks/brochure-links.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
      * @param BulkBar    $bulkBar    The component; its template reads it.
      * @param RenderPass $renderPass The pass its template writes through.
      *
@@ -81,33 +97,17 @@ final readonly class ThemeTemplatesPart3 implements ComponentTemplates
     }
 
     /**
-     * @param CarGrid    $carGrid    The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
+     * @param CarBrochure $carBrochure The component; its template reads it.
+     * @param RenderPass  $renderPass  The pass its template writes through.
      *
      * @throws UnknownComponent When a child has no template.
      *
-     * @return string Its markup, from templates/themes/lotline/components/CarGrid/car-grid.phtml.
+     * @return string Its markup, from templates/themes/lotline/components/CarBrochure/car-brochure.phtml.
      */
-    private function renderCarGrid(CarGrid $carGrid, RenderPass $renderPass): string
+    private function renderCarBrochure(CarBrochure $carBrochure, RenderPass $renderPass): string
     {
-        $renderPass->open($carGrid);
-        require __DIR__ . '/templates/themes/lotline/components/CarGrid/car-grid.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param CarProfile $carProfile The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/CarProfile/car-profile.phtml.
-     */
-    private function renderCarProfile(CarProfile $carProfile, RenderPass $renderPass): string
-    {
-        $renderPass->open($carProfile);
-        require __DIR__ . '/templates/themes/lotline/components/CarProfile/car-profile.phtml';
+        $renderPass->open($carBrochure);
+        require __DIR__ . '/templates/themes/lotline/components/CarBrochure/car-brochure.phtml';
 
         return $renderPass->close();
     }

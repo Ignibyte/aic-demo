@@ -10,4 +10,4 @@ Files staff download from a vehicle's page, which the app keeps in AIC's private
 
 The bundle is written by photos' `photo-bundle` job, which inventory's photo routes queue after a change, so the ZIP is there a moment after the worker runs, and the link to it shows on the vehicle's page once it is. See the photos README for the archive.
 
-The brochure the ticket also asks for is not built yet: AIC has no way for a job to store a rendered document, so it waits on an AIC ticket (`tickets/0044`).
+The brochure the ticket also asked for is not here. It is for visitors, not staff, so storefront builds it from its view of the car and serves it below the car's page (#44, with AIC #265); see storefront's README.

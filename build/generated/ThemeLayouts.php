@@ -27,6 +27,10 @@ final readonly class ThemeLayouts implements PageLayouts
             'identity' => 'lotline',
             'regions' => ['sidebar', 'header', 'content', 'footer'],
         ],
+        'brochure' => [
+            'identity' => 'lotline-brochure',
+            'regions' => ['content'],
+        ],
         'store' => [
             'identity' => 'lotline-store',
             'regions' => ['masthead', 'content', 'colophon'],
@@ -69,6 +73,7 @@ final readonly class ThemeLayouts implements PageLayouts
     private function name(?LayoutName $layoutName): string
     {
         return match ($layoutName) {
+            ThemeLayoutName::Brochure => 'brochure',
             ThemeLayoutName::Store => 'store',
             default => '',
         };

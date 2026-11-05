@@ -8,10 +8,10 @@ use AIC\Component\Application\ComponentTemplates;
 use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
+use App\Theme\Components\ChatLog\ChatLog;
+use App\Theme\Components\ChatSendForm\ChatSendForm;
 use App\Theme\Components\ChatStart\ChatStart;
 use App\Theme\Components\ChatThread\ChatThread;
-use App\Theme\Components\CheckGroup\CheckGroup;
-use App\Theme\Components\ColumnChart\ColumnChart;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof ChatLog => $this->renderChatLog($component, $renderPass),
+            $component instanceof ChatSendForm => $this->renderChatSendForm($component, $renderPass),
             $component instanceof ChatStart => $this->renderChatStart($component, $renderPass),
             $component instanceof ChatThread => $this->renderChatThread($component, $renderPass),
-            $component instanceof CheckGroup => $this->renderCheckGroup($component, $renderPass),
-            $component instanceof ColumnChart => $this->renderColumnChart($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param ChatLog    $chatLog    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ChatLog/chat-log.phtml.
+     */
+    private function renderChatLog(ChatLog $chatLog, RenderPass $renderPass): string
+    {
+        $renderPass->open($chatLog);
+        require __DIR__ . '/templates/themes/lotline/components/ChatLog/chat-log.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param ChatSendForm $chatSendForm The component; its template reads it.
+     * @param RenderPass   $renderPass   The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml.
+     */
+    private function renderChatSendForm(ChatSendForm $chatSendForm, RenderPass $renderPass): string
+    {
+        $renderPass->open($chatSendForm);
+        require __DIR__ . '/templates/themes/lotline/components/ChatSendForm/chat-send-form.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart6 implements ComponentTemplates
     {
         $renderPass->open($chatThread);
         require __DIR__ . '/templates/themes/lotline/components/ChatThread/chat-thread.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param CheckGroup $checkGroup The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/CheckGroup/check-group.phtml.
-     */
-    private function renderCheckGroup(CheckGroup $checkGroup, RenderPass $renderPass): string
-    {
-        $renderPass->open($checkGroup);
-        require __DIR__ . '/templates/themes/lotline/components/CheckGroup/check-group.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ColumnChart $columnChart The component; its template reads it.
-     * @param RenderPass  $renderPass  The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ColumnChart/column-chart.phtml.
-     */
-    private function renderColumnChart(ColumnChart $columnChart, RenderPass $renderPass): string
-    {
-        $renderPass->open($columnChart);
-        require __DIR__ . '/templates/themes/lotline/components/ColumnChart/column-chart.phtml';
 
         return $renderPass->close();
     }

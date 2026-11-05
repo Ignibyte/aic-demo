@@ -40,9 +40,9 @@ final readonly class InventoryHandlers
         $inventoryHandlerServicesPart2 = new InventoryHandlerServicesPart2($this->handlerContext);
 
         return [
-            VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($inventoryHandlerServices->vehicleSaves())),
-            VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($inventoryHandlerServices->vehicleSaves())),
-            VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($inventoryHandlerServices->vehicleSaves())),
+            VehicleCreatePost::class => $this->handlerContext->page(new VehicleCreatePost($inventoryHandlerServicesPart2->vehicleSaves())),
+            VehicleEditPage::class => $this->handlerContext->page(new VehicleEditPage($inventoryHandlerServicesPart2->vehicleSaves())),
+            VehicleNewPage::class => $this->handlerContext->page(new VehicleNewPage($inventoryHandlerServicesPart2->vehicleSaves())),
             VehiclePage::class => $this->handlerContext->page(
                 new VehiclePage($inventoryHandlerServices->vehicleServices()->vehicleCards()),
             ),
@@ -52,7 +52,7 @@ final readonly class InventoryHandlers
             VehiclePhotoStream::class => $this->handlerContext->stream(
                 new VehiclePhotoStream($inventoryHandlerServicesPart2->vehiclePhotoForms()),
             ),
-            VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($inventoryHandlerServices->vehicleSaves())),
+            VehicleUpdatePost::class => $this->handlerContext->page(new VehicleUpdatePost($inventoryHandlerServicesPart2->vehicleSaves())),
         ];
     }
 }

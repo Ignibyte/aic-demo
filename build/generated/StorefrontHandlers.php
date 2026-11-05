@@ -6,6 +6,8 @@ namespace App\Generated;
 
 use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
+use App\Storefront\Controller\CarBrochureDownloadStream;
+use App\Storefront\Controller\CarBrochureStream;
 use App\Storefront\Controller\CarChatPost;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarPage;
@@ -39,6 +41,10 @@ final readonly class StorefrontHandlers
         $storefrontHandlerServicesPart2 = new StorefrontHandlerServicesPart2($this->handlerContext);
 
         return [
+            CarBrochureDownloadStream::class => $this->handlerContext->stream(
+                new CarBrochureDownloadStream($storefrontHandlerServicesPart2->carFinder()),
+            ),
+            CarBrochureStream::class => $this->handlerContext->stream(new CarBrochureStream($storefrontHandlerServicesPart2->carFinder())),
             CarChatPost::class => $this->handlerContext->page(new CarChatPost($storefrontHandlerServicesPart2->carPages())),
             CarInquiryPost::class => $this->handlerContext->page(new CarInquiryPost($storefrontHandlerServicesPart2->carPages())),
             CarPage::class => $this->handlerContext->page(new CarPage($storefrontHandlerServicesPart2->carPages())),

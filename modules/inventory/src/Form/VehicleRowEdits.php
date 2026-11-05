@@ -7,9 +7,9 @@ namespace App\Inventory\Form;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Database\Contracts\QueryException;
 use AIC\Entity\Application\EntityStore;
-use AIC\Form\Application\EnvelopeCodec;
 use AIC\Form\Application\FormTokens;
 use AIC\Module\Attribute\Tagged;
+use App\Brochures\Service\Brochures;
 use App\Inventory\Entity\Vehicle;
 use App\Inventory\Service\VehicleRecords;
 use App\Inventory\Service\VehicleSales;
@@ -21,10 +21,11 @@ use UnexpectedValueException;
 /**
  * A vehicle's row in the list, edited in place (#28): the row shown, the row as a form, and the form saved. Each answer
  * is `VehicleRowPages`' page holding that row alone, where the list puts it, so a Tessera request from the row is
- * answered with the row and nothing else. The wiring builds it from the entity store, the envelope codec and the sale plugins,
- * its page first, so its generated handler part does not open as the record forms' part does (gate:14). A save is held to its
- * row's props, checked by the vehicle form's own checks over the stored vehicle with the row's fields put in, and saved
- * as the form saves; a refusal is the row as a form again, 422.
+ * answered with the row and nothing else. The wiring builds it from the entity store, the row's form and staff's seals
+ * (both sealing with the app secret), the sale plugins and the brochures, its page first, so its generated handler part
+ * does not open as the record forms' part does (gate:14). A save is held to its row's props, checked by the vehicle
+ * form's own checks over the stored vehicle with the row's fields put in, and saved as the form saves, then queues the
+ * car's brochure (#44); a refusal is the row as a form again, 422.
  */
 final readonly class VehicleRowEdits
 {
@@ -39,36 +40,28 @@ final readonly class VehicleRowEdits
     private VehicleChecks $vehicleChecks;
 
     /**
-     * The row, shown or as a form.
-     */
-    private VehicleRowForm $vehicleRowForm;
-
-    /**
-     * Checks the row's props on a save.
-     */
-    private StaffSeals $staffSeals;
-
-    /**
      * @param VehicleRowPages $vehicleRowPages The page holding the row, the record's pages and the form's checks.
      * @param EntityStore     $entityStore     The entity store, through which the vehicle is read and saved.
-     * @param EnvelopeCodec   $envelopeCodec   Seals with the app secret: the row's props, and their check on a save.
+     * @param VehicleRowForm  $vehicleRowForm  The row, shown or as a form, its props sealed with the app secret.
+     * @param StaffSeals      $staffSeals      Checks the row's props on a save.
      * @param list<object>    $vehicleSales    The `VehicleSales` plugins, in tag order (`#[Tagged]`).
+     * @param Brochures       $brochures       Queues the car's brochure after a save (#44).
      * @param VehicleEntries  $vehicleEntries  Fills the form from the vehicle and the row's post.
      * @param FormTokens      $formTokens      Gives the guard fields the page's action bar posts (#29, AIC #246).
      */
     public function __construct(
         private VehicleRowPages $vehicleRowPages,
         EntityStore $entityStore,
-        EnvelopeCodec $envelopeCodec,
+        private VehicleRowForm $vehicleRowForm,
+        private StaffSeals $staffSeals,
         #[Tagged(VehicleSales::class)]
         array $vehicleSales,
+        private Brochures $brochures,
         private VehicleEntries $vehicleEntries = new VehicleEntries(),
         private FormTokens $formTokens = new FormTokens(),
     ) {
         $this->vehicleRecords = $vehicleRowPages->records($entityStore);
         $this->vehicleChecks = $vehicleRowPages->checks($this->vehicleRecords, $entityStore, $vehicleSales);
-        $this->vehicleRowForm = new VehicleRowForm($envelopeCodec);
-        $this->staffSeals = new StaffSeals($envelopeCodec);
     }
 
     /**
@@ -116,7 +109,7 @@ final readonly class VehicleRowEdits
     /**
      * @param ServerRequestInterface $serverRequest A row's save: its fields, its props, its session.
      *
-     * @throws QueryException           When the vehicle cannot be read or written.
+     * @throws QueryException           When the vehicle cannot be read or written, or the brochure's job cannot be queued.
      * @throws UnexpectedValueException When a status is no status.
      * @throws LogicException           When the request has no session, a key or a value does not fit, or a region does not fit the theme.
      *
@@ -146,8 +139,32 @@ final readonly class VehicleRowEdits
 
         $vehicle = $this->vehicleChecks->vehicle($vehicleEntry);
 
-        return $vehicleRecordRepository->update($current->vin, $vehicle)
+        return $this->kept($current->vin, $vehicle)
             ? $this->vehicleRowPages->page($guardFields, $this->vehicleRowForm->shown($vehicle), 200)
             : $this->vehicleRecords->missing();
+    }
+
+    /**
+     * Saves the row's vehicle as the form saves it, and queues its brochure when the save is kept (#44).
+     *
+     * @param string  $vin     The vehicle's VIN as stored, which a row's save does not change.
+     * @param Vehicle $vehicle Every value it is to have.
+     *
+     * @throws QueryException When the vehicle cannot be written, or the brochure's job cannot be queued.
+     * @throws LogicException When a value does not fit its field, or the brochure's payload cannot be encoded.
+     *
+     * @return bool Whether it was saved; false when no vehicle has the VIN any more.
+     */
+    private function kept(string $vin, Vehicle $vehicle): bool
+    {
+        $vehicleRecordRepository = $this->vehicleRecords->repository();
+
+        if (!$vehicleRecordRepository->update($vin, $vehicle)) {
+            return false;
+        }
+
+        $this->brochures->queue($vehicleRecordRepository->vehicleId($vin));
+
+        return true;
     }
 }

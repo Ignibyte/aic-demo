@@ -6,6 +6,7 @@ namespace App\Storefront\Service;
 
 use AIC\Entity\Application\EntityStore;
 use AIC\Storage\Application\PublicFiles;
+use App\Brochures\Service\Brochures;
 use App\Chat\Service\ChatDesk;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Leads\Service\LeadDesk;
@@ -24,6 +25,7 @@ final readonly class StoreServices
      * @param LeadDesk    $leadDesk    The lead forms, and a sent one recorded.
      * @param PublicFiles $publicFiles AIC's public files, where the photos are kept.
      * @param ChatDesk    $chatDesk    A chat started on a car's page (#32).
+     * @param Brochures   $brochures   The cars' kept brochures, which the car's page links (#44).
      */
     public function __construct(
         private EntityStore $entityStore,
@@ -31,6 +33,7 @@ final readonly class StoreServices
         private LeadDesk $leadDesk,
         private PublicFiles $publicFiles,
         private ChatDesk $chatDesk,
+        private Brochures $brochures,
     ) {
     }
 
@@ -40,8 +43,9 @@ final readonly class StoreServices
     public function carPages(): CarPages
     {
         $vehiclePhotos = new VehiclePhotos($this->entityStore, $this->publicFiles);
-        $carFinder = new CarFinder(new ListedVehicleRepository($this->entityStore), $vehiclePhotos);
+        $carFinder = new CarFinder(new ListedVehicleRepository($this->entityStore), $vehiclePhotos, $this->brochures);
+        $carProfiles = new CarProfiles($vehiclePhotos);
 
-        return new CarPages($this->storePages, $carFinder, new CarProfiles($vehiclePhotos), $this->leadDesk, $this->chatDesk);
+        return new CarPages($this->storePages, $carFinder, $carProfiles, $this->leadDesk, $this->chatDesk);
     }
 }

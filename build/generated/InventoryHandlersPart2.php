@@ -42,7 +42,8 @@ final readonly class InventoryHandlersPart2
         $inventoryHandlerServices = new InventoryHandlerServices($this->handlerContext);
         $inventoryHandlerServicesPart2 = new InventoryHandlerServicesPart2($this->handlerContext);
         $entityStore = new EntityStore($this->handlerContext->database());
-        $inventoryList = new InventoryList(new VehicleRepository($entityStore), new VehicleRowForm($this->handlerContext->envelopeCodec()));
+        $vehicleRowForm = new VehicleRowForm($this->handlerContext->envelopeCodec());
+        $inventoryList = new InventoryList(new VehicleRepository($entityStore), $vehicleRowForm);
 
         return [
             InventoryListPage::class => $this->handlerContext->page(

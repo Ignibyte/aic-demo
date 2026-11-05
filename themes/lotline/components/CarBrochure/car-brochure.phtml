@@ -1,0 +1,13 @@
+<?php /** @var \App\Theme\Components\CarBrochure\CarBrochure $carBrochure */ ?>
+<article class="car-brochure mx-auto flex w-full max-w-4xl flex-col gap-6 rounded-box border border-base-300 bg-base-100 p-8 shadow-sm" aria-labelledby="<?= $carBrochure->id ?>">
+<p class="brochure-screen text-sm opacity-70" id="<?= $carBrochure->id ?>-print">Print this page, or save it as a PDF from the print dialog.</p>
+<header class="flex flex-wrap items-end justify-between gap-4 border-b border-base-300 pb-4">
+<div><p class="text-sm font-semibold uppercase tracking-wide opacity-70" id="<?= $carBrochure->id ?>-dealership"><?= $carBrochure->dealership ?></p>
+<h1 class="text-3xl font-bold" id="<?= $carBrochure->id ?>"><?= $carBrochure->title ?></h1>
+<p class="opacity-70" id="<?= $carBrochure->id ?>-subtitle"><?= $carBrochure->subtitle ?></p></div>
+<p class="text-3xl font-semibold" id="<?= $carBrochure->id ?>-price"><?= $carBrochure->price ?></p>
+</header>
+<?php if (!empty($carBrochure->photos)): ?><ul class="brochure-photos grid grid-cols-4 gap-3" id="<?= $carBrochure->id ?>-photos"><?php foreach ($carBrochure->photos as $galleryPhoto): ?><li<?php if ($galleryPhoto->main): ?> class="col-span-4"<?php endif; ?>><img class="aspect-[4/3] w-full rounded-box bg-base-300 object-cover" id="<?= $galleryPhoto->id ?>" src="<?= $galleryPhoto->src ?>" alt="<?= $galleryPhoto->alt ?>"></li><?php endforeach ?></ul><?php endif; ?>
+<dl class="brochure-facts grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2" id="<?= $carBrochure->id ?>-facts"><?php foreach ($carBrochure->facts as $fact): ?><dt class="opacity-70"><?= $fact->term ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $fact->detail ?></dd><?php endforeach ?></dl>
+<footer class="border-t border-base-300 pt-4 text-sm" id="<?= $carBrochure->id ?>-contact"><p><?= $carBrochure->dealership ?>. <?= $carBrochure->contact ?></p></footer>
+</article>

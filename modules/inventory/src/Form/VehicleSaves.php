@@ -7,8 +7,8 @@ namespace App\Inventory\Form;
 use AIC\Controller\Contracts\PageResponse;
 use AIC\Controller\Domain\PageRedirect;
 use AIC\Database\Contracts\QueryException;
+use App\Brochures\Service\Brochures;
 use App\Inventory\Entity\Vehicle;
-use App\Inventory\Repository\VehicleRecordRepository;
 use App\Inventory\Service\VehicleRecords;
 use App\Staff\Form\StaffSeals;
 use App\Staff\Service\StaffNotices;
@@ -18,8 +18,8 @@ use UnexpectedValueException;
 
 /**
  * The vehicle form's flows: the blank form, a new vehicle checked and made, a stored one's form, and that form checked
- * and saved. A refusal shows the form again as 422 with what was typed; a save leaves a notice and goes to the vehicle
- * (303).
+ * and saved. A refusal shows the form again as 422 with what was typed; a save queues the car's brochure (#44), leaves a
+ * notice and goes to the vehicle (303).
  */
 final readonly class VehicleSaves
 {
@@ -29,18 +29,18 @@ final readonly class VehicleSaves
     private VehicleForm $vehicleForm;
 
     /**
-     * @param VehicleRecords          $vehicleRecords          The route's vehicle and the 404 and 400 pages.
-     * @param VehicleRecordRepository $vehicleRecordRepository Saves the vehicle.
-     * @param VehicleChecks           $vehicleChecks           Checks the form.
-     * @param StaffSeals              $staffSeals              Seals and checks an edit form's envelope.
-     * @param VehicleEntries          $vehicleEntries          Fills the form.
-     * @param StaffNotices            $staffNotices            Leaves the save's notice.
+     * @param VehicleRecords $vehicleRecords The route's vehicle, its repository, which saves it, and the 404 and 400 pages.
+     * @param VehicleChecks  $vehicleChecks  Checks the form.
+     * @param StaffSeals     $staffSeals     Seals and checks an edit form's envelope.
+     * @param Brochures      $brochures      Queues the car's brochure after a save (#44).
+     * @param VehicleEntries $vehicleEntries Fills the form.
+     * @param StaffNotices   $staffNotices   Leaves the save's notice.
      */
     public function __construct(
         private VehicleRecords $vehicleRecords,
-        private VehicleRecordRepository $vehicleRecordRepository,
         private VehicleChecks $vehicleChecks,
         private StaffSeals $staffSeals,
+        private Brochures $brochures,
         private VehicleEntries $vehicleEntries = new VehicleEntries(),
         private StaffNotices $staffNotices = new StaffNotices(),
     ) {
@@ -57,7 +57,7 @@ final readonly class VehicleSaves
      */
     public function start(ServerRequestInterface $serverRequest): PageResponse
     {
-        $vehicleEntry = $this->vehicleEntries->blank($this->vehicleRecordRepository->today());
+        $vehicleEntry = $this->vehicleEntries->blank($this->vehicleRecords->repository()->today());
 
         return $this->vehicleForm->page($serverRequest, $vehicleEntry, [], '', 200);
     }
@@ -65,7 +65,7 @@ final readonly class VehicleSaves
     /**
      * @param ServerRequestInterface $serverRequest A posted new vehicle, with its session.
      *
-     * @throws QueryException           When the vehicles cannot be read or written.
+     * @throws QueryException           When the vehicles cannot be read or written, or the brochure's job cannot be queued.
      * @throws UnexpectedValueException When the checked status is no status.
      * @throws LogicException           When the request has no session, an envelope cannot be sealed, or a key does not fit the theme.
      *
@@ -74,7 +74,7 @@ final readonly class VehicleSaves
     public function create(ServerRequestInterface $serverRequest): PageResponse
     {
         $vehicleEntry = $this->vehicleEntries->posted($serverRequest);
-        $errors = $this->vehicleChecks->errors($vehicleEntry, '', $this->vehicleRecordRepository->today());
+        $errors = $this->vehicleChecks->errors($vehicleEntry, '', $this->vehicleRecords->repository()->today());
 
         if ($errors !== []) {
             return $this->vehicleForm->page($serverRequest, $vehicleEntry, $errors, '', 422);
@@ -82,7 +82,7 @@ final readonly class VehicleSaves
 
         $vehicle = $this->vehicleChecks->vehicle($vehicleEntry);
 
-        if (!$this->vehicleRecordRepository->create($vehicle)) {
+        if (!$this->vehicleRecords->repository()->create($vehicle)) {
             return $this->vehicleForm->page($serverRequest, $vehicleEntry, ['vin' => VehicleChecks::VIN_TAKEN], '', 422);
         }
 
@@ -112,7 +112,7 @@ final readonly class VehicleSaves
     /**
      * @param ServerRequestInterface $serverRequest A posted edit form, with its session.
      *
-     * @throws QueryException           When the vehicles cannot be read or written.
+     * @throws QueryException           When the vehicles cannot be read or written, or the brochure's job cannot be queued.
      * @throws UnexpectedValueException When a status is no status.
      * @throws LogicException           When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
      *
@@ -134,7 +134,7 @@ final readonly class VehicleSaves
         }
 
         $vehicleEntry = $this->vehicleEntries->posted($serverRequest);
-        $errors = $this->vehicleChecks->errors($vehicleEntry, $current->vin, $this->vehicleRecordRepository->today());
+        $errors = $this->vehicleChecks->errors($vehicleEntry, $current->vin, $this->vehicleRecords->repository()->today());
 
         if ($errors !== []) {
             return $this->vehicleForm->page($serverRequest, $vehicleEntry, $errors, $current->vin, 422);
@@ -148,7 +148,8 @@ final readonly class VehicleSaves
      * @param Vehicle                $current       The vehicle as stored.
      * @param VehicleEntry           $vehicleEntry  What was posted, found valid.
      *
-     * @throws QueryException           When the vehicle cannot be written for any reason but a VIN taken meanwhile.
+     * @throws QueryException           When the vehicle cannot be written for any reason but a VIN taken meanwhile, or
+     *                                  the brochure's job cannot be queued.
      * @throws UnexpectedValueException When the checked status is no status.
      * @throws LogicException           When the request has no session, the envelope cannot be sealed, or a key does not fit the theme.
      *
@@ -163,9 +164,9 @@ final readonly class VehicleSaves
         $vehicle = $this->vehicleChecks->vehicle($vehicleEntry);
 
         try {
-            $updated = $this->vehicleRecordRepository->update($current->vin, $vehicle);
+            $updated = $this->vehicleRecords->repository()->update($current->vin, $vehicle);
         } catch (QueryException $queryException) {
-            if (!$this->vehicleRecordRepository->taken($vehicle->vin, $current->vin)) {
+            if (!$this->vehicleRecords->repository()->taken($vehicle->vin, $current->vin)) {
                 throw $queryException;
             }
 
@@ -180,16 +181,21 @@ final readonly class VehicleSaves
     }
 
     /**
+     * Queues the car's brochure (#44), which the `car-brochure` job writes from it as saved, or deletes when it is not
+     * for sale, then leaves the notice.
+     *
      * @param ServerRequestInterface $serverRequest The post that saved, with its session.
      * @param Vehicle                $vehicle       The vehicle as saved.
      * @param string                 $message       The notice its page shows.
      *
      * @throws LogicException When the request carries no session.
+     * @throws QueryException When the vehicle's id cannot be read or the brochure's job cannot be queued.
      *
      * @return PageRedirect 303 to the vehicle.
      */
     private function saved(ServerRequestInterface $serverRequest, Vehicle $vehicle, string $message): PageRedirect
     {
+        $this->brochures->queue($this->vehicleRecords->repository()->vehicleId($vehicle->vin));
         $this->staffNotices->keep($serverRequest, $message);
 
         return new PageRedirect($vehicle->path());

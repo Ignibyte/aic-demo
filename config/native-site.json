@@ -452,6 +452,24 @@
             "captures": false
         },
         {
+            "name": "car brochure, none written",
+            "method": "GET",
+            "path": "/cars/2023-volkswagen-tiguan-9f381a/brochure",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "car brochure download, none written",
+            "method": "GET",
+            "path": "/cars/2023-volkswagen-tiguan-9f381a/brochure/download",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "compare, two cars",
             "method": "GET",
             "path": "/compare?car=2017-chevrolet-malibu-b28602&car=2018-toyota-rav4-adc48d",
@@ -2134,6 +2152,15 @@
             "captures": false
         },
         {
+            "name": "car brochure, before the worker",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
             "name": "health, once the worker has written the photo bundle",
             "method": "GET",
             "path": "/health",
@@ -2192,6 +2219,69 @@
             "name": "photo bundle, unknown vehicle",
             "method": "GET",
             "path": "/app/inventory/0LTGATE19SR999999/photos.zip",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "storefront car, with its brochure links",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car brochure",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car brochure, a byte range",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
+            "form": "",
+            "header": "Range: bytes=0-29",
+            "status": 206,
+            "captures": false
+        },
+        {
+            "name": "car brochure, a range past its end",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
+            "form": "",
+            "header": "Range: bytes=999999999-",
+            "status": 416,
+            "captures": false
+        },
+        {
+            "name": "car brochure, unchanged",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
+            "form": "",
+            "header": "If-None-Match: *",
+            "status": 304,
+            "captures": false
+        },
+        {
+            "name": "car brochure download",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure/download",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "car brochure, unknown car",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-000000/brochure",
             "form": "",
             "header": "",
             "status": 404,
@@ -2264,6 +2354,15 @@
             "name": "storefront car, deleted",
             "method": "GET",
             "path": "/cars/2025-gate-probe-fa5196",
+            "form": "",
+            "header": "",
+            "status": 404,
+            "captures": false
+        },
+        {
+            "name": "car brochure, car deleted",
+            "method": "GET",
+            "path": "/cars/2025-gate-probe-fa5196/brochure",
             "form": "",
             "header": "",
             "status": 404,

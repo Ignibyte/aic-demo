@@ -7,7 +7,7 @@ namespace App\Inventory\Service;
 use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Attribute\Tagged;
-use AIC\Storage\Application\PublicFiles;
+use App\Brochures\Service\Brochures;
 use App\Finance\Service\DealershipRates;
 use App\Finance\Service\FinanceRates;
 use App\Inventory\Entity\VehiclePanel;
@@ -26,8 +26,9 @@ use App\Staff\Service\StaffPanels;
  * build splits the module's handlers into parts and each part builds what its controllers take, so a graph the
  * controllers share would be written out in every part; through here each part makes one call. Its products also
  * reach the classes the wiring builds: `VehiclePhotoForms` takes `vehicleRecords()` and `vehicleCards()`. It builds
- * the staff pages and the photos' service, whose files are in AIC's public files (#23), from the page documents and
- * the public files, so the seven vehicle routes' generated part names few classes. The vehicle's page shows finance's
+ * the staff pages from the page documents, so the seven vehicle routes' generated part names few classes, and takes
+ * the photos' service, whose files are in AIC's public files (#23), as the wiring builds it for the photo forms. The
+ * vehicle form queues the car's brochure after a save (#44). The vehicle's page shows finance's
  * payment calculator (#26) at the dealership's APR, which the first `FinanceRates` plugin gives. It takes staff's
  * seals as the wiring builds them rather than the envelope codec, so the two generated parts that build it (one
  * opening with the record's forms, one with the photos') do not repeat one statement long enough for gate:14. The
@@ -42,19 +43,15 @@ final readonly class VehicleServices
     private StaffPages $staffPages;
 
     /**
-     * A vehicle's photos, by its id, their files in AIC's public files.
-     */
-    private VehiclePhotos $vehiclePhotos;
-
-    /**
      * @param EntityStore    $entityStore    The entity store.
      * @param PageDocuments  $pageDocuments  The theme's documents.
      * @param StaffSeals     $staffSeals     Seals and checks a record's path in its forms' envelopes.
      * @param list<object>   $vehicleSales   The `VehicleSales` plugins, in tag order (`#[Tagged]`).
-     * @param PublicFiles    $publicFiles    AIC's public files, where the photos are kept.
+     * @param VehiclePhotos  $vehiclePhotos  A vehicle's photos, by its id, their files in AIC's public files.
      * @param list<object>   $financeRates   The `FinanceRates` plugins, in tag order (`#[Tagged]`).
      * @param list<object>   $vehiclePanels  The `VehiclePanel` plugins, in tag order (`#[Tagged]`).
      * @param PhotoGalleries $photoGalleries The vehicle's photo gallery, with its ZIP's link (#36).
+     * @param Brochures      $brochures      Queues a car's brochure after the form saves it (#44).
      */
     public function __construct(
         private EntityStore $entityStore,
@@ -62,15 +59,15 @@ final readonly class VehicleServices
         private StaffSeals $staffSeals,
         #[Tagged(VehicleSales::class)]
         private array $vehicleSales,
-        PublicFiles $publicFiles,
+        private VehiclePhotos $vehiclePhotos,
         #[Tagged(FinanceRates::class)]
         private array $financeRates,
         #[Tagged(VehiclePanel::class)]
         private array $vehiclePanels,
         private PhotoGalleries $photoGalleries,
+        private Brochures $brochures,
     ) {
         $this->staffPages = new StaffPages($pageDocuments);
-        $this->vehiclePhotos = new VehiclePhotos($entityStore, $publicFiles);
     }
 
     /**
@@ -79,10 +76,9 @@ final readonly class VehicleServices
     public function vehicleSaves(): VehicleSaves
     {
         $vehicleRecords = $this->vehicleRecords();
-        $vehicleRecordRepository = $vehicleRecords->repository();
-        $vehicleChecks = new VehicleChecks($vehicleRecordRepository, $this->soldVehicles());
+        $vehicleChecks = new VehicleChecks($vehicleRecords->repository(), $this->soldVehicles());
 
-        return new VehicleSaves($vehicleRecords, $vehicleRecordRepository, $vehicleChecks, $this->staffSeals);
+        return new VehicleSaves($vehicleRecords, $vehicleChecks, $this->staffSeals, $this->brochures);
     }
 
     /**

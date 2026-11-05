@@ -1,0 +1,12 @@
+<?php declare(strict_types=1); /* Escaped from themes/lotline/components/CarBrochure/car-brochure.phtml by composer run build; edit that file, never this one. */ ?>
+<article<?= $renderPass->marks() ?> class="car-brochure mx-auto flex w-full max-w-4xl flex-col gap-6 rounded-box border border-base-300 bg-base-100 p-8 shadow-sm" aria-labelledby="<?= $renderPass->text($carBrochure->id) ?>">
+<p class="brochure-screen text-sm opacity-70" id="<?= $renderPass->text($carBrochure->id) ?>-print">Print this page, or save it as a PDF from the print dialog.</p>
+<header class="flex flex-wrap items-end justify-between gap-4 border-b border-base-300 pb-4">
+<div><p class="text-sm font-semibold uppercase tracking-wide opacity-70" id="<?= $renderPass->text($carBrochure->id) ?>-dealership"><?= $renderPass->text($carBrochure->dealership) ?></p>
+<h1 class="text-3xl font-bold" id="<?= $renderPass->text($carBrochure->id) ?>"><?= $renderPass->text($carBrochure->title) ?></h1>
+<p class="opacity-70" id="<?= $renderPass->text($carBrochure->id) ?>-subtitle"><?= $renderPass->text($carBrochure->subtitle) ?></p></div>
+<p class="text-3xl font-semibold" id="<?= $renderPass->text($carBrochure->id) ?>-price"><?= $renderPass->text($carBrochure->price) ?></p>
+</header>
+<?php if (!($carBrochure->photos === [])): ?><ul class="brochure-photos grid grid-cols-4 gap-3" id="<?= $renderPass->text($carBrochure->id) ?>-photos"><?php foreach ($carBrochure->photos as $galleryPhoto): ?><li<?php if ($galleryPhoto->main): ?> class="col-span-4"<?php endif; ?>><img class="aspect-[4/3] w-full rounded-box bg-base-300 object-cover" id="<?= $renderPass->text($galleryPhoto->id) ?>" src="<?= $renderPass->text($galleryPhoto->src) ?>" alt="<?= $renderPass->text($galleryPhoto->alt) ?>"></li><?php endforeach; ?></ul><?php endif; ?><dl class="brochure-facts grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2" id="<?= $renderPass->text($carBrochure->id) ?>-facts"><?php foreach ($carBrochure->facts as $fact): ?><dt class="opacity-70"><?= $renderPass->text($fact->term) ?></dt><dd<?php if ($fact->mono): ?> class="font-mono"<?php endif; ?>><?= $renderPass->text($fact->detail) ?></dd><?php endforeach; ?></dl>
+<footer class="border-t border-base-300 pt-4 text-sm" id="<?= $renderPass->text($carBrochure->id) ?>-contact"><p><?= $renderPass->text($carBrochure->dealership) ?>. <?= $renderPass->text($carBrochure->contact) ?></p></footer>
+</article>

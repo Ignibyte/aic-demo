@@ -19,9 +19,9 @@ use UnexpectedValueException;
 /**
  * The vehicles for sale, for the public side (#17): only the rows in stock, never one sold or on hold. The makes and
  * years for sale, a page of what a `ListingQuery` keeps and its count, every one of a make for the feed, the one a
- * year and a key name, and those a comparison names by key (#33). Every read goes through the `vehicle_listings` view
- * (#33), which holds the cars in stock and works out each one's key in SQL, so the key has that one source. Each row
- * is read as a `ListedVehicle`, so the VIN and the cost stay here.
+ * year and a key name, the one an id names for its brochure (#44), and those a comparison names by key (#33). Every
+ * read goes through the `vehicle_listings` view (#33), which holds the cars in stock and works out each one's key in
+ * SQL, so the key has that one source. Each row is read as a `ListedVehicle`, so the VIN and the cost stay here.
  */
 final readonly class ListedVehicleRepository
 {
@@ -130,6 +130,23 @@ final readonly class ListedVehicleRepository
         $entityQuery = $this->inStock()->where('year', $year)->where('listing_key', $key);
 
         return $this->listed($entityQuery->orderBy('vin')->limit(1))[0] ?? null;
+    }
+
+    /**
+     * The car a brochure is written for (#44), read from `vehicle_listings` by its row's id, so the brochure has the
+     * columns and the key the public pages have.
+     *
+     * @param int $vehicleId A vehicle's id.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     * @throws UnexpectedValueException When a stored status is no status.
+     *
+     * @return ListedVehicle|null The vehicle with that id, when it is for sale; null when it is sold, on hold or gone.
+     */
+    public function listing(int $vehicleId): ?ListedVehicle
+    {
+        return $this->listed($this->inStock()->where('id', $vehicleId)->limit(1))[0] ?? null;
     }
 
     /**

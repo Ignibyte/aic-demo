@@ -9,7 +9,9 @@ use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
 use App\Inventory\Form\VehiclePhotoForms;
 use App\Inventory\Form\VehicleRowEdits;
+use App\Inventory\Form\VehicleRowForm;
 use App\Inventory\Form\VehicleRowPages;
+use App\Inventory\Form\VehicleSaves;
 use App\Inventory\Service\VehicleSales;
 use App\Staff\Form\StaffSeals;
 
@@ -30,6 +32,16 @@ final readonly class InventoryHandlerServicesPart2
     /**
      * @throws ContainerException When a called constructor or service fails.
      *
+     * @return VehicleSaves A new one, for the part that asked.
+     */
+    public function vehicleSaves(): VehicleSaves
+    {
+        return (new InventoryHandlerServices($this->handlerContext))->vehicleServices()->vehicleSaves();
+    }
+
+    /**
+     * @throws ContainerException When a called constructor or service fails.
+     *
      * @return VehiclePhotoForms A new one, for the part that asked.
      */
     public function vehiclePhotoForms(): VehiclePhotoForms
@@ -39,6 +51,7 @@ final readonly class InventoryHandlerServicesPart2
             (new InventoryHandlerServices($this->handlerContext))->vehiclePhotos(),
             (new InventoryHandlerServices($this->handlerContext))->vehicleServices(),
             (new InventoryHandlerServices($this->handlerContext))->photoBundles(),
+            (new InventoryHandlerServices($this->handlerContext))->brochures(),
         );
     }
 
@@ -52,8 +65,10 @@ final readonly class InventoryHandlerServicesPart2
         return new VehicleRowEdits(
             new VehicleRowPages($this->handlerContext->documents()),
             new EntityStore($this->handlerContext->database()),
-            $this->handlerContext->envelopeCodec(),
+            new VehicleRowForm($this->handlerContext->envelopeCodec()),
+            new StaffSeals($this->handlerContext->envelopeCodec()),
             $this->handlerContext->tagged(VehicleSales::class),
+            (new InventoryHandlerServices($this->handlerContext))->brochures(),
         );
     }
 }

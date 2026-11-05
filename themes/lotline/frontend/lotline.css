@@ -136,3 +136,35 @@
 		@apply text-end;
 	}
 }
+
+/*
+ * A car's brochure, printed (#44): the page's margins, the sheet without its box so it fills the page in black on
+ * white, its photos and its details each kept on one page, and the line that says how to print hidden. A kept
+ * brochure links this stylesheet by its root-relative URL, so a copy opened from disk has none of it (AIC #265).
+ */
+@media print {
+	@page {
+		margin: 12mm;
+	}
+	.brochure-body,
+	.brochure-page {
+		background: #fff;
+		padding: 0;
+	}
+	.car-brochure {
+		max-width: none;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+		background: #fff;
+		color: #000;
+		padding: 0;
+	}
+	.brochure-photos,
+	.brochure-facts {
+		break-inside: avoid;
+	}
+	.brochure-screen {
+		display: none;
+	}
+}
