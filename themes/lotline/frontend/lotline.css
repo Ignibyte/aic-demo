@@ -81,13 +81,15 @@
 }
 
 /*
- * AIC's catalog atoms (forms, fields, inputs, buttons, alerts, links, tabs)
+ * AIC's catalog atoms (forms, fields, inputs, buttons, alerts, links, tabs, code)
  * render fixed aic-* classes; the site's theme owns their look, so each maps to
  * its daisyUI component here; the current tab is the link AIC marks
  * `aria-current="page"`. The CSRF form's honeypot stays out of sight, and a
  * link in the header (the signed-out "Sign in") is a small ghost button. AIC's
  * table is daisyUI's small table, its caption small and quiet above it, and a
  * column AIC marks `aic-align-end` (money, counts: AIC #240) sits at the end.
+ * AIC's code block (the Coverage page's command, #38) is a monospace box on the
+ * base's darker tone that scrolls rather than wraps.
  */
 @layer components {
 	.aic-form {
@@ -134,6 +136,9 @@
 	}
 	.aic-table .aic-align-end {
 		@apply text-end;
+	}
+	.aic-code {
+		@apply overflow-x-auto rounded-box bg-base-300 p-3 font-mono text-sm;
 	}
 }
 

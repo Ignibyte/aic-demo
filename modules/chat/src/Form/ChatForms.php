@@ -71,6 +71,8 @@ final readonly class ChatForms
      * @param string                 $label         The box's accessible name.
      * @param ChatReply|null         $chatReply     A refused message; null for an empty box.
      * @param bool                   $ended         Whether the chat has ended.
+     * @param bool                   $focused       Whether the box takes focus (#38): the staff side's does while the
+     *                                              chat is open, unless a refusal's reason takes it.
      *
      * @throws LogicException When the request carries no session, or a key is malformed.
      *
@@ -84,15 +86,21 @@ final readonly class ChatForms
         string $label,
         ?ChatReply $chatReply,
         bool $ended,
+        bool $focused = false,
     ): KeyedComponent {
-        $message = $chatReply instanceof ChatReply
-            ? $chatReply->message
-            : '';
-        $reason = $chatReply instanceof ChatReply
-            ? $chatReply->reason
-            : '';
-        $guardFields = $this->guard($serverRequest);
-        $chatSendForm = new ChatSendForm('chat-send-form', $action, $back, $typing, $label, $message, $reason, $ended, $guardFields);
+        $sent = $chatReply ?? new ChatReply(200, '', '', '', '', '', 0);
+        $chatSendForm = new ChatSendForm(
+            'chat-send-form',
+            $action,
+            $back,
+            $typing,
+            $label,
+            $sent->message,
+            $sent->reason,
+            $ended,
+            $this->guard($serverRequest),
+            $focused && !$ended && $sent->reason === '',
+        );
 
         return new KeyedComponent('send', $chatSendForm, '', 'chat-send');
     }

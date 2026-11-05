@@ -59,7 +59,7 @@ final readonly class ChatConversations
     ): PageDocument {
         $path = $chat->path();
         $label = 'Reply to ' . $chat->visitorName;
-        $send = $this->chatForms->send($serverRequest, $path . '/messages', '', $path . '/typing', $label, $chatReply, !$chat->open);
+        $send = $this->chatForms->send($serverRequest, $path . '/messages', '', $path . '/typing', $label, $chatReply, !$chat->open, true);
         $chatConversation = new ChatConversation(
             $path . '/events',
             $chat->carTitle,

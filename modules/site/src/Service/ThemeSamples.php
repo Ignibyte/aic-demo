@@ -7,8 +7,6 @@ namespace App\Site\Service;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Domain\KeyedComponent;
 use App\Site\Form\ThemeEntry;
-use App\Theme\Components\Notice\Notice;
-use App\Theme\Components\Notice\NoticeTone;
 use App\Theme\Components\Panel\Panel;
 use App\Theme\Components\PanelGrid\PanelGrid;
 use InvalidArgumentException;
@@ -18,15 +16,10 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * The style guide's content: a line saying what it is, then every part of Lotline's theme with sample data in a
  * dashboard grid, from the figures and charts down to the forms, the notices, the account menu and the icons, and the
- * links to the resilience cases (#34).
+ * links to the resilience cases (#34) and the Coverage page (#38).
  */
 final readonly class ThemeSamples
 {
-    /**
-     * The line above the guide.
-     */
-    private const string INTRO = "Every part of Lotline's theme, with sample Ridgeway Motors data.";
-
     /**
      * @param ResilienceCases    $resilienceCases    The resilience cases' links (#34).
      * @param ThemeSampleCharts  $themeSampleCharts  The figures and charts.
@@ -34,6 +27,7 @@ final readonly class ThemeSamples
      * @param ThemeSampleForms   $themeSampleForms   The vehicle form.
      * @param ThemeSampleActions $themeSampleActions The delete and sign-out forms.
      * @param ThemeSampleParts   $themeSampleParts   The card, badges, notices and icons.
+     * @param CoverageCatalog    $coverageCatalog    The Coverage page's link (#38).
      */
     public function __construct(
         private ResilienceCases $resilienceCases,
@@ -42,6 +36,7 @@ final readonly class ThemeSamples
         private ThemeSampleForms $themeSampleForms = new ThemeSampleForms(),
         private ThemeSampleActions $themeSampleActions = new ThemeSampleActions(),
         private ThemeSampleParts $themeSampleParts = new ThemeSampleParts(),
+        private CoverageCatalog $coverageCatalog = new CoverageCatalog(),
     ) {
     }
 
@@ -57,7 +52,7 @@ final readonly class ThemeSamples
     public function content(ServerRequestInterface $serverRequest, ThemeEntry $themeEntry, array $problems): array
     {
         return [
-            new Notice(self::INTRO, NoticeTone::Info, 'theme-intro'),
+            $this->themeSampleParts->intro(),
             new PanelGrid([
                 ...$this->themeSampleCharts->items(),
                 ...$this->panels($serverRequest, $themeEntry, $problems),
@@ -100,7 +95,7 @@ final readonly class ThemeSamples
      *
      * @throws LogicException When a key is malformed, or the request carries no session.
      *
-     * @return list<KeyedComponent> The badge, notice, account, icon and resilience panels.
+     * @return list<KeyedComponent> The badge, notice, account and icon panels, then the guides' links.
      */
     private function small(ServerRequestInterface $serverRequest): array
     {
@@ -113,12 +108,32 @@ final readonly class ThemeSamples
                 new KeyedComponent('menu', $this->themeSampleActions->account($serverRequest)),
             ]),
             $this->panel('icons', 'Icons', 'Heroicons, 20 solid', false, [$keyedComponent]),
+            ...$this->guides(),
+        ];
+    }
+
+    /**
+     * @throws InvalidArgumentException When a key is malformed.
+     *
+     * @return list<KeyedComponent> The panels that link to the guide's other pages: the resilience cases (#34) and the
+     *                              Coverage page (#38).
+     */
+    private function guides(): array
+    {
+        return [
             $this->panel(
                 'resilience',
                 'Resilience',
                 'What Tessera does when something goes wrong, one case a page',
                 false,
                 $this->resilienceCases->links(),
+            ),
+            $this->panel(
+                'coverage',
+                'Coverage',
+                'Every AIC and Tessera surface: where Lotline uses it, or why not',
+                false,
+                $this->coverageCatalog->links(),
             ),
         ];
     }
