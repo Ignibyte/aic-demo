@@ -687,6 +687,13 @@
             "path": "/theme"
         },
         {
+            "handler": "App\\Site\\Controller\\CoveragePage",
+            "kind": "Page",
+            "method": "GET",
+            "module": "site",
+            "path": "/theme/coverage"
+        },
+        {
             "handler": "App\\Site\\Controller\\ResilienceExpiredPage",
             "kind": "Page",
             "method": "GET",

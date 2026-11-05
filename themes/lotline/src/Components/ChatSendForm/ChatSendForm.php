@@ -12,7 +12,8 @@ use AIC\Component\Domain\GuardFields;
  * keeps what is typed through every morph and stream patch (`data-ignore-morph`); Enter sends, Shift+Enter breaks the
  * line; typing posts the side's typing route at most every two seconds; and the box clears when an answer patches the
  * `chatSent` signal, which the form declares in its region's scope, with the seq it took. With no script it is a plain
- * form that posts and reloads. A chat that has ended shows that it has in place of the form's fields.
+ * form that posts and reloads. A chat that has ended shows that it has in place of the form's fields. The staff side's
+ * box takes focus (`autofocus`, #38): staff open a chat to answer it.
  */
 final readonly class ChatSendForm implements Component
 {
@@ -26,6 +27,7 @@ final readonly class ChatSendForm implements Component
      * @param string      $reason      Why the last message was refused; empty for none.
      * @param bool        $ended       Whether the chat has ended, so nothing more is sent.
      * @param GuardFields $guardFields The form token and the honeypot, which the form renders first.
+     * @param bool        $autofocus   Whether the box takes focus when the page loads or an answer redraws it.
      */
     public function __construct(
         public string $id,
@@ -37,6 +39,7 @@ final readonly class ChatSendForm implements Component
         public string $reason,
         public bool $ended,
         public GuardFields $guardFields,
+        public bool $autofocus = false,
     ) {
     }
 }

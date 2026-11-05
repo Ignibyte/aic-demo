@@ -9,6 +9,7 @@ use App\Site\Block\NavigationBlock;
 use App\Site\Block\SiteFooterBlock;
 use App\Site\Command\DatabasePing;
 use App\Site\Controller\BootstrapPage;
+use App\Site\Controller\CoveragePage;
 use App\Site\Controller\HealthApi;
 use App\Site\Controller\ResilienceExpiredPage;
 use App\Site\Controller\ResilienceExpiredPost;
@@ -31,6 +32,7 @@ return (new ModuleManifest('site'))
     ->route(RouteMethod::Get, '/', BootstrapPage::class)
     ->route(RouteMethod::Get, '/theme', ThemeGuidePage::class)
     ->route(RouteMethod::Post, '/theme', ThemeGuidePost::class)
+    ->route(RouteMethod::Get, '/theme/coverage', CoveragePage::class)
     ->route(RouteMethod::Get, '/theme/resilience/expired', ResilienceExpiredPage::class)
     ->route(RouteMethod::Post, '/theme/resilience/expired', ResilienceExpiredPost::class)
     ->route(RouteMethod::Get, '/theme/resilience/gateway', ResilienceGatewayPage::class)

@@ -4360,6 +4360,15 @@
             "header": "",
             "status": 303,
             "captures": false
+        },
+        {
+            "name": "coverage page",
+            "method": "GET",
+            "path": "/theme/coverage",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
         }
     ],
     "profiled": [

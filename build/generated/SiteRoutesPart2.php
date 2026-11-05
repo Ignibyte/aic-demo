@@ -6,6 +6,7 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
+use App\Site\Controller\ResilienceFullVisitPage;
 use App\Site\Controller\ResilienceFullVisitPost;
 
 /**
@@ -24,6 +25,7 @@ final readonly class SiteRoutesPart2
     public function add(RouteCollector $routeCollector): RouteCollector
     {
         return $routeCollector
+            ->get('/theme/resilience/full-visit', ResilienceFullVisitPage::class)
             ->post('/theme/resilience/full-visit', ResilienceFullVisitPost::class);
     }
 }

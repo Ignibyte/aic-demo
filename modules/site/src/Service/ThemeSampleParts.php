@@ -69,6 +69,14 @@ final readonly class ThemeSampleParts
     }
 
     /**
+     * @return Notice The line above the guide: what it is.
+     */
+    public function intro(): Notice
+    {
+        return new Notice("Every part of Lotline's theme, with sample Ridgeway Motors data.", NoticeTone::Info, 'theme-intro');
+    }
+
+    /**
      * @throws InvalidArgumentException When a key is malformed.
      *
      * @return list<KeyedComponent> A notice in each tone.

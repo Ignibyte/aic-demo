@@ -10,9 +10,11 @@ use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\PostedFields;
 use AIC\Module\Application\HandlerContext;
 use App\Site\Controller\BootstrapPage;
+use App\Site\Controller\CoveragePage;
 use App\Site\Controller\HealthApi;
 use App\Site\Controller\ThemeGuidePage;
 use App\Site\Controller\ThemeGuidePost;
+use App\Site\Service\CoverageCatalog;
 use App\Staff\Service\DealershipNames;
 use App\Staff\Service\StaffDealership;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -48,6 +50,7 @@ final readonly class SiteHandlers
             BootstrapPage::class => $this->handlerContext->page(
                 new BootstrapPage($this->handlerContext->appConfig(), $this->handlerContext->documents(), $staffDealership),
             ),
+            CoveragePage::class => $this->handlerContext->page(new CoveragePage($this->handlerContext->documents(), new CoverageCatalog())),
             HealthApi::class => $this->handlerContext->api(new HealthApi(new DatabaseStatus($this->handlerContext->database()))),
             ThemeGuidePage::class => $this->handlerContext->page(
                 new ThemeGuidePage($this->handlerContext->documents(), $siteHandlerServices->themeSamples()),
