@@ -22,6 +22,7 @@ final readonly class ModuleRoutesPart2
      */
     public function add(RouteCollector $routeCollector): RouteCollector
     {
+        $routeCollector = (new DashboardRoutes())->add($routeCollector);
         $routeCollector = (new DownloadsRoutes())->add($routeCollector);
         $routeCollector = (new InboxRoutes())->add($routeCollector);
         $routeCollector = (new JobsRoutes())->add($routeCollector);

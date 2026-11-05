@@ -442,6 +442,13 @@
             "path": "/api/vehicles"
         },
         {
+            "handler": "App\\Storefront\\Controller\\VehicleXmlFeedApi",
+            "kind": "Api",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/feeds/vehicles.xml"
+        },
+        {
             "handler": "App\\Storefront\\Controller\\CarListPage",
             "kind": "Page",
             "method": "GET",
@@ -1078,7 +1085,8 @@
                 "App\\Inventory\\Entity\\VehiclePanel",
                 "App\\Inventory\\Entity\\PricePoint",
                 "App\\Inventory\\Repository\\VehiclePriceRepository",
-                "App\\Inventory\\Service\\VehicleRecords"
+                "App\\Inventory\\Service\\VehicleRecords",
+                "App\\Inventory\\Entity\\Feed\\FeedListing"
             ],
             "factories": [
                 "App\\Inventory\\Service\\VehicleServices"
@@ -1133,7 +1141,8 @@
             "exports": [
                 "App\\Settings\\Service\\DealershipProfiles",
                 "App\\Settings\\Entity\\DealershipProfile",
-                "App\\Settings\\Entity\\OpeningHours"
+                "App\\Settings\\Entity\\OpeningHours",
+                "App\\Settings\\Entity\\SettingsConfig"
             ],
             "factories": [
                 "App\\Settings\\Service\\SettingsServices",

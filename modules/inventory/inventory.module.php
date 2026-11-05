@@ -25,7 +25,9 @@ declare(strict_types=1);
  * changes (`vehicle_prices`, their own migration) are what one of them draws. The cars in stock with their listing
  * key (`vehicle_listings`, a view, #33) are what the storefront's comparison reads by key. A save from the vehicle's
  * form or its row, and a photo added or deleted, queue the car's brochure (#44) through the brochures module, which
- * it requires; storefront's `car-brochure` job writes it. The build reads it; nothing reads it at run time.
+ * it requires; storefront's `car-brochure` job writes it. The XML feed for listing sites (#37) reads the cars for sale
+ * as `FeedListing`s, each a `ListedVehicle` and its VIN with no cost, the one export a VIN leaves through for the
+ * public side. The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -46,6 +48,7 @@ use App\Inventory\Controller\VehicleRowEditPage;
 use App\Inventory\Controller\VehicleRowPage;
 use App\Inventory\Controller\VehicleRowPut;
 use App\Inventory\Controller\VehicleUpdatePost;
+use App\Inventory\Entity\Feed\FeedListing;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Entity\ListingQuery;
 use App\Inventory\Entity\PricePoint;
@@ -117,4 +120,5 @@ return (new ModuleManifest('inventory'))
     ->export(VehiclePanel::class)
     ->export(PricePoint::class)
     ->export(VehiclePriceRepository::class)
-    ->export(VehicleRecords::class);
+    ->export(VehicleRecords::class)
+    ->export(FeedListing::class);

@@ -605,6 +605,24 @@
             "captures": false
         },
         {
+            "name": "vehicle feed as XML",
+            "method": "GET",
+            "path": "/feeds/vehicles.xml",
+            "form": "",
+            "header": "",
+            "status": 200,
+            "captures": false
+        },
+        {
+            "name": "vehicle feed as XML, another tag",
+            "method": "GET",
+            "path": "/feeds/vehicles.xml",
+            "form": "",
+            "header": "If-None-Match: \"nope\"",
+            "status": 200,
+            "captures": false
+        },
+        {
             "name": "app, anonymous",
             "method": "GET",
             "path": "/app",

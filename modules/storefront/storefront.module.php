@@ -25,7 +25,11 @@ declare(strict_types=1);
  * when it changes the vehicle, renders it in the theme's brochure layout and
  * keeps it in AIC's private files under the brochures module's key, and two
  * Streams below the car serve it, inline and as an attachment; it requires
- * brochures for the key, the queue and the download. The list's route
+ * brochures for the key, the queue and the download. Listing sites read the
+ * cars for sale as XML at /feeds/vehicles.xml (#37), each with its VIN, read
+ * through inventory's exported `FeedListing`, which holds no cost: the one
+ * public answer with a VIN; its URLs start with settings' exported site
+ * address, and AIC gives it an ETag. The list's route
  * comes last, after the routes below it. The build reads it; nothing reads it
  * at run time.
  */
@@ -45,6 +49,7 @@ use App\Storefront\Controller\ChatMessagePost;
 use App\Storefront\Controller\ChatPage;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
+use App\Storefront\Controller\VehicleXmlFeedApi;
 use App\Storefront\Job\WriteBrochure;
 use App\Storefront\Service\CarFigures;
 use App\Storefront\Service\CarSlugs;
@@ -69,6 +74,7 @@ return (new ModuleManifest('storefront'))
     ->route(RouteMethod::Get, '/cars/{slug}/photos/{position:int}', CarPhotoStream::class)
     ->route(RouteMethod::Get, '/api/vehicles/{slug}', VehicleFeedItemApi::class)
     ->route(RouteMethod::Get, '/api/vehicles', VehicleFeedApi::class)
+    ->route(RouteMethod::Get, '/feeds/vehicles.xml', VehicleXmlFeedApi::class)
     ->route(RouteMethod::Get, '/cars', CarListPage::class)
     ->route(RouteMethod::Get, '/chat', ChatPage::class)
     ->route(RouteMethod::Post, '/chat/messages', ChatMessagePost::class)

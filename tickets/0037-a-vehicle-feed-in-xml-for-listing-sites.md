@@ -2,9 +2,10 @@
 number: 37
 title: "A vehicle feed in XML for listing sites"
 type: feature
-status: open
+status: closed
 created: 2026-11-02T18:30:00Z
-updated: 2026-11-02T18:30:00Z
+updated: 2026-11-05T05:02:31Z
+phase: "docs"
 ---
 
 Listing sites take a dealer's stock as an XML feed. Add `/feeds/vehicles.xml` beside the existing

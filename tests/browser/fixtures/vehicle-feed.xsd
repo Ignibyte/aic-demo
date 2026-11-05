@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The XML feed for listing sites, GET /feeds/vehicles.xml (#37): every car for sale, each with its VIN,
+  what it is, its mileage, its list price as a decimal string, its page's URL and its photos' URLs.
+  tests/browser/vehicle-feed-xml.spec.ts validates the feed against it with xmllint.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+    <xs:element name="vehicles">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="vehicle" type="vehicle" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="one-vin">
+            <xs:selector xpath="vehicle"/>
+            <xs:field xpath="vin"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:complexType name="vehicle">
+        <xs:sequence>
+            <xs:element name="vin" type="vin"/>
+            <xs:element name="year" type="year"/>
+            <xs:element name="make" type="name"/>
+            <xs:element name="model" type="name"/>
+            <xs:element name="trim" type="xs:string"/>
+            <xs:element name="mileage" type="xs:nonNegativeInteger"/>
+            <xs:element name="price" type="price"/>
+            <xs:element name="url" type="absolute"/>
+            <xs:element name="photos">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="photo" type="absolute" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Seventeen characters, no I, O or Q. -->
+    <xs:simpleType name="vin">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9A-HJ-NPR-Z]{17}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="year">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1900"/>
+            <xs:maxInclusive value="2100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="name">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Whole dollars written with two decimals, such as 28995.00. -->
+    <xs:simpleType name="price">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+\.00"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="absolute">
+        <xs:restriction base="xs:anyURI">
+            <xs:pattern value="https?://[^/]+/.+"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

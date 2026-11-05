@@ -29,12 +29,14 @@ final readonly class FeedVehicles
      * @param CarFinder               $carFinder               Their photos.
      * @param CarSlugs                $carSlugs                Each one's slug and page.
      * @param StaffRequests           $staffRequests           Reads the `make` parameter.
+     * @param CarFigures              $carFigures              Writes the price as a decimal string.
      */
     public function __construct(
         private ListedVehicleRepository $listedVehicleRepository,
         private CarFinder $carFinder,
         private CarSlugs $carSlugs = new CarSlugs(),
         private StaffRequests $staffRequests = new StaffRequests(),
+        private CarFigures $carFigures = new CarFigures(),
     ) {
     }
 
@@ -114,7 +116,7 @@ final readonly class FeedVehicles
             $listedVehicle->bodyStyle,
             $listedVehicle->mileage,
             $listedVehicle->exteriorColour,
-            $listedVehicle->price . '.00',
+            $this->carFigures->decimal($listedVehicle->price),
             $photos,
         );
     }
