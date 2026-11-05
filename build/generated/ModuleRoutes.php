@@ -30,10 +30,10 @@ final readonly class ModuleRoutes
         $routeCollector = (new LeadsRoutes())->add($routeCollector);
         $routeCollector = (new ChatRoutes())->add($routeCollector);
         $routeCollector = (new StorefrontRoutes())->add($routeCollector);
+        $routeCollector = (new StorefrontRoutesPart2())->add($routeCollector);
         $routeCollector = (new CompareRoutes())->add($routeCollector);
         $routeCollector = (new HoldsRoutes())->add($routeCollector);
         $routeCollector = (new SalesRoutes())->add($routeCollector);
-        $routeCollector = (new DashboardRoutes())->add($routeCollector);
 
         return (new ModuleRoutesPart2())->add($routeCollector);
     }

@@ -81,7 +81,7 @@ final readonly class SettingsHandlerServices
     }
 
     /**
-     * @throws ContainerException When a called constructor or service fails.
+     * @throws RuntimeException When a called constructor or service fails.
      *
      * @return PasswordDesk A new one, for the part that asked.
      */

@@ -1,10 +1,10 @@
 # Storefront
 
-Ridgeway Motors' public side, for customers (#17): the cars for sale at `/cars`, each car's page and photos below it, and the same cars as JSON at `/api/vehicles` for listing partners. Nobody signs in to it, and nothing under it is protected. The module requires `inventory`, whose exported `ListedVehicleRepository` gives the cars for sale; `photos`, whose exported `VehiclePhotos` gives their photos; `staff`, for its `StaffRequests`, which reads a query parameter or a route attribute; `settings`, for the dealership's profile (#22); and `finance`, for the car's payment calculator (#26).
+Ridgeway Motors' public side, for customers (#17): the cars for sale at `/cars`, each car's page and photos below it, the same cars as JSON at `/api/vehicles` for listing partners, and as XML at `/feeds/vehicles.xml` for listing sites, with their VINs (#37). Nobody signs in to it, and nothing under it is protected. The module requires `inventory`, whose exported `ListedVehicleRepository` gives the cars for sale; `photos`, whose exported `VehiclePhotos` gives their photos; `staff`, for its `StaffRequests`, which reads a query parameter or a route attribute; `settings`, for the dealership's profile (#22) and the site's address the XML feed's URLs start with (#37); and `finance`, for the car's payment calculator (#26).
 
 ## What the public sees
 
-Only vehicles whose status is `in_stock`: `ListedVehicleRepository` reads no other row, so a sold car or one on hold is never listed, never found by its slug and never served a photo. Each row reaches this module as inventory's `ListedVehicle`, which has no VIN and no cost, so no public page and no feed answer can show them; nothing here reads a customer.
+Only vehicles whose status is `in_stock`: `ListedVehicleRepository` reads no other row, so a sold car or one on hold is never listed, never found by its slug and never served a photo. Each row reaches this module as inventory's `ListedVehicle`, which has no VIN and no cost, so no public page and no JSON answer can show them; nothing here reads a customer. `/feeds/vehicles.xml` is the one public answer with a VIN, and it shows no cost: listing sites match a dealer's cars by VIN, so the XML feed reads them through inventory's `FeedListing`, which adds the VIN and nothing else (see [The XML feed](#the-xml-feed)).
 
 ## Slugs
 
@@ -63,6 +63,20 @@ Both go through `CarFinder::brochure()`, which finds the car as its page does an
 | `photos` | Each photo's path, the main one first |
 
 Paths are relative to the site, so both of gate:23's sites answer the same bytes. The list's page and the feed read their cars' photos in one statement, `CarFinder::photosOf()` over photos' `VehiclePhotos::photosOf()` (#25: the profiler showed `/cars` reading them once a car, 12 statements a page).
+
+## The XML feed
+
+`VehicleXmlFeedApi` answers `GET /feeds/vehicles.xml` (#37) for listing sites with an `XmlResponse` (AIC #233) whose `XmlDocument` `Service/Feed/VehicleXmlFeed` builds from typed values; nothing here writes XML as text. It holds a `vehicles` element and a `vehicle` for each car for sale, in the list's first order, as `/api/vehicles` has them; a car on hold or sold is not in it. It takes no parameter. Each `vehicle` holds:
+
+| Element | What it is |
+|---|---|
+| `vin` | Its VIN, from inventory's `FeedListing` |
+| `year`, `make`, `model`, `trim`, `mileage` | What it is |
+| `price` | Its list price as a decimal string, `28995.00` |
+| `url` | Its page's absolute URL |
+| `photos` | A `photo` with each photo's absolute URL, the main one first; empty for a car with none |
+
+A listing site fetches the URLs from elsewhere, so they are absolute: settings' exported `SettingsConfig::$siteUrl` before the path, never a request's Host, and the same on both of gate:23's sites. The photos of every car are read in one statement, as the JSON feed's are. The controller hands AIC the request, so the answer carries a strong `ETag`, the SHA-256 of the body, with `Cache-Control: private, no-cache`, and a matching `If-None-Match` answers 304 with no body (AIC #269). The feed's schema is `tests/browser/fixtures/vehicle-feed.xsd`; `tests/browser/vehicle-feed-xml.spec.ts` validates the feed against it with `xmllint`. `src/Service/` is at gate:26's cap, so the builder sits in `src/Service/Feed/`.
 
 ## The chat's dock
 

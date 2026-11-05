@@ -13,8 +13,10 @@ declare(strict_types=1);
  * users table and its rules are staff's, and it names the dealership on the
  * staff pages through staff's `DealershipNames` plugin type (#23); the same
  * class gives the vehicle page's payment calculator its APR through finance's
- * `FinanceRates` plugin type (#26), and finance writes the APR's standard. The
- * build reads it; nothing reads it at run time.
+ * `FinanceRates` plugin type (#26), and finance writes the APR's standard. It
+ * exports `SettingsConfig`, the site's address, which its factory reads from
+ * config/settings.php and storefront's XML feed (#37) writes absolute URLs
+ * with. The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -31,6 +33,7 @@ use App\Settings\Controller\ProfilePost;
 use App\Settings\Controller\SettingsPage;
 use App\Settings\Entity\DealershipProfile;
 use App\Settings\Entity\OpeningHours;
+use App\Settings\Entity\SettingsConfig;
 use App\Settings\Migration\AddDefaultApr;
 use App\Settings\Migration\CreateDealershipProfileTable;
 use App\Settings\Migration\CreatePasswordLinksTable;
@@ -63,4 +66,5 @@ return (new ModuleManifest('settings'))
     ->migration(AddDefaultApr::class)
     ->export(DealershipProfiles::class)
     ->export(DealershipProfile::class)
-    ->export(OpeningHours::class);
+    ->export(OpeningHours::class)
+    ->export(SettingsConfig::class);

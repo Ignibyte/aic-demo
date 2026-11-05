@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Generated;
 
-use AIC\Container\Exception\ContainerException;
 use AIC\Module\Application\HandlerContext;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 use function array_merge;
 
@@ -25,7 +25,7 @@ final readonly class ModuleHandlersPart2
     }
 
     /**
-     * @throws ContainerException When a called constructor or service fails.
+     * @throws RuntimeException When a called constructor or service fails.
      *
      * @return array<string, RequestHandlerInterface> The modules' handlers by id.
      */
@@ -34,6 +34,7 @@ final readonly class ModuleHandlersPart2
         return array_merge(
             (new StorefrontHandlers($this->handlerContext))->byId(),
             (new StorefrontHandlersPart2($this->handlerContext))->byId(),
+            (new StorefrontHandlersPart3($this->handlerContext))->byId(),
             (new CompareHandlers($this->handlerContext))->byId(),
             (new HoldsHandlers($this->handlerContext))->byId(),
             (new SalesHandlers($this->handlerContext))->byId(),
@@ -42,7 +43,6 @@ final readonly class ModuleHandlersPart2
             (new DownloadsHandlers($this->handlerContext))->byId(),
             (new InboxHandlers($this->handlerContext))->byId(),
             (new JobsHandlers($this->handlerContext))->byId(),
-            (new PanelsHandlers($this->handlerContext))->byId(),
             (new ModuleHandlersPart3($this->handlerContext))->byId(),
         );
     }

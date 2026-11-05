@@ -13,13 +13,12 @@ use App\Settings\Entity\SettingsConfig;
 use App\Settings\Form\SettingsSeals;
 use App\Settings\Repository\LinkRepository;
 use App\Staff\Repository\StaffRepository;
-use RuntimeException;
 
 /**
  * The settings module's links (#22): the password links, which hash a chosen password, and their mails, which queue a
- * notification and start with the configured site address. config/settings.php gives the config, as staff's
- * `StaffSettings` hands out the seed's. `MemberServices` builds it; apart from it, so neither passes PHPMD's coupling
- * limit.
+ * notification and start with the configured site address, which `MemberServices` hands it from
+ * its `settingsConfig()`, the one reader of config/settings.php. `MemberServices` builds it; apart from it,
+ * so neither passes PHPMD's coupling limit.
  */
 final readonly class LinkServices
 {
@@ -28,12 +27,14 @@ final readonly class LinkServices
      * @param EnvelopeCodec  $envelopeCodec  Seals a link's id.
      * @param PostgresQueue  $postgresQueue  Queues a link's notification.
      * @param PasswordHasher $passwordHasher Hashes a chosen password.
+     * @param SettingsConfig $settingsConfig The site's address, which a link starts with.
      */
     public function __construct(
         private EntityStore $entityStore,
         private EnvelopeCodec $envelopeCodec,
         private PostgresQueue $postgresQueue,
         private PasswordHasher $passwordHasher,
+        private SettingsConfig $settingsConfig,
     ) {
     }
 
@@ -46,8 +47,6 @@ final readonly class LinkServices
     }
 
     /**
-     * @throws RuntimeException When config/settings.php does not return a SettingsConfig.
-     *
      * @return LinkMails A link issued and its notification sent.
      */
     public function linkMails(): LinkMails
@@ -57,23 +56,7 @@ final readonly class LinkServices
             new SettingsSeals($this->envelopeCodec),
             new DealershipProfiles($this->entityStore),
             new Notifier($this->postgresQueue),
-            $this->settingsConfig(),
+            $this->settingsConfig,
         );
-    }
-
-    /**
-     * @throws RuntimeException When config/settings.php does not return a SettingsConfig.
-     *
-     * @return SettingsConfig The site's address.
-     */
-    private function settingsConfig(): SettingsConfig
-    {
-        $settingsConfig = require __DIR__ . '/../../../../config/settings.php';
-
-        if (!$settingsConfig instanceof SettingsConfig) {
-            throw new RuntimeException('config/settings.php must return a ' . SettingsConfig::class . '.');
-        }
-
-        return $settingsConfig;
     }
 }

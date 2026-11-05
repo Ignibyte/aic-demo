@@ -9,6 +9,7 @@ use AIC\Database\Contracts\Row;
 use AIC\Entity\Application\EntityQuery;
 use AIC\Entity\Application\EntityStore;
 use AIC\Entity\Domain\Comparison;
+use App\Inventory\Entity\Feed\FeedListing;
 use App\Inventory\Entity\ListedVehicle;
 use App\Inventory\Entity\ListingQuery;
 use App\Inventory\Entity\VehicleTable;
@@ -21,7 +22,8 @@ use UnexpectedValueException;
  * years for sale, a page of what a `ListingQuery` keeps and its count, every one of a make for the feed, the one a
  * year and a key name, the one an id names for its brochure (#44), and those a comparison names by key (#33). Every
  * read goes through the `vehicle_listings` view (#33), which holds the cars in stock and works out each one's key in
- * SQL, so the key has that one source. Each row is read as a `ListedVehicle`, so the VIN and the cost stay here.
+ * SQL, so the key has that one source. Each row is read as a `ListedVehicle`, so the VIN and the cost stay here; only
+ * the XML feed for listing sites (#37) reads every car as a `FeedListing`, which adds the VIN and nothing else.
  */
 final readonly class ListedVehicleRepository
 {
@@ -112,7 +114,27 @@ final readonly class ListedVehicleRepository
             $entityQuery->where('make', $make);
         }
 
-        return $this->listed($entityQuery->orderByDescending('added_on')->orderBy('vin'));
+        return $this->listed($this->newest($entityQuery));
+    }
+
+    /**
+     * Every car for sale for the XML feed (#37), in the order `all()` gives, each with its VIN and still no cost.
+     *
+     * @throws QueryException           When the query fails.
+     * @throws InvalidArgumentException When the entity type is malformed.
+     * @throws UnexpectedValueException When a stored status is no status.
+     *
+     * @return list<FeedListing> Every vehicle for sale, newest on the lot first and then by VIN.
+     */
+    public function feed(): array
+    {
+        $feedListings = [];
+
+        foreach ($this->newest($this->inStock())->rows() as $row) {
+            $feedListings[] = new FeedListing($this->vehicle($row), $row->string('vin'));
+        }
+
+        return $feedListings;
     }
 
     /**
@@ -203,6 +225,19 @@ final readonly class ListedVehicleRepository
     private function inStock(): EntityQuery
     {
         return $this->entityStore->query($this->vehicleTable->listings());
+    }
+
+    /**
+     * @param EntityQuery $entityQuery Vehicles.
+     *
+     * @throws InvalidArgumentException When a column is not the entity type's.
+     *
+     * @return EntityQuery Them in the public list's first order, newest on the lot first and then by VIN, which `all()`
+     *                     and `feed()` share, so the JSON and XML feeds list the cars alike.
+     */
+    private function newest(EntityQuery $entityQuery): EntityQuery
+    {
+        return $entityQuery->orderByDescending('added_on')->orderBy('vin');
     }
 
     /**

@@ -9,6 +9,7 @@ use AIC\Controller\Application\PageDocuments;
 use AIC\Entity\Application\EntityStore;
 use AIC\Form\Application\EnvelopeCodec;
 use AIC\Queue\Application\PostgresQueue;
+use App\Settings\Entity\SettingsConfig;
 use App\Settings\Form\MemberChecks;
 use App\Staff\Repository\AccountRepository;
 use RuntimeException;
@@ -17,7 +18,8 @@ use RuntimeException;
  * The settings module's member and link factory (#22): the desks a member's routes and a password link's use, built
  * from the pages `SettingsServices` makes and the links `LinkServices` makes. It takes the framework's services alone,
  * so each generated handler builds it in a few lines and makes one call per controller, inside PHPCS's 20-line method
- * and PHPMD's coupling limit.
+ * and PHPMD's coupling limit. It is the one reader of config/settings.php, the site's address, which the password
+ * mails' links start with and which storefront's XML feed (#37) asks for by type to write absolute URLs.
  */
 final readonly class MemberServices
 {
@@ -92,6 +94,8 @@ final readonly class MemberServices
     }
 
     /**
+     * @throws RuntimeException When config/settings.php does not return a SettingsConfig.
+     *
      * @return PasswordDesk The page a password link lands on, and its post.
      */
     public function passwordDesk(): PasswordDesk
@@ -106,6 +110,22 @@ final readonly class MemberServices
     }
 
     /**
+     * @throws RuntimeException When config/settings.php does not return a SettingsConfig.
+     *
+     * @return SettingsConfig The site's address.
+     */
+    public function settingsConfig(): SettingsConfig
+    {
+        $settingsConfig = require __DIR__ . '/../../../../config/settings.php';
+
+        if (!$settingsConfig instanceof SettingsConfig) {
+            throw new RuntimeException('config/settings.php must return a ' . SettingsConfig::class . '.');
+        }
+
+        return $settingsConfig;
+    }
+
+    /**
      * @return SettingsServices The pages.
      */
     private function settingsServices(): SettingsServices
@@ -114,10 +134,18 @@ final readonly class MemberServices
     }
 
     /**
-     * @return LinkServices The links and their mails.
+     * @throws RuntimeException When config/settings.php does not return a SettingsConfig.
+     *
+     * @return LinkServices The links and their mails, which start with the site's address.
      */
     private function linkServices(): LinkServices
     {
-        return new LinkServices($this->entityStore, $this->envelopeCodec, $this->postgresQueue, $this->passwordHasher);
+        return new LinkServices(
+            $this->entityStore,
+            $this->envelopeCodec,
+            $this->postgresQueue,
+            $this->passwordHasher,
+            $this->settingsConfig(),
+        );
     }
 }
