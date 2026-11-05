@@ -21,9 +21,9 @@ use Throwable;
 /**
  * The visitor's chat answers in the store's frame (#32): the `/chat` page, the dock open on it; a message sent from
  * the dock, 303 back to the store page it came from for a plain post, the `/chat` page with the `chatSent` patch for
- * Tessera (scoped to `colophon`, the region the form declares it in: Tessera reads a fragment answer's scope only as a
- * path, AIC #260), which takes the send form's fragment from it, or that page refused (422) or with the chat ended (409); and
- * "End chat", 303 back. `storefront/src/Service/` is at its cap, so these sit here.
+ * Tessera (scoped to `@chat-send`, which AIC writes as the send form's path, AIC #260), which takes the send form's
+ * fragment from it, or that page refused (422) or with the chat ended (409); and "End chat", 303 back.
+ * `storefront/src/Service/` is at its cap, so these sit here.
  */
 final readonly class ChatAnswers
 {
@@ -77,7 +77,7 @@ final readonly class ChatAnswers
 
         $pageDocument = $this->chatPage($serverRequest, null, 200);
 
-        return $pageDocument->withSignalPatch(new SignalPatch('colophon', '{"chatSent": ' . $chatReply->sent . '}', false));
+        return $pageDocument->withSignalPatch(new SignalPatch('@chat-send', '{"chatSent": ' . $chatReply->sent . '}', false));
     }
 
     /**
