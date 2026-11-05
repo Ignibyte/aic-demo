@@ -7,7 +7,10 @@ namespace App\Generated;
 use AIC\Container\Exception\ContainerException;
 use AIC\Entity\Application\EntityStore;
 use AIC\Module\Application\HandlerContext;
+use AIC\Queue\Application\PostgresQueue;
+use AIC\Storage\Application\PrivateFiles;
 use AIC\Storage\Application\PublicFiles;
+use App\Brochures\Service\Brochures;
 use App\Inventory\Repository\ListedVehicleRepository;
 use App\Photos\Service\VehiclePhotos;
 use App\Storefront\Form\ChatAnswers;
@@ -31,6 +34,14 @@ final readonly class StorefrontHandlerServicesPart2
     }
 
     /**
+     * @return Brochures A new one, for the part that asked.
+     */
+    public function brochures(): Brochures
+    {
+        return new Brochures(new PostgresQueue($this->handlerContext->database()), new PrivateFiles($this->handlerContext->root()));
+    }
+
+    /**
      * @throws ContainerException When a called constructor or service fails.
      *
      * @return StoreServices A new one, for the part that asked.
@@ -43,6 +54,7 @@ final readonly class StorefrontHandlerServicesPart2
             (new StorefrontHandlerServices($this->handlerContext))->leadDesk(),
             new PublicFiles($this->handlerContext->root()),
             (new StorefrontHandlerServices($this->handlerContext))->chatDesk(),
+            $this->brochures(),
         );
     }
 
@@ -77,7 +89,7 @@ final readonly class StorefrontHandlerServicesPart2
      */
     public function carFinder(): CarFinder
     {
-        return new CarFinder($this->listedVehicleRepository(), $this->vehiclePhotos());
+        return new CarFinder($this->listedVehicleRepository(), $this->vehiclePhotos(), $this->brochures());
     }
 
     /**

@@ -20,13 +20,20 @@ declare(strict_types=1);
  * a car, /chat, a message and the end. Every store page also carries the
  * comparison's dock (#33); the compare module builds its /compare page in the
  * same frame, with the slugs and the figures as written, so the module
- * exports StorePages, CarSlugs and CarFigures. The list's route
+ * exports StorePages, CarSlugs and CarFigures. Each car for sale has a
+ * one-page brochure (#44): its `car-brochure` job, which inventory queues
+ * when it changes the vehicle, renders it in the theme's brochure layout and
+ * keeps it in AIC's private files under the brochures module's key, and two
+ * Streams below the car serve it, inline and as an attachment; it requires
+ * brochures for the key, the queue and the download. The list's route
  * comes last, after the routes below it. The build reads it; nothing reads it
  * at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
 use AIC\Module\Contracts\RouteMethod;
+use App\Storefront\Controller\CarBrochureDownloadStream;
+use App\Storefront\Controller\CarBrochureStream;
 use App\Storefront\Controller\CarChatPost;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarListPage;
@@ -38,6 +45,7 @@ use App\Storefront\Controller\ChatMessagePost;
 use App\Storefront\Controller\ChatPage;
 use App\Storefront\Controller\VehicleFeedApi;
 use App\Storefront\Controller\VehicleFeedItemApi;
+use App\Storefront\Job\WriteBrochure;
 use App\Storefront\Service\CarFigures;
 use App\Storefront\Service\CarSlugs;
 use App\Storefront\Service\StorePages;
@@ -51,10 +59,13 @@ return (new ModuleManifest('storefront'))
     ->requires('settings')
     ->requires('finance')
     ->requires('chat')
+    ->requires('brochures')
     ->route(RouteMethod::Get, '/cars/{slug}', CarPage::class)
     ->route(RouteMethod::Post, '/cars/{slug}/inquiry', CarInquiryPost::class)
     ->route(RouteMethod::Post, '/cars/{slug}/test-drive', CarTestDrivePost::class)
     ->route(RouteMethod::Post, '/cars/{slug}/chat', CarChatPost::class)
+    ->route(RouteMethod::Get, '/cars/{slug}/brochure', CarBrochureStream::class)
+    ->route(RouteMethod::Get, '/cars/{slug}/brochure/download', CarBrochureDownloadStream::class)
     ->route(RouteMethod::Get, '/cars/{slug}/photos/{position:int}', CarPhotoStream::class)
     ->route(RouteMethod::Get, '/api/vehicles/{slug}', VehicleFeedItemApi::class)
     ->route(RouteMethod::Get, '/api/vehicles', VehicleFeedApi::class)
@@ -62,6 +73,7 @@ return (new ModuleManifest('storefront'))
     ->route(RouteMethod::Get, '/chat', ChatPage::class)
     ->route(RouteMethod::Post, '/chat/messages', ChatMessagePost::class)
     ->route(RouteMethod::Post, '/chat/end', ChatEndPost::class)
+    ->job('car-brochure', WriteBrochure::class)
     ->factory(StoreServices::class)
     ->export(StorePages::class)
     ->export(CarSlugs::class)

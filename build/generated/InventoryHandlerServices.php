@@ -10,9 +10,9 @@ use AIC\Module\Application\HandlerContext;
 use AIC\Queue\Application\PostgresQueue;
 use AIC\Storage\Application\PrivateFiles;
 use AIC\Storage\Application\PublicFiles;
+use App\Brochures\Service\Brochures;
 use App\Finance\Service\FinanceRates;
 use App\Inventory\Entity\VehiclePanel;
-use App\Inventory\Form\VehicleSaves;
 use App\Inventory\Service\VehicleSales;
 use App\Inventory\Service\VehicleServices;
 use App\Photos\Service\PhotoBundles;
@@ -64,6 +64,14 @@ final readonly class InventoryHandlerServices
     }
 
     /**
+     * @return Brochures A new one, for the part that asked.
+     */
+    public function brochures(): Brochures
+    {
+        return new Brochures(new PostgresQueue($this->handlerContext->database()), new PrivateFiles($this->handlerContext->root()));
+    }
+
+    /**
      * @throws ContainerException When a called constructor or service fails.
      *
      * @return VehicleServices A new one, for the part that asked.
@@ -75,20 +83,11 @@ final readonly class InventoryHandlerServices
             $this->handlerContext->documents(),
             new StaffSeals($this->handlerContext->envelopeCodec()),
             $this->handlerContext->tagged(VehicleSales::class),
-            new PublicFiles($this->handlerContext->root()),
+            $this->vehiclePhotos(),
             $this->handlerContext->tagged(FinanceRates::class),
             $this->handlerContext->tagged(VehiclePanel::class),
             $this->photoGalleries(),
+            $this->brochures(),
         );
-    }
-
-    /**
-     * @throws ContainerException When a called constructor or service fails.
-     *
-     * @return VehicleSaves A new one, for the part that asked.
-     */
-    public function vehicleSaves(): VehicleSaves
-    {
-        return $this->vehicleServices()->vehicleSaves();
     }
 }

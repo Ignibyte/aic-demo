@@ -23,7 +23,8 @@ use Throwable;
  * to a GET with both forms blank, and answering a sent form with that form thanked (200) or refused (422) in its
  * panel. A car that is not in stock, or a slug that is not its own, answers 404 for a post as for the page. The page's
  * chat dock (#32) is the start form for this car, or the visitor's open chat; a start posted below the car answers
- * the car's page with the dock open (200), or the start form again with its reason (422).
+ * the car's page with the dock open (200), or the start form again with its reason (422). Once the car's brochure is
+ * kept (#44), its view and download links sit between the profile and the lead forms.
  */
 final readonly class CarPages
 {
@@ -140,8 +141,8 @@ final readonly class CarPages
      * @throws LogicException   When an entity type is malformed, or a key or a region does not fit the theme.
      * @throws RuntimeException When its photos cannot be read.
      *
-     * @return PageDocument The car's page: its profile with its calculator, then the lead panels side by side, and the
-     *                      chat's dock.
+     * @return PageDocument The car's page: its profile with its calculator, its brochure's links once it is kept, then
+     *                      the lead panels side by side, and the chat's dock.
      */
     private function page(
         ListedVehicle $listedVehicle,
@@ -150,10 +151,15 @@ final readonly class CarPages
         ?KeyedComponent $keyedComponent,
     ): PageDocument {
         $dealershipProfile = $this->storePages->profile();
-        $parts = [
-            new KeyedComponent('car', $this->carProfiles->profile($listedVehicle, $dealershipProfile->aprBasisPoints)),
-            new KeyedComponent('leads', new PanelGrid($panels)),
-        ];
+        $parts = [new KeyedComponent('car', $this->carProfiles->profile($listedVehicle, $dealershipProfile->aprBasisPoints))];
+
+        $brochureLinks = $this->carFinder->brochureLinks($listedVehicle);
+
+        if ($brochureLinks !== null) {
+            $parts[] = new KeyedComponent('brochure', $brochureLinks);
+        }
+
+        $parts[] = new KeyedComponent('leads', new PanelGrid($panels));
 
         return $this->storePages->framed($dealershipProfile, $listedVehicle->title(), $parts, $status, $keyedComponent);
     }

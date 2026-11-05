@@ -6,6 +6,8 @@ namespace App\Generated;
 
 use AIC\Routing\Application\RouteCollector;
 use AIC\Routing\Domain\DuplicateRouteException;
+use App\Storefront\Controller\CarBrochureDownloadStream;
+use App\Storefront\Controller\CarBrochureStream;
 use App\Storefront\Controller\CarChatPost;
 use App\Storefront\Controller\CarInquiryPost;
 use App\Storefront\Controller\CarListPage;
@@ -38,6 +40,8 @@ final readonly class StorefrontRoutes
             ->post('/cars/{slug}/inquiry', CarInquiryPost::class)
             ->post('/cars/{slug}/test-drive', CarTestDrivePost::class)
             ->post('/cars/{slug}/chat', CarChatPost::class)
+            ->get('/cars/{slug}/brochure', CarBrochureStream::class)
+            ->get('/cars/{slug}/brochure/download', CarBrochureDownloadStream::class)
             ->get('/cars/{slug}/photos/{position:int}', CarPhotoStream::class)
             ->get('/api/vehicles/{slug}', VehicleFeedItemApi::class)
             ->get('/api/vehicles', VehicleFeedApi::class)

@@ -23,8 +23,9 @@ declare(strict_types=1);
  * sets their status, moves them to a lot location (a column its own migration adds) or deletes them. A vehicle's page
  * places the panels the `VehiclePanel` plugins give (#31), which the panels module registers, and its exported price
  * changes (`vehicle_prices`, their own migration) are what one of them draws. The cars in stock with their listing
- * key (`vehicle_listings`, a view, #33) are what the storefront's comparison reads by key. The build reads it;
- * nothing reads it at run time.
+ * key (`vehicle_listings`, a view, #33) are what the storefront's comparison reads by key. A save from the vehicle's
+ * form or its row, and a photo added or deleted, queue the car's brochure (#44) through the brochures module, which
+ * it requires; storefront's `car-brochure` job writes it. The build reads it; nothing reads it at run time.
  */
 
 use AIC\Module\Contracts\ModuleManifest;
@@ -75,6 +76,7 @@ return (new ModuleManifest('inventory'))
     ->requires('staff')
     ->requires('photos')
     ->requires('finance')
+    ->requires('brochures')
     ->route(RouteMethod::Get, '/app/inventory/new', VehicleNewPage::class)
     ->route(RouteMethod::Post, '/app/inventory', VehicleCreatePost::class)
     ->route(RouteMethod::Get, '/app/inventory/{vin}', VehiclePage::class)

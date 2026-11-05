@@ -407,6 +407,20 @@
             "path": "/cars/{slug}/chat"
         },
         {
+            "handler": "App\\Storefront\\Controller\\CarBrochureStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}/brochure"
+        },
+        {
+            "handler": "App\\Storefront\\Controller\\CarBrochureDownloadStream",
+            "kind": "Stream",
+            "method": "GET",
+            "module": "storefront",
+            "path": "/cars/{slug}/brochure/download"
+        },
+        {
             "handler": "App\\Storefront\\Controller\\CarPhotoStream",
             "kind": "Stream",
             "method": "GET",
@@ -842,6 +856,12 @@
             "name": "aged-stock"
         },
         {
+            "class": "App\\Storefront\\Job\\WriteBrochure",
+            "kind": "Job",
+            "module": "storefront",
+            "name": "car-brochure"
+        },
+        {
             "class": "App\\Chat\\Job\\SendChatTranscript",
             "kind": "Job",
             "module": "chat",
@@ -923,6 +943,21 @@
         }
     ],
     "modules": [
+        {
+            "bindings": [],
+            "blocks": [],
+            "exports": [
+                "App\\Brochures\\Service\\Brochures"
+            ],
+            "factories": [],
+            "middleware": [],
+            "migrations": [],
+            "name": "brochures",
+            "namespace": "App\\Brochures\\",
+            "plugins": [],
+            "prefixes": [],
+            "requires": []
+        },
         {
             "bindings": [
                 {
@@ -1063,7 +1098,8 @@
             "requires": [
                 "staff",
                 "photos",
-                "finance"
+                "finance",
+                "brochures"
             ]
         },
         {
@@ -1208,7 +1244,8 @@
                 "leads",
                 "settings",
                 "finance",
-                "chat"
+                "chat",
+                "brochures"
             ]
         },
         {
@@ -1505,9 +1542,19 @@
                 "source": "themes/lotline/components/BootstrapIntro/bootstrap-intro.phtml"
             },
             {
+                "component": "App\\Theme\\Components\\BrochureLinks\\BrochureLinks",
+                "generated": "build/generated/templates/themes/lotline/components/BrochureLinks/brochure-links.phtml",
+                "source": "themes/lotline/components/BrochureLinks/brochure-links.phtml"
+            },
+            {
                 "component": "App\\Theme\\Components\\BulkBar\\BulkBar",
                 "generated": "build/generated/templates/themes/lotline/components/BulkBar/bulk-bar.phtml",
                 "source": "themes/lotline/components/BulkBar/bulk-bar.phtml"
+            },
+            {
+                "component": "App\\Theme\\Components\\CarBrochure\\CarBrochure",
+                "generated": "build/generated/templates/themes/lotline/components/CarBrochure/car-brochure.phtml",
+                "source": "themes/lotline/components/CarBrochure/car-brochure.phtml"
             },
             {
                 "component": "App\\Theme\\Components\\CarGrid\\CarGrid",
@@ -1812,6 +1859,16 @@
         ],
         "html": "themes/lotline/layouts/html.phtml",
         "layouts": [
+            {
+                "html": "themes/lotline/layouts/html--brochure.phtml",
+                "identity": "lotline-brochure",
+                "name": "brochure",
+                "page": "themes/lotline/layouts/page--brochure.phtml",
+                "pageData": "App\\Theme\\Layouts\\BrochurePage",
+                "regions": [
+                    "content"
+                ]
+            },
             {
                 "html": "themes/lotline/layouts/html--store.phtml",
                 "identity": "lotline-store",

@@ -2,9 +2,10 @@
 number: 44
 title: "A vehicle brochure, rendered and kept for download"
 type: feature
-status: open
+status: closed
 created: 2026-11-04T17:40:00Z
-updated: 2026-11-04T17:40:00Z
+updated: 2026-11-05T01:17:30Z
+phase: "docs"
 ---
 
 Split from tickets/0036, which built the staff photo ZIP. Each vehicle gets a one-page brochure:

@@ -9,9 +9,9 @@ use AIC\Component\Application\RenderPass;
 use AIC\Component\Contracts\Component;
 use AIC\Component\Exception\UnknownComponent;
 use App\Theme\Components\CardMove\CardMove;
+use App\Theme\Components\CarGrid\CarGrid;
+use App\Theme\Components\CarProfile\CarProfile;
 use App\Theme\Components\CaseWatch\CaseWatch;
-use App\Theme\Components\ChatConversation\ChatConversation;
-use App\Theme\Components\ChatDock\ChatDock;
 use Override;
 
 /**
@@ -40,12 +40,44 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     public function compose(Component $component, RenderPass $renderPass): string
     {
         return match (true) {
+            $component instanceof CarGrid => $this->renderCarGrid($component, $renderPass),
+            $component instanceof CarProfile => $this->renderCarProfile($component, $renderPass),
             $component instanceof CardMove => $this->renderCardMove($component, $renderPass),
             $component instanceof CaseWatch => $this->renderCaseWatch($component, $renderPass),
-            $component instanceof ChatConversation => $this->renderChatConversation($component, $renderPass),
-            $component instanceof ChatDock => $this->renderChatDock($component, $renderPass),
             default => $this->componentTemplates->compose($component, $renderPass),
         };
+    }
+
+    /**
+     * @param CarGrid    $carGrid    The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CarGrid/car-grid.phtml.
+     */
+    private function renderCarGrid(CarGrid $carGrid, RenderPass $renderPass): string
+    {
+        $renderPass->open($carGrid);
+        require __DIR__ . '/templates/themes/lotline/components/CarGrid/car-grid.phtml';
+
+        return $renderPass->close();
+    }
+
+    /**
+     * @param CarProfile $carProfile The component; its template reads it.
+     * @param RenderPass $renderPass The pass its template writes through.
+     *
+     * @throws UnknownComponent When a child has no template.
+     *
+     * @return string Its markup, from templates/themes/lotline/components/CarProfile/car-profile.phtml.
+     */
+    private function renderCarProfile(CarProfile $carProfile, RenderPass $renderPass): string
+    {
+        $renderPass->open($carProfile);
+        require __DIR__ . '/templates/themes/lotline/components/CarProfile/car-profile.phtml';
+
+        return $renderPass->close();
     }
 
     /**
@@ -76,38 +108,6 @@ final readonly class ThemeTemplatesPart4 implements ComponentTemplates
     {
         $renderPass->open($caseWatch);
         require __DIR__ . '/templates/themes/lotline/components/CaseWatch/case-watch.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ChatConversation $chatConversation The component; its template reads it.
-     * @param RenderPass       $renderPass       The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ChatConversation/chat-conversation.phtml.
-     */
-    private function renderChatConversation(ChatConversation $chatConversation, RenderPass $renderPass): string
-    {
-        $renderPass->open($chatConversation);
-        require __DIR__ . '/templates/themes/lotline/components/ChatConversation/chat-conversation.phtml';
-
-        return $renderPass->close();
-    }
-
-    /**
-     * @param ChatDock   $chatDock   The component; its template reads it.
-     * @param RenderPass $renderPass The pass its template writes through.
-     *
-     * @throws UnknownComponent When a child has no template.
-     *
-     * @return string Its markup, from templates/themes/lotline/components/ChatDock/chat-dock.phtml.
-     */
-    private function renderChatDock(ChatDock $chatDock, RenderPass $renderPass): string
-    {
-        $renderPass->open($chatDock);
-        require __DIR__ . '/templates/themes/lotline/components/ChatDock/chat-dock.phtml';
 
         return $renderPass->close();
     }

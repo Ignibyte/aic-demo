@@ -23,13 +23,13 @@ final readonly class AssetsPart5
         return [
             new PublicAsset(
                 'theme_lotline/lotline.css',
-                '/assets/76ab3d3ca28b2121820a2cf14634b7b4132ac86cce51de1672f9d31688dd8847/themes/'
+                '/assets/656b294b35bb267021c42ed1db5fc4878b684d2f36f12168a3b19cce76b739b2/themes/'
                     . 'lotline/lotline.css',
-                '76ab3d3ca28b2121820a2cf14634b7b4132ac86cce51de1672f9d31688dd8847/themes/lotline/'
+                '656b294b35bb267021c42ed1db5fc4878b684d2f36f12168a3b19cce76b739b2/themes/lotline/'
                     . 'lotline.css',
                 'text/css; charset=utf-8',
-                '126b75c8f6215465fd9a0b9bc3edd7fcef03a58719f7bff593ee7d785213eb66',
-                188_456,
+                'd9e4d5e81d5d220439bc4c00bbfdc27408650ef7de56a52c6302a627c50a4bfe',
+                189_315,
                 '/assets/themes/lotline/lotline.css',
             ),
         ];

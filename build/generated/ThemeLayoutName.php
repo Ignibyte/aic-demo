@@ -12,5 +12,6 @@ use AIC\Component\Contracts\LayoutName;
  */
 enum ThemeLayoutName: string implements LayoutName
 {
+    case Brochure = 'brochure';
     case Store = 'store';
 }
