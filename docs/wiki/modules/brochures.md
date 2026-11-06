@@ -65,11 +65,11 @@ none
 
 ### Framework systems
 
-- [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
-- [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
-- [AIC\Queue](../../../vendor/aic/framework/docs/systems.md#10-background-work)
-- [AIC\Routing](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
-- [AIC\Storage](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Controller](../../../vendor/ignibyte/aic-framework/docs/systems.md#1-http-routing-and-the-kinds)
+- [AIC\Module](../../../vendor/ignibyte/aic-framework/docs/systems.md#2-wiring-and-modules)
+- [AIC\Queue](../../../vendor/ignibyte/aic-framework/docs/systems.md#10-background-work)
+- [AIC\Routing](../../../vendor/ignibyte/aic-framework/docs/systems.md#1-http-routing-and-the-kinds)
+- [AIC\Storage](../../../vendor/ignibyte/aic-framework/docs/systems.md#3-data)
 
 ### Other modules
 

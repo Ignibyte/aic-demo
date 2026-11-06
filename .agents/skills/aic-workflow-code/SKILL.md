@@ -43,7 +43,8 @@ another file, add its row to the manifest first; the run records it as declared 
   `make:page --component=<Class>` reuses a theme component. `make:theme <name>` writes
   `themes/<name>/layouts/` (`html.phtml`, `page.phtml`), `src/Layouts/Page.php` and CSS, then prints the
   `config/app.php`, Composer and PHPCS lines to add. A Page controller takes the framework's
-  `PageDocuments` and may name a layout (`content([...], 200, ThemeLayoutName::Focus)`); a layout
+  `PageDocuments`, names its title and may name a layout
+  (`content([...], 200, 'Stock', ThemeLayoutName::Focus)`); a layout
   ships `page--<name>.phtml`, `html--<name>.phtml` or both, each falling back to the default.
   `make:layout <name>` writes a page layout (`src/Layouts/<Case>Page.php`, the content region only,
   and `layouts/page--<name>.phtml`); after `composer run build`, `make:page … --layout=<name>` names it. The
@@ -54,7 +55,7 @@ another file, add its row to the manifest first; the run records it as declared 
 
 ## What never changes
 
-The gates and the tools' configuration (the root files aic/gates ships, which the operator restores
+The gates and the tools' configuration (the root files ignibyte/aic-gates ships, which the operator restores
 with `vendor/bin/aic-gate init` between runs), baselines and suppressions; and what the hook
 walls whatever the manifest says: `config/workflow.php`, `var/workflow/` (but the spec), `var/index/` (the code index),
 `.claude/settings.json`, `.codex/`, the installed `.agents/` skills, the workflow's skills, commands and lock in `.claude/`, `AGENTS.md` and
