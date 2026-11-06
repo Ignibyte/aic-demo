@@ -2,9 +2,10 @@
 number: 47
 title: "The photo bundle writes its ZIP records with pack()"
 type: chore
-status: open
+status: in-review
 created: 2026-11-05T12:00:00Z
-updated: 2026-11-05T12:00:00Z
+updated: 2026-11-06T05:15:34Z
+phase: "docs"
 ---
 
 `modules/photos/src/Service/StoredZip.php` writes each ZIP record field by field, every integer

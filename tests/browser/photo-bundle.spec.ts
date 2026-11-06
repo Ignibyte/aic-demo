@@ -4,7 +4,7 @@ import { signIn } from './support/inventory';
 import { work } from './support/schedules';
 import {
     FIXTURES, SALESPERSON, TITLE, VINS, addPhoto, bundleWritten, fetchInPage, insertPhotoVehicle, insertSalesperson,
-    removePhotoLooks, signInAs, vehiclePath, zipFiles,
+    removePhotoLooks, signInAs, storedZip, unzipFailure, vehiclePath, zipFiles,
 } from './support/photos';
 
 // The photo bundle (#36): the `photo-bundle` job, which a photo's add or delete queues, writes the vehicle's photos as
@@ -66,6 +66,12 @@ test('the worker bundles the photos as a stored ZIP, served with its ETag, range
     expect(Buffer.compare(files[1].bytes, webp)).toBe(0);
     expect(files.map((file) => file.size)).toEqual([jpeg.length, webp.length]);
 
+    // Every byte as `StoredZip` lays the archive out, its fixed fields too, and Info-ZIP tests it clean.
+    const expected = storedZip([{ name: 'photo-1.jpg', bytes: jpeg }, { name: 'photo-2.webp', bytes: webp }]);
+    expect(whole.body.length).toBe(expected.length);
+    expect(Buffer.compare(whole.body, expected)).toBe(0);
+    expect(unzipFailure(whole.body)).toBe('');
+
     // A byte range: 206 with exactly those bytes; one at its size: 416.
     const part = await fetchInPage(page, zip, { headers: { Range: 'bytes=0-29' } });
     expect(part.status).toBe(206);
@@ -94,6 +100,7 @@ test('the worker bundles the photos as a stored ZIP, served with its ETag, range
     const left = zipFiles(after.body);
     expect(left.map((file) => file.name)).toEqual(['photo-1.webp']);
     expect(Buffer.compare(left[0].bytes, webp)).toBe(0);
+    expect(Buffer.compare(after.body, storedZip([{ name: 'photo-1.webp', bytes: webp }]))).toBe(0);
 
     // Deleting the last: the bundle goes, and so do the link and the ZIP.
     await page.goto(path);
