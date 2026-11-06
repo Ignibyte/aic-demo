@@ -1,16 +1,16 @@
 {
     "schema": "aic.workflow-pack/1",
     "files": {
-        ".agents/skills/aic-workflow-check/SKILL.md": "sha256:4dea41388edfd107659a1665cb086b0e8afbcbd9eadac93a2217cab9a41fe64e",
-        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:9dd99315799cc397a66d4ef2f7a67d7a3649701f5d4b3fe0c848eb7b770896b0",
-        ".agents/skills/aic-workflow-complete/SKILL.md": "sha256:92cdcdcedfcc55b1095c1390a4676a4df92ee8468a4038ec328522202d8af58a",
-        ".agents/skills/aic-workflow-continue/SKILL.md": "sha256:7f2ca8a46543b757298df960812c57e1269f6dbee9d02216c3bd15b9e229e4b6",
-        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:31879c637c00a028f0c39a394d7127675296e8b6e407ef6133915775fe011e0b",
-        ".agents/skills/aic-workflow-plan/spec-template.md": "sha256:eb495f4267920cf1bab53971650c02164171e2afb15c1d0daf2f0fe91dcaf706",
+        ".agents/skills/aic-workflow-check/SKILL.md": "sha256:19c613c33a9906cc3d774273e55d45c68fb5d0cb93e2109826c01b3c1b61c69b",
+        ".agents/skills/aic-workflow-code/SKILL.md": "sha256:9a4f8b271f503296cc3d9a81d4359159352557f31f476ec4f1f0115924d70089",
+        ".agents/skills/aic-workflow-complete/SKILL.md": "sha256:ce8238d555804a527e958071dd69e80429955b2f92c51fba6c9a9684eb486ffe",
+        ".agents/skills/aic-workflow-continue/SKILL.md": "sha256:ecf412d33d72da11896ff19b7db99d7d489ae192550ae494205f7630fcd0b6c7",
+        ".agents/skills/aic-workflow-plan/SKILL.md": "sha256:41037d696ee6a1f2b864a30b32f7df839ff719eaf554fbe66a10e8b428d45269",
+        ".agents/skills/aic-workflow-plan/spec-template.md": "sha256:7f5b5e20253eaac7de8461d9d2c4ca9283e6b41f0d3570b57aa34034d7504c82",
         ".agents/skills/aic-workflow-start/SKILL.md": "sha256:23fe853cb161afa7aee0723f4797dedb7f38e8aa42387953de57de1f55817a4a",
         ".agents/skills/aic-workflow-status/SKILL.md": "sha256:687902be86099360ad2f47c2f5eaadc621095820dabfaa029acd6ef624970563",
         ".codex/agents/aic-seeker.toml": "sha256:407296fa533e4baba0241e3f699b91dca879e7dacc50a833c252533ed9640118",
-        "AGENTS.md#aic-workflow": "sha256:d6c07033a8bc9636f03ec771e8842fabe8a777eb5264a9bb7459ff15e6654717",
+        "AGENTS.md#aic-workflow": "sha256:6415465aa6d55e27185ecd6266c021f6296965434d5a9b43ba7f090790cbf7a4",
         "tickets/README.md": "sha256:bac6472b42cd172a8147bb6a0da9f2521e2da1fa5dcf46a47b75e6a26fefec1e"
     }
 }

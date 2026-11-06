@@ -110,15 +110,15 @@ none
 
 ### Framework systems
 
-- [AIC\Component](../../../vendor/aic/framework/docs/systems.md#4-components)
-- [AIC\Controller](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
-- [AIC\Entity](../../../vendor/aic/framework/docs/systems.md#3-data)
-- [AIC\Form](../../../vendor/aic/framework/docs/systems.md#8-form-security)
-- [AIC\Module](../../../vendor/aic/framework/docs/systems.md#2-wiring-and-modules)
-- [AIC\Queue](../../../vendor/aic/framework/docs/systems.md#10-background-work)
-- [AIC\Routing](../../../vendor/aic/framework/docs/systems.md#1-http-routing-and-the-kinds)
-- [AIC\Schema](../../../vendor/aic/framework/docs/systems.md#3-data)
-- [AIC\Storage](../../../vendor/aic/framework/docs/systems.md#3-data)
+- [AIC\Component](../../../vendor/ignibyte/aic-framework/docs/systems.md#4-components)
+- [AIC\Controller](../../../vendor/ignibyte/aic-framework/docs/systems.md#1-http-routing-and-the-kinds)
+- [AIC\Entity](../../../vendor/ignibyte/aic-framework/docs/systems.md#3-data)
+- [AIC\Form](../../../vendor/ignibyte/aic-framework/docs/systems.md#8-form-security)
+- [AIC\Module](../../../vendor/ignibyte/aic-framework/docs/systems.md#2-wiring-and-modules)
+- [AIC\Queue](../../../vendor/ignibyte/aic-framework/docs/systems.md#10-background-work)
+- [AIC\Routing](../../../vendor/ignibyte/aic-framework/docs/systems.md#1-http-routing-and-the-kinds)
+- [AIC\Schema](../../../vendor/ignibyte/aic-framework/docs/systems.md#3-data)
+- [AIC\Storage](../../../vendor/ignibyte/aic-framework/docs/systems.md#3-data)
 
 ### Other modules
 

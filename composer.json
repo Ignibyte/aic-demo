@@ -5,13 +5,13 @@
     "type": "project",
     "require": {
         "php": "^8.5",
-        "aic/framework": "0.1.x-dev",
+        "ignibyte/aic-framework": "0.1.x-dev",
         "psr/http-message": "^2.0",
         "psr/http-server-handler": "^1.0"
     },
     "require-dev": {
-        "aic/gates": "0.1.x-dev",
-        "aic/workflow": "0.1.x-dev",
+        "ignibyte/aic-gates": "0.1.x-dev",
+        "ignibyte/aic-workflow": "0.1.x-dev",
         "roave/security-advisories": "dev-latest"
     },
     "repositories": [
@@ -21,7 +21,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "aic/framework": "0.1.x-dev"
+                    "ignibyte/aic-framework": "0.1.x-dev"
                 }
             }
         },
@@ -31,7 +31,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "aic/gates": "0.1.x-dev"
+                    "ignibyte/aic-gates": "0.1.x-dev"
                 }
             }
         },
@@ -41,7 +41,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "aic/workflow": "0.1.x-dev"
+                    "ignibyte/aic-workflow": "0.1.x-dev"
                 }
             }
         }
