@@ -1,6 +1,8 @@
+import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { existsSync, rmSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { crc32 } from 'node:zlib';
 import { expect, type Page } from '@playwright/test';
 import { checkDigitHolds, literal, sql } from './inventory';
@@ -182,6 +184,77 @@ export async function fetchInPage(
     }, { path, init });
 
     return { status: answer.status, headers: answer.headers, body: Buffer.from(answer.body) };
+}
+
+// The stored ZIP `StoredZip` writes for these entries, in order, built here field by field (APPNOTE 6.3.x, 4.3) so a
+// look can compare the bundle with it byte for byte: version 1.0 needed, made by 2.0, no flags, stored, dated
+// 1980-01-01 00:00, no extra field, no comment, disk 0, no attributes.
+export function storedZip(entries: { name: string; bytes: Buffer }[]): Buffer {
+    const locals: Buffer[] = [];
+    const centrals: Buffer[] = [];
+    let offset = 0;
+
+    for (const entry of entries) {
+        const name = Buffer.from(entry.name, 'latin1');
+        const crc = crc32(entry.bytes);
+        const local = Buffer.alloc(30);
+        local.writeUInt32LE(0x04034b50, 0);
+        local.writeUInt16LE(10, 4);
+        local.writeUInt16LE(0, 6);
+        local.writeUInt16LE(0, 8);
+        local.writeUInt16LE(0, 10);
+        local.writeUInt16LE(0x0021, 12);
+        local.writeUInt32LE(crc, 14);
+        local.writeUInt32LE(entry.bytes.length, 18);
+        local.writeUInt32LE(entry.bytes.length, 22);
+        local.writeUInt16LE(name.length, 26);
+        local.writeUInt16LE(0, 28);
+        const central = Buffer.alloc(46);
+        central.writeUInt32LE(0x02014b50, 0);
+        central.writeUInt16LE(20, 4);
+        local.copy(central, 6, 4, 30);
+        central.writeUInt16LE(0, 32);
+        central.writeUInt16LE(0, 34);
+        central.writeUInt16LE(0, 36);
+        central.writeUInt32LE(0, 38);
+        central.writeUInt32LE(offset, 42);
+        locals.push(local, name, entry.bytes);
+        centrals.push(central, name);
+        offset += local.length + name.length + entry.bytes.length;
+    }
+
+    const directory = Buffer.concat(centrals);
+    const end = Buffer.alloc(22);
+    end.writeUInt32LE(0x06054b50, 0);
+    end.writeUInt16LE(0, 4);
+    end.writeUInt16LE(0, 6);
+    end.writeUInt16LE(entries.length, 8);
+    end.writeUInt16LE(entries.length, 10);
+    end.writeUInt32LE(directory.length, 12);
+    end.writeUInt32LE(offset, 16);
+    end.writeUInt16LE(0, 20);
+
+    return Buffer.concat([...locals, directory, end]);
+}
+
+// What Info-ZIP's `unzip -t` reports when it cannot read the archive or finds an entry's CRC-32 wrong, or an empty
+// string when it tests clean; a missing `unzip` reports that, so a look's failure says which it was.
+export function unzipFailure(zip: Buffer): string {
+    const folder = mkdtempSync(join(tmpdir(), 'photo-bundle-'));
+    const file = join(folder, 'bundle.zip');
+
+    try {
+        writeFileSync(file, zip);
+        execFileSync('unzip', ['-tq', file], { stdio: 'pipe' });
+
+        return '';
+    } catch (error) {
+        const failed = error as { message: string; stdout?: Buffer; stderr?: Buffer };
+
+        return `${failed.message}\n${failed.stdout?.toString() ?? ''}${failed.stderr?.toString() ?? ''}`.trim();
+    } finally {
+        rmSync(folder, { recursive: true, force: true });
+    }
 }
 
 // One file in a ZIP as its central directory and local header give it.
