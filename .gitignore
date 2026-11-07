@@ -8,7 +8,6 @@
 /.rector-cache/
 /.deptrac.cache
 /.phpmd.result-cache.php
-/tools/gitleaks
 /.env
 /.env.*
 /.ddev/config.local.yaml
@@ -32,3 +31,4 @@ core.*
 
 # ignibyte/aic-gates' work directories and tool caches (#130)
 /node_modules/
+/tools/
