@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9179d126894b088d6f3d0ce449786ef4",
+    "content-hash": "9ab8fa872226b06cd9d2c6372a80a1cd",
     "packages": [
         {
             "name": "ignibyte/aic-framework",
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Ignibyte/aic-framework",
+                "url": "https://github.com/Ignibyte/aic-framework.git",
                 "reference": "dea8882aebbfe5ea9743053a16073dbf67c1d540"
             },
             "dist": {
@@ -33,41 +33,41 @@
             "extra": {
                 "aic-scaffold": {
                     "file-mapping": {
-                        ".gitignore": {
-                            "mode": "append",
-                            "path": "scaffold/gitignore"
-                        },
                         "bin/aic": {
                             "mode": "replace",
                             "path": "scaffold/bin/aic"
                         },
-                        "bootstrap/serve.php": {
-                            "mode": "replace",
-                            "path": "scaffold/bootstrap/serve.php"
+                        ".gitignore": {
+                            "mode": "append",
+                            "path": "scaffold/gitignore"
                         },
                         "config/app.php": {
                             "mode": "add-once",
                             "path": "scaffold/config/app.php"
                         },
-                        "config/database.php": {
-                            "mode": "add-once",
-                            "path": "scaffold/config/database.php"
-                        },
                         "config/mail.php": {
                             "mode": "add-once",
                             "path": "scaffold/config/mail.php"
                         },
-                        "config/profiler.php": {
-                            "mode": "add-once",
-                            "path": "scaffold/config/profiler.php"
+                        "public/index.php": {
+                            "mode": "replace",
+                            "path": "scaffold/public/index.php"
                         },
                         "config/secret.php": {
                             "mode": "add-once",
                             "path": "scaffold/config/secret.php"
                         },
-                        "public/index.php": {
+                        "bootstrap/serve.php": {
                             "mode": "replace",
-                            "path": "scaffold/public/index.php"
+                            "path": "scaffold/bootstrap/serve.php"
+                        },
+                        "config/database.php": {
+                            "mode": "add-once",
+                            "path": "scaffold/config/database.php"
+                        },
+                        "config/profiler.php": {
+                            "mode": "add-once",
+                            "path": "scaffold/config/profiler.php"
                         }
                     }
                 },
@@ -80,6 +80,7 @@
                     "AIC\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2896,7 +2897,7 @@
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Ignibyte/aic-gates",
+                "url": "https://github.com/Ignibyte/aic-gates.git",
                 "reference": "d174f473c95a88c82e87e13b4097c3c34dbeb327"
             },
             "dist": {
@@ -2960,6 +2961,7 @@
                     "Gates\\Architecture\\": "architecture/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2982,7 +2984,7 @@
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Ignibyte/aic-workflow",
+                "url": "https://github.com/Ignibyte/aic-workflow.git",
                 "reference": "6f6944170208ccc80fd93a8eb2b4df3a7f5c6fb2"
             },
             "dist": {
@@ -3012,6 +3014,7 @@
                     "AIC\\Workflow\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],

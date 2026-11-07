@@ -14,23 +14,6 @@
         "ignibyte/aic-workflow": "^0.1",
         "roave/security-advisories": "dev-latest"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Ignibyte/aic-framework",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Ignibyte/aic-gates",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Ignibyte/aic-workflow",
-            "no-api": true
-        }
-    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
