@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+## Description: Install Lotline end to end: settings, Composer packages, the database and its demo data
+## Usage: install
+## Example: "ddev install"
+
+# One command from a fresh clone to a signed-in demo:
+#   1. .ddev/config.local.yaml (ignored by git) gets the settings it lacks: the app secret, the
+#      admin's sign-in, the invented staff's password and the site URL. Values already there stay,
+#      so a rerun never changes a password.
+#   2. DDEV restarts so the web container reads them.
+#   3. composer install, bin/aic migrate, then the four seeds (staff, vehicles, customers, sales).
+#      A rerun updates the same rows.
+#   4. /health must answer 200; then the URL and the admin's sign-in are printed.
+
+set -euo pipefail
+
+cd "${DDEV_APPROOT:-.}"
+settings=.ddev/config.local.yaml
+
+# A random token from /dev/urandom: letters and digits only, so it is safe in YAML and a shell.
+token() {
+    od -An -N"$1" -tx1 /dev/urandom | tr -d ' \n'
+}
+
+# The value of NAME in the settings file, or nothing.
+setting() {
+    [ -f "$settings" ] || return 0
+    sed -n "s/^  - $1=//p" "$settings" | head -n 1
+}
+
+# Adds NAME=VALUE under web_environment when NAME is not set yet.
+ensure() {
+    if [ -n "$(setting "$1")" ]; then
+        return 0
+    fi
+    if ! grep -q '^web_environment:' "$settings" 2>/dev/null; then
+        printf 'web_environment:\n' >> "$settings"
+    fi
+    local line="  - $1=$2"
+    awk -v line="$line" '{ print } /^web_environment:/ { print line }' "$settings" > "$settings.new"
+    mv "$settings.new" "$settings"
+}
+
+url="${DDEV_PRIMARY_URL:-}"
+if [ -z "$url" ]; then
+    url="https://${DDEV_HOSTNAME:-$(basename "$PWD").ddev.site}"
+fi
+
+echo "Lotline: writing the settings it lacks to $settings"
+ensure AIC_APP_SECRET "$(token 32)"
+ensure LOTLINE_ADMIN_EMAIL admin@example.test
+ensure LOTLINE_ADMIN_NAME "Ada Admin"
+ensure LOTLINE_ADMIN_PASSWORD "$(token 9)"
+ensure LOTLINE_STAFF_PASSWORD "$(token 9)"
+ensure LOTLINE_SITE_URL "$url"
+
+echo "Lotline: restarting DDEV so the web container reads them"
+ddev restart
+
+echo "Lotline: installing the Composer packages"
+ddev composer install --no-interaction
+
+echo "Lotline: migrating the database"
+ddev exec bin/aic migrate
+
+echo "Lotline: saving the demo data"
+for seed in staff inventory customers sales; do
+    ddev exec bin/aic "$seed:seed"
+done
+
+status="$(curl -sk -o /dev/null -w '%{http_code}' "$url/health" || true)"
+if [ "$status" != 200 ]; then
+    echo "Lotline: $url/health answered $status, not 200; see 'ddev logs'" >&2
+    exit 1
+fi
+
+cat <<DONE
+
+Lotline is installed.
+  Open:     $url/sign-in
+  Email:    $(setting LOTLINE_ADMIN_EMAIL)
+  Password: $(setting LOTLINE_ADMIN_PASSWORD)
+  Staff:    the four invented @ridgeway-motors.test staff sign in with $(setting LOTLINE_STAFF_PASSWORD)
+  The style guide is $url/theme; no sign-in needed.
+The settings live in $settings, which git ignores.
+DONE

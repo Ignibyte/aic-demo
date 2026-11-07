@@ -6,13 +6,11 @@ declare(strict_types=1);
 /*
  * bin/aic: the console entry point (`bin/aic <command> [arguments]`).
  *
- * It reads config/database.php, config/mail.php and config/app.php, wires the
- * console kernel (AIC\Module\Application\ConsoleKernel) over the generated
- * wiring (App\Generated\ConsoleModules, #93), with the app's root for its
- * stored files (AIC #213) and the app's settings after it, so a job can make a
- * page in the app's theme and keep it (AIC #265, #44), and runs the command
- * line through the console. Output goes
- * to STDOUT, a line at a time, through the CommandWriter
+ * It reads config/database.php, config/mail.php and config/app.php (for the
+ * pages a job keeps, #265), wires the console kernel
+ * (AIC\Module\Application\ConsoleKernel) over the generated wiring
+ * (App\Generated\ConsoleModules, #93) and runs the command line through the
+ * console. Output goes to STDOUT, a line at a time, through the CommandWriter
  * below; the exit code is the command's. With no command, or an unknown one, it
  * lists the commands and exits 2. The database connection opens on the first
  * query, so a command that does not query runs without one. When the dev-only

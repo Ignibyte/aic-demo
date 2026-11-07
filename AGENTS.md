@@ -39,3 +39,9 @@ Do not create a substitute ledger.
 Actual native identity and return events bind the review receipt.
 Delivery belongs to the primary driver after the workflow completes.
 <!-- END AIC WORKFLOW -->
+
+## Installing and running Lotline
+
+To install or run Lotline rather than change it, follow the README's
+[For a coding agent](README.md#for-a-coding-agent) steps: check git, Docker and DDEV, then run
+`ddev install` from the clone's root and read its last lines. It needs no workflow run.

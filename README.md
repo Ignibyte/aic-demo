@@ -6,36 +6,74 @@ is a dealership's back office for the invented Ridgeway Motors: staff sign in, k
 on the lot, the customers and the sales, and land on a live dashboard. A coding agent wrote it
 through AIC's workflow, one ticket at a time (`tickets/`).
 
-## Try it
+## Install
 
-You need git, Docker and [DDEV](https://ddev.com) 1.24.10 or later. Lotline requires AIC from a
-checkout beside it, so make a folder for both:
+You need git, Docker and [DDEV](https://ddev.com) 1.24.10 or later. DDEV brings PHP 8.5,
+Composer and Postgres 17; AIC itself comes from Packagist, and no `vendor/` is committed.
+
+### With DDEV, in one command
 
 ```bash
-mkdir aic && cd aic
-git clone https://github.com/Ignibyte/aic-nextgen.git aic-nextgen-stable
-git -C aic-nextgen-stable checkout c5daaf3518f1272da1a4197ea0cf03ac1ab4fb7d
 git clone https://github.com/Ignibyte/aic-demo.git lotline
 cd lotline
-printf 'web_environment:\n  - AIC_APP_SECRET=%s\n' "$(openssl rand -hex 32)" > .ddev/config.local.yaml
+ddev install
+```
+
+`ddev install` (`.ddev/commands/host/install`) does the whole install and is safe to run again:
+
+1. It writes the settings that are missing to `.ddev/config.local.yaml`, which git ignores: a
+   random app secret, the admin's sign-in (`admin@example.test`, a random password), a random
+   password for the four invented staff, and the site URL. It never changes a value already there.
+2. It restarts DDEV so the web container reads them, then runs `composer install`,
+   `bin/aic migrate` and the four seeds: staff, 60 vehicles, 40 customers and 44 sales, all
+   invented. A rerun updates the same rows.
+3. It checks that `/health` answers 200 and prints the sign-in URL, the admin's email and password,
+   and the staff password.
+
+Sign in at the URL it prints. `/theme` is the style guide, open without signing in. This runs
+Lotline under PHP (nginx and php-fpm in DDEV), the runtime to use in production.
+
+### Step by step
+
+The same install by hand, with passwords you choose:
+
+```bash
+git clone https://github.com/Ignibyte/aic-demo.git lotline
+cd lotline
+cat > .ddev/config.local.yaml <<YAML
+web_environment:
+  - AIC_APP_SECRET=$(openssl rand -hex 32)
+  - LOTLINE_ADMIN_EMAIL=admin@example.test
+  - LOTLINE_ADMIN_NAME=Ada Admin
+  - LOTLINE_ADMIN_PASSWORD=choose-a-password
+  - LOTLINE_STAFF_PASSWORD=choose-another
+YAML
 ddev start
 ddev composer install
 ddev exec bin/aic migrate
+for seed in staff inventory customers sales; do ddev exec bin/aic "$seed:seed"; done
 ```
 
-Then make the staff and fill the lot with invented data. Pick your own passwords:
+Then open the URL `ddev start` printed and sign in at `/sign-in`.
 
-```bash
-ddev exec env LOTLINE_ADMIN_EMAIL=admin@example.test LOTLINE_ADMIN_NAME='Ada Admin' \
-  LOTLINE_ADMIN_PASSWORD='choose-a-password' LOTLINE_STAFF_PASSWORD='choose-another' bin/aic staff:seed
-ddev exec bin/aic inventory:seed
-ddev exec bin/aic customers:seed
-ddev exec bin/aic sales:seed
-```
+### For a coding agent
 
-Open the URL `ddev start` printed, sign in at `/sign-in` with the admin's email and password, and
-look around. `/theme` is the style guide, open without signing in. This runs Lotline under PHP
-(nginx and php-fpm in DDEV), the runtime to use in production.
+If you are an agent asked to install or run Lotline, follow this and nothing else:
+
+1. Check the tools: `git --version`, `docker info` and `ddev version` (1.24.10 or later) must all
+   succeed. If DDEV is missing, stop and ask; do not install system packages yourself.
+2. From the clone's root, run `ddev install`. It takes a few minutes the first time, while DDEV
+   pulls its images and Composer downloads the packages.
+3. It succeeded when its last lines begin `Lotline is installed.` and print the sign-in URL and
+   the admin's email and password; it has already checked that `/health` answers 200.
+4. On a failure, read its last lines. A port already in use means another DDEV project or web
+   server holds 80 or 443: `ddev poweroff` stops every DDEV project, then rerun `ddev install`.
+   Rerunning is always safe.
+5. Do not edit `vendor/`, `build/`, or the files `ignibyte/aic-scaffold` writes on every install
+   (`public/index.php`, `bootstrap/serve.php`, `bin/aic`). The settings and passwords are in
+   `.ddev/config.local.yaml`; never commit that file.
+6. To work on Lotline itself, read [AGENTS.md](AGENTS.md): changes go through AIC's workflow,
+   one ticket at a time.
 
 ### See it work
 
@@ -54,7 +92,7 @@ so they record nothing.
 `deploy/frankenphp/` holds a Caddyfile and a PHP 8.5 container. From `lotline/`:
 
 ```bash
-docker build --build-context aic=../aic-nextgen-stable -f deploy/frankenphp/Dockerfile -t lotline .
+docker build -f deploy/frankenphp/Dockerfile -t lotline .
 docker run -d --name lotline -p 8080:8080 -e SERVER_NAME=:8080 \
   -e AIC_APP_SECRET="$(openssl rand -hex 32)" \
   -e PGHOST=... -e PGPORT=5432 -e PGDATABASE=... -e PGUSER=... -e PGPASSWORD=... lotline
@@ -65,25 +103,33 @@ Run the seeds the same way, with `docker exec lotline` in place of `ddev exec`. 
 [deploy page](https://github.com/Ignibyte/aic-nextgen/blob/main/framework/docs/deploy.md) covers
 the rest: the schedule, the queue worker and a domain with automatic HTTPS.
 
-### Compiled (experimental)
+### Compiled on Linux (experimental)
 
-The same code compiles into one native HTTP server with
-[AIC's elephc fork](https://github.com/Ignibyte/aic_compiler): build it as its `FORK.md` says, so
-`elephc` is on your `PATH`. This needs PHP 8.5 and Composer on the host too:
+The same code also compiles into one native HTTP server, a single Linux executable, with
+[AIC's elephc fork](https://github.com/Ignibyte/aic_compiler). On Linux x86_64,
+`vendor/bin/aic-gate tools` downloads the compiler release AIC pins and checks its SHA-256;
+anywhere else, build the fork from source as its `FORK.md` says and put `elephc` on your `PATH`.
+It runs on the host, beside DDEV, and needs PHP 8.5, Composer, a C toolchain (`build-essential`)
+and the bzip2 and zlib development libraries there:
 
 ```bash
 composer install
-composer run native:serve        # builds the compiled site and serves it on http://127.0.0.1:8090
+vendor/bin/aic-gate tools
+composer run native:serve        # compiles the site and serves it on http://127.0.0.1:8090
 ```
 
-It finds DDEV's Postgres by itself. The gates hold the compiled site to PHP's answers on every
-page, but the compiler is young: try it, compare, and keep PHP for anything real.
+It finds DDEV's Postgres by itself. The binary it builds is `.native-site/main`, run from the
+clone's root as `.native-site/main --listen 127.0.0.1:8090`, with the same `AIC_APP_SECRET` and
+`PG*` settings in its environment; it serves the files in `build/assets/` from disk, so keep it
+beside the clone. The gates hold the compiled site to PHP's answers on every page, but the
+compiler is young: try it, compare, and keep PHP for anything real. `bin/aic` (the migrations,
+the seeds, the queue worker) runs under PHP either way.
 
 ## How it is built
 
 This foundation provides the application runtime, database health check, installed development workflow and Lotline's theme. Staff sign in (the `staff` module, below), keep the vehicles on the lot (the `inventory` module), keep the customers (the `customers` module) and record the sales (the `sales` module), and land on the dashboard (the `dashboard` module).
 
-AIC is pinned through the clean sibling checkout `../aic-nextgen-stable` at `3508fb3af691e0d91bbeb58c498fe69eca63aed0`, which publishes AIC as `ignibyte/aic-framework`, `ignibyte/aic-workflow` and `ignibyte/aic-gates` (AIC #278; Lotline requires them by those names, and its house rules load from `vendor/ignibyte/aic-workflow/rules/`) and whose `workflow:init` retires a guard hook the pack no longer ships (AIC #284), which took the stale `PostToolUse` entry out of `.claude/settings.json`. Before it, `9aa35e5e7686fd7f44a33dfceb982bfde58a8cc6`, whose `bin/aic code:coverage` knows all of Tessera's vocabulary, the actions, the runtime members and a theme's scripts included (AIC #271), counts no name a comment holds (AIC #272), and reads no part of `config/coverage.php`, the Coverage page's catalog (AIC #273). Before it, `c6bdeba02db91a4e8980a5fe6bff5230e4f4d3c8` let the rendered check take an Api's XML answer (AIC #270), and its Api answers can carry an ETag and answer a matching `If-None-Match` with 304 (AIC #269: the vehicle XML feed passes its request). Before it, `d84e2037513c85f526efe080b6e78dd6cd7436ac` read a request's Tessera headers in one place (AIC #268: `TesseraRequests::read()` gives the `TesseraRequest`, which the jobs page's poll asks whether a refresh is of `@jobs-live` alone). Before it, `3d6f0f2dcd6de78e0e23991ee86e1450291d9f37` brought pages kept as private files (AIC #265: a job asks for `PageDocuments` and `PageFiles`, and `PageFiles::put()` keeps a page rendered in the theme for a Stream to send; the console reads the theme from the generated `ConsoleModules`, and an app's `bin/aic` passes `ConsoleKernel` its `AppConfig` for a page's title, which Lotline's does from tickets/0044), the operator's `workflow:amend` for a frozen spec row (AIC #267) and gate:23's build failures naming the compiler's error first (AIC #264). Before it, `c5daaf3518f1272da1a4197ea0cf03ac1ab4fb7d` brought the queue as typed records (AIC #262): `QueueRecords::queued()` gives each job waiting, running or retrying as a `QueuedJob` with its `QueueState`, attempts and due and start times, `failed()` each `FailedJob` with its reason and when it failed, both newest first with times as ISO 8601 UTC text, and `PostgresQueue::retry()` and `discard()` queue a failed job again or drop it, so the jobs page reads and changes the queue with no SQL of its own. Before it, `b874d9811f5f9019bee3e63ffe301ae5c42cacea` let a generated handlers part declare only the services locals it reads (AIC #261) and a fragment answer resolve an anchor-scoped signal patch to the path the request named (AIC #260; the chat still scopes its patch to the region until Lotline #38). Before it, `436bc039dbe39065dd8454d838a198e096cd3cbc` brought the stream pause (AIC #259: `EventStream::pausedWhileHidden()` answers `Tessera-Stream-Pause: hidden`, so the visitor's chat stream closes while its tab is hidden and resumes from `Last-Event-ID`), with Tessera 0.4.5 pinned in `config/app.php`: protocol 2, where a component is marked by `data-t-c` on its one root element and a link, form or poll may name a component by its anchor, `@NAME`. Module code and the browser tests target the inventory results and the dashboard's live part by their anchors (`@inventory-results`, `@dashboard-live`) and spell no component path. Tessera 0.4.5 removes an element with `data-ignore-morph` that the incoming markup drops, with its parent and no error, and keeps one it holds as the same node with its typed text (Tessera #44), which the chat's message box needs when a chat is closed or ended. Tessera 0.4.4 before it prefetches on a keyboard focus as on a hover, drops a pending hover timer when the link is pressed, so a click sends one request, starts a `data-on:dragstart` drag in Firefox, which the leads board's drag needs, and loads the whole page on Back to a page whose recorded target is gone; 0.4.2 before it let every fragment after a removal land (Tessera #41). Before it, AIC 98f7ea4 let a page's fragment answer carry signal patches (AIC #253), so an applied bulk edit's answer empties the list's selection from the server, and lets a page answer `private, no-cache` (AIC #254), so the vehicle page takes the hover prefetch of a row's VIN link. It also builds a split module's shared services once (AIC #257): when a module's handlers fill more than one generated part, the services the parts share, such as inventory's `VehicleServices`, are built in one generated `<M>HandlerServices`, so no two parts repeat a statement; and gate:10 runs PDepend with a fresh cache (AIC #256). Before it, AIC 1ad769e brought the guard fields as an atom (AIC #246): every `Form` takes a `GuardFields` from `FormTokens::guard()` in place of a token string, and the theme's own forms, the inventory's action bar and the lead cards' move menus, place the same atom. Lotline also uses what the commit adds besides: its one script is a tracked page script, `helpers.page.js` (AIC #239); a bulk delete's rows leave the page, answered removed (AIC #247); the payment calculator's no-script table is the `Table` atom with its money columns at the end (AIC #240); and the browser looks run the console on the host (AIC #225), below. AIC's elephc fork compiles the shapes AIC #248 and #245 named, so the sidebar builds its links with one spread and a bulk edit finds its missing VINs with `array_diff()`. Framework, workflow and gate packages use Composer path repositories. DDEV mounts that checkout read-only at `/var/www/aic-nextgen-stable`.
+Lotline is an AIC app as `composer create-project ignibyte/aic-project` makes one. It requires `ignibyte/aic-framework` at `^0.1` from Packagist, with `ignibyte/aic-gates`, `ignibyte/aic-workflow` and `ignibyte/aic-scaffold` for development, and commits no `vendor/`. On every `composer install` and `update`, `ignibyte/aic-scaffold` writes the framework's entry files (`public/index.php`, `bootstrap/serve.php`, `bin/aic`), adds the config starters it is missing and runs `aic-gate init`; edit Lotline's own config files, never those three. `build/` is committed, so a deploy needs `composer install --no-dev` and no build step. Its changelog records which AIC each change was built on.
 
 `config/app.php` names the theme, `themes/lotline/`. Its templates sit on top: `layouts/` (the daisyUI drawer, `html.phtml` and `page.phtml`) and `components/<Name>/` (each component's `.phtml`). The PHP behind them sits in `src/`: `src/Layouts/Page.php`, whose regions are `sidebar`, `header`, `content` and `footer`, and `src/Components/<Name>/`, each component's class and its value classes. `assets/` holds the stylesheet. Modules hold no component, template or asset. The look is old Lotline's: Tailwind 4 and daisyUI 5 with its two themes, dark the default. `themes/lotline/frontend/` holds the Tailwind source and its npm build, which scans the theme's templates and classes and writes `themes/lotline/assets/lotline.css`; after changing a template's classes, run `npm ci && npm run build` there, then `composer run build`, and commit the stylesheet.
 

@@ -11,6 +11,7 @@
     },
     "require-dev": {
         "ignibyte/aic-gates": "^0.1",
+        "ignibyte/aic-scaffold": "^0.1",
         "ignibyte/aic-workflow": "^0.1",
         "roave/security-advisories": "dev-latest"
     },
@@ -48,6 +49,7 @@
             "captainhook/hook-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "ergebnis/composer-normalize": true,
+            "ignibyte/aic-scaffold": true,
             "phpstan/extension-installer": true
         },
         "optimize-autoloader": true,

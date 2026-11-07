@@ -2,9 +2,9 @@
 number: 47
 title: "The photo bundle writes its ZIP records with pack()"
 type: chore
-status: in-review
+status: closed
 created: 2026-11-05T12:00:00Z
-updated: 2026-11-06T05:15:34Z
+updated: 2026-11-07T16:00:00Z
 phase: "docs"
 ---
 
