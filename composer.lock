@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ab8fa872226b06cd9d2c6372a80a1cd",
+    "content-hash": "583066ae1fb28dec1ced101aeee1246e",
     "packages": [
         {
             "name": "ignibyte/aic-framework",
@@ -2978,6 +2978,53 @@
                 "source": "https://github.com/Ignibyte/aic-nextgen"
             },
             "time": "2026-11-06T17:40:23+00:00"
+        },
+        {
+            "name": "ignibyte/aic-scaffold",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Ignibyte/aic-scaffold.git",
+                "reference": "abfaf6188feaf902fb03449b7dbcf4560c597a73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Ignibyte/aic-scaffold/zipball/abfaf6188feaf902fb03449b7dbcf4560c597a73",
+                "reference": "abfaf6188feaf902fb03449b7dbcf4560c597a73",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.6",
+                "php": "^8.5"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "AIC\\Scaffold\\Infrastructure\\ScaffoldPlugin",
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIC\\Scaffold\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "AIC's Composer plugin: on every install and update it writes and keeps an app's root files from the ignibyte/aic-* packages that own them, then runs their scaffolders.",
+            "homepage": "https://github.com/Ignibyte/aic-nextgen",
+            "keywords": [
+                "aic",
+                "composer-plugin",
+                "scaffold"
+            ],
+            "support": {
+                "issues": "https://github.com/Ignibyte/aic-nextgen/issues",
+                "source": "https://github.com/Ignibyte/aic-nextgen"
+            },
+            "time": "2026-11-07T00:01:17+00:00"
         },
         {
             "name": "ignibyte/aic-workflow",

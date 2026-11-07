@@ -9,15 +9,13 @@ declare(strict_types=1);
  * and compiled (the class bundle and this file built with `elephc --web`, see
  * gate:23). Either way it runs once per request with fresh state, as PHP-FPM
  * does: it reads the app's config (config/app.php, config/database.php,
- * config/secret.php and config/profiler.php, typed), wires the framework's SAPI
- * services and the app
+ * config/secret.php and config/profiler.php, typed), wires the framework's SAPI services and the app
  * kernel (AIC\Module\Application\AppKernel) over the generated wiring
  * (App\Generated\WebModules, #93), narrows the superglobals into a
  * SapiRequest, answers it through the kernel and emits the response through
  * PhpSapiSink (header(), http_response_code() and echo). This is the one place
- * that reads the superglobals. With the profiler on (AIC #229, AIC_PROFILER=1
- * in DDEV), it wraps the database and gives the request one Profile that
- * observes it; off, nothing of the profiler is built.
+ * that reads the superglobals. With the profiler on (#229), it wraps the
+ * database and gives the request one Profile that observes it.
  */
 
 use AIC\Config\Domain\AppConfig;
@@ -74,6 +72,7 @@ try {
     $requestObservers = $profile instanceof Profile
         ? new RequestObservers($profile, $profile, $profile, true)
         : new RequestObservers();
+
     $appKernel = new AppKernel(
         new HandlerContexts(
             $appConfig,
