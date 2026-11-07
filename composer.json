@@ -5,45 +5,30 @@
     "type": "project",
     "require": {
         "php": "^8.5",
-        "ignibyte/aic-framework": "0.1.x-dev",
+        "ignibyte/aic-framework": "^0.1",
         "psr/http-message": "^2.0",
         "psr/http-server-handler": "^1.0"
     },
     "require-dev": {
-        "ignibyte/aic-gates": "0.1.x-dev",
-        "ignibyte/aic-workflow": "0.1.x-dev",
+        "ignibyte/aic-gates": "^0.1",
+        "ignibyte/aic-workflow": "^0.1",
         "roave/security-advisories": "dev-latest"
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../aic-nextgen-stable/framework",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "ignibyte/aic-framework": "0.1.x-dev"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/Ignibyte/aic-framework",
+            "no-api": true
         },
         {
-            "type": "path",
-            "url": "../aic-nextgen-stable/gates",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "ignibyte/aic-gates": "0.1.x-dev"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/Ignibyte/aic-gates",
+            "no-api": true
         },
         {
-            "type": "path",
-            "url": "../aic-nextgen-stable/workflow",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "ignibyte/aic-workflow": "0.1.x-dev"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/Ignibyte/aic-workflow",
+            "no-api": true
         }
     ],
     "minimum-stability": "stable",
